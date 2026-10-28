@@ -1,6 +1,6 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMatch, useNavigate } from 'react-router-dom'
-import tourists from './data/tourists.json'
+import defaultTourists from './data/tourists.json'
 import { useFilteredTourists } from './hooks/useMapControls'
 import { useFavorites } from './hooks/useFavorites'
 import { useUserLocation } from './hooks/useUserLocation'
@@ -16,6 +16,30 @@ import ProfilePage from './components/pages/ProfilePage'
 import LoginModal from './components/ui/LoginModal'
 
 export default function App() {
+  // Data destinasi wisata: di-fetch dari API backend Laravel (PostgreSQL / PostGIS)
+  const [tourists, setTourists] = useState(defaultTourists)
+
+  useEffect(() => {
+    let isMounted = true
+    fetch('/api/tourists')
+      .then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok')
+        return res.json()
+      })
+      .then((json) => {
+        if (isMounted && json?.data && Array.isArray(json.data)) {
+          setTourists(json.data)
+        }
+      })
+      .catch((err) => {
+        console.warn('Gagal memuat data dari API Laravel, menggunakan data lokal fallback:', err)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   // 1. State aktif untuk tab navigasi (Explore, Untuk Anda, Navigasi, Tersimpan, Aktivitas)
   const [activeTab, setActiveTab] = useState('Explore')
 
@@ -42,7 +66,7 @@ export default function App() {
 
   const routePlace = useMemo(
     () => (selectedSlug ? tourists.find((t) => t.slug === selectedSlug) ?? null : null),
-    [selectedSlug],
+    [selectedSlug, tourists],
   )
 
   // State untuk menyimpan data objek tempat wisata yang sedang dipilih untuk Detail Wisata
@@ -73,7 +97,7 @@ export default function App() {
         navigate(`/place/${place.slug}`, { replace: selectedSlug !== null })
       }
     },
-    [navigate, selectedSlug],
+    [navigate, selectedSlug, tourists],
   )
 
   // Tombol kembali (<-) mengosongkan state selectedPlace dan kembali ke peta utama
