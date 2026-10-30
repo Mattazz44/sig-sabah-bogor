@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Environment files
+.env
+.env.backup
+.env.production
+env
+
+# Logs
+*.log
+logs/
+
+# Build outputs
+dist/
+dist-ssr/
+public/build/
+public/hot/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temp QGIS metadata
+*.qmd

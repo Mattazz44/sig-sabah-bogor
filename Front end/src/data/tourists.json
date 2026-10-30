@@ -1,0 +1,255 @@
+[
+  {
+    "id": 1,
+    "slug": "taman-peranginan",
+    "name": "Taman Peranginan",
+    "category": "Alam & Curug",
+    "description": "Taman kota bersejarah di ketinggian tebing Jalan Jenderal Sudirman dengan panorama Sungai Ciliwung dan rimbun pepohonan rindang.",
+    "detailedDescription": "Taman Peranginan merupakan taman kota peninggalan era kolonial yang terletak di ketinggian tebing Jalan Jenderal Sudirman. Dari taman ini, pengunjung dapat menikmati pemandangan aliran Sungai Ciliwung dan pemukiman Sempur yang asri di bawah rindangnya pepohonan berusia puluhan tahun.\n\nTempat ini sangat cocok untuk bersantai sore hari, berolahraga ringan, menikmati semilir angin sejuk Kota Hujan, atau sekadar melepas penat di tengah hiruk-pikuk pusat kota Bogor.",
+    "address": "Jl. Jend. Sudirman No.1, Sempur, Bogor Tengah, Kota Bogor",
+    "distance": "1 km dari posisi kamu",
+    "rating": 4.6,
+    "operationalHours": "06.00-18.00",
+    "ticketPrice": "Gratis",
+    "travelTime": "5 Menit",
+    "image": "/images/taman-peranginan.jpg",
+    "gallery": [
+      "/images/taman-peranginan.jpg",
+      "/images/kebun-raya-bogor.jpg",
+      "/images/tugu-kujang.jpg"
+    ],
+    "coordinates": { "lat": -6.5885, "lng": 106.7978 }
+  },
+  {
+    "id": 2,
+    "slug": "lawang-surya-kencana",
+    "name": "Lawang Surya Kencana",
+    "category": "Kuliner",
+    "description": "Gerbang megah bernuansa Tionghoa penanda kawasan pecinan legendaris Bogor yang menjadi surga aneka kuliner otentik Nusantara.",
+    "detailedDescription": "Lawang Surya Kencana adalah gerbang megah berarsitektur khas Tionghoa yang berdiri kokoh sebagai gerbang masuk kawasan pecinan legendaris di Kota Bogor. Kawasan ini terkenal sebagai sentra wisata kuliner legendaris yang menawarkan perpaduan cita rasa Sunda dan Tionghoa sejak puluhan tahun lalu.\n\nDi sepanjang jalan ini, Anda dapat menjumpai aneka kuliner otentik mulai dari Soto Kuning Pak Salam, Asinan Gedung Dalam, Lumpia Basah, hingga Combro hangat yang menggugah selera.",
+    "address": "Jl. Suryakencana No.1, Babakan Pasar, Bogor Tengah, Kota Bogor",
+    "distance": "3 km dari posisi kamu",
+    "rating": 4.6,
+    "operationalHours": "07.00-22.00",
+    "ticketPrice": "Gratis",
+    "travelTime": "10 Menit",
+    "image": "/images/lawang-surya-kencana.jpg",
+    "gallery": [
+      "/images/lawang-surya-kencana.jpg",
+      "/images/jalan-suryakencana.jpg",
+      "/images/tugu-kujang.jpg"
+    ],
+    "coordinates": { "lat": -6.6022, "lng": 106.8003 }
+  },
+  {
+    "id": 3,
+    "slug": "jbound-geo-edu-park",
+    "name": "Jbound Geo Edu Park",
+    "category": "Edukasi & Budaya",
+    "description": "Taman wisata edukasi dan wahana outbound outdoor keluarga dengan latar belakang megah Gunung Salak dan udara perbukitan sejuk.",
+    "detailedDescription": "Jbound Geo Edu Park merupakan tempat rekreasi lengkap dengan pemandangan pegunungan yang indah serta udara yang sejuk. Jbound Geo Edu Park mempunyai pemandian air panas alami yang bersumber dari air mata Gunung Salak.\n\nJbound Geo Edu Park menyediakan destinasi rekreasi alam terbuka di kawasan pegunungan yang sejuk, ideal untuk liburan keluarga. Nikmati ragam aktivitas seru mulai dari wisata edukasi, agrowisata, hingga wahana outbound.",
+    "address": "Jl. Mayjen Ishak Djuarsa, Gunungbatu, Bogor Barat, Kota Bogor",
+    "distance": "16 km dari posisi kamu",
+    "rating": 4.8,
+    "operationalHours": "08.00-19.00",
+    "ticketPrice": "Rp175.000/pax",
+    "travelTime": "20 Menit",
+    "image": "/images/jbound-geo-edu-park.jpg",
+    "gallery": [
+      "/images/jbound-gallery-1.jpg",
+      "/images/jbound-gallery-2.jpg",
+      "/images/jbound-gallery-3.jpg"
+    ],
+    "coordinates": { "lat": -6.6115, "lng": 106.7725 }
+  },
+  {
+    "id": 4,
+    "slug": "museum-peta",
+    "name": "Museum PETA - Bogor Kota",
+    "category": "Edukasi & Budaya",
+    "description": "Museum sejarah perjuangan Pembela Tanah Air (PETA) dengan patung Jenderal Sudirman dan koleksi persenjataan di gedung kolonial bersejarah.",
+    "detailedDescription": "Museum PETA (Pembela Tanah Air) didirikan untuk mengenang jasa para pahlawan pejuang kemerdekaan Indonesia yang tergabung dalam tentara sukarela PETA. Bertempat di gedung bersejarah peninggalan militer Belanda tahun 1745.\n\nDi museum ini pengunjung dapat menyaksikan diorama peristiwa bersejarah, koleksi senjata asli era perang kemerdekaan, meriam, seragam tempur, serta monumen patung Jenderal Sudirman yang gagah berdiri di halaman depan.",
+    "address": "Jl. Jend. Sudirman No.35, Pabaton, Bogor Tengah, Kota Bogor",
+    "distance": "3 km dari posisi kamu",
+    "rating": 4.6,
+    "operationalHours": "08.00-16.00",
+    "ticketPrice": "Rp10.000/pax",
+    "travelTime": "8 Menit",
+    "image": "/images/museum-peta.jpg",
+    "gallery": [
+      "/images/museum-peta.jpg",
+      "/images/museum-zoologi.jpg",
+      "/images/taman-peranginan.jpg"
+    ],
+    "coordinates": { "lat": -6.5855, "lng": 106.7947 },
+    "isPopular": true
+  },
+  {
+    "id": 5,
+    "slug": "kebun-raya-bogor",
+    "name": "Kebun Raya Bogor",
+    "category": "Alam & Curug",
+    "description": "Kebun botani bersejarah seluas 87 hektar yang didirikan tahun 1817, rumah bagi lebih dari 12.000 spesimen tumbuhan dan bersebelahan dengan Istana Bogor.",
+    "detailedDescription": "Kebun Raya Bogor adalah kebun botani tertua di Asia Tenggara yang berdiri sejak 18 Mei 1817 oleh Prof. Caspar Georg Karl Reinwardt. Berdampingan langsung dengan kompleks Istana Kepresidenan Bogor, kebun seluas 87 hektar ini menampung ribuan spesies tanaman tropis langka dari seluruh penjuru dunia.\n\nPengunjung dapat menjelajahi Danau Gunting yang dipenuhi teratai raksasa Victoria amazonica, Jembatan Merah legendaris, Griya Anggrek, serta Makam Belanda kuno di tengah keteduhan pepohonan purba raksasa.",
+    "address": "Jl. Ir. H. Juanda No.13, Paledang, Kota Bogor",
+    "distance": "2 km dari posisi kamu",
+    "rating": 4.7,
+    "operationalHours": "08.00-17.00",
+    "ticketPrice": "Rp25.000/pax",
+    "travelTime": "5 Menit",
+    "image": "/images/kebun-raya-bogor.jpg",
+    "gallery": [
+      "/images/kebun-raya-bogor.jpg",
+      "/images/taman-peranginan.jpg",
+      "/images/tugu-kujang.jpg"
+    ],
+    "coordinates": { "lat": -6.5976, "lng": 106.7996 }
+  },
+  {
+    "id": 6,
+    "slug": "curug-leuwi-hejo",
+    "name": "Curug Leuwi Hejo",
+    "category": "Alam & Curug",
+    "description": "Air terjun dengan kolam alami berwarna hijau toska jernih di antara bebatuan besar, populer untuk berenang dan trekking ringan di kawasan Sentul.",
+    "detailedDescription": "Curug Leuwi Hejo sering dijuluki sebagai 'Green Canyon-nya Bogor' karena air sungainya yang berwarna hijau toska transparan memikat diapit oleh dinding tebing batu alami yang eksotis. Terletak di perbukitan Sentul, udara di sekitar curug sangat sejuk dan menyegarkan.\n\nKolam alami dengan kedalaman bertingkat sangat digemari wisatawan untuk berenang, cliff jumping ringan, atau sekadar berendam relaksasi di air pegunungan yang sangat jernih.",
+    "address": "Bojong Koneng, Babakan Madang, Kabupaten Bogor",
+    "distance": "18 km dari posisi kamu",
+    "rating": 4.5,
+    "operationalHours": "07.00-17.00",
+    "ticketPrice": "Rp25.000/pax",
+    "travelTime": "45 Menit",
+    "image": "/images/curug-leuwi-hejo.jpg",
+    "gallery": [
+      "/images/curug-leuwi-hejo.jpg",
+      "/images/curug-nangka.jpg",
+      "/images/kopi-daong.jpg"
+    ],
+    "coordinates": { "lat": -6.579, "lng": 106.927 }
+  },
+  {
+    "id": 7,
+    "slug": "curug-nangka",
+    "name": "Curug Nangka",
+    "category": "Alam & Curug",
+    "description": "Air terjun di kaki Gunung Salak yang dikelilingi tebing berlumut dan hutan tropis, bagian dari kawasan wisata Taman Nasional Gunung Halimun Salak.",
+    "detailedDescription": "Curug Nangka terletak persis di lereng bawah Gunung Salak yang asri dan masih sangat alami. Kawasan ini dikelilingi hutan pinus yang tinggi menjulang dan dihuni oleh kawanan kera ekor panjang yang hidup bebas.\n\nUntuk mencapai curug, pengunjung akan melewati aliran sungai jernih berkerikil dan tebing batu berlumut hijau yang menyejukkan mata. Suara deburan air terjun dan semilir angin pegunungan memberikan ketenangan jiwa yang luar biasa.",
+    "address": "Sukajadi, Tamansari, Kabupaten Bogor",
+    "distance": "14 km dari posisi kamu",
+    "rating": 4.4,
+    "operationalHours": "07.00-17.00",
+    "ticketPrice": "Rp22.000/pax",
+    "travelTime": "35 Menit",
+    "image": "/images/curug-nangka.jpg",
+    "gallery": [
+      "/images/curug-nangka.jpg",
+      "/images/curug-leuwi-hejo.jpg",
+      "/images/jbound-geo-edu-park.jpg"
+    ],
+    "coordinates": { "lat": -6.6664, "lng": 106.7247 }
+  },
+  {
+    "id": 8,
+    "slug": "kopi-daong",
+    "name": "Kopi Daong",
+    "category": "Kuliner",
+    "description": "Kedai kopi di tengah hutan pinus Pancawati dengan meja-meja kayu dan pemandangan Gunung Pangrango, cocok untuk bersantai menikmati udara sejuk.",
+    "detailedDescription": "Kopi Daong adalah destinasi kuliner dan kedai kopi bernuansa alam terbuka yang terhampar di tengah lebatnya hutan pohon pinus kawasan Pancawati, Caringin. Tempat ini menawarkan pengalaman ngopi istimewa di bawah kanopi rindang pepohonan dengan latar siluet Gunung Pangrango.\n\nMenjelang malam, lampu-lampu gantung temaram menciptakan suasana hangat nan romantis. Selain kopi arabika khas Bogor, tersedia aneka pastry, makanan berat, dan spot swafoto aesthetic yang memukau.",
+    "address": "Pancawati, Caringin, Kabupaten Bogor",
+    "distance": "22 km dari posisi kamu",
+    "rating": 4.6,
+    "operationalHours": "09.00-21.00",
+    "ticketPrice": "Gratis (F&B)",
+    "travelTime": "40 Menit",
+    "image": "/images/kopi-daong.jpg",
+    "gallery": [
+      "/images/kopi-daong.jpg",
+      "/images/jalan-suryakencana.jpg",
+      "/images/lawang-surya-kencana.jpg"
+    ],
+    "coordinates": { "lat": -6.688, "lng": 106.87 }
+  },
+  {
+    "id": 9,
+    "slug": "jalan-suryakencana",
+    "name": "Kuliner Jalan Suryakencana",
+    "category": "Kuliner",
+    "description": "Kawasan pecinan legendaris Bogor yang dipenuhi jajanan khas seperti soto kuning, laksa Bogor, dan asinan, berderet di antara ruko-ruko tua.",
+    "detailedDescription": "Jalan Suryakencana adalah denyut nadi kuliner tradisional Kota Bogor. Sepanjang koridor trotoar yang lebar dan ramah pejalan kaki, berjejer puluhan gerobak dan kedai kuliner legendaris turun-temurun sejak era 1950-an.\n\nSensasi kulineran di sini menjadi favorit para pelancong karena Anda dapat mencicipi toge goreng khas Bogor, bir kotjok rempah segar, ngo hiang, martabak manis legendaris, hingga es pala yang menyegarkan dahaga.",
+    "address": "Jl. Suryakencana, Babakan Pasar, Kota Bogor",
+    "distance": "3 km dari posisi kamu",
+    "rating": 4.5,
+    "operationalHours": "08.00-21.00",
+    "ticketPrice": "Gratis (F&B)",
+    "travelTime": "10 Menit",
+    "image": "/images/jalan-suryakencana.jpg",
+    "gallery": [
+      "/images/jalan-suryakencana.jpg",
+      "/images/lawang-surya-kencana.jpg",
+      "/images/tugu-kujang.jpg"
+    ],
+    "coordinates": { "lat": -6.604, "lng": 106.8 }
+  },
+  {
+    "id": 10,
+    "slug": "museum-zoologi-bogor",
+    "name": "Museum of zoology - Bogor Tengah",
+    "category": "Edukasi & Budaya",
+    "description": "Museum zoologi tertua di Indonesia yang menyimpan koleksi fauna Nusantara, termasuk kerangka paus biru sepanjang 27 meter.",
+    "detailedDescription": "Museum Zoologi Bogor didirikan pada tahun 1894 oleh Dr. J.C. Koningsberger sebagai sarana riset fauna tropis Indonesia. Terletak di area dekat Kebun Raya Bogor, museum ini menyimpan koleksi spesimen satwa liar terbesar dan terlengkap di Asia Tenggara.\n\nDaya tarik utamanya adalah kerangka utuh Paus Biru raksasa sepanjang 27 meter seberat 119 ton yang terdampar di Pameungpeuk Garut pada tahun 1916, serta awetan Harimau Jawa, Badak Jawa bercula satu, dan ribuan serangga eksotis.",
+    "address": "Jl. Ir. H. Juanda No.9, Paledang, Kota Bogor",
+    "distance": "2.5 km dari posisi kamu",
+    "rating": 4.7,
+    "operationalHours": "08.00-16.00",
+    "ticketPrice": "Rp15.000/pax",
+    "travelTime": "7 Menit",
+    "image": "/images/museum-zoologi.jpg",
+    "gallery": [
+      "/images/museum-zoologi.jpg",
+      "/images/museum-peta.jpg",
+      "/images/kebun-raya-bogor.jpg"
+    ],
+    "coordinates": { "lat": -6.6014, "lng": 106.7972 }
+  },
+  {
+    "id": 11,
+    "slug": "prasasti-batutulis",
+    "name": "Prasasti Batutulis",
+    "category": "Edukasi & Budaya",
+    "description": "Situs cagar budaya peninggalan Kerajaan Pajajaran berupa batu bertuliskan aksara Sunda Kuno yang dibuat pada tahun 1533.",
+    "detailedDescription": "Prasasti Batutulis adalah prasasti bertarikh 1533 Masehi peninggalan Kerajaan Sunda Pajajaran yang dibuat oleh Prabu Surawisesa untuk mengenang kejayaan ayahandanya, Sri Baduga Maharaja (Prabu Siliwangi).\n\nPrasasti ini terpahat dalam aksara dan bahasa Sunda Kuno pada batu andesit alami berwarna abu-abu kehitaman. Di dalam cungkup situs ini juga terdapat batu tapak kaki Prabu Surawisesa, batu tempat bersemayam pusaka, dan makam kuno pembesar Pajajaran.",
+    "address": "Jl. Batutulis, Batutulis, Bogor Selatan, Kota Bogor",
+    "distance": "4 km dari posisi kamu",
+    "rating": 4.3,
+    "operationalHours": "08.00-16.00",
+    "ticketPrice": "Rp5.000/pax",
+    "travelTime": "12 Menit",
+    "image": "/images/prasasti-batutulis.jpg",
+    "gallery": [
+      "/images/prasasti-batutulis.jpg",
+      "/images/tugu-kujang.jpg",
+      "/images/museum-peta.jpg"
+    ],
+    "coordinates": { "lat": -6.626, "lng": 106.8075 }
+  },
+  {
+    "id": 12,
+    "slug": "tugu-kujang",
+    "name": "Tugu Kujang - Bogor Kota",
+    "category": "Edukasi & Budaya",
+    "description": "Monumen senjata khas Sunda yang berdiri megah di pusat persimpangan Kota Bogor, menjadi simbol kebanggaan dan identitas sejarah tanah Pajajaran.",
+    "detailedDescription": "Tugu Kujang dibangun pada 4 Mei 1982 pada masa pemerintahan Walikota Achmad Sobana untuk melestarikan memori pusaka senjata tradisional suku Sunda, yaitu Kujang. Monumen setinggi 25 meter ini terletak strategis di pertemuan Jalan Pajajaran, Baranangsiang, dan Otista.\n\nDi puncaknya bertengger ornamen Kujang seberat 800 kilogram dari perunggu tebal yang dilapisi warna emas. Kawasan pedestrian di sekitar Tugu Kujang kini dilengkapi Lawang Salapan yang megah berlatar belakang Gunung Salak.",
+    "address": "Tegallega, Bogor Tengah, Kota Bogor",
+    "distance": "1 km dari posisi kamu",
+    "rating": 4.4,
+    "operationalHours": "24 Jam",
+    "ticketPrice": "Gratis",
+    "travelTime": "3 Menit",
+    "image": "/images/tugu-kujang.jpg",
+    "gallery": [
+      "/images/tugu-kujang.jpg",
+      "/images/kebun-raya-bogor.jpg",
+      "/images/lawang-surya-kencana.jpg"
+    ],
+    "coordinates": { "lat": -6.6017, "lng": 106.8048 }
+  }
+]
