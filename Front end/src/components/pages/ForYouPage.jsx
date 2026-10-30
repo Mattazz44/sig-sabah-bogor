@@ -1,7 +1,7 @@
-import { memo } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const RECOMMENDED_ITEMS = [
+const DEFAULT_RECOMMENDED_ITEMS = [
   {
     id: 'tugu-kujang',
     slug: 'tugu-kujang',
@@ -28,7 +28,7 @@ const RECOMMENDED_ITEMS = [
   },
 ]
 
-const CONTINUE_ITEM = {
+const DEFAULT_CONTINUE_ITEM = {
   id: 'museum-peta-continue',
   slug: 'museum-peta',
   name: 'Museum PETA - Bogor Kota',
@@ -37,8 +37,54 @@ const CONTINUE_ITEM = {
   image: '/images/museum-peta.jpg',
 }
 
-function ForYouPage({ favorites = [], toggleFavorite, isFavorite, onSelectPlace }) {
+function ForYouPage({
+  favorites = [],
+  toggleFavorite,
+  isFavorite,
+  onSelectPlace,
+  isLoggedIn = false,
+  onRequireLogin,
+  onOpenProfile,
+}) {
   const navigate = useNavigate()
+  const [recommendedItems, setRecommendedItems] = useState([])
+  const [continueItem, setContinueItem] = useState(null)
+
+  // Fetch data rekomendasi 'Untuk Anda' dari Backend API HANYA JIKA LOGGED IN
+  useEffect(() => {
+    if (!isLoggedIn) return
+
+    let isMounted = true
+    fetch('/api/for-you')
+      .then((res) => {
+        if (!res.ok) throw new Error('Network error')
+        return res.json()
+      })
+      .then((json) => {
+        if (isMounted && json?.data) {
+          if (Array.isArray(json.data.recommended)) {
+            setRecommendedItems(json.data.recommended)
+          }
+          if (json.data.continue_item) {
+            setContinueItem(json.data.continue_item)
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn('Gagal memuat rekomendasi Untuk Anda dari API, fallback ke default:', err)
+        if (isMounted) {
+          setRecommendedItems(DEFAULT_RECOMMENDED_ITEMS)
+          setContinueItem(DEFAULT_CONTINUE_ITEM)
+        }
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [isLoggedIn])
+
+  const effectiveRecommended = isLoggedIn ? recommendedItems : []
+  const effectiveContinue = isLoggedIn ? continueItem : null
 
   const handleCardClick = (slug) => {
     if (onSelectPlace) {
@@ -112,50 +158,89 @@ function ForYouPage({ favorites = [], toggleFavorite, isFavorite, onSelectPlace 
         <h1 className="text-[24px] font-bold tracking-tight text-white">Untuk Kamu</h1>
         <button
           type="button"
+          onClick={() => {
+            if (!isLoggedIn) {
+              if (onRequireLogin) onRequireLogin()
+            } else if (onOpenProfile) {
+              onOpenProfile('self')
+            }
+          }}
           aria-label="Profil pengguna"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white/90 transition hover:bg-white/10 active:scale-95"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white/90 transition hover:bg-white/10 active:scale-95 cursor-pointer overflow-hidden"
         >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
+          {isLoggedIn ? (
+            <img
+              src="/images/avatar-ambalingham.jpg"
+              alt="Avatar"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          )}
         </button>
       </div>
 
-      {/* Section 1: Berdasarkan aktivitas terakhir kamu */}
-      <div className="mt-6">
-        <h2 className="text-[14px] font-bold tracking-tight text-white">
-          Berdasarkan aktivitas terakhir kamu
-        </h2>
-        <p className="mt-0.5 text-[11px] text-white/60">
-          Beberapa tempat yang kami rekomendasikan
-        </p>
-
-        <div className="mt-3 flex flex-col divide-y divide-white/10">
-          {RECOMMENDED_ITEMS.map((item) => renderItem(item))}
+      {!isLoggedIn ? (
+        /* Empty State Jika Pengguna Belum Login */
+        <div className="mt-14 flex flex-col items-center justify-center text-center px-4">
+          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-forest-700/60 border border-white/15 text-3xl shadow-inner mb-4">
+            ✨
+          </div>
+          <h2 className="text-[17px] font-bold text-white tracking-tight">
+            Rekomendasi Spesial Untuk Anda
+          </h2>
+          <p className="mt-2 text-[12px] text-white/60 max-w-xs leading-relaxed">
+            Masuk dengan akun Anda untuk melihat kurasi tempat wisata berdasarkan aktivitas, riwayat perjalanan, dan preferensi Anda.
+          </p>
+          <button
+            type="button"
+            onClick={onRequireLogin}
+            className="mt-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 px-6 py-3 text-[13px] font-bold text-white shadow-lg transition cursor-pointer border border-emerald-400/30"
+          >
+            Masuk ke Akun
+          </button>
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Section 1: Berdasarkan aktivitas terakhir kamu */}
+          <div className="mt-6">
+            <h2 className="text-[14px] font-bold tracking-tight text-white">
+              Berdasarkan aktivitas terakhir kamu
+            </h2>
+            <p className="mt-0.5 text-[11px] text-white/60">
+              Beberapa tempat yang kami rekomendasikan
+            </p>
 
-      {/* Section 2: Lanjutkan Perjalanan ? */}
-      <div className="mt-6">
-        <h2 className="text-[14px] font-bold tracking-tight text-white">
-          Lanjutkan Perjalanan ?
-        </h2>
-        <p className="mt-0.5 text-[11px] text-white/60">Terakhir dilihat</p>
+            <div className="mt-3 flex flex-col divide-y divide-white/10">
+              {effectiveRecommended.map((item) => renderItem(item))}
+            </div>
+          </div>
 
-        <div className="mt-3 flex flex-col divide-y divide-white/10">
-          {renderItem(CONTINUE_ITEM)}
-        </div>
-      </div>
+          {/* Section 2: Lanjutkan Perjalanan ? */}
+          <div className="mt-6">
+            <h2 className="text-[14px] font-bold tracking-tight text-white">
+              Lanjutkan Perjalanan ?
+            </h2>
+            <p className="mt-0.5 text-[11px] text-white/60">Terakhir dilihat</p>
+
+            <div className="mt-3 flex flex-col divide-y divide-white/10">
+              {effectiveContinue && renderItem(effectiveContinue)}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

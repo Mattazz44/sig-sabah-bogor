@@ -1,4 +1,4 @@
-import { memo, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import tourists from '../../data/tourists.json'
 
 function CustomRoutePage({ onBack, onStartCustomRoute }) {
@@ -52,6 +52,42 @@ function CustomRoutePage({ onBack, onStartCustomRoute }) {
     },
   ])
 
+  // Fetch rute custom dari database backend
+  useEffect(() => {
+    let isMounted = true
+    fetch('/api/saved-activities')
+      .then((res) => {
+        if (!res.ok) throw new Error('Network error')
+        return res.json()
+      })
+      .then((json) => {
+        if (isMounted && Array.isArray(json?.data?.custom_routes) && json.data.custom_routes.length > 0) {
+          const mapped = json.data.custom_routes.map((cr) => {
+            const stops = Array.isArray(cr.stops) ? cr.stops : []
+            const places = stops.map((s) => s.place).filter(Boolean)
+            return {
+              id: cr.slug || `cr-${cr.id}`,
+              title: cr.title,
+              desc: cr.desc || '',
+              isPrimary: Boolean(cr.is_primary),
+              stops: stops,
+              totalDistance: cr.total_distance || '3.0 KM',
+              totalDuration: cr.total_duration || '10 Menit',
+              places: places.length > 0 ? places : [tourists[0]],
+            }
+          })
+          setCustomRoutesList(mapped)
+        }
+      })
+      .catch((err) => {
+        console.warn('Gagal memuat rute custom dari API, fallback ke default:', err)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   // 3. STATE MODAL "RANCANG RUTE CUSTOM BARU"
   const [showCreateRouteModal, setShowCreateRouteModal] = useState(false)
   const [newRouteTitle, setNewRouteTitle] = useState('')
@@ -89,6 +125,22 @@ function CustomRoutePage({ onBack, onStartCustomRoute }) {
     }
 
     setCustomRoutesList((prev) => [newRoute, ...prev])
+
+    // Simpan ke database backend
+    fetch('/api/custom-routes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        title: newRouteTitle.trim(),
+        place_ids: selectedDestIds,
+      }),
+    }).catch((err) => {
+      console.warn('Gagal menyimpan rute custom ke server:', err)
+    })
+
     setNewRouteTitle('')
     setSelectedDestIds([tourists[0]?.id, tourists[1]?.id])
     setShowCreateRouteModal(false)

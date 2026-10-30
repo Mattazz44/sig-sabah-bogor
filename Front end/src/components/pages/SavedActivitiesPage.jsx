@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useState } from 'react'
 import tourists from '../../data/tourists.json'
 import CustomRoutePage from './CustomRoutePage'
 import NotificationDrawer from '../ui/NotificationDrawer'
@@ -21,14 +21,40 @@ function SavedActivitiesPage({
   const [newActivityLocation, setNewActivityLocation] = useState('')
 
   // State daftar aktivitas tersimpan yang dibuat user
-  const [userActivities, setUserActivities] = useState([
-    {
-      id: 'act-1',
-      name: 'Bersepeda Santai Akhir Pekan',
-      location: 'Taman Peranginan',
-      date: '2 hari lalu',
-    },
-  ])
+  const [userActivities, setUserActivities] = useState([])
+
+  // Fetch daftar aktivitas dari API database HANYA JIKA LOGGED IN
+  useEffect(() => {
+    if (!isLoggedIn) return
+
+    let isMounted = true
+    fetch('/api/saved-activities')
+      .then((res) => {
+        if (!res.ok) throw new Error('Network error')
+        return res.json()
+      })
+      .then((json) => {
+        if (isMounted && Array.isArray(json?.data?.activities) && json.data.activities.length > 0) {
+          setUserActivities(
+            json.data.activities.map((a) => ({
+              id: a.id,
+              name: a.name,
+              location: a.location,
+              date: a.date_label || 'Baru saja',
+            }))
+          )
+        }
+      })
+      .catch((err) => {
+        console.warn('Gagal memuat aktivitas tersimpan dari API, fallback ke default:', err)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [isLoggedIn])
+
+  const effectiveUserActivities = isLoggedIn ? userActivities : []
 
   // STATE DROPDOWN "URUTKAN"
   const [showSortMenu, setShowSortMenu] = useState(false)
@@ -49,14 +75,33 @@ function SavedActivitiesPage({
     e.preventDefault()
     if (!newActivityName.trim() || !newActivityLocation.trim()) return
 
+    const nameText = newActivityName.trim()
+    const locText = newActivityLocation.trim()
+
     const newAct = {
       id: `act-${Date.now()}`,
-      name: newActivityName.trim(),
-      location: newActivityLocation.trim(),
+      name: nameText,
+      location: locText,
       date: 'Baru saja',
     }
 
     setUserActivities((prev) => [newAct, ...prev])
+
+    // Kirim juga ke database backend
+    fetch('/api/saved-activities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        name: nameText,
+        location: locText,
+      }),
+    }).catch((err) => {
+      console.warn('Gagal menyimpan aktivitas ke server:', err)
+    })
+
     setNewActivityName('')
     setNewActivityLocation('')
     setShowActivityModal(false)
@@ -136,7 +181,7 @@ function SavedActivitiesPage({
                   {place.name}
                 </h3>
                 <p className="text-[11px] text-white/60 truncate mt-0.5">
-                  ★ {place.rating} · {place.travelTime}
+                  ★ {place.rating} · {place.travelTime || '15 Menit'}
                 </p>
               </div>
               <button
@@ -493,20 +538,33 @@ function SavedActivitiesPage({
         </div>
       </div>
 
-      {/* SECTION: AKTIVITAS PERJALANAN USER (HASIL TAMBAH AKTIVITAS BARU) */}
-      {userActivities.length > 0 && (
+      {/* SECTION: AKTIVITAS PERJALANAN USER (HANYA DITAMPILKAN JIKA SUDAH LOGIN) */}
+      {!isLoggedIn ? (
+        <div className="mt-8 rounded-2xl bg-forest-700/40 border border-white/10 p-5 text-center">
+          <p className="text-[12px] text-white/70">
+            Masuk untuk menyimpan catatan perjalanan dan mengakses riwayat aktivitas wisata Anda.
+          </p>
+          <button
+            type="button"
+            onClick={onRequireLogin}
+            className="mt-3.5 inline-block rounded-xl bg-emerald-600/90 hover:bg-emerald-500 active:scale-95 px-5 py-2 text-[12px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
+          >
+            Masuk ke Akun
+          </button>
+        </div>
+      ) : effectiveUserActivities.length > 0 ? (
         <div className="mt-8">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-[14px] font-bold text-white tracking-tight">
               Aktivitas Perjalanan Saya
             </h3>
             <span className="text-[11px] text-white/60">
-              {userActivities.length} tercatat
+              {effectiveUserActivities.length} tercatat
             </span>
           </div>
 
           <div className="flex flex-col gap-2.5">
-            {userActivities.map((act) => (
+            {effectiveUserActivities.map((act) => (
               <div
                 key={act.id}
                 className="flex items-center justify-between rounded-2xl bg-forest-700/60 border border-white/10 px-4 py-3"
@@ -521,6 +579,12 @@ function SavedActivitiesPage({
               </div>
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="mt-8 rounded-2xl bg-forest-700/40 border border-white/10 p-4 text-center">
+          <p className="text-[11px] text-white/60">
+            Belum ada aktivitas perjalanan tersimpan. Klik tombol (+) di atas untuk menambahkan.
+          </p>
         </div>
       )}
 

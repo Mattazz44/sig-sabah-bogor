@@ -174,7 +174,7 @@ function TouristDetailPage({
             <span className="text-amber-400">★</span>
             <span className="font-semibold text-white">{place.rating.toFixed(1)}</span>
             <span className="text-white/40">·</span>
-            <span className="text-white/80">{place.distance || '16 km dari posisi kamu'}</span>
+            <span className="text-white/80">{place.distance || place.category}</span>
           </div>
         </div>
       </section>
@@ -204,7 +204,7 @@ function TouristDetailPage({
         <div className="flex flex-col items-center justify-center px-2 text-center">
           <span className="text-[11px] font-medium text-white/60">Waktu ke destinasi</span>
           <span className="mt-1 text-[13px] font-bold text-white tracking-tight">
-            {place.travelTime || '20 Menit'}
+            {place.travelTime || '-'}
           </span>
         </div>
       </section>

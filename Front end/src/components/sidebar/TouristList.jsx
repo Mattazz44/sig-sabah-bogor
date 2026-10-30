@@ -52,7 +52,7 @@ export default function TouristList({
                 <span className="text-amber-400">★</span>
                 <span className="font-medium text-white">{popularSpot.rating.toFixed(1)}</span>
                 <span className="text-white/40">·</span>
-                <span>{popularSpot.distance || '3 km dari posisi kamu'}</span>
+                <span>{popularSpot.distance || popularSpot.category}</span>
               </div>
             </div>
           </button>

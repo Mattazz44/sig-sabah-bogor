@@ -1,4 +1,4 @@
-import { memo, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import NotificationDrawer from '../ui/NotificationDrawer'
 
 const DEFAULT_MY_ACTIVITIES = [
@@ -63,8 +63,65 @@ function ActivitiesPage({ isLoggedIn, onRequireLogin, onOpenProfile }) {
   const [showNotificationDrawer, setShowNotificationDrawer] = useState(false)
 
   // 4. STATE POSTING FOTO DENGAN SIMULASI FILE UPLOAD
-  const [myActivities, setMyActivities] = useState(DEFAULT_MY_ACTIVITIES)
-  const [communityActivities, setCommunityActivities] = useState(DEFAULT_COMMUNITY_ACTIVITIES)
+  const [myActivities, setMyActivities] = useState([])
+  const [communityActivities, setCommunityActivities] = useState([])
+
+  // Fetch daftar postingan aktivitas dari API database
+  useEffect(() => {
+    let isMounted = true
+    fetch('/api/activities')
+      .then((res) => {
+        if (!res.ok) throw new Error('Network error')
+        return res.json()
+      })
+      .then((json) => {
+        if (isMounted && Array.isArray(json?.data) && json.data.length > 0) {
+          const my = json.data.filter((item) => !item.is_community)
+          const com = json.data.filter((item) => item.is_community)
+          
+          // Aktivitas Kamu HANYA ada jika pengguna sedang logged in
+          if (isLoggedIn && my.length > 0) {
+            setMyActivities(my.map((m) => ({
+              id: m.id,
+              userName: m.user_name,
+              userAvatar: m.user_avatar,
+              date: m.date,
+              image: m.image,
+              title: m.title,
+              location: m.location,
+              isOtherUser: m.is_other_user,
+            })))
+          } else if (!isLoggedIn) {
+            setMyActivities([])
+          }
+
+          // Aktivitas Komunitas tetap bisa dilihat publik
+          if (com.length > 0) {
+            setCommunityActivities(com.map((c) => ({
+              id: c.id,
+              userName: c.user_name,
+              userAvatar: c.user_avatar,
+              date: c.date,
+              image: c.image,
+              title: c.title,
+              location: c.location,
+              isOtherUser: c.is_other_user,
+            })))
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn('Gagal memuat aktivitas dari database, fallback ke default:', err)
+        if (isMounted) {
+          setMyActivities(isLoggedIn ? DEFAULT_MY_ACTIVITIES : [])
+          setCommunityActivities(DEFAULT_COMMUNITY_ACTIVITIES)
+        }
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [isLoggedIn])
 
   const [showPostModal, setShowPostModal] = useState(false)
   const [postCaption, setPostCaption] = useState('')
@@ -95,19 +152,42 @@ function ActivitiesPage({ isLoggedIn, onRequireLogin, onOpenProfile }) {
   const handlePostSubmit = (e) => {
     e.preventDefault()
 
+    const titleText = postCaption.trim() || 'Perjalanan seru di alam Bogor'
+    const locText = postLocation.trim() || 'Curug Cikuluwung'
+    const imgUrl = uploadedImagePreview || '/images/curug-cikuluwung.jpg'
+
     const newPost = {
       id: `post-${Date.now()}`,
       userName: 'Ambalingham',
       userAvatar: '/images/avatar-ambalingham.jpg',
       date: 'Baru saja',
-      image: uploadedImagePreview || '/images/curug-cikuluwung.jpg',
-      title: postCaption.trim() || 'Perjalanan seru di alam Bogor',
-      location: postLocation.trim() || 'Curug Cikuluwung',
+      image: imgUrl,
+      title: titleText,
+      location: locText,
       isOtherUser: false,
     }
 
     setMyActivities((prev) => [newPost, ...prev])
     setCommunityActivities((prev) => [newPost, ...prev])
+
+    // Simpan juga ke database backend
+    fetch('/api/activities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        title: titleText,
+        location: locText,
+        image: imgUrl,
+        user_name: 'Ambalingham',
+        user_avatar: '/images/avatar-ambalingham.jpg',
+        is_community: false,
+      }),
+    }).catch((err) => {
+      console.warn('Gagal menyimpan postingan aktivitas ke server:', err)
+    })
 
     setShowPostModal(false)
     setPostCaption('')
@@ -243,88 +323,122 @@ function ActivitiesPage({ isLoggedIn, onRequireLogin, onOpenProfile }) {
         aria-label="Daftar post aktivitas"
         className="flex-1 overflow-y-auto px-5 pt-4 pb-28 overscroll-contain"
       >
-        <h2 className="text-[13px] font-semibold text-white/90 mb-4 tracking-tight">
-          {subTab === 'Kamu'
-            ? `${myActivities.length} Aktivitas Kamu Bulan Ini`
-            : 'Temukan aktivitas lainnya disini'}
-        </h2>
-
-        <div className="flex flex-col gap-6">
-          {currentFeed.map((post) => (
-            <article
-              key={post.id}
-              className="flex flex-col text-left group"
+        {subTab === 'Kamu' && !isLoggedIn ? (
+          /* Empty State Tab Kamu jika Pengguna Belum Login */
+          <div className="mt-14 flex flex-col items-center justify-center text-center px-4">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-forest-700/60 border border-white/15 text-3xl shadow-inner mb-4">
+              📸
+            </div>
+            <h2 className="text-[17px] font-bold text-white tracking-tight">
+              Aktivitas Perjalanan Kamu
+            </h2>
+            <p className="mt-2 text-[12px] text-white/60 max-w-xs leading-relaxed">
+              Masuk dengan akun Anda untuk melihat dan membagikan dokumentasi aktivitas wisata pribadi Anda di Bogor.
+            </p>
+            <button
+              type="button"
+              onClick={onRequireLogin}
+              className="mt-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 px-6 py-3 text-[13px] font-bold text-white shadow-lg transition cursor-pointer border border-emerald-400/30"
             >
-              {/* Header Post: Avatar, nama, tanggal */}
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => {
-                  if (onOpenProfile) {
-                    if (post.userName === 'Kirk hasibuan') {
-                      onOpenProfile({
-                        isSelf: false,
-                        name: 'Kirk hasibuan',
-                        avatar: post.userAvatar,
-                      })
-                    } else if (post.userName === 'Ambalingham') {
-                      onOpenProfile('self')
-                    } else {
-                      onOpenProfile({
-                        isSelf: false,
-                        name: post.userName,
-                        avatar: post.userAvatar,
-                      })
-                    }
-                  }
-                }}
-                onKeyDown={(e) => e.key === 'Enter' && onOpenProfile && onOpenProfile('self')}
-                className="flex items-center gap-3 mb-2.5 cursor-pointer hover:opacity-90 transition active:scale-[0.99] w-fit"
-                title={`Lihat profil ${post.userName}`}
-              >
-                <img
-                  src={post.userAvatar}
-                  alt={post.userName}
-                  className="h-9 w-9 rounded-full object-cover border border-white/20 shadow-sm"
-                  loading="lazy"
-                />
-                <div className="flex flex-col justify-center">
-                  <span className="text-[13px] font-semibold text-white leading-tight hover:underline flex items-center gap-1.5">
-                    <span>{post.userName}</span>
-                    {post.userName === 'Kirk hasibuan' && (
-                      <span className="text-[10px] text-emerald-300 font-normal">
-                        (Lihat profil)
-                      </span>
-                    )}
-                  </span>
-                  <span className="text-[11px] text-white/60 leading-tight mt-0.5">
-                    {post.date}
-                  </span>
-                </div>
-              </div>
+              Masuk ke Akun
+            </button>
+          </div>
+        ) : (
+          <>
+            <h2 className="text-[13px] font-semibold text-white/90 mb-4 tracking-tight">
+              {subTab === 'Kamu'
+                ? `${myActivities.length} Aktivitas Kamu Bulan Ini`
+                : 'Temukan aktivitas lainnya disini'}
+            </h2>
 
-              {/* Gambar Utama Tempat Wisata */}
-              <div className="relative w-full aspect-[16/10] overflow-hidden rounded-[20px] bg-black/20 shadow-md border border-white/10">
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                  loading="lazy"
-                />
-              </div>
-
-              {/* Deskripsi Post */}
-              <div className="mt-2.5">
-                <h3 className="text-[13px] font-bold text-white leading-snug group-hover:text-amber-200 transition-colors">
-                  {post.title}
-                </h3>
-                <p className="mt-0.5 text-[11px] text-white/60 leading-tight">
-                  {post.location}
+            {currentFeed.length === 0 ? (
+              <div className="mt-8 rounded-2xl bg-forest-700/40 border border-white/10 p-6 text-center">
+                <p className="text-[12px] text-white/60">
+                  {subTab === 'Kamu'
+                    ? 'Belum ada aktivitas yang Anda unggah. Klik tombol + Post di atas untuk berbagi cerita perjalanan Anda!'
+                    : 'Belum ada postingan komunitas saat ini.'}
                 </p>
               </div>
-            </article>
-          ))}
-        </div>
+            ) : (
+              <div className="flex flex-col gap-6">
+                {currentFeed.map((post) => (
+                  <article
+                    key={post.id}
+                    className="flex flex-col text-left group"
+                  >
+                    {/* Header Post: Avatar, nama, tanggal */}
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        if (onOpenProfile) {
+                          if (post.userName === 'Kirk hasibuan') {
+                            onOpenProfile({
+                              isSelf: false,
+                              name: 'Kirk hasibuan',
+                              avatar: post.userAvatar,
+                            })
+                          } else if (post.userName === 'Ambalingham') {
+                            onOpenProfile('self')
+                          } else {
+                            onOpenProfile({
+                              isSelf: false,
+                              name: post.userName,
+                              avatar: post.userAvatar,
+                            })
+                          }
+                        }
+                      }}
+                      onKeyDown={(e) => e.key === 'Enter' && onOpenProfile && onOpenProfile('self')}
+                      className="flex items-center gap-3 mb-2.5 cursor-pointer hover:opacity-90 transition active:scale-[0.99] w-fit"
+                      title={`Lihat profil ${post.userName}`}
+                    >
+                      <img
+                        src={post.userAvatar}
+                        alt={post.userName}
+                        className="h-9 w-9 rounded-full object-cover border border-white/20 shadow-sm"
+                        loading="lazy"
+                      />
+                      <div className="flex flex-col justify-center">
+                        <span className="text-[13px] font-semibold text-white leading-tight hover:underline flex items-center gap-1.5">
+                          <span>{post.userName}</span>
+                          {post.userName === 'Kirk hasibuan' && (
+                            <span className="text-[10px] text-emerald-300 font-normal">
+                              (Lihat profil)
+                            </span>
+                          )}
+                        </span>
+                        <span className="text-[11px] text-white/60 leading-tight mt-0.5">
+                          {post.date}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Gambar Utama Tempat Wisata */}
+                    <div className="relative w-full aspect-[16/10] overflow-hidden rounded-[20px] bg-black/20 shadow-md border border-white/10">
+                      <img
+                        src={post.image}
+                        alt={post.title}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                        loading="lazy"
+                      />
+                    </div>
+
+                    {/* Deskripsi Post */}
+                    <div className="mt-2.5">
+                      <h3 className="text-[13px] font-bold text-white leading-snug group-hover:text-amber-200 transition-colors">
+                        {post.title}
+                      </h3>
+                      <p className="mt-0.5 text-[11px] text-white/60 leading-tight">
+                        {post.location}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       {/* 4. MODAL FORM: "POSTING FOTO PERJALANAN" DENGAN DROPZONE UPLOAD FOTO HP */}

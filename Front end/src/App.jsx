@@ -14,6 +14,7 @@ import ActivitiesPage from './components/pages/ActivitiesPage'
 import TouristDetailPage from './components/pages/TouristDetailPage'
 import ProfilePage from './components/pages/ProfilePage'
 import LoginModal from './components/ui/LoginModal'
+import { enrichTouristWithUserLocation } from './utils/distance'
 
 export default function App() {
   // Data destinasi wisata: di-fetch dari API backend Laravel (PostgreSQL / PostGIS)
@@ -44,7 +45,16 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('Explore')
 
   // HTML5 User GPS Location
-  const { position: userPosition } = useUserLocation()
+  const {
+    position: userPosition,
+    status: locationStatus,
+    requestLocation: handleRequestLocation,
+  } = useUserLocation()
+
+  // Perkaya data tempat wisata dengan jarak dan waktu tempuh dinamis dari lokasi user
+  const enrichedTourists = useMemo(() => {
+    return tourists.map((place) => enrichTouristWithUserLocation(place, userPosition))
+  }, [tourists, userPosition])
 
   // State mode navigasi internal peta (destination object atau array rute custom)
   const [navigationTarget, setNavigationTarget] = useState(null)
@@ -65,16 +75,16 @@ export default function App() {
   const selectedSlug = match?.params.slug ?? null
 
   const routePlace = useMemo(
-    () => (selectedSlug ? tourists.find((t) => t.slug === selectedSlug) ?? null : null),
-    [selectedSlug, tourists],
+    () => (selectedSlug ? enrichedTourists.find((t) => t.slug === selectedSlug) ?? null : null),
+    [selectedSlug, enrichedTourists],
   )
 
   // State untuk menyimpan data objek tempat wisata yang sedang dipilih untuk Detail Wisata
   const [clickedPlace, setClickedPlace] = useState(null)
-  const selectedPlace = clickedPlace ?? routePlace
+  const selectedPlace = clickedPlace ? enrichTouristWithUserLocation(clickedPlace, userPosition) : routePlace
   const selected = selectedPlace
 
-  const filtered = useFilteredTourists(tourists, category, query)
+  const filtered = useFilteredTourists(enrichedTourists, category, query)
 
   const mapPlaces = useMemo(
     () => (selected && !filtered.includes(selected) ? [...filtered, selected] : filtered),
@@ -87,7 +97,7 @@ export default function App() {
       const place =
         typeof slugOrPlace === 'object' && slugOrPlace !== null
           ? slugOrPlace
-          : tourists.find((t) => t.slug === slugOrPlace) ?? null
+          : enrichedTourists.find((t) => t.slug === slugOrPlace) ?? null
 
       setClickedPlace(place)
       setProfileUser(null)
@@ -97,7 +107,7 @@ export default function App() {
         navigate(`/place/${place.slug}`, { replace: selectedSlug !== null })
       }
     },
-    [navigate, selectedSlug, tourists],
+    [navigate, selectedSlug, enrichedTourists],
   )
 
   // Tombol kembali (<-) mengosongkan state selectedPlace dan kembali ke peta utama
@@ -134,20 +144,47 @@ export default function App() {
     [navigate],
   )
 
+  const [currentUser, setCurrentUser] = useState(null)
+
+  const handleLoginSuccess = useCallback((userData) => {
+    if (userData) {
+      setCurrentUser(userData)
+      setIsLoggedIn(true)
+      setShowLoginModal(false)
+      return
+    }
+
+    // Fallback jika dipanggil tanpa payload userData
+    fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ email: 'ambalingham@gmail.com' }),
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.data) {
+          setCurrentUser(json.data)
+        }
+      })
+      .catch((err) => {
+        console.warn('Gagal login via API, fallback ke state lokal:', err)
+      })
+      .finally(() => {
+        setIsLoggedIn(true)
+        setShowLoginModal(false)
+      })
+  }, [])
+
   // 4. FUNGSI LOGOUT GLOBAL:
   // Ubah status global isLoggedIn(false), hapus data rute custom aktif, dan tendang ke Explore
   const handleLogout = useCallback(() => {
     setIsLoggedIn(false)
+    setCurrentUser(null)
     setNavigationTarget(null)
     setProfileUser(null)
     setActiveTab('Explore')
     navigate('/')
   }, [navigate])
-
-  const handleLoginSuccess = useCallback(() => {
-    setIsLoggedIn(true)
-    setShowLoginModal(false)
-  }, [])
 
   // Akhiri Perjalanan: hapus garis rute dari peta dan kembalikan activeTab ke 'Explore'
   const handleStopNavigation = useCallback(() => {
@@ -174,7 +211,7 @@ export default function App() {
       {/* 3. TAMPILAN HALAMAN PROFIL (Akun Sendiri vs Orang Lain) */}
       {profileUser ? (
         <ProfilePage
-          user={profileUser}
+          user={profileUser === 'self' && currentUser ? { isSelf: true, ...currentUser } : profileUser}
           onBack={() => setProfileUser(null)}
           onLogout={handleLogout}
           onStartCustomRoute={handleStartCustomRoute}
@@ -198,6 +235,8 @@ export default function App() {
                 selected={selected}
                 onSelect={handleSelect}
                 userPosition={userPosition}
+                locationStatus={locationStatus}
+                onRequestLocation={handleRequestLocation}
                 navigationTarget={null}
                 onStopNavigation={handleStopNavigation}
                 isNavigationMode={false}
@@ -230,6 +269,8 @@ export default function App() {
                 selected={Array.isArray(navigationTarget) ? null : navigationTarget}
                 onSelect={handleSelect}
                 userPosition={userPosition}
+                locationStatus={locationStatus}
+                onRequestLocation={handleRequestLocation}
                 navigationTarget={navigationTarget}
                 onStopNavigation={handleStopNavigation}
                 isNavigationMode={true}
@@ -244,6 +285,9 @@ export default function App() {
               toggleFavorite={toggleFavorite}
               isFavorite={isFavorite}
               onSelectPlace={handleSelect}
+              isLoggedIn={isLoggedIn}
+              onRequireLogin={() => setShowLoginModal(true)}
+              onOpenProfile={setProfileUser}
             />
           )}
 

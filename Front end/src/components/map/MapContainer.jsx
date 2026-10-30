@@ -3,6 +3,7 @@ import { AttributionControl, MapContainer as LeafletMap, TileLayer } from 'react
 import MapMarker from './MapMarker'
 import MapController from './MapController'
 import UserLocationMarker from './UserLocationMarker'
+import LocateControl from './LocateControl'
 import RoutingMachine from './RoutingMachine'
 import RouteMetrics from './RouteMetrics'
 import { getMapFocusOffset } from '../ui/sheetMetrics'
@@ -16,6 +17,8 @@ export default function MapView({
   selected,
   onSelect,
   userPosition,
+  locationStatus,
+  onRequestLocation,
   navigationTarget,
   onStopNavigation,
   isNavigationMode = false,
@@ -181,6 +184,13 @@ export default function MapView({
             getFocusOffset={getMapFocusOffset}
           />
         )}
+
+        {/* Tombol GPS ala Google Maps: Tampilkan Lokasi Anda / Re-center */}
+        <LocateControl
+          userPosition={userPosition}
+          status={locationStatus}
+          onRequestLocation={onRequestLocation}
+        />
       </LeafletMap>
     </section>
   )
