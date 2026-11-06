@@ -1,16 +1,15 @@
 import { memo, useState } from 'react'
-import tourists from '../../data/tourists.json'
 
 function ProfilePage({ user = 'self', onBack, onLogout, onStartCustomRoute }) {
   const isSelf = user === 'self' || Boolean(user?.isSelf)
   const [isFollowing, setIsFollowing] = useState(false)
 
   // Data profil
-  const profileName = isSelf ? 'Ambalingham' : user?.name || 'Kirk hasibuan'
+  const profileName = isSelf ? (user?.name || 'Ambalingham') : user?.name || 'Kirk hasibuan'
   const profileAvatar = isSelf
-    ? '/images/avatar-ambalingham.jpg'
+    ? (user?.avatar || '/images/avatar-ambalingham.jpg')
     : user?.avatar || '/images/avatar-kirk.jpg'
-  const profileEmail = isSelf ? 'ambalingham@gmail.com' : null // Tanpa email jika profil orang lain
+  const profileEmail = isSelf ? (user?.email || 'ambalingham@gmail.com') : null // Tanpa email jika profil orang lain
 
   // Destinasi sampel untuk Rute Saya
   const museumZoologi = tourists.find((t) => t.slug === 'museum-zoologi-bogor')

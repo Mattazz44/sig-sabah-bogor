@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMatch, useNavigate } from 'react-router-dom'
-import defaultTourists from './data/tourists.json'
 import { useFilteredTourists } from './hooks/useMapControls'
 import { useFavorites } from './hooks/useFavorites'
 import { useUserLocation } from './hooks/useUserLocation'
@@ -17,23 +16,30 @@ import LoginModal from './components/ui/LoginModal'
 import { enrichTouristWithUserLocation } from './utils/distance'
 
 export default function App() {
-  // Data destinasi wisata: di-fetch dari API backend Laravel (PostgreSQL / PostGIS)
-  const [tourists, setTourists] = useState(defaultTourists)
+  // Data destinasi wisata: murni di-fetch dari API backend Laravel (PostgreSQL / PostGIS)
+  const [tourists, setTourists] = useState([])
+  const [isBackendError, setIsBackendError] = useState(false)
 
   useEffect(() => {
     let isMounted = true
+
     fetch('/api/tourists')
       .then((res) => {
-        if (!res.ok) throw new Error('Network response was not ok')
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
         return res.json()
       })
       .then((json) => {
         if (isMounted && json?.data && Array.isArray(json.data)) {
           setTourists(json.data)
+          setIsBackendError(false)
         }
       })
       .catch((err) => {
-        console.warn('Gagal memuat data dari API Laravel, menggunakan data lokal fallback:', err)
+        console.error('Gagal memuat data objek wisata dari backend Laravel:', err)
+        if (isMounted) {
+          setTourists([])
+          setIsBackendError(true)
+        }
       })
 
     return () => {
@@ -208,6 +214,25 @@ export default function App() {
     <main className="relative h-dvh w-full overflow-hidden bg-forest-900">
       <h1 className="sr-only">SIG Wisata Bogor</h1>
 
+      {/* Banner Peringatan jika Backend Laravel Belum Dijalankan */}
+      {isBackendError && (
+        <aside
+          role="alert"
+          aria-live="polite"
+          className="fixed top-4 inset-x-4 max-w-sm mx-auto z-[2500] pointer-events-none animate-in fade-in slide-in-from-top-4 duration-300"
+        >
+          <div className="pointer-events-auto flex items-center gap-3 rounded-2xl bg-rose-950/95 backdrop-blur-md px-4 py-3 border border-rose-500/40 shadow-2xl text-rose-200">
+            <span className="text-xl shrink-0">⚠️</span>
+            <div className="text-left text-[11px] leading-tight">
+              <p className="font-bold text-white">Gagal terhubung ke Backend!</p>
+              <p className="mt-0.5 text-rose-200/80">
+                Silakan jalankan backend Laravel (<code className="font-mono bg-black/30 px-1 rounded">php artisan serve</code>) untuk memuat data wisata dari database.
+              </p>
+            </div>
+          </div>
+        </aside>
+      )}
+
       {/* 3. TAMPILAN HALAMAN PROFIL (Akun Sendiri vs Orang Lain) */}
       {profileUser ? (
         <ProfilePage
@@ -294,6 +319,7 @@ export default function App() {
           {/* Menu Tersimpan: Halaman "Aktivitas Tersimpan" */}
           {(activeTab === 'Tersimpan' || activeTab === 'Aktivitas Tersimpan') && (
             <SavedActivitiesPage
+              tourists={enrichedTourists}
               favorites={favorites}
               onSelectPlace={handleSelect}
               onStartCustomRoute={handleStartCustomRoute}

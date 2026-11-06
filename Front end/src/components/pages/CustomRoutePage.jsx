@@ -1,8 +1,7 @@
 import { memo, useEffect, useState } from 'react'
-import tourists from '../../data/tourists.json'
 
-function CustomRoutePage({ onBack, onStartCustomRoute }) {
-  // Destinasi bawaan: Museum of Zoology & Museum PETA
+function CustomRoutePage({ tourists = [], onBack, onStartCustomRoute }) {
+  // Destinasi bawaan yang diambil dari daftar tempat wisata backend
   const museumZoologi = tourists.find((t) => t.slug === 'museum-zoologi-bogor') || {
     id: 10,
     slug: 'museum-zoologi-bogor',
@@ -48,7 +47,7 @@ function CustomRoutePage({ onBack, onStartCustomRoute }) {
       ],
       totalDistance: '3.0 KM',
       totalDuration: '10 Menit',
-      places: [tourists.find((t) => t.slug === 'lawang-surya-kencana') || tourists[1]],
+      places: [tourists.find((t) => t.slug === 'lawang-surya-kencana') || tourists[0]].filter(Boolean),
     },
   ])
 
@@ -86,7 +85,7 @@ function CustomRoutePage({ onBack, onStartCustomRoute }) {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [tourists])
 
   // 3. STATE MODAL "RANCANG RUTE CUSTOM BARU"
   const [showCreateRouteModal, setShowCreateRouteModal] = useState(false)

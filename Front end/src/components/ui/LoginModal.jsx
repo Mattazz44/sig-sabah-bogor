@@ -9,7 +9,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
 
   if (!isOpen) return null
 
-  // Handler Submit Login Email / Username & Password
+  // Handler Submit Login Email / Username & Password (Manual Tanpa Google)
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!emailOrUsername.trim()) return
@@ -46,7 +46,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
     }
   }
 
-  // Handler Login Cepat Google
+  // Handler Login Alternatif dengan Akun Google
   const handleGoogleLogin = async () => {
     setIsLoading(true)
     setErrorMessage(null)
@@ -106,14 +106,14 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           Masuk untuk menyimpan rute custom, posting foto perjalanan, dan melihat rekomendasi khusus untuk Anda.
         </p>
 
-        {/* Notifikasi Error */}
+        {/* Notifikasi Error jika login gagal */}
         {errorMessage && (
           <div className="mt-3 rounded-xl bg-rose-500/20 border border-rose-500/40 p-2.5 text-[11px] text-rose-200 text-left">
             ⚠️ {errorMessage}
           </div>
         )}
 
-        {/* Form Login Biasa (Email & Password) */}
+        {/* Form Login Mandiri (Email / Username & Password) */}
         <form onSubmit={handleSubmit} className="mt-4 flex flex-col gap-3 text-left">
           <div>
             <label className="text-[11px] font-semibold text-white/80 block mb-1">
@@ -124,7 +124,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
               id="input-login-email"
               value={emailOrUsername}
               onChange={(e) => setEmailOrUsername(e.target.value)}
-              placeholder="Contoh: ambalingham@gmail.com"
+              placeholder="Contoh: ambalingham@gmail.com atau ambalingham"
               className="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3.5 py-2.5 text-[12px] text-white placeholder-white/40 focus:outline-none focus:border-emerald-400 transition"
               required
             />
@@ -165,7 +165,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           </button>
         </form>
 
-        {/* Separator / Pembatas 'atau' */}
+        {/* Separator 'atau' */}
         <div className="relative my-4 flex items-center justify-center">
           <div className="border-t border-white/15 w-full" />
           <span className="bg-forest-900 px-3 text-[10px] text-white/50 uppercase tracking-wider absolute">

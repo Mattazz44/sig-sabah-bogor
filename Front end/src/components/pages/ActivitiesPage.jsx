@@ -265,13 +265,29 @@ function ActivitiesPage({ isLoggedIn, onRequireLogin, onOpenProfile }) {
                 }
               }}
               aria-label="Profil pengguna"
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 overflow-hidden bg-forest-700 hover:ring-2 hover:ring-white/40 active:scale-95 transition cursor-pointer shadow-sm"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 overflow-hidden bg-forest-700 hover:ring-2 hover:ring-white/40 active:scale-95 transition cursor-pointer shadow-sm text-white/90"
             >
-              <img
-                src="/images/avatar-ambalingham.jpg"
-                alt="Profil pengguna"
-                className="h-full w-full object-cover"
-              />
+              {isLoggedIn ? (
+                <img
+                  src="/images/avatar-ambalingham.jpg"
+                  alt="Profil pengguna"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              )}
             </button>
           </div>
         </div>

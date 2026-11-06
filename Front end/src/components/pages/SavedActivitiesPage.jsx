@@ -1,9 +1,9 @@
 import { memo, useEffect, useMemo, useState } from 'react'
-import tourists from '../../data/tourists.json'
 import CustomRoutePage from './CustomRoutePage'
 import NotificationDrawer from '../ui/NotificationDrawer'
 
 function SavedActivitiesPage({
+  tourists = [],
   favorites = [],
   onSelectPlace,
   onStartCustomRoute,
@@ -117,18 +117,21 @@ function SavedActivitiesPage({
       return [...list].reverse()
     }
     return list
-  }, [favorites, sortOption])
+  }, [tourists, favorites, sortOption])
 
-  // Recently viewed preview items
-  const recentPlaces = useMemo(() => [
-    tourists.find((t) => t.slug === 'lawang-surya-kencana') || tourists[1],
-    tourists.find((t) => t.slug === 'museum-peta') || tourists[3],
-  ], [])
+  // Recently viewed preview items dari data tourists backend
+  const recentPlaces = useMemo(() => {
+    if (!Array.isArray(tourists) || tourists.length === 0) return []
+    const p1 = tourists.find((t) => t.slug === 'lawang-surya-kencana') || tourists[0]
+    const p2 = tourists.find((t) => t.slug === 'museum-peta') || tourists[1] || tourists[0]
+    return [p1, p2].filter(Boolean)
+  }, [tourists])
 
   // JIKA TAMPILAN AKTIF ADALAH RUTE CUSTOM
   if (activeFolderView === 'custom-route') {
     return (
       <CustomRoutePage
+        tourists={tourists}
         onBack={() => setActiveFolderView(null)}
         onStartCustomRoute={onStartCustomRoute}
       />
@@ -364,7 +367,38 @@ function SavedActivitiesPage({
         </div>
       </div>
 
-      {/* DROPDOWN "URUTKAN" & FLOATING POPOVER MENU */}
+      {!isLoggedIn ? (
+        /* TAMPILAN JIKA BELUM LOGIN: ALBUM & AKTIVITAS DISEMBUNYIKAN */
+        <div className="mt-8 rounded-2xl bg-forest-700/40 border border-white/10 p-6 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/5 border border-white/10 mb-3 text-white/60">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </div>
+          <h3 className="text-[15px] font-bold text-white">Album & Koleksi Tersimpan</h3>
+          <p className="mt-1 text-[12px] text-white/70 max-w-sm mx-auto">
+            Masuk untuk melihat dan menyimpan tempat wisata favorit, rute custom, serta catatan aktivitas perjalanan Anda.
+          </p>
+          <button
+            type="button"
+            onClick={onRequireLogin}
+            className="mt-4 inline-block rounded-xl bg-emerald-600/90 hover:bg-emerald-500 active:scale-95 px-6 py-2.5 text-[12px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
+          >
+            Masuk ke Akun
+          </button>
+        </div>
+      ) : (
+        <>
+{/* DROPDOWN "URUTKAN" & FLOATING POPOVER MENU */}
       <div className="relative mt-4 inline-block">
         <button
           type="button"
@@ -436,18 +470,23 @@ function SavedActivitiesPage({
           className="group flex flex-col text-left cursor-pointer focus-visible:outline-none"
         >
           <div className="aspect-square w-full rounded-2xl bg-white/5 border border-white/10 p-2 grid grid-cols-2 gap-1.5 transition-transform duration-200 group-hover:scale-[1.02] shadow-sm">
-            <img
-              src={recentPlaces[0].image}
-              alt={recentPlaces[0].name}
-              className="h-full w-full rounded-lg object-cover"
-            />
-            <img
-              src={recentPlaces[1].image}
-              alt={recentPlaces[1].name}
-              className="h-full w-full rounded-lg object-cover"
-            />
-            <div className="h-full w-full rounded-lg bg-white/10" />
-            <div className="h-full w-full rounded-lg bg-white/10" />
+            {recentPlaces.length > 0 ? (
+              recentPlaces.map((rp) => (
+                <img
+                  key={rp.id}
+                  src={rp.image}
+                  alt={rp.name}
+                  className="h-full w-full rounded-lg object-cover"
+                />
+              ))
+            ) : (
+              <div className="col-span-2 flex items-center justify-center h-full text-[10px] text-white/40">
+                Belum ada data
+              </div>
+            )}
+            {Array.from({ length: Math.max(0, 4 - recentPlaces.length) }).map((_, i) => (
+              <div key={i} className="h-full w-full rounded-lg bg-white/10" />
+            ))}
           </div>
           <h3 className="mt-2.5 text-[14px] font-semibold text-white group-hover:text-amber-200 transition-colors flex items-center justify-between">
             <span>Terakhir dilihat</span>
@@ -538,21 +577,8 @@ function SavedActivitiesPage({
         </div>
       </div>
 
-      {/* SECTION: AKTIVITAS PERJALANAN USER (HANYA DITAMPILKAN JIKA SUDAH LOGIN) */}
-      {!isLoggedIn ? (
-        <div className="mt-8 rounded-2xl bg-forest-700/40 border border-white/10 p-5 text-center">
-          <p className="text-[12px] text-white/70">
-            Masuk untuk menyimpan catatan perjalanan dan mengakses riwayat aktivitas wisata Anda.
-          </p>
-          <button
-            type="button"
-            onClick={onRequireLogin}
-            className="mt-3.5 inline-block rounded-xl bg-emerald-600/90 hover:bg-emerald-500 active:scale-95 px-5 py-2 text-[12px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
-          >
-            Masuk ke Akun
-          </button>
-        </div>
-      ) : effectiveUserActivities.length > 0 ? (
+      {/* SECTION: AKTIVITAS PERJALANAN USER */}
+      {effectiveUserActivities.length > 0 ? (
         <div className="mt-8">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-[14px] font-bold text-white tracking-tight">
@@ -586,6 +612,9 @@ function SavedActivitiesPage({
             Belum ada aktivitas perjalanan tersimpan. Klik tombol (+) di atas untuk menambahkan.
           </p>
         </div>
+      )}
+
+              </>
       )}
 
       {/* 2. MODAL FORM: "TAMBAH AKTIVITAS PERJALANAN BARU" */}
