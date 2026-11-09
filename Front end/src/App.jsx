@@ -12,7 +12,9 @@ import SavedActivitiesPage from './components/pages/SavedActivitiesPage'
 import ActivitiesPage from './components/pages/ActivitiesPage'
 import TouristDetailPage from './components/pages/TouristDetailPage'
 import ProfilePage from './components/pages/ProfilePage'
+import AdminPage from './components/pages/AdminPage'
 import LoginModal from './components/ui/LoginModal'
+import { useAdminLocations } from './hooks/useAdminLocations'
 import { enrichTouristWithUserLocation } from './utils/distance'
 
 export default function App() {
@@ -57,10 +59,13 @@ export default function App() {
     requestLocation: handleRequestLocation,
   } = useUserLocation()
 
+  const { locations: adminLocations } = useAdminLocations()
+
   // Perkaya data tempat wisata dengan jarak dan waktu tempuh dinamis dari lokasi user
   const enrichedTourists = useMemo(() => {
-    return tourists.map((place) => enrichTouristWithUserLocation(place, userPosition))
-  }, [tourists, userPosition])
+    const combined = [...adminLocations, ...tourists]
+    return combined.map((place) => enrichTouristWithUserLocation(place, userPosition))
+  }, [adminLocations, tourists, userPosition])
 
   // State mode navigasi internal peta (destination object atau array rute custom)
   const [navigationTarget, setNavigationTarget] = useState(null)
@@ -77,6 +82,7 @@ export default function App() {
   const { favorites, toggleFavorite, isFavorite } = useFavorites()
 
   const navigate = useNavigate()
+  const isAdminRoute = Boolean(useMatch('/admin'))
   const match = useMatch('/place/:slug')
   const selectedSlug = match?.params.slug ?? null
 
@@ -209,6 +215,10 @@ export default function App() {
     },
     [navigate, selectedSlug],
   )
+
+  if (isAdminRoute) {
+    return <AdminPage />
+  }
 
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-forest-900">
