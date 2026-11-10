@@ -1,11 +1,12 @@
 import { useCallback, useRef, useState } from 'react'
 import { AttributionControl, MapContainer as LeafletMap, TileLayer } from 'react-leaflet'
-import MapMarker from './MapMarker'
 import MapController from './MapController'
 import UserLocationMarker from './UserLocationMarker'
 import LocateControl from './LocateControl'
 import RoutingMachine from './RoutingMachine'
 import RouteMetrics from './RouteMetrics'
+import BogorBoundaryLayer from './BogorBoundaryLayer'
+import MarkerClusterGroup from './MarkerClusterGroup'
 import { getMapFocusOffset } from '../ui/sheetMetrics'
 
 const BOGOR_CENTER = [-6.598, 106.805]
@@ -30,6 +31,16 @@ export default function MapView({
   }, [])
 
   const [routeInfo, setRouteInfo] = useState(null)
+  const [showBoundary, setShowBoundary] = useState(true)
+  const [clusteringEnabled, setClusteringEnabled] = useState(true)
+
+  const handleToggleBoundary = useCallback(() => {
+    setShowBoundary((prev) => !prev)
+  }, [])
+
+  const handleToggleClustering = useCallback(() => {
+    setClusteringEnabled((prev) => !prev)
+  }, [])
 
   // Target destinasi: objek tempat wisata tunggal ATAU array rute custom (multi-titik)
   const activeDestination = navigationTarget || (isNavigationMode ? selected : null)
@@ -144,27 +155,22 @@ export default function MapView({
           maxZoom={19}
         />
 
+        {/* Layer Batas Administrasi Kota Bogor (WBS 1.2.7) */}
+        <BogorBoundaryLayer visible={showBoundary} />
+
         {/* 2c. Custom GPS User Marker */}
         {userPosition && <UserLocationMarker position={userPosition} />}
 
-        {/* Tourist spots markers (termasuk titik-titik rute custom) */}
-        {places.map((place) => {
-          const isTransit =
-            isNavigationMode &&
-            isMultiDestination &&
-            activeDestination[0]?.id === place.id
-
-          return (
-            <MapMarker
-              key={place.id}
-              place={place}
-              onSelect={onSelect}
-              registerMarker={registerMarker}
-              autoOpenPopup={isTransit}
-              isTransit={isTransit}
-            />
-          )
-        })}
+        {/* Tourist spots markers dengan fitur Marker Clustering (WBS 1.4.1) */}
+        <MarkerClusterGroup
+          places={places}
+          selected={selected}
+          onSelect={onSelect}
+          registerMarker={registerMarker}
+          isNavigationMode={isNavigationMode}
+          activeDestination={activeDestination}
+          clusteringEnabled={clusteringEnabled}
+        />
 
         {/* 1 & 2. Internal Routing Machine: Mendukung Single Titik maupun Multi-Waypoints */}
         {hasDestination && userPosition && (
@@ -185,11 +191,15 @@ export default function MapView({
           />
         )}
 
-        {/* Tombol GPS ala Google Maps: Tampilkan Lokasi Anda / Re-center */}
+        {/* Tombol GPS & Toggle Layer Batas Wilayah + Marker Clustering */}
         <LocateControl
           userPosition={userPosition}
           status={locationStatus}
           onRequestLocation={onRequestLocation}
+          showBoundary={showBoundary}
+          onToggleBoundary={handleToggleBoundary}
+          clusteringEnabled={clusteringEnabled}
+          onToggleClustering={handleToggleClustering}
         />
       </LeafletMap>
     </section>

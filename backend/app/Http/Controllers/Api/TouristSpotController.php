@@ -177,4 +177,18 @@ class TouristSpotController extends Controller
             'data' => $data,
         ]);
     }
+
+    /**
+     * Return Kota Bogor administrative boundary GeoJSON (WBS 1.2.7).
+     */
+    public function boundary()
+    {
+        $path = database_path('data/bogor_boundary.geojson');
+        if (!file_exists($path)) {
+            return response()->json(['status' => 'error', 'message' => 'Boundary file not found'], 404);
+        }
+
+        $geojson = json_decode(file_get_contents($path), true);
+        return response()->json($geojson);
+    }
 }

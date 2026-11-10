@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { useFilteredTourists } from './hooks/useMapControls'
 import { useFavorites } from './hooks/useFavorites'
+import { useRecentlyViewed } from './hooks/useRecentlyViewed'
 import { useUserLocation } from './hooks/useUserLocation'
 import { ALL_CATEGORY } from './components/ui/categories'
 import SidebarContainer from './components/sidebar/SidebarContainer'
@@ -75,6 +76,7 @@ export default function App() {
   const [sheetExpanded, setSheetExpanded] = useState(false)
 
   const { favorites, toggleFavorite, isFavorite } = useFavorites()
+  const { recentSlugs, addRecentlyViewed } = useRecentlyViewed()
 
   const navigate = useNavigate()
   const match = useMatch('/place/:slug')
@@ -110,10 +112,11 @@ export default function App() {
       setSheetExpanded(false)
       setActiveTab('Explore')
       if (place) {
+        addRecentlyViewed(place.slug)
         navigate(`/place/${place.slug}`, { replace: selectedSlug !== null })
       }
     },
-    [navigate, selectedSlug, enrichedTourists],
+    [navigate, selectedSlug, enrichedTourists, addRecentlyViewed],
   )
 
   // Tombol kembali (<-) mengosongkan state selectedPlace dan kembali ke peta utama
@@ -237,6 +240,7 @@ export default function App() {
       {profileUser ? (
         <ProfilePage
           user={profileUser === 'self' && currentUser ? { isSelf: true, ...currentUser } : profileUser}
+          tourists={enrichedTourists}
           onBack={() => setProfileUser(null)}
           onLogout={handleLogout}
           onStartCustomRoute={handleStartCustomRoute}
@@ -306,11 +310,14 @@ export default function App() {
           {/* Menu Untuk Anda: Halaman Rekomendasi "Untuk Kamu" */}
           {activeTab === 'Untuk Anda' && (
             <ForYouPage
+              tourists={enrichedTourists}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
               isFavorite={isFavorite}
+              recentSlugs={recentSlugs}
               onSelectPlace={handleSelect}
               isLoggedIn={isLoggedIn}
+              currentUser={currentUser}
               onRequireLogin={() => setShowLoginModal(true)}
               onOpenProfile={setProfileUser}
             />
@@ -321,9 +328,11 @@ export default function App() {
             <SavedActivitiesPage
               tourists={enrichedTourists}
               favorites={favorites}
+              recentSlugs={recentSlugs}
               onSelectPlace={handleSelect}
               onStartCustomRoute={handleStartCustomRoute}
               isLoggedIn={isLoggedIn}
+              currentUser={currentUser}
               onRequireLogin={() => setShowLoginModal(true)}
               onOpenProfile={setProfileUser}
             />
@@ -333,6 +342,7 @@ export default function App() {
           {activeTab === 'Aktivitas' && (
             <ActivitiesPage
               isLoggedIn={isLoggedIn}
+              currentUser={currentUser}
               onRequireLogin={() => setShowLoginModal(true)}
               onOpenProfile={setProfileUser}
             />

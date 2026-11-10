@@ -17,7 +17,20 @@ class AdditionalPagesSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. SEED DATA USERS (Termasuk akun Ambalingham yang dipakai di frontend)
+        // 1. SEED DATA USERS
+        // Akun Administrator Khusus Panel Admin Backend
+        $admin = User::updateOrCreate(
+            ['username' => 'admin'],
+            [
+                'name' => 'Administrator',
+                'email' => 'admin@gmail.com',
+                'avatar' => '/images/avatar-ambalingham.jpg',
+                'bio' => 'Administrator Pengelola SIG Pariwisata Kota Bogor.',
+                'password' => Hash::make('admin123'),
+            ]
+        );
+
+        // Akun User Ambalingham yang dipakai/terlogin pada frontend
         $ambalingham = User::updateOrCreate(
             ['email' => 'ambalingham@gmail.com'],
             [

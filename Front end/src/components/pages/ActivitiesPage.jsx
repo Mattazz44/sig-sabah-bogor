@@ -55,7 +55,7 @@ const DEFAULT_COMMUNITY_ACTIVITIES = [
   },
 ]
 
-function ActivitiesPage({ isLoggedIn, onRequireLogin, onOpenProfile }) {
+function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpenProfile }) {
   // SUB-TAB NAVIGATION: 'Kamu' vs 'Komunitas'
   const [subTab, setSubTab] = useState('Kamu')
 
@@ -158,8 +158,8 @@ function ActivitiesPage({ isLoggedIn, onRequireLogin, onOpenProfile }) {
 
     const newPost = {
       id: `post-${Date.now()}`,
-      userName: 'Ambalingham',
-      userAvatar: '/images/avatar-ambalingham.jpg',
+      userName: currentUser?.name || 'Ambalingham',
+      userAvatar: currentUser?.avatar || '/images/avatar-ambalingham.jpg',
       date: 'Baru saja',
       image: imgUrl,
       title: titleText,
@@ -181,8 +181,8 @@ function ActivitiesPage({ isLoggedIn, onRequireLogin, onOpenProfile }) {
         title: titleText,
         location: locText,
         image: imgUrl,
-        user_name: 'Ambalingham',
-        user_avatar: '/images/avatar-ambalingham.jpg',
+        user_name: currentUser?.name || 'Ambalingham',
+        user_avatar: currentUser?.avatar || '/images/avatar-ambalingham.jpg',
         is_community: false,
       }),
     }).catch((err) => {
@@ -269,8 +269,8 @@ function ActivitiesPage({ isLoggedIn, onRequireLogin, onOpenProfile }) {
             >
               {isLoggedIn ? (
                 <img
-                  src="/images/avatar-ambalingham.jpg"
-                  alt="Profil pengguna"
+                  src={currentUser?.avatar || '/images/avatar-ambalingham.jpg'}
+                  alt={currentUser?.name || 'Profil pengguna'}
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -388,13 +388,7 @@ function ActivitiesPage({ isLoggedIn, onRequireLogin, onOpenProfile }) {
                       tabIndex={0}
                       onClick={() => {
                         if (onOpenProfile) {
-                          if (post.userName === 'Kirk hasibuan') {
-                            onOpenProfile({
-                              isSelf: false,
-                              name: 'Kirk hasibuan',
-                              avatar: post.userAvatar,
-                            })
-                          } else if (post.userName === 'Ambalingham') {
+                          if (currentUser && post.userName === currentUser.name) {
                             onOpenProfile('self')
                           } else {
                             onOpenProfile({

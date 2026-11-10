@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react'
 
-function CustomRoutePage({ tourists = [], onBack, onStartCustomRoute }) {
+function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCustomRoute }) {
   // Destinasi bawaan yang diambil dari daftar tempat wisata backend
   const museumZoologi = tourists.find((t) => t.slug === 'museum-zoologi-bogor') || {
     id: 10,
@@ -208,13 +208,13 @@ function CustomRoutePage({ tourists = [], onBack, onStartCustomRoute }) {
       <div className="mt-5 flex items-center justify-between rounded-2xl bg-forest-700/60 border border-white/10 px-4 py-3">
         <div className="flex items-center gap-3">
           <img
-            src="/images/avatar-ambalingham.jpg"
+            src={currentUser?.avatar || '/images/avatar-ambalingham.jpg'}
             alt="Foto profil pengguna"
             className="h-10 w-10 rounded-full object-cover border border-emerald-400"
           />
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-[13px] font-bold text-white">Ambalingham</span>
+              <span className="text-[13px] font-bold text-white">{currentUser?.name || 'Ambalingham'}</span>
               <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-semibold text-emerald-300 border border-emerald-400/30">
                 Terhubung
               </span>

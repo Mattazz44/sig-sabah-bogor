@@ -38,11 +38,14 @@ const DEFAULT_CONTINUE_ITEM = {
 }
 
 function ForYouPage({
+  tourists = [],
   favorites = [],
   toggleFavorite,
   isFavorite,
+  recentSlugs = [],
   onSelectPlace,
   isLoggedIn = false,
+  currentUser = null,
   onRequireLogin,
   onOpenProfile,
 }) {
@@ -55,7 +58,11 @@ function ForYouPage({
     if (!isLoggedIn) return
 
     let isMounted = true
-    fetch('/api/for-you')
+    const favParam = encodeURIComponent(favorites.join(','))
+    const recentParam = encodeURIComponent(recentSlugs.join(','))
+    const url = `/api/for-you?favorites=${favParam}&recent=${recentParam}`
+
+    fetch(url)
       .then((res) => {
         if (!res.ok) throw new Error('Network error')
         return res.json()
@@ -71,17 +78,46 @@ function ForYouPage({
         }
       })
       .catch((err) => {
-        console.warn('Gagal memuat rekomendasi Untuk Anda dari API, fallback ke default:', err)
+        console.warn('Gagal memuat rekomendasi Untuk Anda dari API, fallback ke kalkulasi lokal:', err)
         if (isMounted) {
-          setRecommendedItems(DEFAULT_RECOMMENDED_ITEMS)
-          setContinueItem(DEFAULT_CONTINUE_ITEM)
+          // Fallback dinamis dari array tourists yang ada
+          if (Array.isArray(tourists) && tourists.length > 0) {
+            const lastPlace = recentSlugs.length > 0
+              ? tourists.find((t) => t.slug === recentSlugs[0]) || tourists[0]
+              : tourists[0]
+
+            setContinueItem({
+              id: 'continue-' + lastPlace.slug,
+              slug: lastPlace.slug,
+              name: lastPlace.name,
+              location: lastPlace.address || 'Bogor, Jawa Barat',
+              rating: Number(lastPlace.rating || 4.5).toFixed(1),
+              image: lastPlace.image,
+            })
+
+            const recList = tourists
+              .filter((t) => t.slug !== lastPlace.slug)
+              .slice(0, 4)
+              .map((t) => ({
+                id: t.slug,
+                slug: t.slug,
+                name: t.name,
+                location: t.address || 'Bogor, Jawa Barat',
+                rating: Number(t.rating || 4.5).toFixed(1),
+                image: t.image,
+              }))
+            setRecommendedItems(recList)
+          } else {
+            setRecommendedItems(DEFAULT_RECOMMENDED_ITEMS)
+            setContinueItem(DEFAULT_CONTINUE_ITEM)
+          }
         }
       })
 
     return () => {
       isMounted = false
     }
-  }, [isLoggedIn])
+  }, [isLoggedIn, favorites, recentSlugs, tourists])
 
   const effectiveRecommended = isLoggedIn ? recommendedItems : []
   const effectiveContinue = isLoggedIn ? continueItem : null
@@ -170,8 +206,8 @@ function ForYouPage({
         >
           {isLoggedIn ? (
             <img
-              src="/images/avatar-ambalingham.jpg"
-              alt="Avatar"
+              src={currentUser?.avatar || '/images/avatar-ambalingham.jpg'}
+              alt={currentUser?.name || 'Avatar'}
               className="h-full w-full object-cover"
             />
           ) : (

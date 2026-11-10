@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import { useMap } from 'react-leaflet'
 
-export default function LocateControl({ userPosition, status, onRequestLocation }) {
+export default function LocateControl({
+  userPosition,
+  status,
+  onRequestLocation,
+  showBoundary = true,
+  onToggleBoundary,
+  clusteringEnabled = true,
+  onToggleClustering,
+}) {
   const map = useMap()
   const [isLocating, setIsLocating] = useState(false)
 
@@ -37,7 +45,80 @@ export default function LocateControl({ userPosition, status, onRequestLocation 
   else if (isGranted) tooltipText = 'Pusatkan ke lokasi Anda'
 
   return (
-    <div className="leaflet-bottom leaflet-right mb-24 mr-4 !pointer-events-auto z-[450]">
+    <div className="leaflet-bottom leaflet-right mb-24 mr-4 !pointer-events-auto z-[450] flex flex-col items-end gap-2.5">
+      {/* Toggle Batas Wilayah Kota Bogor (WBS 1.2.7) */}
+      {onToggleBoundary && (
+        <button
+          type="button"
+          id="btn-toggle-boundary"
+          aria-label={showBoundary ? 'Sembunyikan Batas Wilayah Kota Bogor' : 'Tampilkan Batas Wilayah Kota Bogor'}
+          title={showBoundary ? 'Batas Wilayah Kota Bogor: Aktif (Klik untuk nonaktifkan)' : 'Batas Wilayah Kota Bogor: Nonaktif (Klik untuk aktifkan)'}
+          onClick={(e) => {
+            e.stopPropagation()
+            e.preventDefault()
+            onToggleBoundary()
+          }}
+          className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl shadow-xl backdrop-blur-md transition-all duration-200 active:scale-90 cursor-pointer border ${
+            showBoundary
+              ? 'bg-emerald-700/95 text-white border-emerald-400/50 hover:bg-emerald-600'
+              : 'bg-forest-900/85 text-white/60 border-white/15 hover:bg-forest-800/95 hover:text-white'
+          }`}
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="transition-transform duration-200 group-hover:scale-110"
+          >
+            <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+            <line x1="9" y1="3" x2="9" y2="18" />
+            <line x1="15" y1="6" x2="15" y2="21" />
+          </svg>
+        </button>
+      )}
+
+      {/* Toggle Marker Clustering (WBS 1.4.1) */}
+      {onToggleClustering && (
+        <button
+          type="button"
+          id="btn-toggle-clustering"
+          aria-label={clusteringEnabled ? 'Nonaktifkan Pengelompokan Marker (Cluster)' : 'Aktifkan Pengelompokan Marker (Cluster)'}
+          title={clusteringEnabled ? 'Marker Clustering: Aktif (Klik untuk nonaktifkan)' : 'Marker Clustering: Nonaktif (Klik untuk aktifkan)'}
+          onClick={(e) => {
+            e.stopPropagation()
+            e.preventDefault()
+            onToggleClustering()
+          }}
+          className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl shadow-xl backdrop-blur-md transition-all duration-200 active:scale-90 cursor-pointer border ${
+            clusteringEnabled
+              ? 'bg-emerald-700/95 text-white border-emerald-400/50 hover:bg-emerald-600'
+              : 'bg-forest-900/85 text-white/60 border-white/15 hover:bg-forest-800/95 hover:text-white'
+          }`}
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="transition-transform duration-200 group-hover:scale-110"
+          >
+            <circle cx="9" cy="9" r="5" />
+            <circle cx="16" cy="15" r="5" />
+            <path d="M8 9h2" />
+            <path d="M9 8v2" />
+          </svg>
+        </button>
+      )}
+
       <button
         type="button"
         id="btn-show-my-location"

@@ -5,9 +5,11 @@ import NotificationDrawer from '../ui/NotificationDrawer'
 function SavedActivitiesPage({
   tourists = [],
   favorites = [],
+  recentSlugs = [],
   onSelectPlace,
   onStartCustomRoute,
   isLoggedIn = false,
+  currentUser = null,
   onRequireLogin,
   onOpenProfile,
 }) {
@@ -20,10 +22,11 @@ function SavedActivitiesPage({
   const [newActivityName, setNewActivityName] = useState('')
   const [newActivityLocation, setNewActivityLocation] = useState('')
 
-  // State daftar aktivitas tersimpan yang dibuat user
+  // State daftar aktivitas & rute custom tersimpan yang dibuat user
   const [userActivities, setUserActivities] = useState([])
+  const [customRoutesCount, setCustomRoutesCount] = useState(2)
 
-  // Fetch daftar aktivitas dari API database HANYA JIKA LOGGED IN
+  // Fetch daftar aktivitas & rute custom dari API database HANYA JIKA LOGGED IN
   useEffect(() => {
     if (!isLoggedIn) return
 
@@ -34,15 +37,20 @@ function SavedActivitiesPage({
         return res.json()
       })
       .then((json) => {
-        if (isMounted && Array.isArray(json?.data?.activities) && json.data.activities.length > 0) {
-          setUserActivities(
-            json.data.activities.map((a) => ({
-              id: a.id,
-              name: a.name,
-              location: a.location,
-              date: a.date_label || 'Baru saja',
-            }))
-          )
+        if (isMounted && json?.data) {
+          if (Array.isArray(json.data.activities) && json.data.activities.length > 0) {
+            setUserActivities(
+              json.data.activities.map((a) => ({
+                id: a.id,
+                name: a.name,
+                location: a.location,
+                date: a.date_label || 'Baru saja',
+              }))
+            )
+          }
+          if (Array.isArray(json.data.custom_routes)) {
+            setCustomRoutesCount(json.data.custom_routes.length)
+          }
         }
       })
       .catch((err) => {
@@ -119,19 +127,24 @@ function SavedActivitiesPage({
     return list
   }, [tourists, favorites, sortOption])
 
-  // Recently viewed preview items dari data tourists backend
+  // Recently viewed preview items yang dinamis berdasarkan riwayat klik user
   const recentPlaces = useMemo(() => {
     if (!Array.isArray(tourists) || tourists.length === 0) return []
-    const p1 = tourists.find((t) => t.slug === 'lawang-surya-kencana') || tourists[0]
-    const p2 = tourists.find((t) => t.slug === 'museum-peta') || tourists[1] || tourists[0]
-    return [p1, p2].filter(Boolean)
-  }, [tourists])
+    if (Array.isArray(recentSlugs) && recentSlugs.length > 0) {
+      return recentSlugs
+        .map((slug) => tourists.find((t) => t.slug === slug))
+        .filter(Boolean)
+    }
+    // Fallback jika belum ada yang dilihat
+    return tourists.slice(0, 2)
+  }, [tourists, recentSlugs])
 
   // JIKA TAMPILAN AKTIF ADALAH RUTE CUSTOM
   if (activeFolderView === 'custom-route') {
     return (
       <CustomRoutePage
         tourists={tourists}
+        currentUser={currentUser}
         onBack={() => setActiveFolderView(null)}
         onStartCustomRoute={onStartCustomRoute}
       />
@@ -344,8 +357,8 @@ function SavedActivitiesPage({
           >
             {isLoggedIn ? (
               <img
-                src="/images/avatar-ambalingham.jpg"
-                alt="Avatar"
+                src={currentUser?.avatar || '/images/avatar-ambalingham.jpg'}
+                alt={currentUser?.name || 'Avatar'}
                 className="h-full w-full rounded-full object-cover"
               />
             ) : (
@@ -492,7 +505,9 @@ function SavedActivitiesPage({
             <span>Terakhir dilihat</span>
             <span className="text-white/40 group-hover:text-white transition">→</span>
           </h3>
-          <p className="text-[11px] text-white/60">2 tempat wisata</p>
+          <p className="text-[11px] text-white/60">
+            {recentPlaces.length} tempat wisata
+          </p>
         </div>
 
         {/* FOLDER 2: Rute custom (MEMBUKA DAFTAR LIST RUTE CUSTOM) */}
@@ -534,7 +549,7 @@ function SavedActivitiesPage({
 
             <div className="absolute inset-x-2 bottom-2 rounded-lg bg-forest-900/90 py-1 text-center backdrop-blur-sm border border-white/10">
               <span className="text-[9px] font-semibold text-emerald-300">
-                {isLoggedIn ? '2 Rute Tersedia' : 'Perlu Login'}
+                {isLoggedIn ? `${customRoutesCount} Rute Tersedia` : 'Perlu Login'}
               </span>
             </div>
           </div>
@@ -543,7 +558,7 @@ function SavedActivitiesPage({
             <span className="text-white/40 group-hover:text-white transition">→</span>
           </h3>
           <p className="text-[11px] text-white/60">
-            {isLoggedIn ? '2 rute perjalanan' : 'Masuk untuk akses'}
+            {isLoggedIn ? `${customRoutesCount} rute perjalanan` : 'Masuk untuk akses'}
           </p>
         </div>
 
