@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { GeoJSON } from 'react-leaflet'
 import bogorBoundaryFallback from '../../data/bogor_boundary.json'
+import { apiFetch } from '../../utils/api'
 
 const BOUNDARY_STYLE = {
   color: '#1f8a5b',
@@ -16,7 +17,7 @@ export default function BogorBoundaryLayer({ visible = true }) {
   const [boundaryData, setBoundaryData] = useState(bogorBoundaryFallback)
 
   useEffect(() => {
-    fetch('/api/boundary')
+    apiFetch('/api/boundary')
       .then((res) => {
         if (!res.ok) throw new Error('Boundary API error')
         return res.json()

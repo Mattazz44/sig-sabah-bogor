@@ -1,5 +1,6 @@
 import { memo, useEffect, useState } from 'react'
 import NotificationDrawer from '../ui/NotificationDrawer'
+import { apiFetch, getImageUrl } from '../../utils/api'
 
 const DEFAULT_MY_ACTIVITIES = [
   {
@@ -69,7 +70,7 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
   // Fetch daftar postingan aktivitas dari API database
   useEffect(() => {
     let isMounted = true
-    fetch('/api/activities')
+    apiFetch('/api/activities')
       .then((res) => {
         if (!res.ok) throw new Error('Network error')
         return res.json()
@@ -84,9 +85,9 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
             setMyActivities(my.map((m) => ({
               id: m.id,
               userName: m.user_name,
-              userAvatar: m.user_avatar,
+              userAvatar: getImageUrl(m.user_avatar),
               date: m.date,
-              image: m.image,
+              image: getImageUrl(m.image),
               title: m.title,
               location: m.location,
               isOtherUser: m.is_other_user,
@@ -100,9 +101,9 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
             setCommunityActivities(com.map((c) => ({
               id: c.id,
               userName: c.user_name,
-              userAvatar: c.user_avatar,
+              userAvatar: getImageUrl(c.user_avatar),
               date: c.date,
-              image: c.image,
+              image: getImageUrl(c.image),
               title: c.title,
               location: c.location,
               isOtherUser: c.is_other_user,
@@ -171,7 +172,7 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
     setCommunityActivities((prev) => [newPost, ...prev])
 
     // Simpan juga ke database backend
-    fetch('/api/activities', {
+    apiFetch('/api/activities', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,4 +1,5 @@
 import { memo, useState } from 'react'
+import { apiFetch } from '../../utils/api'
 
 function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const [emailOrUsername, setEmailOrUsername] = useState('ambalingham@gmail.com')
@@ -18,7 +19,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
     setErrorMessage(null)
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await apiFetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +53,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
     setErrorMessage(null)
 
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await apiFetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

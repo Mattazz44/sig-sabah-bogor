@@ -1,14 +1,14 @@
 import { memo, useState } from 'react'
 
-function ProfilePage({ user = 'self', onBack, onLogout, onStartCustomRoute }) {
+function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCustomRoute }) {
   const isSelf = user === 'self' || Boolean(user?.isSelf)
   const [isFollowing, setIsFollowing] = useState(false)
 
   // Data profil
   const profileName = isSelf ? (user?.name || 'Ambalingham') : user?.name || 'Kirk hasibuan'
   const profileAvatar = isSelf
-    ? (user?.avatar || '/images/avatar-ambalingham.jpg')
-    : user?.avatar || '/images/avatar-kirk.jpg'
+    ? (user?.avatar || getImageUrl('/images/'))
+    : user?.avatar || getImageUrl('/images/')
   const profileEmail = isSelf ? (user?.email || 'ambalingham@gmail.com') : null // Tanpa email jika profil orang lain
 
   // Destinasi sampel untuk Rute Saya

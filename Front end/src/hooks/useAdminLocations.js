@@ -49,7 +49,7 @@ export function useAdminLocations() {
         lng: Number(Number(formData.lng).toFixed(4)),
       },
       rating: 4.5,
-      image: formData.image || '/images/tugu-kujang.jpg',
+      image: formData.image || getImageUrl('/images/'),
       createdAt: new Date().toISOString(),
     }
 

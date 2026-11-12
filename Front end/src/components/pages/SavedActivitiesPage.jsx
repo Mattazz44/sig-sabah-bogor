@@ -1,6 +1,7 @@
 import { memo, useEffect, useMemo, useState } from 'react'
 import CustomRoutePage from './CustomRoutePage'
 import NotificationDrawer from '../ui/NotificationDrawer'
+import { apiFetch, getImageUrl } from '../../utils/api'
 
 function SavedActivitiesPage({
   tourists = [],
@@ -31,7 +32,7 @@ function SavedActivitiesPage({
     if (!isLoggedIn) return
 
     let isMounted = true
-    fetch('/api/saved-activities')
+    apiFetch('/api/saved-activities')
       .then((res) => {
         if (!res.ok) throw new Error('Network error')
         return res.json()
@@ -96,7 +97,7 @@ function SavedActivitiesPage({
     setUserActivities((prev) => [newAct, ...prev])
 
     // Kirim juga ke database backend
-    fetch('/api/saved-activities', {
+    apiFetch('/api/saved-activities', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -357,7 +358,7 @@ function SavedActivitiesPage({
           >
             {isLoggedIn ? (
               <img
-                src={currentUser?.avatar || '/images/avatar-ambalingham.jpg'}
+                src={currentUser?.avatar || getImageUrl('/images/')}
                 alt={currentUser?.name || 'Avatar'}
                 className="h-full w-full rounded-full object-cover"
               />

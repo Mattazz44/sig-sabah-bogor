@@ -1,5 +1,6 @@
 import { memo, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { apiFetch, getImageUrl } from '../../utils/api'
 
 const DEFAULT_RECOMMENDED_ITEMS = [
   {
@@ -8,7 +9,7 @@ const DEFAULT_RECOMMENDED_ITEMS = [
     name: 'Tugu Kujang - Bogor Kota',
     location: 'Bogor, jawa barat',
     rating: '4.4',
-    image: '/images/tugu-kujang.jpg',
+    image: getImageUrl('/images/'),
   },
   {
     id: 'museum-zoologi',
@@ -16,7 +17,7 @@ const DEFAULT_RECOMMENDED_ITEMS = [
     name: 'Museum of zoology - Bogor Tengah',
     location: 'Bogor, jawa barat',
     rating: '4.7',
-    image: '/images/museum-zoologi.jpg',
+    image: getImageUrl('/images/'),
   },
   {
     id: 'museum-peta',
@@ -24,7 +25,7 @@ const DEFAULT_RECOMMENDED_ITEMS = [
     name: 'Museum PETA - Bogor Kota',
     location: 'Bogor, jawa barat',
     rating: '4.6',
-    image: '/images/museum-peta.jpg',
+    image: getImageUrl('/images/'),
   },
 ]
 
@@ -34,7 +35,7 @@ const DEFAULT_CONTINUE_ITEM = {
   name: 'Museum PETA - Bogor Kota',
   location: 'Bogor, jawa barat',
   rating: '4.6',
-  image: '/images/museum-peta.jpg',
+  image: getImageUrl('/images/'),
 }
 
 function ForYouPage({
@@ -62,7 +63,7 @@ function ForYouPage({
     const recentParam = encodeURIComponent(recentSlugs.join(','))
     const url = `/api/for-you?favorites=${favParam}&recent=${recentParam}`
 
-    fetch(url)
+    apiFetch(url)
       .then((res) => {
         if (!res.ok) throw new Error('Network error')
         return res.json()
@@ -70,10 +71,18 @@ function ForYouPage({
       .then((json) => {
         if (isMounted && json?.data) {
           if (Array.isArray(json.data.recommended)) {
-            setRecommendedItems(json.data.recommended)
+            setRecommendedItems(
+              json.data.recommended.map((item) => ({
+                ...item,
+                image: getImageUrl(item.image),
+              }))
+            )
           }
           if (json.data.continue_item) {
-            setContinueItem(json.data.continue_item)
+            setContinueItem({
+              ...json.data.continue_item,
+              image: getImageUrl(json.data.continue_item.image),
+            })
           }
         }
       })
@@ -206,7 +215,7 @@ function ForYouPage({
         >
           {isLoggedIn ? (
             <img
-              src={currentUser?.avatar || '/images/avatar-ambalingham.jpg'}
+              src={currentUser?.avatar || getImageUrl('/images/')}
               alt={currentUser?.name || 'Avatar'}
               className="h-full w-full object-cover"
             />

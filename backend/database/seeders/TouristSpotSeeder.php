@@ -50,12 +50,20 @@ class TouristSpotSeeder extends Seeder
                 ]
             );
 
-            // Update PostGIS geometry kolom geom: ST_SetSRID(ST_MakePoint(lon, lat), 4326)
+            // Update spatial geometry kolom geom: ST_SetSRID(ST_MakePoint(lon, lat), 4326) / ST_SRID(Point(lon, lat), 4326)
             if ($lon !== null && $lat !== null) {
-                DB::statement(
-                    'UPDATE tourist_spots SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326) WHERE id = ?',
-                    [$lon, $lat, $spot->id]
-                );
+                $driver = DB::getDriverName();
+                if ($driver === 'pgsql') {
+                    DB::statement(
+                        'UPDATE tourist_spots SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326) WHERE id = ?',
+                        [$lon, $lat, $spot->id]
+                    );
+                } elseif ($driver === 'mysql') {
+                    DB::statement(
+                        'UPDATE tourist_spots SET geom = POINT(?, ?) WHERE id = ?',
+                        [$lon, $lat, $spot->id]
+                    );
+                }
             }
         }
 

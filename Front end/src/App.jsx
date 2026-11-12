@@ -17,6 +17,7 @@ import AdminPage from './components/pages/AdminPage'
 import LoginModal from './components/ui/LoginModal'
 import { useAdminLocations } from './hooks/useAdminLocations'
 import { enrichTouristWithUserLocation } from './utils/distance'
+import { apiFetch, getImageUrl } from './utils/api'
 
 export default function App() {
   // Data destinasi wisata: murni di-fetch dari API backend Laravel (PostgreSQL / PostGIS)
@@ -26,14 +27,20 @@ export default function App() {
   useEffect(() => {
     let isMounted = true
 
-    fetch('/api/tourists')
+    apiFetch('/api/tourists')
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
         return res.json()
       })
       .then((json) => {
         if (isMounted && json?.data && Array.isArray(json.data)) {
-          setTourists(json.data)
+          // Normalisasi path image & gallery agar menggunakan helper getImageUrl
+          const normalized = json.data.map((item) => ({
+            ...item,
+            image: getImageUrl(item.image),
+            gallery: Array.isArray(item.gallery) ? item.gallery.map(getImageUrl) : [],
+          }))
+          setTourists(normalized)
           setIsBackendError(false)
         }
       })
@@ -170,7 +177,7 @@ export default function App() {
     }
 
     // Fallback jika dipanggil tanpa payload userData
-    fetch('/api/auth/login', {
+    apiFetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ email: 'ambalingham@gmail.com' }),

@@ -12,8 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Pastikan ekstensi PostGIS aktif
-        DB::statement('CREATE EXTENSION IF NOT EXISTS postgis');
+        $driver = DB::getDriverName();
+
+        // Pastikan ekstensi PostGIS aktif jika menggunakan PostgreSQL
+        if ($driver === 'pgsql') {
+            DB::statement('CREATE EXTENSION IF NOT EXISTS postgis');
+        }
 
         Schema::create('tourist_spots', function (Blueprint $table) {
             $table->id();
@@ -34,9 +38,13 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Kolom spasial PostGIS: geometry(Point, 4326)
-        DB::statement('ALTER TABLE tourist_spots ADD COLUMN geom geometry(Point, 4326)');
-        DB::statement('CREATE INDEX idx_tourist_spots_geom ON tourist_spots USING GIST (geom)');
+        // Kolom spasial geometry (kompatibel PostGIS & MySQL/MariaDB spatial)
+        if ($driver === 'pgsql') {
+            DB::statement('ALTER TABLE tourist_spots ADD COLUMN geom geometry(Point, 4326)');
+            DB::statement('CREATE INDEX idx_tourist_spots_geom ON tourist_spots USING GIST (geom)');
+        } elseif ($driver === 'mysql') {
+            DB::statement('ALTER TABLE tourist_spots ADD COLUMN geom POINT NULL');
+        }
     }
 
     /**

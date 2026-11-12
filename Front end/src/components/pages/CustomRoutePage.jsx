@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from 'react'
+import { apiFetch, getImageUrl } from '../../utils/api'
 
 function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCustomRoute }) {
   // Destinasi bawaan yang diambil dari daftar tempat wisata backend
@@ -54,7 +55,7 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
   // Fetch rute custom dari database backend
   useEffect(() => {
     let isMounted = true
-    fetch('/api/saved-activities')
+    apiFetch('/api/saved-activities')
       .then((res) => {
         if (!res.ok) throw new Error('Network error')
         return res.json()
@@ -126,7 +127,7 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
     setCustomRoutesList((prev) => [newRoute, ...prev])
 
     // Simpan ke database backend
-    fetch('/api/custom-routes', {
+    apiFetch('/api/custom-routes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
