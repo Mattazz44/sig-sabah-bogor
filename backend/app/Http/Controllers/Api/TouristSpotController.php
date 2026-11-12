@@ -39,10 +39,19 @@ class TouristSpotController extends Controller
         if ($request->filled('lat') && $request->filled('lon')) {
             $userLat = (float) $request->lat;
             $userLon = (float) $request->lon;
-            $query->selectRaw(
-                'ST_DistanceSphere(geom, ST_SetSRID(ST_MakePoint(?, ?), 4326)) as distance_meters',
-                [$userLon, $userLat]
-            )->orderBy('distance_meters', 'asc');
+
+            if (\Illuminate\Support\Facades\DB::getDriverName() === 'pgsql') {
+                $query->selectRaw(
+                    'ST_DistanceSphere(geom, ST_SetSRID(ST_MakePoint(?, ?), 4326)) as distance_meters',
+                    [$userLon, $userLat]
+                )->orderBy('distance_meters', 'asc');
+            } else {
+                // Haversine formula dalam meter (kompatibel MySQL / MariaDB)
+                $query->selectRaw(
+                    '(6371000 * acos(LEAST(1, GREATEST(-1, cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))))) as distance_meters',
+                    [$userLat, $userLon, $userLat]
+                )->orderBy('distance_meters', 'asc');
+            }
         } else {
             $query->orderBy('id', 'asc');
         }

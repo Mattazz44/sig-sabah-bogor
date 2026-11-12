@@ -39,9 +39,13 @@ class TouristSpot extends Model
      */
     public function scopeWithGeoJson($query)
     {
-        return $query->select(
-            'tourist_spots.*',
-            DB::raw('ST_AsGeoJSON(geom) as geojson')
-        );
+        if (DB::getDriverName() === 'pgsql') {
+            return $query->select(
+                'tourist_spots.*',
+                DB::raw('ST_AsGeoJSON(geom) as geojson')
+            );
+        }
+
+        return $query->select('tourist_spots.*');
     }
 }
