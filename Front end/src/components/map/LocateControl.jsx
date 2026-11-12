@@ -45,7 +45,7 @@ export default function LocateControl({
   else if (isGranted) tooltipText = 'Pusatkan ke lokasi Anda'
 
   return (
-    <div className="leaflet-bottom leaflet-right mb-24 mr-4 !pointer-events-auto z-[450] flex flex-col items-end gap-2.5">
+    <div className="fixed bottom-24 right-4 !pointer-events-auto z-[450] flex flex-col items-end gap-2.5">
       {/* Toggle Batas Wilayah Kota Bogor (WBS 1.2.7) */}
       {onToggleBoundary && (
         <button

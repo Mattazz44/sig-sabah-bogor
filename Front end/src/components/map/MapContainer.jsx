@@ -72,7 +72,7 @@ export default function MapView({
     <section
       id="map-section"
       aria-label="Peta wisata Bogor"
-      className="fixed inset-0 z-0 h-screen w-full"
+      className="fixed inset-0 z-0 h-dvh w-full"
     >
       {/* 3. PANEL METRICS MELAYANG (RouteMetrics.jsx) */}
       {isNavigationMode && hasDestination && (
@@ -114,12 +114,12 @@ export default function MapView({
 
       {/* Tombol Melayang "Akhiri Perjalanan" di atas peta */}
       {isNavigationMode && hasDestination && (
-        <div className="fixed bottom-[74px] inset-x-0 flex justify-center z-[1000] pointer-events-none">
+        <div className="fixed bottom-20 inset-x-0 flex justify-center z-[1000] pointer-events-none">
           <button
             type="button"
             id="btn-akhiri-perjalanan"
             onClick={onStopNavigation}
-            className="pointer-events-auto flex items-center gap-2 rounded-full bg-rose-600 hover:bg-rose-700 active:scale-95 px-6 py-2.5 text-[13px] font-bold text-white shadow-[0_6px_24px_rgba(225,29,72,0.5)] transition border border-rose-400/30 cursor-pointer"
+            className="pointer-events-auto flex items-center gap-2 rounded-full bg-rose-600 hover:bg-rose-700 active:scale-95 px-6 py-2.5 text-[13px] font-bold text-white shadow-lg transition border border-rose-400/30 cursor-pointer"
           >
             <svg
               width="14"

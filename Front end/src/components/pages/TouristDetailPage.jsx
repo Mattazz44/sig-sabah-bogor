@@ -61,7 +61,7 @@ function TouristDetailPage({
   return (
     <div
       id="tourist-detail-page"
-      className="relative h-full w-full max-w-md mx-auto bg-forest-900 text-white overflow-y-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu pb-32"
+      className="relative h-full w-full max-w-md mx-auto bg-forest-900 text-white overflow-y-auto overscroll-contain overscroll-y-contain pb-36"
     >
       {/* 1. Hero Section (Atas) with Full-Width Background Photo */}
       <section className="relative h-[340px] w-full shrink-0 overflow-hidden">
@@ -221,7 +221,7 @@ function TouristDetailPage({
       </section>
 
       {/* 4. Foto Tempat Wisata (Galeri Estetik Berujung Tumpul / Rounded) */}
-      <section className="mt-5 px-5">
+      <section className="mt-5 px-5 pb-36">
         <h2 className="text-[15px] font-bold tracking-tight text-white">Foto Tempat Wisata</h2>
 
         {/* Aesthetic Staggered Photo Collage Matching Figma */}
@@ -261,31 +261,29 @@ function TouristDetailPage({
         </div>
       </section>
 
-      {/* 5. Tombol Navigasi Melayang ("Mulai Perjalanan" Google Maps External) */}
-      <div className="fixed bottom-[74px] inset-x-0 flex justify-center z-[550] pointer-events-none">
-        <button
-          type="button"
-          id="btn-mulai-perjalanan"
-          onClick={handleStartJourney}
-          className="pointer-events-auto flex items-center gap-2 rounded-full bg-[#7a6649] px-6 py-2.5 text-[13px] font-semibold text-white shadow-md active:scale-[0.98] transition-transform duration-150 hover:bg-[#887353] cursor-pointer border border-white/15"
+      {/* 5. Tombol Navigasi Melayang ("Mulai Perjalanan" terkunci di atas BottomNav) */}
+      <button
+        type="button"
+        id="btn-mulai-perjalanan"
+        onClick={handleStartJourney}
+        className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 shadow-lg flex items-center gap-2 whitespace-nowrap rounded-full bg-[#7a6649] px-6 py-2.5 text-[13px] font-semibold text-white active:scale-[0.98] transition-transform duration-150 hover:bg-[#887353] cursor-pointer border border-white/15"
+      >
+        {/* Compass / Paper Airplane Navigation Icon */}
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
         >
-          {/* Compass / Paper Airplane Navigation Icon */}
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <polygon points="3 11 22 2 13 21 11 13 3 11" />
-          </svg>
-          <span>Mulai Perjalanan</span>
-        </button>
-      </div>
+          <polygon points="3 11 22 2 13 21 11 13 3 11" />
+        </svg>
+        <span>Mulai Perjalanan</span>
+      </button>
     </div>
   )
 }

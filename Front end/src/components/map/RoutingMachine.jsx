@@ -164,8 +164,8 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
               ]
               const bounds = L.latLngBounds(allPoints)
               map.fitBounds(bounds, {
-                paddingTopLeft: [75, 40],
-                paddingBottomRight: [40, 160],
+                paddingTopLeft: [20, 140],
+                paddingBottomRight: [20, 160],
                 maxZoom: 15,
                 animate: true,
               })
