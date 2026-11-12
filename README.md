@@ -1,4 +1,4 @@
-# 🗺️ SIG Wisata Sabah Bogor (Progressive Web App & Mobile GIS)
+# SIG Wisata Sabah Bogor (Progressive Web App & Mobile GIS)
 
 **SIG Wisata Sabah Bogor** adalah aplikasi **Sistem Informasi Geografis (SIG)** berbasis *Mobile-First Progressive Web App (PWA)* dan Android (Capacitor) yang dirancang untuk membantu wisatawan menjelajahi, merencanakan rute perjalanan, dan berbagi pengalaman wisata di wilayah **Kota & Kabupaten Bogor**.
 
@@ -6,7 +6,7 @@ Aplikasi ini memadukan peta interaktif **Leaflet**, pengelompokan lokasi otomati
 
 ---
 
-## ✨ Fitur Unggulan
+## Fitur Unggulan
 
 1. **Eksplorasi Peta Interaktif & Marker Clustering (`Explore`)**
    * Visualisasi sebaran destinasi wisata Bogor berdasarkan 3 kategori utama: **Alam & Curug**, **Kuliner**, serta **Edukasi & Budaya**.
@@ -33,7 +33,7 @@ Aplikasi ini memadukan peta interaktif **Leaflet**, pengelompokan lokasi otomati
 
 ---
 
-## 💻 Prasyarat Sistem (Prerequisites)
+## Prasyarat Sistem (Prerequisites)
 
 Sebelum menjalankan proyek ini di perangkat lokal Anda, pastikan sudah menginstal:
 * **Node.js** versi `18.x` atau `20.x+` (disarankan LTS terbaru)
@@ -43,7 +43,7 @@ Sebelum menjalankan proyek ini di perangkat lokal Anda, pastikan sudah menginsta
 
 ---
 
-## 🚀 Cara Instalasi & Menjalankan Proyek (Local Setup)
+## Cara Instalasi & Menjalankan Proyek (Local Setup)
 
 Ikuti langkah-langkah berikut untuk menjalankan aplikasi **Frontend** di komputer Anda:
 
@@ -87,7 +87,7 @@ npm run preview
 
 ---
 
-## 📱 Cara Menggunakan Aplikasi (User Guide)
+## Cara Menggunakan Aplikasi (User Guide)
 
 ### 1. Mencari & Memfilter Tempat Wisata
 1. Buka aplikasi pada tab **Explore** (ikon kaca pembesar di navigasi bawah).
@@ -128,7 +128,7 @@ npm run preview
 
 ---
 
-## 📂 Struktur Folder Proyek
+## Struktur Folder Proyek
 
 ```text
 project sabah bogor/
@@ -196,5 +196,5 @@ project sabah bogor/
 
 ---
 
-## 👥 Tim Pengembang
-Dikembangkan dengan ❤️ oleh Tim **SIG Wisata Sabah Bogor**.
+## Tim Pengembang
+Dikembangkan oleh Tim **Pemuda berkaca mata**.
