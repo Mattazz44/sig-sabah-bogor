@@ -1,42 +1,11 @@
 import { memo, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { apiFetch, getImageUrl } from '../../utils/api'
-
-const DEFAULT_RECOMMENDED_ITEMS = [
-  {
-    id: 'tugu-kujang',
-    slug: 'tugu-kujang',
-    name: 'Tugu Kujang - Bogor Kota',
-    location: 'Bogor, jawa barat',
-    rating: '4.4',
-    image: getImageUrl('/images/'),
-  },
-  {
-    id: 'museum-zoologi',
-    slug: 'museum-zoologi-bogor',
-    name: 'Museum of zoology - Bogor Tengah',
-    location: 'Bogor, jawa barat',
-    rating: '4.7',
-    image: getImageUrl('/images/'),
-  },
-  {
-    id: 'museum-peta',
-    slug: 'museum-peta',
-    name: 'Museum PETA - Bogor Kota',
-    location: 'Bogor, jawa barat',
-    rating: '4.6',
-    image: getImageUrl('/images/'),
-  },
-]
-
-const DEFAULT_CONTINUE_ITEM = {
-  id: 'museum-peta-continue',
-  slug: 'museum-peta',
-  name: 'Museum PETA - Bogor Kota',
-  location: 'Bogor, jawa barat',
-  rating: '4.6',
-  image: getImageUrl('/images/'),
-}
+import { apiFetch } from '../../utils/api'
+import {
+  DEFAULT_AVATAR_PLACEHOLDER,
+  getImageUrl,
+  handleImageError,
+} from '../../utils/imageHelper'
 
 function ForYouPage({
   tourists = [],
@@ -71,25 +40,17 @@ function ForYouPage({
       .then((json) => {
         if (isMounted && json?.data) {
           if (Array.isArray(json.data.recommended)) {
-            setRecommendedItems(
-              json.data.recommended.map((item) => ({
-                ...item,
-                image: getImageUrl(item.image),
-              }))
-            )
+            setRecommendedItems(json.data.recommended)
           }
           if (json.data.continue_item) {
-            setContinueItem({
-              ...json.data.continue_item,
-              image: getImageUrl(json.data.continue_item.image),
-            })
+            setContinueItem(json.data.continue_item)
           }
         }
       })
       .catch((err) => {
         console.warn('Gagal memuat rekomendasi Untuk Anda dari API, fallback ke kalkulasi lokal:', err)
         if (isMounted) {
-          // Fallback dinamis dari array tourists yang ada
+          // Fallback dinamis dari array tourists yang ada dari API Backend
           if (Array.isArray(tourists) && tourists.length > 0) {
             const lastPlace = recentSlugs.length > 0
               ? tourists.find((t) => t.slug === recentSlugs[0]) || tourists[0]
@@ -117,8 +78,8 @@ function ForYouPage({
               }))
             setRecommendedItems(recList)
           } else {
-            setRecommendedItems(DEFAULT_RECOMMENDED_ITEMS)
-            setContinueItem(DEFAULT_CONTINUE_ITEM)
+            setRecommendedItems([])
+            setContinueItem(null)
           }
         }
       })
@@ -153,8 +114,9 @@ function ForYouPage({
           className="flex flex-1 cursor-pointer items-center gap-3.5 text-left focus-visible:outline-none"
         >
           <img
-            src={item.image}
+            src={getImageUrl(item.image)}
             alt={item.name}
+            onError={handleImageError}
             className="h-16 w-16 shrink-0 rounded-2xl object-cover shadow-sm transition group-hover:scale-105"
           />
           <div className="min-w-0 flex-1">
@@ -215,8 +177,9 @@ function ForYouPage({
         >
           {isLoggedIn ? (
             <img
-              src={currentUser?.avatar || getImageUrl('/images/')}
+              src={getImageUrl(currentUser?.avatar, DEFAULT_AVATAR_PLACEHOLDER)}
               alt={currentUser?.name || 'Avatar'}
+              onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
               className="h-full w-full object-cover"
             />
           ) : (

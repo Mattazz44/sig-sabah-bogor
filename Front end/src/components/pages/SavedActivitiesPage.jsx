@@ -1,7 +1,12 @@
 import { memo, useEffect, useMemo, useState } from 'react'
 import CustomRoutePage from './CustomRoutePage'
 import NotificationDrawer from '../ui/NotificationDrawer'
-import { apiFetch, getImageUrl } from '../../utils/api'
+import { apiFetch } from '../../utils/api'
+import {
+  DEFAULT_AVATAR_PLACEHOLDER,
+  getImageUrl,
+  handleImageError,
+} from '../../utils/imageHelper'
 
 function SavedActivitiesPage({
   tourists = [],
@@ -186,8 +191,9 @@ function SavedActivitiesPage({
               className="flex items-center gap-3.5 rounded-2xl bg-forest-700/70 border border-white/10 p-3 shadow-md hover:bg-forest-700 hover:border-white/20 transition cursor-pointer active:scale-[0.99]"
             >
               <img
-                src={place.image}
+                src={getImageUrl(place.image)}
                 alt={place.name}
+                onError={handleImageError}
                 className="h-16 w-16 rounded-xl object-cover shrink-0"
               />
               <div className="flex-1 min-w-0">
@@ -358,8 +364,9 @@ function SavedActivitiesPage({
           >
             {isLoggedIn ? (
               <img
-                src={currentUser?.avatar || getImageUrl('/images/')}
+                src={getImageUrl(currentUser?.avatar, DEFAULT_AVATAR_PLACEHOLDER)}
                 alt={currentUser?.name || 'Avatar'}
+                onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
                 className="h-full w-full rounded-full object-cover"
               />
             ) : (
@@ -488,8 +495,9 @@ function SavedActivitiesPage({
               recentPlaces.map((rp) => (
                 <img
                   key={rp.id}
-                  src={rp.image}
+                  src={getImageUrl(rp.image)}
                   alt={rp.name}
+                  onError={handleImageError}
                   className="h-full w-full rounded-lg object-cover"
                 />
               ))
@@ -576,8 +584,9 @@ function SavedActivitiesPage({
             {favoritePlaces.slice(0, 4).map((place) => (
               <img
                 key={place.id}
-                src={place.image}
+                src={getImageUrl(place.image)}
                 alt={place.name}
+                onError={handleImageError}
                 className="h-full w-full rounded-lg object-cover"
               />
             ))}

@@ -1,4 +1,5 @@
 import { memo, useState } from 'react'
+import { getImageUrl, handleImageError } from '../../utils/imageHelper'
 
 function TouristDetailPage({
   place,
@@ -65,8 +66,9 @@ function TouristDetailPage({
       {/* 1. Hero Section (Atas) with Full-Width Background Photo */}
       <section className="relative h-[340px] w-full shrink-0 overflow-hidden">
         <img
-          src={place.image}
+          src={getImageUrl(place.image)}
           alt={place.name}
+          onError={handleImageError}
           className="h-full w-full object-cover"
         />
 
@@ -227,8 +229,9 @@ function TouristDetailPage({
           {/* Foto 1: Kiri Atas */}
           <div className="w-[56%] overflow-hidden rounded-[26px] shadow-md border border-white/10 transition-transform duration-200 hover:scale-[1.02]">
             <img
-              src={galleryImages[0]}
+              src={getImageUrl(galleryImages[0])}
               alt={`${place.name} foto 1`}
+              onError={handleImageError}
               className="aspect-[4/3] w-full object-cover"
               loading="lazy"
             />
@@ -237,8 +240,9 @@ function TouristDetailPage({
           {/* Foto 2: Kanan Tengah (Staggered Offset) */}
           <div className="-mt-16 ml-auto w-[56%] overflow-hidden rounded-[26px] shadow-lg border border-white/10 transition-transform duration-200 hover:scale-[1.02]">
             <img
-              src={galleryImages[1]}
+              src={getImageUrl(galleryImages[1])}
               alt={`${place.name} foto 2`}
+              onError={handleImageError}
               className="aspect-[4/3] w-full object-cover"
               loading="lazy"
             />
@@ -247,8 +251,9 @@ function TouristDetailPage({
           {/* Foto 3: Kiri Bawah */}
           <div className="-mt-14 w-[56%] overflow-hidden rounded-[26px] shadow-md border border-white/10 transition-transform duration-200 hover:scale-[1.02]">
             <img
-              src={galleryImages[2]}
+              src={getImageUrl(galleryImages[2])}
               alt={`${place.name} foto 3`}
+              onError={handleImageError}
               className="aspect-[4/3] w-full object-cover"
               loading="lazy"
             />

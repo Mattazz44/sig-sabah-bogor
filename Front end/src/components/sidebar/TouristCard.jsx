@@ -1,4 +1,5 @@
 import { memo } from 'react'
+import { getImageUrl, handleImageError } from '../../utils/imageHelper'
 
 function TouristCard({ place, onSelect }) {
   const displayLocation = place.address.toLowerCase().includes('bogor barat')
@@ -16,9 +17,10 @@ function TouristCard({ place, onSelect }) {
     >
       <div className="relative overflow-hidden rounded-[22px]">
         <img
-          src={place.image}
+          src={getImageUrl(place.image)}
           alt={place.name}
           loading="lazy"
+          onError={handleImageError}
           className="aspect-[16/10] w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
         {/* Floating action buttons on top-right: Share and Save/Heart */}

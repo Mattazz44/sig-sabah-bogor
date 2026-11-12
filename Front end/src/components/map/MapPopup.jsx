@@ -1,4 +1,5 @@
 import { Popup } from 'react-leaflet'
+import { getImageUrl, handleImageError } from '../../utils/imageHelper'
 
 export default function MapPopup({ place, onSelect, isTransit = false }) {
   if (!place) return null
@@ -16,8 +17,9 @@ export default function MapPopup({ place, onSelect, isTransit = false }) {
       >
         <div className="relative">
           <img
-            src={place.image}
+            src={getImageUrl(place.image)}
             alt={place.name}
+            onError={handleImageError}
             className="h-[100px] w-full object-cover"
             loading="lazy"
           />

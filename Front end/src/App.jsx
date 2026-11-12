@@ -17,7 +17,8 @@ import AdminPage from './components/pages/AdminPage'
 import LoginModal from './components/ui/LoginModal'
 import { useAdminLocations } from './hooks/useAdminLocations'
 import { enrichTouristWithUserLocation } from './utils/distance'
-import { apiFetch, getImageUrl } from './utils/api'
+import { apiFetch } from './utils/api'
+import { getImageUrl } from './utils/imageHelper'
 
 export default function App() {
   // Data destinasi wisata: murni di-fetch dari API backend Laravel (PostgreSQL / PostGIS)

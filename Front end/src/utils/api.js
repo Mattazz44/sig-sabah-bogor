@@ -1,9 +1,15 @@
 import { Capacitor } from '@capacitor/core'
+import {
+  DEFAULT_AVATAR_PLACEHOLDER,
+  DEFAULT_IMAGE_PLACEHOLDER,
+  getImageUrl,
+  handleImageError,
+} from './imageHelper'
 
 // URL backend publik (ngrok atau server hosting)
-const DEFAULT_REMOTE_BACKEND = 'http://127.0.0.1:8000'
+const DEFAULT_REMOTE_BACKEND = 'http://localhost:8000'
 
-// Gunakan VITE_API_BASE_URL jika ada di .env; jika di Android Capacitor gunakan backend ngrok; jika di browser dev gunakan proxy ''
+// Gunakan VITE_API_BASE_URL jika ada di .env; jika di Android Capacitor gunakan backend remote; jika di browser dev gunakan proxy ''
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL !== undefined
     ? import.meta.env.VITE_API_BASE_URL
@@ -11,26 +17,11 @@ export const API_BASE_URL =
       ? DEFAULT_REMOTE_BACKEND
       : ''
 
-/**
- * Format URL asset gambar:
- * Karena seluruh gambar /images/* sudah di-bundle langsung di dalam APK Android,
- * kita gunakan path lokal relatif '/images/...' agar dimuat offline tanpa terblokir ngrok.
- */
-export function getImageUrl(path) {
-  if (!path) return ''
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
-    // Jika ngrok mengembalikan URL absolut dengan domain ngrok, ubah kembali ke path lokal /images/
-    try {
-      const parsed = new URL(path)
-      if (parsed.pathname.startsWith('/images/')) {
-        return parsed.pathname
-      }
-    } catch {
-      // ignore
-    }
-    return path
-  }
-  return path.startsWith('/') ? path : `/${path}`
+export {
+  DEFAULT_AVATAR_PLACEHOLDER,
+  DEFAULT_IMAGE_PLACEHOLDER,
+  getImageUrl,
+  handleImageError,
 }
 
 /**
@@ -40,9 +31,10 @@ export function getImageUrl(path) {
  * 3. Menambahkan header Content-Type & Accept json jika diperlukan
  */
 export async function apiFetch(endpoint, options = {}) {
-  const url = endpoint.startsWith('http://') || endpoint.startsWith('https://')
-    ? endpoint
-    : `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`
+  const url =
+    endpoint.startsWith('http://') || endpoint.startsWith('https://')
+      ? endpoint
+      : `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`
 
   const headers = new Headers(options.headers || {})
 
@@ -61,4 +53,3 @@ export async function apiFetch(endpoint, options = {}) {
     headers,
   })
 }
-

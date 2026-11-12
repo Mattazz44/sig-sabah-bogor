@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { getImageUrl } from '../utils/imageHelper'
 
 const STORAGE_KEY = 'sig_wisata_admin_locations'
 
@@ -49,7 +50,7 @@ export function useAdminLocations() {
         lng: Number(Number(formData.lng).toFixed(4)),
       },
       rating: 4.5,
-      image: formData.image || getImageUrl('/images/'),
+      image: formData.image ? getImageUrl(formData.image) : '',
       createdAt: new Date().toISOString(),
     }
 

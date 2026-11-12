@@ -1,5 +1,10 @@
 import { memo, useEffect, useState } from 'react'
-import { apiFetch, getImageUrl } from '../../utils/api'
+import { apiFetch } from '../../utils/api'
+import {
+  DEFAULT_AVATAR_PLACEHOLDER,
+  getImageUrl,
+  handleImageError,
+} from '../../utils/imageHelper'
 
 function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCustomRoute }) {
   // Destinasi bawaan yang diambil dari daftar tempat wisata backend
@@ -8,7 +13,7 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
     slug: 'museum-zoologi-bogor',
     name: 'Museum of zoology - Bogor Tengah',
     coordinates: { lat: -6.6014, lng: 106.7972 },
-    image: '/images/museum-zoologi.jpg',
+    image: '',
     travelTime: '7 Menit',
     distance: '2.5 KM',
   }
@@ -18,7 +23,7 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
     slug: 'museum-peta',
     name: 'Museum PETA - Bogor Kota',
     coordinates: { lat: -6.5855, lng: 106.7947 },
-    image: '/images/museum-peta.jpg',
+    image: '',
     travelTime: '8 Menit',
     distance: '3 KM',
   }
@@ -209,8 +214,9 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
       <div className="mt-5 flex items-center justify-between rounded-2xl bg-forest-700/60 border border-white/10 px-4 py-3">
         <div className="flex items-center gap-3">
           <img
-            src={currentUser?.avatar || '/images/avatar-ambalingham.jpg'}
+            src={getImageUrl(currentUser?.avatar, DEFAULT_AVATAR_PLACEHOLDER)}
             alt="Foto profil pengguna"
+            onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
             className="h-10 w-10 rounded-full object-cover border border-emerald-400"
           />
           <div>
@@ -387,8 +393,9 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
                           <img
-                            src={place.image}
+                            src={getImageUrl(place.image)}
                             alt={place.name}
+                            onError={handleImageError}
                             className="h-9 w-9 rounded-lg object-cover shrink-0"
                           />
                           <div className="truncate text-left">

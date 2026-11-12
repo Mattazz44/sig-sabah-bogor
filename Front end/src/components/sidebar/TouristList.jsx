@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import SearchBar from '../ui/SearchBar'
 import CategoryFilter from '../ui/CategoryFilter'
 import TouristCard from './TouristCard'
+import { getImageUrl, handleImageError } from '../../utils/imageHelper'
 
 export default function TouristList({
   places,
@@ -39,8 +40,9 @@ export default function TouristList({
             className="mt-2.5 flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-white/5 p-2 text-left transition hover:bg-white/10"
           >
             <img
-              src={popularSpot.image}
+              src={getImageUrl(popularSpot.image)}
               alt={popularSpot.name}
+              onError={handleImageError}
               className="h-14 w-14 shrink-0 rounded-xl object-cover"
             />
             <div className="min-w-0 flex-1">

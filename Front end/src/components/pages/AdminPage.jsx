@@ -2,6 +2,7 @@ import { memo, useCallback, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AdminLocationPickerMap from '../map/AdminLocationPickerMap'
 import { useAdminLocations } from '../../hooks/useAdminLocations'
+import { getImageUrl, handleImageError } from '../../utils/imageHelper'
 
 const CATEGORY_OPTIONS = [
   { value: 'Alam & Curug', label: 'Alam' },
@@ -511,8 +512,9 @@ function AdminPage() {
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <img
-                          src={loc.image || '/images/tugu-kujang.jpg'}
+                          src={getImageUrl(loc.image)}
                           alt={loc.name}
+                          onError={handleImageError}
                           className="h-12 w-12 shrink-0 rounded-lg object-cover bg-black/20"
                         />
                         <div className="min-w-0">

@@ -1,60 +1,12 @@
 import { memo, useEffect, useState } from 'react'
 import NotificationDrawer from '../ui/NotificationDrawer'
-import { apiFetch, getImageUrl } from '../../utils/api'
-
-const DEFAULT_MY_ACTIVITIES = [
-  {
-    id: 'my-1',
-    userName: 'Ambalingham',
-    userAvatar: '/images/avatar-ambalingham.jpg',
-    date: '1 sep',
-    image: '/images/curug-cikuluwung.jpg',
-    title: 'Perjalanan alam ke curug cikuluwung',
-    location: 'Curug cikuluwung - Bogor selatan',
-  },
-  {
-    id: 'my-2',
-    userName: 'Ambalingham',
-    userAvatar: '/images/avatar-ambalingham.jpg',
-    date: '1 sep',
-    image: '/images/curug-cikuluwung.jpg',
-    title: 'Perjalanan alam ke curug cikuluwung',
-    location: 'Curug cikuluwung - Bogor selatan',
-  },
-]
-
-const DEFAULT_COMMUNITY_ACTIVITIES = [
-  {
-    id: 'com-1',
-    userName: 'Kirk hasibuan',
-    userAvatar: '/images/avatar-kirk.jpg',
-    date: '1 sep',
-    image: '/images/curug-cikuluwung.jpg',
-    title: 'Perjalanan alam ke curug cikuluwung',
-    location: 'Curug cikuluwung - Bogor selatan',
-    isOtherUser: true,
-  },
-  {
-    id: 'com-2',
-    userName: 'Ambalingham',
-    userAvatar: '/images/avatar-ambalingham.jpg',
-    date: '1 sep',
-    image: '/images/curug-cikuluwung.jpg',
-    title: 'Perjalanan alam ke curug cikuluwung',
-    location: 'Curug cikuluwung - Bogor selatan',
-    isOtherUser: false,
-  },
-  {
-    id: 'com-3',
-    userName: 'Sarah Melati',
-    userAvatar: '/images/avatar-ambalingham.jpg',
-    date: '28 agt',
-    image: '/images/curug-leuwi-hejo.jpg',
-    title: 'Eksplorasi jernihnya Curug Leuwi Hejo',
-    location: 'Curug Leuwi Hejo - Babakan Madang, Bogor',
-    isOtherUser: true,
-  },
-]
+import { apiFetch } from '../../utils/api'
+import {
+  DEFAULT_AVATAR_PLACEHOLDER,
+  DEFAULT_IMAGE_PLACEHOLDER,
+  getImageUrl,
+  handleImageError,
+} from '../../utils/imageHelper'
 
 function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpenProfile }) {
   // SUB-TAB NAVIGATION: 'Kamu' vs 'Komunitas'
@@ -85,9 +37,9 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
             setMyActivities(my.map((m) => ({
               id: m.id,
               userName: m.user_name,
-              userAvatar: getImageUrl(m.user_avatar),
+              userAvatar: m.user_avatar,
               date: m.date,
-              image: getImageUrl(m.image),
+              image: m.image,
               title: m.title,
               location: m.location,
               isOtherUser: m.is_other_user,
@@ -101,9 +53,9 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
             setCommunityActivities(com.map((c) => ({
               id: c.id,
               userName: c.user_name,
-              userAvatar: getImageUrl(c.user_avatar),
+              userAvatar: c.user_avatar,
               date: c.date,
-              image: getImageUrl(c.image),
+              image: c.image,
               title: c.title,
               location: c.location,
               isOtherUser: c.is_other_user,
@@ -112,10 +64,10 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
         }
       })
       .catch((err) => {
-        console.warn('Gagal memuat aktivitas dari database, fallback ke default:', err)
+        console.warn('Gagal memuat aktivitas dari database:', err)
         if (isMounted) {
-          setMyActivities(isLoggedIn ? DEFAULT_MY_ACTIVITIES : [])
-          setCommunityActivities(DEFAULT_COMMUNITY_ACTIVITIES)
+          setMyActivities([])
+          setCommunityActivities([])
         }
       })
 
@@ -155,12 +107,12 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
 
     const titleText = postCaption.trim() || 'Perjalanan seru di alam Bogor'
     const locText = postLocation.trim() || 'Curug Cikuluwung'
-    const imgUrl = uploadedImagePreview || '/images/curug-cikuluwung.jpg'
+    const imgUrl = uploadedImagePreview || ''
 
     const newPost = {
       id: `post-${Date.now()}`,
       userName: currentUser?.name || 'Ambalingham',
-      userAvatar: currentUser?.avatar || '/images/avatar-ambalingham.jpg',
+      userAvatar: currentUser?.avatar || '',
       date: 'Baru saja',
       image: imgUrl,
       title: titleText,
@@ -183,7 +135,7 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
         location: locText,
         image: imgUrl,
         user_name: currentUser?.name || 'Ambalingham',
-        user_avatar: currentUser?.avatar || '/images/avatar-ambalingham.jpg',
+        user_avatar: currentUser?.avatar || '',
         is_community: false,
       }),
     }).catch((err) => {
@@ -270,8 +222,9 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
             >
               {isLoggedIn ? (
                 <img
-                  src={currentUser?.avatar || '/images/avatar-ambalingham.jpg'}
+                  src={getImageUrl(currentUser?.avatar, DEFAULT_AVATAR_PLACEHOLDER)}
                   alt={currentUser?.name || 'Profil pengguna'}
+                  onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -405,8 +358,9 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
                       title={`Lihat profil ${post.userName}`}
                     >
                       <img
-                        src={post.userAvatar}
+                        src={getImageUrl(post.userAvatar, DEFAULT_AVATAR_PLACEHOLDER)}
                         alt={post.userName}
+                        onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
                         className="h-9 w-9 rounded-full object-cover border border-white/20 shadow-sm"
                         loading="lazy"
                       />
@@ -428,8 +382,9 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
                     {/* Gambar Utama Tempat Wisata */}
                     <div className="relative w-full aspect-[16/10] overflow-hidden rounded-[20px] bg-black/20 shadow-md border border-white/10">
                       <img
-                        src={post.image}
+                        src={getImageUrl(post.image, DEFAULT_IMAGE_PLACEHOLDER)}
                         alt={post.title}
+                        onError={handleImageError}
                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                         loading="lazy"
                       />

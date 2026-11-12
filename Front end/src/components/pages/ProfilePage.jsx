@@ -1,4 +1,10 @@
 import { memo, useState } from 'react'
+import {
+  DEFAULT_AVATAR_PLACEHOLDER,
+  DEFAULT_IMAGE_PLACEHOLDER,
+  getImageUrl,
+  handleImageError,
+} from '../../utils/imageHelper'
 
 function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCustomRoute }) {
   const isSelf = user === 'self' || Boolean(user?.isSelf)
@@ -6,9 +12,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
 
   // Data profil
   const profileName = isSelf ? (user?.name || 'Ambalingham') : user?.name || 'Kirk hasibuan'
-  const profileAvatar = isSelf
-    ? (user?.avatar || getImageUrl('/images/'))
-    : user?.avatar || getImageUrl('/images/')
+  const profileAvatar = getImageUrl(user?.avatar, DEFAULT_AVATAR_PLACEHOLDER)
   const profileEmail = isSelf ? (user?.email || 'ambalingham@gmail.com') : null // Tanpa email jika profil orang lain
 
   // Destinasi sampel untuk Rute Saya
@@ -81,6 +85,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
           <img
             src={profileAvatar}
             alt={profileName}
+            onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
             className="h-24 w-24 rounded-full object-cover border-4 border-emerald-500/40 shadow-xl"
           />
           <span className="absolute bottom-1 right-1 flex h-4 w-4 rounded-full bg-emerald-400 border-2 border-forest-900" />
@@ -250,8 +255,9 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
             <article className="flex flex-col rounded-2xl bg-forest-700/70 border border-white/10 p-3 shadow overflow-hidden">
               <div className="aspect-[16/10] w-full rounded-xl overflow-hidden bg-black/20">
                 <img
-                  src="/images/curug-cikuluwung.jpg"
+                  src={getImageUrl(user?.recentActivityImage, DEFAULT_IMAGE_PLACEHOLDER)}
                   alt="Curug Cikuluwung"
+                  onError={handleImageError}
                   className="h-full w-full object-cover"
                 />
               </div>
