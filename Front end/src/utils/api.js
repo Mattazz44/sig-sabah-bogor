@@ -1,7 +1,7 @@
 import { Capacitor } from '@capacitor/core'
 
 // URL backend publik (ngrok atau server hosting)
-const DEFAULT_REMOTE_BACKEND = 'https://doorstop-agent-mobile.ngrok-free.dev'
+const DEFAULT_REMOTE_BACKEND = 'http://127.0.0.1:8000'
 
 // Gunakan VITE_API_BASE_URL jika ada di .env; jika di Android Capacitor gunakan backend ngrok; jika di browser dev gunakan proxy ''
 export const API_BASE_URL =
