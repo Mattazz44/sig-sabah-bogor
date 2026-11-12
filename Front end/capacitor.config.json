@@ -1,5 +1,6 @@
 {
   "appId": "com.sabah.app",
   "appName": "Sabah",
-  "webDir": "dist"
+  "webDir": "dist",
+  "overrideUserAgent": "SabahMobileApp/1.0"
 }

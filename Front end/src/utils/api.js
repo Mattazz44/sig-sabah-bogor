@@ -7,7 +7,7 @@ import {
 } from './imageHelper'
 
 // URL backend publik (ngrok atau server hosting)
-const DEFAULT_REMOTE_BACKEND = 'http://localhost:8000'
+const DEFAULT_REMOTE_BACKEND = ' https://doorstop-agent-mobile.ngrok-free.dev'
 
 // Gunakan VITE_API_BASE_URL jika ada di .env; jika di Android Capacitor gunakan backend remote; jika di browser dev gunakan proxy ''
 export const API_BASE_URL =
