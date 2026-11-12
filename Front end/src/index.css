@@ -103,3 +103,27 @@ img {
   display: none !important;
 }
 
+/* Shimmer Skeleton Loader animation for SafeImage */
+@keyframes shimmer-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-skeleton {
+  background: linear-gradient(
+    90deg,
+    #2c3b26 0%,
+    #384931 25%,
+    #4f5f3b 50%,
+    #384931 75%,
+    #2c3b26 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.6s ease-in-out infinite;
+}
+
+

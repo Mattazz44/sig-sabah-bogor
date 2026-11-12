@@ -142,6 +142,8 @@ export default function MapView({
       <LeafletMap
         center={initialView.center}
         zoom={initialView.zoom}
+        preferCanvas={true}
+        updateWhenIdle={true}
         attributionControl={false}
         zoomControl={false}
         className="h-full w-full"
@@ -153,6 +155,8 @@ export default function MapView({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={19}
+          updateWhenIdle={true}
+          keepBuffer={2}
         />
 
         {/* Layer Batas Administrasi Kota Bogor (WBS 1.2.7) */}

@@ -188,7 +188,7 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerCancel}
-      className={`fixed inset-x-0 bottom-0 z-[500] flex flex-col bg-forest-900 text-white shadow-[0_-8px_32px_rgba(0,0,0,0.36)] md:right-auto md:left-6 md:w-[420px] ${
+      className={`fixed inset-x-0 bottom-0 z-[500] flex flex-col bg-forest-900 text-white shadow-lg will-change-transform transform-gpu md:right-auto md:left-6 md:w-[420px] ${
         isDragging
           ? ''
           : 'transition-[transform,border-radius] duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]'
@@ -225,7 +225,7 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
         onWheel={handleWheel}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
-        className={`no-scrollbar flex-1 overscroll-contain ${
+        className={`no-scrollbar flex-1 overscroll-contain overscroll-y-contain will-change-transform transform-gpu ${
           expanded ? 'overflow-y-auto' : 'overflow-hidden'
         } pb-[96px]`}
         style={{

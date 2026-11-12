@@ -1,10 +1,7 @@
 import { memo, useEffect, useState } from 'react'
 import { apiFetch } from '../../utils/api'
-import {
-  DEFAULT_AVATAR_PLACEHOLDER,
-  getImageUrl,
-  handleImageError,
-} from '../../utils/imageHelper'
+import SafeImage from '../ui/SafeImage'
+import { DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageHelper'
 
 function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCustomRoute }) {
   // Destinasi bawaan yang diambil dari daftar tempat wisata backend
@@ -152,7 +149,7 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
   }
 
   return (
-    <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overflow-y-auto">
+    <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
       {/* Top Header with Back button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -213,11 +210,11 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
       {/* Info Status Akun Terhubung */}
       <div className="mt-5 flex items-center justify-between rounded-2xl bg-forest-700/60 border border-white/10 px-4 py-3">
         <div className="flex items-center gap-3">
-          <img
-            src={getImageUrl(currentUser?.avatar, DEFAULT_AVATAR_PLACEHOLDER)}
+          <SafeImage
+            src={currentUser?.avatar}
+            fallback={DEFAULT_AVATAR_PLACEHOLDER}
             alt="Foto profil pengguna"
-            onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
-            className="h-10 w-10 rounded-full object-cover border border-emerald-400"
+            className="h-10 w-10 shrink-0 rounded-full object-cover border border-emerald-400"
           />
           <div>
             <div className="flex items-center gap-1.5">
@@ -239,11 +236,10 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
           <article
             key={route.id}
             id={`card-${route.id}`}
-            className={`group flex flex-col rounded-2xl p-4 shadow-xl transition ${
-              route.isPrimary
-                ? 'bg-forest-700/80 border-2 border-emerald-500/40 hover:border-emerald-400'
-                : 'bg-forest-700/60 border border-white/10 hover:border-white/20'
-            }`}
+            className={`group flex flex-col rounded-2xl p-4 shadow-md active:scale-[0.98] transition-transform duration-150 ${route.isPrimary
+              ? 'bg-forest-700/80 border-2 border-emerald-500/40 hover:border-emerald-400'
+              : 'bg-forest-700/60 border border-white/10 hover:border-white/20'
+              }`}
           >
             {/* Header Rute */}
             <div className="flex items-start justify-between gap-2">
@@ -270,13 +266,12 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
               {route.stops.map((stop, idx) => (
                 <div key={idx} className="flex items-center gap-3">
                   <span
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white shadow-sm ${
-                      idx === 0
-                        ? 'bg-emerald-500'
-                        : idx === route.stops.length - 1
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white shadow-sm ${idx === 0
+                      ? 'bg-emerald-500'
+                      : idx === route.stops.length - 1
                         ? 'bg-rose-500'
                         : 'bg-amber-500'
-                    }`}
+                      }`}
                   >
                     {idx + 1}
                   </span>
@@ -385,17 +380,15 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
                       <div
                         key={place.id}
                         onClick={() => handleToggleDest(place.id)}
-                        className={`flex items-center justify-between p-2.5 rounded-xl border transition cursor-pointer ${
-                          isChecked
-                            ? 'bg-emerald-600/25 border-emerald-400/50'
-                            : 'bg-white/5 border-white/10 hover:bg-white/10'
-                        }`}
+                        className={`flex items-center justify-between p-2.5 rounded-xl border transition cursor-pointer ${isChecked
+                          ? 'bg-emerald-600/25 border-emerald-400/50'
+                          : 'bg-white/5 border-white/10 hover:bg-white/10'
+                          }`}
                       >
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <img
-                            src={getImageUrl(place.image)}
+                          <SafeImage
+                            src={place.image}
                             alt={place.name}
-                            onError={handleImageError}
                             className="h-9 w-9 rounded-lg object-cover shrink-0"
                           />
                           <div className="truncate text-left">
@@ -409,11 +402,10 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
                         </div>
 
                         <span
-                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[10px] font-bold ${
-                            isChecked
-                              ? 'bg-emerald-500 border-emerald-400 text-white'
-                              : 'border-white/30 text-transparent'
-                          }`}
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[10px] font-bold ${isChecked
+                            ? 'bg-emerald-500 border-emerald-400 text-white'
+                            : 'border-white/30 text-transparent'
+                            }`}
                         >
                           ✓
                         </span>

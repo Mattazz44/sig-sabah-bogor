@@ -1,12 +1,9 @@
 import { memo, useEffect, useMemo, useState } from 'react'
 import CustomRoutePage from './CustomRoutePage'
 import NotificationDrawer from '../ui/NotificationDrawer'
+import SafeImage from '../ui/SafeImage'
 import { apiFetch } from '../../utils/api'
-import {
-  DEFAULT_AVATAR_PLACEHOLDER,
-  getImageUrl,
-  handleImageError,
-} from '../../utils/imageHelper'
+import { DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageHelper'
 
 function SavedActivitiesPage({
   tourists = [],
@@ -160,13 +157,13 @@ function SavedActivitiesPage({
   // 6. SUB-VIEW: DAFTAR TEMPAT WISATA "TERAKHIR DILIHAT" (LIST VIEW SEBELUM KE DETAIL)
   if (activeFolderView === 'recent') {
     return (
-      <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overflow-y-auto">
+      <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
         <div className="flex items-center gap-3 pb-4 border-b border-white/10">
           <button
             type="button"
             id="btn-back-recent-list"
             onClick={() => setActiveFolderView(null)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition text-white cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-[0.98] transition-transform duration-150 text-white cursor-pointer"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
@@ -188,12 +185,11 @@ function SavedActivitiesPage({
             <div
               key={place.id}
               onClick={() => onSelectPlace && onSelectPlace(place.slug)}
-              className="flex items-center gap-3.5 rounded-2xl bg-forest-700/70 border border-white/10 p-3 shadow-md hover:bg-forest-700 hover:border-white/20 transition cursor-pointer active:scale-[0.99]"
+              className="flex items-center gap-3.5 rounded-2xl bg-forest-700/70 border border-white/10 p-3 shadow-sm hover:bg-forest-700 hover:border-white/20 cursor-pointer active:scale-[0.98] transition-transform duration-150"
             >
-              <img
-                src={getImageUrl(place.image)}
+              <SafeImage
+                src={place.image}
                 alt={place.name}
-                onError={handleImageError}
                 className="h-16 w-16 rounded-xl object-cover shrink-0"
               />
               <div className="flex-1 min-w-0">
@@ -223,13 +219,13 @@ function SavedActivitiesPage({
   // 6. SUB-VIEW: DAFTAR TEMPAT WISATA "FAVORIT" (LIST VIEW SEBELUM KE DETAIL)
   if (activeFolderView === 'favorites') {
     return (
-      <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overflow-y-auto">
+      <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
         <div className="flex items-center gap-3 pb-4 border-b border-white/10">
           <button
             type="button"
             id="btn-back-favorites-list"
             onClick={() => setActiveFolderView(null)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition text-white cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-[0.98] transition-transform duration-150 text-white cursor-pointer"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
@@ -259,9 +255,9 @@ function SavedActivitiesPage({
               <div
                 key={place.id}
                 onClick={() => onSelectPlace && onSelectPlace(place.slug)}
-                className="flex items-center gap-3.5 rounded-2xl bg-forest-700/70 border border-white/10 p-3 shadow-md hover:bg-forest-700 hover:border-white/20 transition cursor-pointer active:scale-[0.99]"
+                className="flex items-center gap-3.5 rounded-2xl bg-forest-700/70 border border-white/10 p-3 shadow-sm hover:bg-forest-700 hover:border-white/20 cursor-pointer active:scale-[0.98] transition-transform duration-150"
               >
-                <img
+                <SafeImage
                   src={place.image}
                   alt={place.name}
                   className="h-16 w-16 rounded-xl object-cover shrink-0"
@@ -293,7 +289,7 @@ function SavedActivitiesPage({
 
   // TAMPILAN UTAMA: GRID FOLDERS (Terakhir dilihat, Rute custom, Favorit)
   return (
-    <div className="relative h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overflow-y-auto">
+    <div className="relative h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-[22px] font-bold tracking-tight text-white">
@@ -363,10 +359,10 @@ function SavedActivitiesPage({
             className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 text-white/90 transition hover:bg-white/10 active:scale-95 cursor-pointer overflow-hidden"
           >
             {isLoggedIn ? (
-              <img
-                src={getImageUrl(currentUser?.avatar, DEFAULT_AVATAR_PLACEHOLDER)}
+              <SafeImage
+                src={currentUser?.avatar}
+                fallback={DEFAULT_AVATAR_PLACEHOLDER}
                 alt={currentUser?.name || 'Avatar'}
-                onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
                 className="h-full w-full rounded-full object-cover"
               />
             ) : (
@@ -488,16 +484,15 @@ function SavedActivitiesPage({
           id="folder-terakhir-dilihat"
           onClick={() => setActiveFolderView('recent')}
           onKeyDown={(e) => e.key === 'Enter' && setActiveFolderView('recent')}
-          className="group flex flex-col text-left cursor-pointer focus-visible:outline-none"
+          className="group flex flex-col text-left cursor-pointer active:scale-[0.98] transition-transform duration-150 focus-visible:outline-none"
         >
           <div className="aspect-square w-full rounded-2xl bg-white/5 border border-white/10 p-2 grid grid-cols-2 gap-1.5 transition-transform duration-200 group-hover:scale-[1.02] shadow-sm">
             {recentPlaces.length > 0 ? (
               recentPlaces.map((rp) => (
-                <img
+                <SafeImage
                   key={rp.id}
-                  src={getImageUrl(rp.image)}
+                  src={rp.image}
                   alt={rp.name}
-                  onError={handleImageError}
                   className="h-full w-full rounded-lg object-cover"
                 />
               ))
@@ -540,7 +535,7 @@ function SavedActivitiesPage({
               }
             }
           }}
-          className="group flex flex-col text-left cursor-pointer focus-visible:outline-none"
+          className="group flex flex-col text-left cursor-pointer active:scale-[0.98] transition-transform duration-150 focus-visible:outline-none"
         >
           <div className="aspect-square w-full rounded-2xl bg-white/5 border border-white/10 p-2 grid grid-cols-2 gap-1.5 transition-transform duration-200 group-hover:scale-[1.02] group-hover:border-emerald-400/40 shadow-sm relative overflow-hidden">
             <div className="h-full w-full rounded-lg bg-white/10 flex items-center justify-center">
@@ -578,15 +573,14 @@ function SavedActivitiesPage({
           id="folder-favorit"
           onClick={() => setActiveFolderView('favorites')}
           onKeyDown={(e) => e.key === 'Enter' && setActiveFolderView('favorites')}
-          className="group flex flex-col text-left cursor-pointer focus-visible:outline-none"
+          className="group flex flex-col text-left cursor-pointer active:scale-[0.98] transition-transform duration-150 focus-visible:outline-none"
         >
           <div className="aspect-square w-full rounded-2xl bg-white/5 border border-white/10 p-2 grid grid-cols-2 gap-1.5 transition-transform duration-200 group-hover:scale-[1.02] shadow-sm">
             {favoritePlaces.slice(0, 4).map((place) => (
-              <img
+              <SafeImage
                 key={place.id}
-                src={getImageUrl(place.image)}
+                src={place.image}
                 alt={place.name}
-                onError={handleImageError}
                 className="h-full w-full rounded-lg object-cover"
               />
             ))}

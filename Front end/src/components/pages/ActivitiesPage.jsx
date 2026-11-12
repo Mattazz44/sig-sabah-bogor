@@ -1,11 +1,10 @@
 import { memo, useEffect, useState } from 'react'
 import NotificationDrawer from '../ui/NotificationDrawer'
+import SafeImage from '../ui/SafeImage'
 import { apiFetch } from '../../utils/api'
 import {
   DEFAULT_AVATAR_PLACEHOLDER,
   DEFAULT_IMAGE_PLACEHOLDER,
-  getImageUrl,
-  handleImageError,
 } from '../../utils/imageHelper'
 
 function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpenProfile }) {
@@ -218,13 +217,13 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
                 }
               }}
               aria-label="Profil pengguna"
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 overflow-hidden bg-forest-700 hover:ring-2 hover:ring-white/40 active:scale-95 transition cursor-pointer shadow-sm text-white/90"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 overflow-hidden bg-forest-700 hover:ring-2 hover:ring-white/40 active:scale-[0.98] transition-transform duration-150 cursor-pointer shadow-sm text-white/90"
             >
               {isLoggedIn ? (
-                <img
-                  src={getImageUrl(currentUser?.avatar, DEFAULT_AVATAR_PLACEHOLDER)}
+                <SafeImage
+                  src={currentUser?.avatar}
+                  fallback={DEFAULT_AVATAR_PLACEHOLDER}
                   alt={currentUser?.name || 'Profil pengguna'}
-                  onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -291,7 +290,7 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
       <section
         id="feed-list-container"
         aria-label="Daftar post aktivitas"
-        className="flex-1 overflow-y-auto px-5 pt-4 pb-28 overscroll-contain"
+        className="flex-1 overflow-y-auto px-5 pt-4 pb-28 overscroll-contain overscroll-y-contain will-change-transform transform-gpu"
       >
         {subTab === 'Kamu' && !isLoggedIn ? (
           /* Empty State Tab Kamu jika Pengguna Belum Login */
@@ -354,15 +353,16 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
                         }
                       }}
                       onKeyDown={(e) => e.key === 'Enter' && onOpenProfile && onOpenProfile('self')}
-                      className="flex items-center gap-3 mb-2.5 cursor-pointer hover:opacity-90 transition active:scale-[0.99] w-fit"
+                      className="flex items-center gap-3 mb-2.5 cursor-pointer hover:opacity-90 active:scale-[0.98] transition-transform duration-150 w-fit"
                       title={`Lihat profil ${post.userName}`}
                     >
-                      <img
-                        src={getImageUrl(post.userAvatar, DEFAULT_AVATAR_PLACEHOLDER)}
+                      <SafeImage
+                        src={post.userAvatar}
+                        fallback={DEFAULT_AVATAR_PLACEHOLDER}
                         alt={post.userName}
-                        onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
-                        className="h-9 w-9 rounded-full object-cover border border-white/20 shadow-sm"
+                        className="h-9 w-9 shrink-0 rounded-full object-cover border border-white/20 shadow-sm"
                         loading="lazy"
+                        decoding="async"
                       />
                       <div className="flex flex-col justify-center">
                         <span className="text-[13px] font-semibold text-white leading-tight hover:underline flex items-center gap-1.5">
@@ -380,13 +380,14 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
                     </div>
 
                     {/* Gambar Utama Tempat Wisata */}
-                    <div className="relative w-full aspect-[16/10] overflow-hidden rounded-[20px] bg-black/20 shadow-md border border-white/10">
-                      <img
-                        src={getImageUrl(post.image, DEFAULT_IMAGE_PLACEHOLDER)}
+                    <div className="relative w-full aspect-[16/10] overflow-hidden rounded-[20px] bg-black/20 shadow-sm border border-white/10 active:scale-[0.98] transition-transform duration-150">
+                      <SafeImage
+                        src={post.image}
+                        fallback={DEFAULT_IMAGE_PLACEHOLDER}
                         alt={post.title}
-                        onError={handleImageError}
                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                         loading="lazy"
+                        decoding="async"
                       />
                     </div>
 

@@ -1,5 +1,5 @@
 import { Popup } from 'react-leaflet'
-import { getImageUrl, handleImageError } from '../../utils/imageHelper'
+import SafeImage from '../ui/SafeImage'
 
 export default function MapPopup({ place, onSelect, isTransit = false }) {
   if (!place) return null
@@ -13,15 +13,15 @@ export default function MapPopup({ place, onSelect, isTransit = false }) {
         tabIndex={0}
         onClick={() => onSelect && onSelect(place)}
         onKeyDown={(e) => e.key === 'Enter' && onSelect && onSelect(place)}
-        className="w-[220px] cursor-pointer text-left focus:outline-none"
+        className="w-[220px] cursor-pointer text-left active:scale-[0.98] transition-transform duration-150 focus:outline-none"
       >
         <div className="relative">
-          <img
-            src={getImageUrl(place.image)}
+          <SafeImage
+            src={place.image}
             alt={place.name}
-            onError={handleImageError}
             className="h-[100px] w-full object-cover"
             loading="lazy"
+            decoding="async"
           />
           {/* 1. BADGE LOKASI TRANSIT PADA MULTI-ROUTE */}
           {isTransit && (

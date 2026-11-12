@@ -8,23 +8,19 @@ export const DEFAULT_AVATAR_PLACEHOLDER =
 /**
  * Mengonversi path gambar dari API Backend menjadi URL lengkap.
  * - Jika imagePath kosong atau null -> kembalikan DEFAULT_IMAGE_PLACEHOLDER.
- * - Jika imagePath sudah diawali http://, https://, data:, atau blob: -> kembalikan langsung.
- * - Jika imagePath berupa path relatif dari backend (misal: /uploads/foto.jpg atau /images/foto.jpg) ->
- *   gabungkan dengan import.meta.env.VITE_API_BASE_URL.
+ * - Jika imagePath berupa data: atau blob: -> kembalikan langsung.
+ * - Jika imagePath masih mengandung http://localhost:8000 atau http://127.0.0.1:8000 ->
+ *   ganti domain tersebut dengan import.meta.env.VITE_API_BASE_URL.
+ * - Jika imagePath berupa path relatif dari backend -> gabungkan dengan VITE_API_BASE_URL.
  */
 export function getImageUrl(imagePath, fallback = DEFAULT_IMAGE_PLACEHOLDER) {
   if (!imagePath || typeof imagePath !== 'string' || !imagePath.trim()) {
     return fallback
   }
 
-  const trimmed = imagePath.trim()
+  let trimmed = imagePath.trim()
 
-  if (
-    trimmed.startsWith('http://') ||
-    trimmed.startsWith('https://') ||
-    trimmed.startsWith('data:') ||
-    trimmed.startsWith('blob:')
-  ) {
+  if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
     return trimmed
   }
 
@@ -32,8 +28,15 @@ export function getImageUrl(imagePath, fallback = DEFAULT_IMAGE_PLACEHOLDER) {
     /\/+$/,
     '',
   )
-  const normalizedPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
 
+  // Ganti domain localhost/127.0.0.1 bawaan Laravel jika diakses lewat ngrok / server lain
+  trimmed = trimmed.replace(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i, baseUrl)
+
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed
+  }
+
+  const normalizedPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
   return `${baseUrl}${normalizedPath}`
 }
 
@@ -49,4 +52,3 @@ export function handleImageError(e, fallback = DEFAULT_IMAGE_PLACEHOLDER) {
     target.src = fallback
   }
 }
-

@@ -37,11 +37,10 @@ export default function CategoryFilter({ active, onChange }) {
               aria-selected={isActive}
               id={`filter-${cat.toLowerCase().replace(/[^a-z]+/g, '-')}`}
               onClick={() => onChange(cat)}
-              className={`h-7 shrink-0 cursor-pointer whitespace-nowrap rounded-full px-4 text-[12px] font-semibold transition-all shadow-sm ${
-                isActive
-                  ? 'bg-forest-700 text-white ring-1 ring-white/40'
-                  : 'bg-white text-forest-900 hover:bg-white/90 active:scale-95'
-              }`}
+              className={`h-7 shrink-0 cursor-pointer whitespace-nowrap rounded-full px-4 text-[12px] font-semibold transition-all shadow-sm ${isActive
+                ? 'bg-forest-700 text-white ring-1 ring-white/40'
+                : 'bg-white text-forest-900 hover:bg-white/90 active:scale-95'
+                }`}
             >
               {cat}
             </button>

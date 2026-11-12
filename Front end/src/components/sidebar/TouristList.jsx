@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import SearchBar from '../ui/SearchBar'
 import CategoryFilter from '../ui/CategoryFilter'
 import TouristCard from './TouristCard'
-import { getImageUrl, handleImageError } from '../../utils/imageHelper'
+import SafeImage from '../ui/SafeImage'
 
 export default function TouristList({
   places,
@@ -37,12 +37,11 @@ export default function TouristList({
           <button
             type="button"
             onClick={() => onSelect(popularSpot.slug)}
-            className="mt-2.5 flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-white/5 p-2 text-left transition hover:bg-white/10"
+            className="mt-2.5 flex w-full cursor-pointer items-center gap-3 rounded-2xl bg-white/5 p-2 text-left active:scale-[0.98] transition-transform duration-150 hover:bg-white/10"
           >
-            <img
-              src={getImageUrl(popularSpot.image)}
+            <SafeImage
+              src={popularSpot.image}
               alt={popularSpot.name}
-              onError={handleImageError}
               className="h-14 w-14 shrink-0 rounded-xl object-cover"
             />
             <div className="min-w-0 flex-1">

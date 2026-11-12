@@ -1,11 +1,8 @@
 import { memo, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiFetch } from '../../utils/api'
-import {
-  DEFAULT_AVATAR_PLACEHOLDER,
-  getImageUrl,
-  handleImageError,
-} from '../../utils/imageHelper'
+import SafeImage from '../ui/SafeImage'
+import { DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageHelper'
 
 function ForYouPage({
   tourists = [],
@@ -111,12 +108,11 @@ function ForYouPage({
         <button
           type="button"
           onClick={() => handleCardClick(item.slug)}
-          className="flex flex-1 cursor-pointer items-center gap-3.5 text-left focus-visible:outline-none"
+          className="flex flex-1 cursor-pointer items-center gap-3.5 text-left active:scale-[0.98] transition-transform duration-150 focus-visible:outline-none"
         >
-          <img
-            src={getImageUrl(item.image)}
+          <SafeImage
+            src={item.image}
             alt={item.name}
-            onError={handleImageError}
             className="h-16 w-16 shrink-0 rounded-2xl object-cover shadow-sm transition group-hover:scale-105"
           />
           <div className="min-w-0 flex-1">
@@ -135,11 +131,10 @@ function ForYouPage({
           type="button"
           aria-label={`Favoritkan ${item.name}`}
           onClick={() => toggleFavorite && toggleFavorite(item.slug)}
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition ${
-            favoriteActive
-              ? 'text-rose-400 hover:text-rose-300'
-              : 'text-white/65 hover:text-white hover:bg-white/10'
-          }`}
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition ${favoriteActive
+            ? 'text-rose-400 hover:text-rose-300'
+            : 'text-white/65 hover:text-white hover:bg-white/10'
+            }`}
         >
           <svg
             width="20"
@@ -159,7 +154,7 @@ function ForYouPage({
   }
 
   return (
-    <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overflow-y-auto">
+    <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-[24px] font-bold tracking-tight text-white">Untuk Kamu</h1>
@@ -173,13 +168,13 @@ function ForYouPage({
             }
           }}
           aria-label="Profil pengguna"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white/90 transition hover:bg-white/10 active:scale-95 cursor-pointer overflow-hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white/90 active:scale-[0.98] transition-transform duration-150 hover:bg-white/10 cursor-pointer overflow-hidden"
         >
           {isLoggedIn ? (
-            <img
-              src={getImageUrl(currentUser?.avatar, DEFAULT_AVATAR_PLACEHOLDER)}
+            <SafeImage
+              src={currentUser?.avatar}
+              fallback={DEFAULT_AVATAR_PLACEHOLDER}
               alt={currentUser?.name || 'Avatar'}
-              onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
               className="h-full w-full object-cover"
             />
           ) : (

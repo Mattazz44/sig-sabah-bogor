@@ -1,8 +1,8 @@
 import { memo, useCallback, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AdminLocationPickerMap from '../map/AdminLocationPickerMap'
+import SafeImage from '../ui/SafeImage'
 import { useAdminLocations } from '../../hooks/useAdminLocations'
-import { getImageUrl, handleImageError } from '../../utils/imageHelper'
 
 const CATEGORY_OPTIONS = [
   { value: 'Alam & Curug', label: 'Alam' },
@@ -141,11 +141,10 @@ function AdminPage() {
             type="button"
             id="tab-tambah-lokasi"
             onClick={() => setActiveTab('tambah')}
-            className={`relative pb-2.5 text-[13px] transition cursor-pointer ${
-              activeTab === 'tambah'
-                ? 'font-semibold text-white'
-                : 'font-normal text-white/50 hover:text-white/80'
-            }`}
+            className={`relative pb-2.5 text-[13px] transition cursor-pointer ${activeTab === 'tambah'
+              ? 'font-semibold text-white'
+              : 'font-normal text-white/50 hover:text-white/80'
+              }`}
           >
             <span>Tambah lokasi</span>
             {activeTab === 'tambah' && (
@@ -157,11 +156,10 @@ function AdminPage() {
             type="button"
             id="tab-daftar-lokasi"
             onClick={() => setActiveTab('daftar')}
-            className={`relative pb-2.5 text-[13px] transition cursor-pointer ${
-              activeTab === 'daftar'
-                ? 'font-semibold text-white'
-                : 'font-normal text-white/50 hover:text-white/80'
-            }`}
+            className={`relative pb-2.5 text-[13px] transition cursor-pointer ${activeTab === 'daftar'
+              ? 'font-semibold text-white'
+              : 'font-normal text-white/50 hover:text-white/80'
+              }`}
           >
             <span>Daftar ({locations.length})</span>
             {activeTab === 'daftar' && (
@@ -433,11 +431,10 @@ function AdminPage() {
                 }}
                 onDragLeave={() => setIsDraggingPhoto(false)}
                 onDrop={handleDropPhoto}
-                className={`relative flex h-44 w-full items-center justify-center overflow-hidden rounded-xl border transition cursor-pointer ${
-                  isDraggingPhoto
-                    ? 'border-amber-300/60 bg-[#3f5237]'
-                    : 'border-white/10 bg-[#384931] hover:bg-[#3e5036]'
-                }`}
+                className={`relative flex h-44 w-full items-center justify-center overflow-hidden rounded-xl border transition cursor-pointer ${isDraggingPhoto
+                  ? 'border-amber-300/60 bg-[#3f5237]'
+                  : 'border-white/10 bg-[#384931] hover:bg-[#3e5036]'
+                  }`}
               >
                 {/* Crosshair subtle divider lines like mockup */}
                 <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-white/5" />
@@ -511,10 +508,9 @@ function AdminPage() {
                       className="flex items-center justify-between gap-3 rounded-xl bg-[#384931] border border-white/10 p-3.5"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <img
-                          src={getImageUrl(loc.image)}
+                        <SafeImage
+                          src={loc.image}
                           alt={loc.name}
-                          onError={handleImageError}
                           className="h-12 w-12 shrink-0 rounded-lg object-cover bg-black/20"
                         />
                         <div className="min-w-0">

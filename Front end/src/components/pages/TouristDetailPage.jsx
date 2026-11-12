@@ -1,5 +1,5 @@
 import { memo, useState } from 'react'
-import { getImageUrl, handleImageError } from '../../utils/imageHelper'
+import SafeImage from '../ui/SafeImage'
 
 function TouristDetailPage({
   place,
@@ -61,14 +61,15 @@ function TouristDetailPage({
   return (
     <div
       id="tourist-detail-page"
-      className="relative h-full w-full max-w-md mx-auto bg-forest-900 text-white overflow-y-auto overscroll-contain pb-32"
+      className="relative h-full w-full max-w-md mx-auto bg-forest-900 text-white overflow-y-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu pb-32"
     >
       {/* 1. Hero Section (Atas) with Full-Width Background Photo */}
       <section className="relative h-[340px] w-full shrink-0 overflow-hidden">
-        <img
-          src={getImageUrl(place.image)}
+        <SafeImage
+          src={place.image}
           alt={place.name}
-          onError={handleImageError}
+          loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover"
         />
 
@@ -134,9 +135,8 @@ function TouristDetailPage({
               id="detail-favorite-button"
               aria-label={favoriteActive ? 'Hapus dari favorit' : 'Tambah ke favorit'}
               onClick={() => toggleFavorite && toggleFavorite(place.slug)}
-              className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black/35 backdrop-blur-md transition hover:bg-black/55 active:scale-95 ${
-                favoriteActive ? 'text-rose-400' : 'text-white'
-              }`}
+              className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black/35 backdrop-blur-md transition hover:bg-black/55 active:scale-95 ${favoriteActive ? 'text-rose-400' : 'text-white'
+                }`}
             >
               <svg
                 width="20"
@@ -227,35 +227,35 @@ function TouristDetailPage({
         {/* Aesthetic Staggered Photo Collage Matching Figma */}
         <div className="relative mt-3.5 pb-2">
           {/* Foto 1: Kiri Atas */}
-          <div className="w-[56%] overflow-hidden rounded-[26px] shadow-md border border-white/10 transition-transform duration-200 hover:scale-[1.02]">
-            <img
-              src={getImageUrl(galleryImages[0])}
+          <div className="w-[56%] overflow-hidden rounded-[26px] shadow-sm border border-white/10 transition-transform duration-200 hover:scale-[1.02]">
+            <SafeImage
+              src={galleryImages[0]}
               alt={`${place.name} foto 1`}
-              onError={handleImageError}
               className="aspect-[4/3] w-full object-cover"
               loading="lazy"
+              decoding="async"
             />
           </div>
 
           {/* Foto 2: Kanan Tengah (Staggered Offset) */}
-          <div className="-mt-16 ml-auto w-[56%] overflow-hidden rounded-[26px] shadow-lg border border-white/10 transition-transform duration-200 hover:scale-[1.02]">
-            <img
-              src={getImageUrl(galleryImages[1])}
+          <div className="-mt-16 ml-auto w-[56%] overflow-hidden rounded-[26px] shadow-md border border-white/10 transition-transform duration-200 hover:scale-[1.02]">
+            <SafeImage
+              src={galleryImages[1]}
               alt={`${place.name} foto 2`}
-              onError={handleImageError}
               className="aspect-[4/3] w-full object-cover"
               loading="lazy"
+              decoding="async"
             />
           </div>
 
           {/* Foto 3: Kiri Bawah */}
-          <div className="-mt-14 w-[56%] overflow-hidden rounded-[26px] shadow-md border border-white/10 transition-transform duration-200 hover:scale-[1.02]">
-            <img
-              src={getImageUrl(galleryImages[2])}
+          <div className="-mt-14 w-[56%] overflow-hidden rounded-[26px] shadow-sm border border-white/10 transition-transform duration-200 hover:scale-[1.02]">
+            <SafeImage
+              src={galleryImages[2]}
               alt={`${place.name} foto 3`}
-              onError={handleImageError}
               className="aspect-[4/3] w-full object-cover"
               loading="lazy"
+              decoding="async"
             />
           </div>
         </div>
@@ -267,7 +267,7 @@ function TouristDetailPage({
           type="button"
           id="btn-mulai-perjalanan"
           onClick={handleStartJourney}
-          className="pointer-events-auto flex items-center gap-2 rounded-full bg-[#7a6649] px-6 py-2.5 text-[13px] font-semibold text-white shadow-[0_6px_24px_rgba(0,0,0,0.45)] transition hover:bg-[#887353] active:scale-95 cursor-pointer border border-white/15"
+          className="pointer-events-auto flex items-center gap-2 rounded-full bg-[#7a6649] px-6 py-2.5 text-[13px] font-semibold text-white shadow-md active:scale-[0.98] transition-transform duration-150 hover:bg-[#887353] cursor-pointer border border-white/15"
         >
           {/* Compass / Paper Airplane Navigation Icon */}
           <svg

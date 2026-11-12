@@ -1,9 +1,8 @@
 import { memo, useState } from 'react'
+import SafeImage from '../ui/SafeImage'
 import {
   DEFAULT_AVATAR_PLACEHOLDER,
   DEFAULT_IMAGE_PLACEHOLDER,
-  getImageUrl,
-  handleImageError,
 } from '../../utils/imageHelper'
 
 function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCustomRoute }) {
@@ -12,7 +11,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
 
   // Data profil
   const profileName = isSelf ? (user?.name || 'Ambalingham') : user?.name || 'Kirk hasibuan'
-  const profileAvatar = getImageUrl(user?.avatar, DEFAULT_AVATAR_PLACEHOLDER)
+  const profileAvatar = user?.avatar
   const profileEmail = isSelf ? (user?.email || 'ambalingham@gmail.com') : null // Tanpa email jika profil orang lain
 
   // Destinasi sampel untuk Rute Saya
@@ -20,7 +19,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
   const museumPeta = tourists.find((t) => t.slug === 'museum-peta')
 
   return (
-    <div className="relative h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overflow-y-auto">
+    <div className="relative h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
       {/* Top Bar Header */}
       <div className="flex items-center justify-between">
         <button
@@ -82,13 +81,13 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
       <div className="mt-6 flex flex-col items-center text-center">
         {/* Foto Profil Besar */}
         <div className="relative">
-          <img
+          <SafeImage
             src={profileAvatar}
+            fallback={DEFAULT_AVATAR_PLACEHOLDER}
             alt={profileName}
-            onError={(e) => handleImageError(e, DEFAULT_AVATAR_PLACEHOLDER)}
-            className="h-24 w-24 rounded-full object-cover border-4 border-emerald-500/40 shadow-xl"
+            className="h-24 w-24 rounded-full object-cover border-4 border-emerald-500/40 shadow-md"
           />
-          <span className="absolute bottom-1 right-1 flex h-4 w-4 rounded-full bg-emerald-400 border-2 border-forest-900" />
+          <span className="absolute bottom-1 right-1 z-[2] flex h-4 w-4 rounded-full bg-emerald-400 border-2 border-forest-900" />
         </div>
 
         {/* Nama Pengguna */}
@@ -252,12 +251,12 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
             <h3 className="text-[14px] font-bold text-white tracking-tight mb-3">
               Aktivitas Terkini {profileName}
             </h3>
-            <article className="flex flex-col rounded-2xl bg-forest-700/70 border border-white/10 p-3 shadow overflow-hidden">
+            <article className="flex flex-col rounded-2xl bg-forest-700/70 border border-white/10 p-3 shadow-sm overflow-hidden active:scale-[0.98] transition-transform duration-150">
               <div className="aspect-[16/10] w-full rounded-xl overflow-hidden bg-black/20">
-                <img
-                  src={getImageUrl(user?.recentActivityImage, DEFAULT_IMAGE_PLACEHOLDER)}
+                <SafeImage
+                  src={user?.recentActivityImage}
+                  fallback={DEFAULT_IMAGE_PLACEHOLDER}
                   alt="Curug Cikuluwung"
-                  onError={handleImageError}
                   className="h-full w-full object-cover"
                 />
               </div>

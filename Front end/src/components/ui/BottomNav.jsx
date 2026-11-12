@@ -66,7 +66,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
     <nav
       id="bottom-navigation"
       aria-label="Navigasi utama"
-      className="fixed inset-x-0 bottom-0 z-[600] w-full bg-forest-700 shadow-[0_-4px_20px_rgba(0,0,0,0.3)] border-t border-white/10"
+      className="fixed inset-x-0 bottom-0 z-[600] w-full bg-forest-700 shadow-md border-t border-white/10 transform-gpu"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       <ul className="mx-auto flex h-[60px] max-w-[480px] items-center justify-around px-2">
@@ -83,7 +83,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
                 type="button"
                 onClick={() => handleItemClick(item.label)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`group flex w-full cursor-pointer flex-col items-center justify-center py-1 transition-all ${
+                className={`group flex w-full cursor-pointer flex-col items-center justify-center py-1 active:scale-[0.98] transition-transform duration-150 ${
                   isActive ? 'opacity-100 font-bold' : 'opacity-65 hover:opacity-95 font-normal'
                 }`}
               >

@@ -1,37 +1,37 @@
 import { memo } from 'react'
-import { getImageUrl, handleImageError } from '../../utils/imageHelper'
+import SafeImage from '../ui/SafeImage'
 
 function TouristCard({ place, onSelect }) {
   const displayLocation = place.address.toLowerCase().includes('bogor barat')
     ? 'Bogor, jawa barat'
     : place.address.toLowerCase().includes('kabupaten')
-    ? 'Bogor, jawa barat'
-    : 'Bogor, jawa barat'
+      ? 'Bogor, jawa barat'
+      : 'Bogor, jawa barat'
 
   return (
     <button
       type="button"
       id={`card-${place.slug}`}
       onClick={() => onSelect(place.slug)}
-      className="group block w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+      className="group block w-full cursor-pointer text-left active:scale-[0.98] transition-transform duration-150 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
     >
-      <div className="relative overflow-hidden rounded-[22px]">
-        <img
-          src={getImageUrl(place.image)}
+      <div className="relative overflow-hidden rounded-[22px] shadow-sm">
+        <SafeImage
+          src={place.image}
           alt={place.name}
           loading="lazy"
-          onError={handleImageError}
+          decoding="async"
           className="aspect-[16/10] w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
         {/* Floating action buttons on top-right: Share and Save/Heart */}
         <div
-          className="absolute top-3 right-3 flex items-center gap-2"
+          className="absolute top-3 right-3 z-[2] flex items-center gap-2"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             type="button"
             aria-label={`Bagikan ${place.name}`}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/55"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white active:scale-[0.98] transition-transform duration-150 hover:bg-black/60"
           >
             <svg
               width="15"
@@ -53,7 +53,7 @@ function TouristCard({ place, onSelect }) {
           <button
             type="button"
             aria-label={`Simpan ${place.name}`}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/55"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white active:scale-[0.98] transition-transform duration-150 hover:bg-black/60"
           >
             <svg
               width="15"
