@@ -5,50 +5,139 @@ export const DEFAULT_IMAGE_PLACEHOLDER =
 export const DEFAULT_AVATAR_PLACEHOLDER =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='60' fill='%23384931'/%3E%3Ccircle cx='60' cy='45' r='20' fill='%23687d50'/%3E%3Cpath d='M25 105c5-22 22-32 35-32s30 10 35 32' fill='%23687d50'/%3E%3C/svg%3E"
 
+// Cache penyimpanan blob URL gambar yang sudah berhasil di-fetch via header ngrok
+const ngrokBlobCache = new Map()
+const ngrokPendingFetches = new Map()
+
 /**
  * Mengonversi path gambar dari API Backend menjadi URL lengkap.
  * - Jika imagePath kosong atau null -> kembalikan DEFAULT_IMAGE_PLACEHOLDER.
- * - Jika imagePath berupa data: atau blob: -> kembalikan langsung.
+ * - Jika sudah ada di cache blob -> kembalikan blob URL dari memori.
  * - Jika imagePath masih mengandung http://localhost:8000 atau http://127.0.0.1:8000 ->
  *   ganti domain tersebut dengan import.meta.env.VITE_API_BASE_URL.
- * - Jika imagePath berupa path relatif dari backend -> gabungkan dengan VITE_API_BASE_URL.
+ * - Jika imagePath berupa path relatif (misal: /images/taman.jpg) ->
+ *   gabungkan dengan baseUrl yang bersih dari spasi dan trailing slash.
  */
 export function getImageUrl(imagePath, fallback = DEFAULT_IMAGE_PLACEHOLDER) {
-  if (!imagePath || typeof imagePath !== 'string' || !imagePath.trim()) {
+  if (!imagePath || typeof imagePath !== 'string') {
     return fallback
   }
 
   let trimmed = imagePath.trim()
+  if (!trimmed) {
+    return fallback
+  }
+
+  if (ngrokBlobCache.has(trimmed)) {
+    return ngrokBlobCache.get(trimmed)
+  }
 
   if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
     return trimmed
   }
 
-  const baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(
-    /\/+$/,
-    '',
-  )
+  // Bersihkan baseUrl dari spasi (whitespace) dan trailing slash
+  const rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').trim()
+  const baseUrl = rawBase.replace(/\/+$/, '')
 
   // Ganti domain localhost/127.0.0.1 bawaan Laravel jika diakses lewat ngrok / server lain
   trimmed = trimmed.replace(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i, baseUrl)
 
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    if (ngrokBlobCache.has(trimmed)) {
+      return ngrokBlobCache.get(trimmed)
+    }
     return trimmed
   }
 
   const normalizedPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
-  return `${baseUrl}${normalizedPath}`
+  const fullUrl = `${baseUrl}${normalizedPath}`
+
+  if (ngrokBlobCache.has(fullUrl)) {
+    return ngrokBlobCache.get(fullUrl)
+  }
+
+  return fullUrl
 }
 
 /**
- * Event handler onError pada elemen <img> agar otomatis mengganti src ke placeholder
- * jika gambar dari server Backend gagal dimuat (404 / network error).
+ * Event handler onError pada elemen <img>:
+ * 1. Jika tag <img> gagal karena pencegatan halaman HTML ngrok, otomatis lakukan fetch()
+ *    ke endpoint /api/media/{filename} dengan header 'ngrok-skip-browser-warning: true',
+ *    ubah menjadi Blob URL, dan pasang ke elemen <img>!
+ * 2. Jika tetap gagal (404 / offline), baru ganti ke SVG placeholder.
  */
 export function handleImageError(e, fallback = DEFAULT_IMAGE_PLACEHOLDER) {
   const target = e?.currentTarget
   if (!target) return
-  if (target.src !== fallback) {
+
+  const failedSrc = target.src || ''
+
+  // Cegah loop jika sudah mencoba fetch blob atau sudah di fallback
+  if (
+    failedSrc === fallback ||
+    failedSrc.startsWith('data:') ||
+    failedSrc.startsWith('blob:') ||
+    target.dataset.retriedNgrok === 'true'
+  ) {
     target.onerror = null
     target.src = fallback
+    return
   }
+
+  target.dataset.retriedNgrok = 'true'
+
+  // Jika sudah ada di cache blob, langsung pakai
+  if (ngrokBlobCache.has(failedSrc)) {
+    target.src = ngrokBlobCache.get(failedSrc)
+    return
+  }
+
+  // Bangun URL endpoint /api/media/{filename} yang dilengkapi CORS penuh di Laravel
+  const rawBase = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '')
+  const fileName = failedSrc.split('/').pop()?.split('?')[0]
+
+  if (!fileName) {
+    target.onerror = null
+    target.src = fallback
+    return
+  }
+
+  const mediaApiUrl = `${rawBase}/api/media/${fileName}`
+
+  let fetchPromise = ngrokPendingFetches.get(failedSrc)
+  if (!fetchPromise) {
+    fetchPromise = fetch(mediaApiUrl, {
+      headers: {
+        'ngrok-skip-browser-warning': 'true',
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Image fetch failed: ${res.status}`)
+        return res.blob()
+      })
+      .then((blob) => {
+        // Pastikan yang diterima benar-benar image (bukan text/html dari ngrok)
+        if (blob.type && !blob.type.startsWith('image/')) {
+          throw new Error(`Invalid image MIME: ${blob.type}`)
+        }
+        const blobUrl = URL.createObjectURL(blob)
+        ngrokBlobCache.set(failedSrc, blobUrl)
+        return blobUrl
+      })
+      .finally(() => {
+        ngrokPendingFetches.delete(failedSrc)
+      })
+
+    ngrokPendingFetches.set(failedSrc, fetchPromise)
+  }
+
+  fetchPromise
+    .then((blobUrl) => {
+      target.src = blobUrl
+    })
+    .catch(() => {
+      target.onerror = null
+      target.src = fallback
+    })
 }

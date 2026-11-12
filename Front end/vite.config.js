@@ -6,20 +6,20 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        //target: 'https://doorstop-agent-mobile.ngrok-free.dev',
-        target: 'http://127.0.0.1:8000',
+        target: 'https://doorstop-agent-mobile.ngrok-free.dev',
+        //target: 'http://127.0.0.1:8000',
         changeOrigin: true,
-        // headers: {
-        //   'ngrok-skip-browser-warning': 'true',
-        // },
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        },
       },
       '/images': {
-        //target: 'https://doorstop-agent-mobile.ngrok-free.dev',
-        target: 'http://127.0.0.1:8000',
+        target: 'https://doorstop-agent-mobile.ngrok-free.dev',
+        //target: 'http://127.0.0.1:8000',
         changeOrigin: true,
-        // headers: {
-        //   'ngrok-skip-browser-warning': 'true',
-        // },
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        },
       },
     },
   },

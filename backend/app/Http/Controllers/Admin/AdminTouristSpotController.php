@@ -25,10 +25,11 @@ class AdminTouristSpotController extends Controller
         }
 
         if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'ilike', "%{$search}%")
-                  ->orWhere('address', 'ilike', "%{$search}%")
-                  ->orWhere('description', 'ilike', "%{$search}%");
+            $likeOp = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(function ($q) use ($search, $likeOp) {
+                $q->where('name', $likeOp, "%{$search}%")
+                  ->orWhere('address', $likeOp, "%{$search}%")
+                  ->orWhere('description', $likeOp, "%{$search}%");
             });
         }
 
@@ -49,7 +50,8 @@ class AdminTouristSpotController extends Controller
      */
     public function create()
     {
-        return view('admin.spots.create');
+        $totalSpots = TouristSpot::count();
+        return view('admin.spots.create', compact('totalSpots'));
     }
 
     /**
@@ -139,11 +141,8 @@ class AdminTouristSpotController extends Controller
             'gallery' => array_values(array_unique($orderedGallery)),
         ]);
 
-        // Simpan PostGIS Geometry
-        DB::statement(
-            'UPDATE tourist_spots SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326) WHERE id = ?',
-            [(float)$validated['longitude'], (float)$validated['latitude'], $spot->id]
-        );
+        // Simpan Geometry spasial (kompatibel PostgreSQL PostGIS & MySQL/MariaDB)
+        $this->updateSpatialPoint($spot->id, (float) $validated['longitude'], (float) $validated['latitude']);
 
         return redirect()->route('admin.spots.index')->with('success', "Tempat wisata '{$spot->name}' berhasil ditambahkan ke database!");
     }
@@ -154,7 +153,8 @@ class AdminTouristSpotController extends Controller
     public function edit($id)
     {
         $spot = TouristSpot::findOrFail($id);
-        return view('admin.spots.edit', compact('spot'));
+        $totalSpots = TouristSpot::count();
+        return view('admin.spots.edit', compact('spot', 'totalSpots'));
     }
 
     /**
@@ -231,11 +231,8 @@ class AdminTouristSpotController extends Controller
             'gallery' => $orderedGallery,
         ]);
 
-        // Update PostGIS Point
-        DB::statement(
-            'UPDATE tourist_spots SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326) WHERE id = ?',
-            [(float)$validated['longitude'], (float)$validated['latitude'], $spot->id]
-        );
+        // Update Geometry spasial (kompatibel PostgreSQL PostGIS & MySQL/MariaDB)
+        $this->updateSpatialPoint($spot->id, (float) $validated['longitude'], (float) $validated['latitude']);
 
         return redirect()->route('admin.spots.index')->with('success', "Tempat wisata '{$spot->name}' berhasil diperbarui!");
     }
@@ -250,5 +247,24 @@ class AdminTouristSpotController extends Controller
         $spot->delete();
 
         return redirect()->route('admin.spots.index')->with('success', "Tempat wisata '{$name}' telah dihapus.");
+    }
+
+    /**
+     * Update kolom spasial geom sesuai driver database (PostGIS / MySQL).
+     */
+    private function updateSpatialPoint(int $spotId, float $lon, float $lat): void
+    {
+        $driver = DB::getDriverName();
+        if ($driver === 'pgsql') {
+            DB::statement(
+                'UPDATE tourist_spots SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326) WHERE id = ?',
+                [$lon, $lat, $spotId]
+            );
+        } elseif ($driver === 'mysql') {
+            DB::statement(
+                'UPDATE tourist_spots SET geom = POINT(?, ?) WHERE id = ?',
+                [$lon, $lat, $spotId]
+            );
+        }
     }
 }

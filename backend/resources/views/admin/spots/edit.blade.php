@@ -1,217 +1,391 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Tempat Wisata: ' . $spot->name)
+@section('title', 'Edit Lokasi: ' . $spot->name)
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+@php
+    $inputClass = 'w-full rounded-lg bg-[#384931] border border-white/10 px-3.5 py-2.5 text-[13px] text-white placeholder-white/35 focus:outline-none focus:border-white/30 transition';
+    $labelClass = 'block text-[11px] font-medium text-white/60 mb-1.5';
 
-    <!-- Header Breadcrumb & Back -->
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <a href="{{ route('admin.spots.index') }}" class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white transition">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </a>
-            <div>
-                <h1 class="text-xl font-bold text-white tracking-tight">Edit Tempat Wisata: {{ $spot->name }}</h1>
-                <p class="text-xs text-white/60">Perbarui data spasial & kelola urutan foto galeri tempat wisata</p>
-            </div>
-        </div>
-    </div>
+    $rawHours = $spot->operational_hours ?: '08:00-17:00';
+    $openVal = '08:00';
+    $closeVal = '17:00';
+    $dayVal = 'Setiap hari';
+    if (str_contains($rawHours, ',')) {
+        [$dayPart, $timePart] = array_map('trim', explode(',', $rawHours, 2));
+        $dayVal = $dayPart ?: 'Setiap hari';
+        $rawHours = $timePart;
+    }
+    if (preg_match('/(\d{2}[:.]\d{2})\s*[-–]\s*(\d{2}[:.]\d{2})/', $rawHours, $m)) {
+        $openVal = str_replace('.', ':', $m[1]);
+        $closeVal = str_replace('.', ':', $m[2]);
+    }
+@endphp
 
-    <!-- Form Container -->
-    <form id="spot-form" action="{{ route('admin.spots.update', $spot->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-        @csrf
-        @method('PUT')
+<form id="spot-form" action="{{ route('admin.spots.update', $spot->id) }}" method="POST" enctype="multipart/form-data" class="mt-6 space-y-7" novalidate>
+    @csrf
+    @method('PUT')
+    <input type="hidden" name="photo_order" id="photo_order" value="[]">
+    <input type="hidden" name="operational_hours" id="input-operational-hours" value="{{ old('operational_hours', $spot->operational_hours) }}">
 
-        <!-- Hidden input untuk Urutan Foto Hasil Drag & Drop -->
-        <input type="hidden" name="photo_order" id="photo_order" value="[]">
-
-        <!-- Informasi Utama -->
-        <div class="rounded-2xl bg-forest-900/90 border border-white/10 p-5 sm:p-6 shadow-xl space-y-4">
-            <h2 class="text-sm font-bold text-white uppercase tracking-wider text-emerald-400 flex items-center gap-2">
-                <span>📝</span> Informasi Utama
+    <!-- 1. Bagian Informasi -->
+    <section class="space-y-3.5">
+        <div class="flex items-center justify-between">
+            <h2 class="text-[12px] font-bold tracking-wide text-white">
+                Informasi
             </h2>
+            <a href="{{ route('admin.spots.index') }}" class="text-[11px] text-white/55 hover:text-white transition">
+                ← Kembali ke daftar
+            </a>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Nama Tempat -->
-                <div>
-                    <label class="block text-xs font-semibold text-white/80 mb-1.5">Nama Tempat Wisata <span class="text-rose-400">*</span></label>
-                    <input type="text" name="name" value="{{ old('name', $spot->name) }}" required
-                           class="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3.5 py-2 text-xs text-white placeholder-white/40 focus:outline-none focus:border-emerald-400 transition">
-                </div>
+        <div>
+            <label for="admin-name" class="{{ $labelClass }}">
+                Nama tempat wisata
+            </label>
+            <input
+                id="admin-name"
+                type="text"
+                name="name"
+                value="{{ old('name', $spot->name) }}"
+                placeholder="Jbound Geo Edu Park"
+                class="{{ $inputClass }}"
+                required
+            />
+        </div>
 
-                <!-- Kategori Wisata -->
-                <div>
-                    <label class="block text-xs font-semibold text-white/80 mb-1.5">Kategori Wisata <span class="text-rose-400">*</span></label>
-                    <select name="category" required class="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3.5 py-2 text-xs text-white focus:outline-none focus:border-emerald-400 transition">
-                        <option value="Alam & Curug" {{ old('category', $spot->category) == 'Alam & Curug' ? 'selected' : '' }}>Alam & Curug</option>
-                        <option value="Kuliner" {{ old('category', $spot->category) == 'Kuliner' ? 'selected' : '' }}>Kuliner</option>
-                        <option value="Edukasi & Budaya" {{ old('category', $spot->category) == 'Edukasi & Budaya' ? 'selected' : '' }}>Edukasi & Budaya</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Jam Operasional -->
-                <div>
-                    <label class="block text-xs font-semibold text-white/80 mb-1.5">Jam Operasional</label>
-                    <input type="text" name="operational_hours" value="{{ old('operational_hours', $spot->operational_hours) }}"
-                           class="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3.5 py-2 text-xs text-white placeholder-white/40 focus:outline-none focus:border-emerald-400 transition">
-                </div>
-
-                <!-- Harga Tiket -->
-                <div>
-                    <label class="block text-xs font-semibold text-white/80 mb-1.5">Harga Tiket Masuk</label>
-                    <input type="text" name="ticket_price" value="{{ old('ticket_price', $spot->ticket_price) }}"
-                           class="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3.5 py-2 text-xs text-white placeholder-white/40 focus:outline-none focus:border-emerald-400 transition">
-                </div>
-
-                <!-- Rating -->
-                <div>
-                    <label class="block text-xs font-semibold text-white/80 mb-1.5">Rating Wisata (0.0 - 5.0)</label>
-                    <input type="number" step="0.1" min="0" max="5" name="rating" value="{{ old('rating', $spot->rating) }}"
-                           class="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3.5 py-2 text-xs text-white placeholder-white/40 focus:outline-none focus:border-emerald-400 transition">
-                </div>
-            </div>
-
-            <!-- Checkbox Populer -->
-            <div class="flex items-center gap-2 pt-1">
-                <input type="checkbox" id="is_popular" name="is_popular" value="1" {{ old('is_popular', $spot->is_popular) ? 'checked' : '' }}
-                       class="rounded bg-forest-700 border-white/30 text-emerald-500 focus:ring-0 w-4 h-4 cursor-pointer">
-                <label for="is_popular" class="text-xs text-white/90 font-medium cursor-pointer">
-                    Tandai sebagai Tempat Wisata Populer
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label for="admin-category" class="{{ $labelClass }}">
+                    Kategori
                 </label>
-            </div>
-        </div>
-
-        <!-- Lokasi Spasial & Peta Interaktif (PostGIS) -->
-        <div class="rounded-2xl bg-forest-900/90 border border-white/10 p-5 sm:p-6 shadow-xl space-y-4">
-            <div class="flex items-center justify-between">
-                <h2 class="text-sm font-bold text-white uppercase tracking-wider text-emerald-400 flex items-center gap-2">
-                    <span>🗺️</span> Lokasi & Koordinat Spasial (PostGIS)
-                </h2>
-                <span class="text-[11px] text-white/50">Geser pin marker untuk memperbarui lokasi</span>
-            </div>
-
-            <!-- Map Picker Container -->
-            <div id="map-picker" class="h-64 sm:h-80 w-full rounded-xl border border-white/20 overflow-hidden shadow-inner z-10"></div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-semibold text-white/80 mb-1.5">Latitude (Lintang) <span class="text-rose-400">*</span></label>
-                    <input type="number" step="any" id="input-lat" name="latitude" value="{{ old('latitude', $spot->latitude) }}" required
-                           class="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3.5 py-2 text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-400 transition">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-white/80 mb-1.5">Longitude (Bujur) <span class="text-rose-400">*</span></label>
-                    <input type="number" step="any" id="input-lng" name="longitude" value="{{ old('longitude', $spot->longitude) }}" required
-                           class="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3.5 py-2 text-xs font-mono text-emerald-300 focus:outline-none focus:border-emerald-400 transition">
+                <div class="relative">
+                    <select
+                        id="admin-category"
+                        name="category"
+                        class="{{ $inputClass }} appearance-none pr-8 cursor-pointer"
+                    >
+                        <option value="Alam & Curug" {{ old('category', $spot->category) == 'Alam & Curug' ? 'selected' : '' }} class="bg-[#2c3b26] text-white">Alam</option>
+                        <option value="Kuliner" {{ old('category', $spot->category) == 'Kuliner' ? 'selected' : '' }} class="bg-[#2c3b26] text-white">Kuliner</option>
+                        <option value="Edukasi & Budaya" {{ old('category', $spot->category) == 'Edukasi & Budaya' ? 'selected' : '' }} class="bg-[#2c3b26] text-white">Edukasi & Budaya</option>
+                    </select>
+                    <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/70"
+                    >
+                        <polyline points="6 9 12 15 18 9" />
+                    </svg>
                 </div>
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-white/80 mb-1.5">Alamat Lengkap</label>
-                <input type="text" name="address" value="{{ old('address', $spot->address) }}"
-                       class="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3.5 py-2 text-xs text-white placeholder-white/40 focus:outline-none focus:border-emerald-400 transition">
+                <label for="admin-ticket" class="{{ $labelClass }}">
+                    Harga tiket
+                </label>
+                <input
+                    id="admin-ticket"
+                    type="text"
+                    name="ticket_price"
+                    value="{{ old('ticket_price', $spot->ticket_price) }}"
+                    placeholder="Rp 15.000 / Gratis"
+                    class="{{ $inputClass }}"
+                />
             </div>
         </div>
 
-        <!-- Deskripsi Wisata -->
-        <div class="rounded-2xl bg-forest-900/90 border border-white/10 p-5 sm:p-6 shadow-xl space-y-4">
-            <h2 class="text-sm font-bold text-white uppercase tracking-wider text-emerald-400 flex items-center gap-2">
-                <span>📄</span> Deskripsi & Narasi
+        <div>
+            <label for="admin-address" class="{{ $labelClass }}">
+                Alamat
+            </label>
+            <input
+                id="admin-address"
+                type="text"
+                name="address"
+                value="{{ old('address', $spot->address) }}"
+                placeholder="Bogor, Jawa Barat"
+                class="{{ $inputClass }}"
+            />
+        </div>
+
+        <div>
+            <label for="admin-description" class="{{ $labelClass }}">
+                Deskripsi
+            </label>
+            <textarea
+                id="admin-description"
+                name="description"
+                rows="3"
+                placeholder="Tulis deskripsi singkat"
+                class="{{ $inputClass }} resize-none"
+            >{{ old('description', $spot->description) }}</textarea>
+        </div>
+
+        <div>
+            <label for="admin-detailed-description" class="{{ $labelClass }}">
+                Deskripsi detail
+            </label>
+            <textarea
+                id="admin-detailed-description"
+                name="detailed_description"
+                rows="3"
+                placeholder="Tulis ulasan lengkap, fasilitas, dan daya tarik wisata"
+                class="{{ $inputClass }} resize-none"
+            >{{ old('detailed_description', $spot->detailed_description) }}</textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 items-end">
+            <div>
+                <label for="admin-rating" class="{{ $labelClass }}">
+                    Rating (0.0 - 5.0)
+                </label>
+                <input
+                    id="admin-rating"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="5"
+                    name="rating"
+                    value="{{ old('rating', $spot->rating) }}"
+                    placeholder="4.6"
+                    class="{{ $inputClass }}"
+                />
+            </div>
+
+            <label class="flex items-center gap-2 rounded-lg bg-[#384931] border border-white/10 px-3.5 py-2.5 cursor-pointer">
+                <input type="checkbox" name="is_popular" value="1" {{ old('is_popular', $spot->is_popular) ? 'checked' : '' }}
+                       class="rounded bg-[#2c3b26] border-white/30 text-[#8c785c] focus:ring-0 w-4 h-4 cursor-pointer">
+                <span class="text-[12px] text-white/80">Wisata populer</span>
+            </label>
+        </div>
+    </section>
+
+    <!-- 2. Bagian Operasional -->
+    <section class="space-y-3.5">
+        <h2 class="text-[12px] font-bold tracking-wide text-white">
+            Operasional
+        </h2>
+
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label for="admin-open" class="{{ $labelClass }}">
+                    Buka
+                </label>
+                <input
+                    id="admin-open"
+                    type="text"
+                    value="{{ $openVal }}"
+                    placeholder="08:00"
+                    class="{{ $inputClass }}"
+                />
+            </div>
+
+            <div>
+                <label for="admin-close" class="{{ $labelClass }}">
+                    Tutup
+                </label>
+                <input
+                    id="admin-close"
+                    type="text"
+                    value="{{ $closeVal }}"
+                    placeholder="17:00"
+                    class="{{ $inputClass }}"
+                />
+            </div>
+        </div>
+
+        <div>
+            <label for="admin-days" class="{{ $labelClass }}">
+                Hari
+            </label>
+            <div class="relative">
+                <select
+                    id="admin-days"
+                    class="{{ $inputClass }} appearance-none pr-8 cursor-pointer"
+                >
+                    @foreach(['Setiap hari', 'Senin - Jumat', 'Sabtu - Minggu', 'Selasa - Minggu'] as $d)
+                        <option value="{{ $d }}" {{ $dayVal === $d ? 'selected' : '' }} class="bg-[#2c3b26] text-white">{{ $d }}</option>
+                    @endforeach
+                </select>
+                <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/70"
+                >
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Bagian Lokasi (Peta Interaktif sesuai AdminLocationPickerMap.jsx) -->
+    <section class="space-y-3.5">
+        <div>
+            <h2 class="text-[12px] font-bold tracking-wide text-white">
+                Lokasi
             </h2>
+            <p class="mt-1 text-[11px] text-white/55">
+                Ketuk peta untuk menaruh titik
+            </p>
+        </div>
+
+        <div class="relative h-[180px] w-full overflow-hidden rounded-xl border border-white/10 bg-[#253520] shadow-inner">
+            <div id="map-picker" class="h-full w-full z-0 cursor-crosshair"></div>
+            <!-- Subtle grid & label overlay matching AdminLocationPickerMap.jsx -->
+            <div class="pointer-events-none absolute inset-0 z-[400] bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:48px_32px]"></div>
+            <span class="pointer-events-none absolute bottom-2 left-2.5 z-[400] rounded bg-[#2c3b26]/85 px-1.5 py-0.5 text-[10px] text-white/60 backdrop-blur-sm">
+                Peta skema
+            </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label for="input-lat" class="{{ $labelClass }}">
+                    Latitude
+                </label>
+                <input
+                    id="input-lat"
+                    type="number"
+                    step="any"
+                    name="latitude"
+                    value="{{ old('latitude', $spot->latitude) }}"
+                    placeholder="-6.5971"
+                    class="{{ $inputClass }}"
+                    required
+                />
+            </div>
 
             <div>
-                <label class="block text-xs font-semibold text-white/80 mb-1.5">Deskripsi Ringkas</label>
-                <textarea name="description" rows="2"
-                          class="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3.5 py-2 text-xs text-white placeholder-white/40 focus:outline-none focus:border-emerald-400 transition">{{ old('description', $spot->description) }}</textarea>
-            </div>
-
-            <div>
-                <label class="block text-xs font-semibold text-white/80 mb-1.5">Deskripsi Detail</label>
-                <textarea name="detailed_description" rows="4"
-                          class="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3.5 py-2 text-xs text-white placeholder-white/40 focus:outline-none focus:border-emerald-400 transition">{{ old('detailed_description', $spot->detailed_description) }}</textarea>
-            </div>
-        </div>
-
-        <!-- Foto & Galeri Wisata (Drag & Drop Reordering) -->
-        <div class="rounded-2xl bg-forest-900/90 border border-white/10 p-5 sm:p-6 shadow-xl space-y-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-sm font-bold text-white uppercase tracking-wider text-emerald-400 flex items-center gap-2">
-                        <span>📸</span> Foto & Galeri Wisata
-                    </h2>
-                    <p class="text-[11px] text-white/60 mt-0.5">Unggah foto baru atau geser/drag kartu foto untuk mengatur urutan. <strong>Foto pertama/paling atas otomatis menjadi Foto Utama</strong>.</p>
-                </div>
-            </div>
-
-            <!-- Upload Dropzone Area -->
-            <div id="dropzone-area" class="border-2 border-dashed border-white/20 hover:border-emerald-400/80 bg-white/5 hover:bg-white/10 rounded-2xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 group">
-                <input type="file" id="photos-input" name="photos[]" multiple accept="image/*" class="hidden">
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-600/30 text-emerald-300 group-hover:scale-110 transition border border-emerald-400/30">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                </div>
-                <div class="text-xs font-semibold text-white">
-                    Klik untuk pilih foto tambahan atau tarik file ke sini
-                </div>
-                <p class="text-[10px] text-white/50">Mendukung format JPG, PNG, WEBP hingga 10MB per foto</p>
-            </div>
-
-            <!-- Sortable Photos Container (List Drag & Drop) -->
-            <div class="space-y-2">
-                <div class="flex items-center justify-between text-xs text-white/70">
-                    <span class="font-medium">Urutan Foto Terpasang (<span id="photo-count">0</span> foto):</span>
-                    <span class="text-[10px] text-emerald-300/80 flex items-center gap-1">
-                        <span>⇅</span> Drag handle kartu untuk mengubah urutan
-                    </span>
-                </div>
-
-                <div id="photo-sortable-list" class="space-y-2.5 min-h-[50px] p-1.5 rounded-xl bg-black/20 border border-white/10">
-                    <!-- Kartu foto akan di-render oleh JS -->
-                </div>
+                <label for="input-lng" class="{{ $labelClass }}">
+                    Longitude
+                </label>
+                <input
+                    id="input-lng"
+                    type="number"
+                    step="any"
+                    name="longitude"
+                    value="{{ old('longitude', $spot->longitude) }}"
+                    placeholder="106.8060"
+                    class="{{ $inputClass }}"
+                    required
+                />
             </div>
         </div>
+    </section>
 
-        <!-- Tombol Aksi Simpan -->
-        <div class="flex items-center justify-end gap-3 pt-2">
-            <a href="{{ route('admin.spots.index') }}" class="px-5 py-2.5 rounded-xl text-xs font-semibold text-white/70 hover:text-white hover:bg-white/10 transition">
-                Batal
-            </a>
-            <button type="submit" id="btn-submit" class="px-7 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white shadow-lg shadow-emerald-950/60 border border-emerald-400/40 transition cursor-pointer flex items-center gap-2">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-                Perbarui Tempat Wisata
-            </button>
+    <!-- 4. Bagian Foto (Sesuai AdminPage.jsx + SortableJS Multi-Photo) -->
+    <section class="space-y-3">
+        <div class="flex items-center justify-between">
+            <h2 class="text-[12px] font-bold tracking-wide text-white">
+                Foto
+            </h2>
+            <span class="text-[10px] text-white/45">
+                <span id="photo-count">0</span> foto · geser urutan di bawah
+            </span>
         </div>
-    </form>
-</div>
+
+        <input type="file" id="photos-input" name="photos[]" multiple accept="image/*" class="hidden">
+
+        <div
+            id="dropzone-area"
+            role="button"
+            tabindex="0"
+            class="relative flex h-44 w-full items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-[#384931] hover:bg-[#3e5036] transition cursor-pointer"
+        >
+            <!-- Crosshair subtle divider lines like AdminPage.jsx -->
+            <div class="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-white/5"></div>
+            <div class="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-white/5"></div>
+
+            <img id="primary-photo-preview" src="" alt="Pratinjau foto lokasi" class="hidden h-full w-full object-cover z-10">
+            <span id="primary-photo-badge" class="hidden absolute bottom-2.5 right-2.5 z-20 rounded-full bg-black/65 px-2.5 py-1 text-[10px] font-medium text-white backdrop-blur-sm">
+                Ganti foto
+            </span>
+            <span id="primary-photo-empty" class="z-10 text-[12px] font-medium text-white/50">
+                Tambah foto
+            </span>
+        </div>
+
+        <!-- Daftar Sortable Urutan Foto -->
+        <div id="photo-sortable-list" class="space-y-2"></div>
+    </section>
+
+    <!-- Tombol Aksi Simpan -->
+    <div class="pt-3 flex items-center justify-center gap-3">
+        <a href="{{ route('admin.spots.index') }}"
+           class="rounded-full bg-white/10 hover:bg-white/15 px-6 py-2.5 text-[12px] font-medium text-white/80 transition">
+            Batal
+        </a>
+        <button
+            type="submit"
+            id="btn-submit"
+            class="rounded-full bg-[#8c785c] hover:bg-[#9b8669] active:scale-95 px-9 py-2.5 text-[12px] font-semibold text-white shadow-md transition cursor-pointer"
+        >
+            Perbarui lokasi
+        </button>
+    </div>
+</form>
 @endsection
 
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // --- 1. Leaflet Map Picker ---
+        // --- 0. Sinkronisasi Jam Operasional ---
+        const openInput = document.getElementById('admin-open');
+        const closeInput = document.getElementById('admin-close');
+        const daysSelect = document.getElementById('admin-days');
+        const opHoursInput = document.getElementById('input-operational-hours');
+
+        function syncOperationalHours() {
+            const openVal = openInput.value.trim() || '08:00';
+            const closeVal = closeInput.value.trim() || '17:00';
+            const dayVal = daysSelect.value;
+            opHoursInput.value = dayVal === 'Setiap hari'
+                ? `${openVal}-${closeVal}`
+                : `${dayVal}, ${openVal}-${closeVal}`;
+        }
+        [openInput, closeInput, daysSelect].forEach(el => el.addEventListener('change', syncOperationalHours));
+        document.getElementById('spot-form').addEventListener('submit', syncOperationalHours);
+
+        // --- 1. Leaflet Map Picker (Sesuai AdminLocationPickerMap.jsx) ---
         const currentLat = parseFloat(document.getElementById('input-lat').value) || -6.5971;
         const currentLng = parseFloat(document.getElementById('input-lng').value) || 106.8060;
 
-        const map = L.map('map-picker').setView([currentLat, currentLng], 14);
+        const map = L.map('map-picker', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView([currentLat, currentLng], 14);
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors',
             maxZoom: 19
         }).addTo(map);
 
-        const markerIcon = L.divIcon({
-            className: 'custom-picker-pin',
-            html: '<div style="background-color: #10b981; width: 22px; height: 22px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.5);"></div>',
-            iconSize: [22, 22],
-            iconAnchor: [11, 11]
+        const adminPinIcon = L.divIcon({
+            className: 'wisata-marker',
+            iconSize: [32, 42],
+            iconAnchor: [16, 41],
+            html: `<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 3px 6px rgb(0 0 0 / .45))">
+                <path d="M16 41S3 26.5 3 16a13 13 0 1 1 26 0c0 10.5-13 25-13 25Z" fill="#8c785c" stroke="#fff" stroke-width="2"/>
+                <circle cx="16" cy="15" r="5" fill="#fff"/>
+            </svg>`
         });
 
-        let marker = L.marker([currentLat, currentLng], { icon: markerIcon, draggable: true }).addTo(map);
+        let marker = L.marker([currentLat, currentLng], { icon: adminPinIcon, draggable: true }).addTo(map);
 
         function updateInputs(lat, lng) {
-            document.getElementById('input-lat').value = lat.toFixed(7);
-            document.getElementById('input-lng').value = lng.toFixed(7);
+            document.getElementById('input-lat').value = lat.toFixed(6);
+            document.getElementById('input-lng').value = lng.toFixed(6);
         }
 
         marker.on('dragend', function (e) {
@@ -248,46 +422,54 @@
         const sortableList = document.getElementById('photo-sortable-list');
         const photoOrderInput = document.getElementById('photo_order');
         const photoCountBadge = document.getElementById('photo-count');
+        const primaryPreview = document.getElementById('primary-photo-preview');
+        const primaryBadge = document.getElementById('primary-photo-badge');
+        const primaryEmpty = document.getElementById('primary-photo-empty');
 
         let photoItems = [];
         let newFileCounter = 0;
         const fileStore = new DataTransfer();
 
-        // Inisialisasi foto yang sudah ada dari database
         const existingGallery = @json(is_array($spot->gallery) ? $spot->gallery : []);
         const primaryImage = @json($spot->image);
 
-        // Pastikan primary image ada di urutan pertama jika belum di galeri
         let initialList = [...existingGallery];
         if (primaryImage && !initialList.includes(primaryImage)) {
             initialList.unshift(primaryImage);
         }
 
         initialList.forEach((src, idx) => {
+            if (!src) return;
             const fileName = src.split('/').pop();
             photoItems.push({
                 id: 'existing_' + idx,
                 fileId: null,
                 src: src,
                 name: fileName,
-                size: 'Tersimpan di Backend'
+                size: 'Tersimpan'
             });
         });
 
         dropzone.addEventListener('click', () => fileInput.click());
+        dropzone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                fileInput.click();
+            }
+        });
 
         dropzone.addEventListener('dragover', (e) => {
             e.preventDefault();
-            dropzone.classList.add('border-emerald-400', 'bg-white/10');
+            dropzone.classList.add('border-amber-300/60', 'bg-[#3f5237]');
         });
 
         dropzone.addEventListener('dragleave', () => {
-            dropzone.classList.remove('border-emerald-400', 'bg-white/10');
+            dropzone.classList.remove('border-amber-300/60', 'bg-[#3f5237]');
         });
 
         dropzone.addEventListener('drop', (e) => {
             e.preventDefault();
-            dropzone.classList.remove('border-emerald-400', 'bg-white/10');
+            dropzone.classList.remove('border-amber-300/60', 'bg-[#3f5237]');
             if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                 handleNewFiles(e.dataTransfer.files);
             }
@@ -309,7 +491,7 @@
 
                 const reader = new FileReader();
                 reader.onload = function (e) {
-                    photoItems.push({
+                    photoItems.unshift({
                         id: fileId,
                         fileId: fileId,
                         src: e.target.result,
@@ -327,52 +509,42 @@
             sortableList.innerHTML = '';
             photoCountBadge.textContent = photoItems.length;
 
-            if (photoItems.length === 0) {
-                sortableList.innerHTML = `
-                    <div class="py-8 text-center text-xs text-white/40">
-                        Belum ada foto yang diunggah. Klik area di atas untuk menambahkan foto.
-                    </div>
-                `;
-                syncOrderInput();
-                return;
+            if (photoItems.length > 0) {
+                primaryPreview.src = photoItems[0].src;
+                primaryPreview.classList.remove('hidden');
+                primaryBadge.classList.remove('hidden');
+                primaryEmpty.classList.add('hidden');
+            } else {
+                primaryPreview.src = '';
+                primaryPreview.classList.add('hidden');
+                primaryBadge.classList.add('hidden');
+                primaryEmpty.classList.remove('hidden');
             }
 
             photoItems.forEach((item, index) => {
                 const isPrimary = index === 0;
                 const card = document.createElement('div');
                 card.dataset.id = item.id;
-                card.className = `flex items-center justify-between p-3 rounded-xl border transition group cursor-grab active:cursor-grabbing ${
-                    isPrimary 
-                        ? 'bg-forest-800/95 border-emerald-400/50 shadow-md ring-1 ring-emerald-400/30' 
-                        : 'bg-forest-700/60 border-white/10 hover:border-white/20'
+                card.className = `flex items-center justify-between gap-3 p-2.5 rounded-xl border transition group cursor-grab active:cursor-grabbing ${
+                    isPrimary
+                        ? 'bg-[#384931] border-[#8c785c]/70'
+                        : 'bg-[#384931]/65 border-white/10 hover:border-white/20'
                 }`;
 
                 card.innerHTML = `
-                    <div class="flex items-center gap-3 min-w-0">
-                        <!-- Drag Handle -->
-                        <div class="flex items-center text-white/30 group-hover:text-emerald-300 transition shrink-0">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg>
-                        </div>
-
-                        <!-- Thumbnail -->
-                        <div class="relative h-14 w-20 rounded-lg overflow-hidden bg-black/40 border border-white/10 shrink-0">
-                            <img src="${item.src}" alt="${item.name}" class="h-full w-full object-cover">
-                            ${isPrimary ? '<span class="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-emerald-600 text-white uppercase tracking-wider shadow">Utama</span>' : ''}
-                        </div>
-
-                        <!-- Info -->
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="text-white/35 text-xs shrink-0">⋮⋮</span>
+                        <img src="${item.src}" alt="${item.name}" class="h-10 w-12 rounded-lg object-cover bg-black/20 shrink-0">
                         <div class="min-w-0">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs font-semibold text-white truncate max-w-[200px] sm:max-w-xs">${item.name}</span>
-                                ${isPrimary ? '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">★ Foto Utama</span>' : `<span class="text-[10px] text-white/40">Galeri #${index + 1}</span>`}
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[12px] font-medium text-white truncate max-w-[160px]">${item.name}</span>
+                                ${isPrimary ? '<span class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#8c785c] text-white">Utama</span>' : ''}
                             </div>
-                            <p class="text-[11px] text-white/40 mt-0.5">${item.size || ''}</p>
+                            <p class="text-[10px] text-white/45">${item.size || ''}</p>
                         </div>
                     </div>
-
-                    <!-- Action: Remove -->
-                    <button type="button" class="btn-remove-photo p-2 rounded-lg bg-white/5 hover:bg-rose-500/20 text-white/40 hover:text-rose-300 transition" title="Hapus Foto">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <button type="button" class="btn-remove-photo rounded-lg bg-rose-500/15 hover:bg-rose-500/30 px-2 py-1 text-[10px] font-medium text-rose-200 transition cursor-pointer shrink-0">
+                        Hapus
                     </button>
                 `;
 
@@ -402,7 +574,6 @@
             animation: 200,
             ghostClass: 'sortable-ghost',
             chosenClass: 'sortable-chosen',
-            handle: '.group',
             onEnd: function () {
                 const newOrderIds = Array.from(sortableList.children).map(c => c.dataset.id);
                 photoItems.sort((a, b) => newOrderIds.indexOf(a.id) - newOrderIds.indexOf(b.id));

@@ -18,6 +18,20 @@ Route::get('/tourists', [TouristSpotController::class, 'index']);
 Route::get('/tourists/{slugOrId}', [TouristSpotController::class, 'show']);
 Route::get('/boundary', [TouristSpotController::class, 'boundary']);
 
+// Endpoint Media Gambar dengan CORS penuh (agar bisa di-fetch dengan header ngrok-skip-browser-warning)
+Route::get('/media/{filename}', function (string $filename) {
+    $safeName = basename($filename);
+    $path = public_path('images/' . $safeName);
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, [
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Headers' => '*',
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+})->where('filename', '.*');
+
 // 3. API Halaman 'Untuk Anda'
 Route::get('/for-you', [ForYouController::class, 'index']);
 
