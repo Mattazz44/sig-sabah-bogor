@@ -54,29 +54,12 @@ function SavedActivitiesPage({
         return res.json()
       })
       .then((json) => {
-<<<<<<< HEAD
-        if (isMounted && json?.data) {
-          if (Array.isArray(json.data.activities) && json.data.activities.length > 0) {
-            setUserActivities(
-              json.data.activities.map((a) => ({
-                id: a.id,
-                tourist_spot_id: a.tourist_spot_id,
-                spot_slug: a.spot_slug,
-                name: a.name,
-                location: a.location,
-                date: a.date_label || 'Baru saja',
-              }))
-            )
-          }
-          if (Array.isArray(json.data.custom_routes)) {
-            setCustomRoutesCount(json.data.custom_routes.length)
-          }
-        }
-=======
         if (!isMounted || !json?.data) return
         const mapped = Array.isArray(json.data.activities)
           ? json.data.activities.map((a) => ({
               id: a.id,
+              tourist_spot_id: a.tourist_spot_id,
+              spot_slug: a.spot_slug,
               name: a.name,
               location: a.location,
               date: a.date_label || 'Baru saja',
@@ -90,7 +73,6 @@ function SavedActivitiesPage({
           activities: mapped,
           customRoutesCount: routesLen,
         })
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
       })
       .catch(() => {
         if (isMounted) {

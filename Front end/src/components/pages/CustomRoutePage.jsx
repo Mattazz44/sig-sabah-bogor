@@ -11,72 +11,6 @@ import {
   XIcon,
 } from '../ui/VectorIcons'
 
-<<<<<<< HEAD
-function CustomRoutePage({
-  tourists = [],
-  favorites = [],
-  userActivities = [],
-  currentUser = null,
-  onBack,
-  onStartCustomRoute,
-}) {
-  // Destinasi bawaan yang diambil dari daftar tempat wisata backend
-  const museumZoologi = tourists.find((t) => t.slug === 'museum-zoologi-bogor') || {
-    id: 10,
-    slug: 'museum-zoologi-bogor',
-    name: 'Museum of zoology - Bogor Tengah',
-    coordinates: { lat: -6.6014, lng: 106.7972 },
-    image: '',
-    travelTime: '7 Menit',
-    distance: '2.5 KM',
-  }
-
-  const museumPeta = tourists.find((t) => t.slug === 'museum-peta') || {
-    id: 4,
-    slug: 'museum-peta',
-    name: 'Museum PETA - Bogor Kota',
-    coordinates: { lat: -6.5855, lng: 106.7947 },
-    image: '',
-    travelTime: '8 Menit',
-    distance: '3 KM',
-  }
-
-  // Tempat wisata yang sudah di-save / disukai oleh pengguna:
-  // 1. Dari daftar favorites (disukai lewat ikon bookmark di detail wisata & for-you)
-  // 2. Dari daftar aktivitas / tempat tersimpan user di database (userActivities)
-  const savedTouristSpots = useMemo(() => {
-    if (!Array.isArray(tourists) || tourists.length === 0) return []
-
-    const favSlugs = new Set(favorites || [])
-    const savedSlugs = new Set()
-    const savedNames = new Set()
-
-    if (Array.isArray(userActivities)) {
-      userActivities.forEach((act) => {
-        if (act.spot_slug) savedSlugs.add(act.spot_slug)
-        if (act.slug) savedSlugs.add(act.slug)
-        if (act.name) savedNames.add(act.name.toLowerCase().trim())
-        if (act.location) savedNames.add(act.location.toLowerCase().trim())
-      })
-    }
-
-    return tourists.filter((place) => {
-      if (favSlugs.has(place.slug) || favSlugs.has(String(place.id))) return true
-      if (savedSlugs.has(place.slug) || savedSlugs.has(String(place.id))) return true
-      if (savedNames.has(place.name.toLowerCase().trim())) return true
-      for (const name of savedNames) {
-        if (name && (place.name.toLowerCase().includes(name) || name.includes(place.name.toLowerCase()))) {
-          return true
-        }
-      }
-      return false
-    })
-  }, [tourists, favorites, userActivities])
-
-  // 3. STATE DAFTAR RUTE CUSTOM (Dapat Ditambahkan Dinamis)
-  const [customRoutesList, setCustomRoutesList] = useState([
-    {
-=======
 function buildFallbackRoutes(tourists) {
   if (!Array.isArray(tourists) || tourists.length === 0) return []
   const museumZoologi = tourists.find((t) => t.slug === 'museum-zoologi-bogor')
@@ -85,7 +19,6 @@ function buildFallbackRoutes(tourists) {
 
   if (museumZoologi && museumPeta) {
     routes.push({
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
       id: 'cr-museum',
       title: 'Tur Edukasi: Museum of Zoology ke Museum PETA',
       desc: 'Rute sejarah dan edukasi di pusat Kota Bogor',
@@ -170,20 +103,6 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
     }
   }, [tourists])
 
-<<<<<<< HEAD
-  // 3. STATE MODAL "RANCANG RUTE CUSTOM BARU"
-  const [showCreateRouteModal, setShowCreateRouteModal] = useState(false)
-  const [newRouteTitle, setNewRouteTitle] = useState('')
-  const [selectedDestIds, setSelectedDestIds] = useState([])
-
-  const handleOpenCreateModal = () => {
-    if (savedTouristSpots.length >= 2) {
-      setSelectedDestIds([savedTouristSpots[0].id, savedTouristSpots[1].id])
-    } else if (savedTouristSpots.length === 1) {
-      setSelectedDestIds([savedTouristSpots[0].id])
-    } else {
-      setSelectedDestIds([])
-=======
   useEffect(() => {
     if (!showCreateRouteModal) return undefined
     const handleKeyDown = (e) => {
@@ -196,7 +115,6 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
   const openCreateModal = () => {
     if (selectedDestIds.length === 0 && tourists.length > 0) {
       setSelectedDestIds(tourists.slice(0, 2).map((t) => t.id).filter(Boolean))
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
     }
     setShowCreateRouteModal(true)
   }
@@ -211,11 +129,7 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
     e.preventDefault()
     if (!newRouteTitle.trim() || selectedDestIds.length === 0) return
 
-<<<<<<< HEAD
-    const chosenPlaces = savedTouristSpots.filter((t) => selectedDestIds.includes(t.id))
-=======
     const chosenPlaces = tourists.filter((t) => selectedDestIds.includes(t.id))
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
     if (chosenPlaces.length === 0) return
 
     const stopsFormatted = chosenPlaces.map((p, idx) => ({
@@ -261,11 +175,9 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
     })
 
     setNewRouteTitle('')
-<<<<<<< HEAD
-    setSelectedDestIds([])
-=======
     setSelectedDestIds(tourists.slice(0, 2).map((t) => t.id).filter(Boolean))
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
+    setShowCreateRouteModal(false)
+  }
     setShowCreateRouteModal(false)
   }
 
@@ -301,13 +213,8 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
         <button
           type="button"
           id="btn-add-custom-route"
-<<<<<<< HEAD
-          onClick={handleOpenCreateModal}
-          className="flex items-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 px-3 py-1.5 text-[11px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
-=======
           onClick={openCreateModal}
           className="flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-xl border border-[#EBF0EB]/18 bg-[#253320] px-3.5 py-2 text-[12px] font-semibold text-[#EBF0EB] shadow-sm transition-colors duration-150 hover:bg-[#31442B] active:scale-[0.97]"
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
         >
           <svg
             width="14"
@@ -337,19 +244,14 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
             className="h-10 w-10 shrink-0 rounded-full border border-emerald-400/60 object-cover"
           />
           <div>
-<<<<<<< HEAD
-            <div className="flex items-center gap-1.5">
-              <span className="text-[13px] font-bold text-white">{currentUser?.name || 'Pengguna'}</span>
-              <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[9px] font-semibold text-emerald-300 border border-emerald-400/30">
-                Terhubung
-=======
             <div className="flex items-center gap-2">
               <span className="text-[13px] font-bold text-[#EBF0EB]">
                 {currentUser?.name || 'Pengguna'}
               </span>
               <span className="rounded-lg border border-emerald-400/30 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-200">
-                Aktif
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
+                Terhubung
+              </span>
+            </div>
               </span>
             </div>
             <p className="mt-0.5 text-[12px] text-[#C8D3C8] tabular-nums">
@@ -540,68 +442,6 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
               </div>
 
               <div>
-<<<<<<< HEAD
-                <label className="text-[11px] font-semibold text-white/80 block mb-1.5 flex items-center justify-between">
-                  <span>Pilih Destinasi Singgah:</span>
-                  <span className="text-[10px] text-emerald-300 font-normal">
-                    {savedTouristSpots.length} Tempat Tersimpan
-                  </span>
-                </label>
-
-                {savedTouristSpots.length > 0 ? (
-                  <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
-                    {savedTouristSpots.map((place) => {
-                      const isChecked = selectedDestIds.includes(place.id)
-                      return (
-                        <div
-                          key={place.id}
-                          onClick={() => handleToggleDest(place.id)}
-                          className={`flex items-center justify-between p-2.5 rounded-xl border transition cursor-pointer ${
-                            isChecked
-                              ? 'bg-emerald-600/25 border-emerald-400/50'
-                              : 'bg-white/5 border-white/10 hover:bg-white/10'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <SafeImage
-                              src={place.image}
-                              alt={place.name}
-                              className="h-9 w-9 rounded-lg object-cover shrink-0"
-                            />
-                            <div className="truncate text-left">
-                              <p className="text-[12px] font-bold text-white truncate">
-                                {place.name}
-                              </p>
-                              <span className="text-[10px] text-white/60">
-                                {place.category}
-                              </span>
-                            </div>
-                          </div>
-
-                          <span
-                            className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[10px] font-bold ${
-                              isChecked
-                                ? 'bg-emerald-500 border-emerald-400 text-white'
-                                : 'border-white/30 text-transparent'
-                            }`}
-                          >
-                            ✓
-                          </span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                ) : (
-                  <div className="rounded-xl border border-dashed border-white/20 p-4 text-center bg-white/5">
-                    <p className="text-[12px] text-white/80 font-medium">
-                      Belum ada tempat wisata yang disimpan / disukai.
-                    </p>
-                    <p className="text-[10px] text-white/50 mt-1">
-                      Silakan simpan tempat wisata terlebih dahulu melalui tombol simpan/suka untuk dapat merancang rute perjalanan.
-                    </p>
-                  </div>
-                )}
-=======
                 <p className="mb-1.5 block text-[12px] font-semibold text-[#EBF0EB]">
                   Pilih destinasi singgah:
                 </p>
@@ -651,7 +491,6 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
                     )
                   })}
                 </div>
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
               </div>
 
               <div className="mt-2 flex items-center gap-2">
@@ -665,17 +504,11 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
                 <button
                   type="submit"
                   id="btn-save-new-custom-route"
-<<<<<<< HEAD
-                  disabled={savedTouristSpots.length === 0 || selectedDestIds.length === 0}
-                  className={`flex-1 rounded-xl py-2.5 text-[12px] font-bold text-white shadow-md transition cursor-pointer border ${
-                    savedTouristSpots.length === 0 || selectedDestIds.length === 0
-                      ? 'bg-gray-600/50 border-gray-500/30 cursor-not-allowed opacity-60'
-                      : 'bg-emerald-600 hover:bg-emerald-500 active:scale-95 border-emerald-400/30'
-                  }`}
-=======
                   disabled={selectedDestIds.length === 0}
                   className="min-h-[44px] flex-1 rounded-xl bg-[#EBF0EB] py-2.5 text-[12.5px] font-semibold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.97] disabled:opacity-50"
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
+                >
+                  Simpan rute
+                </button>
                 >
                   Simpan rute
                 </button>

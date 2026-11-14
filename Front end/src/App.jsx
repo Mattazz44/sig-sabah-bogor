@@ -26,25 +26,6 @@ export default function App() {
   const [tourists, setTourists] = useState([])
   const [isLoadingTourists, setIsLoadingTourists] = useState(true)
   const [isBackendError, setIsBackendError] = useState(false)
-<<<<<<< HEAD
-  const [isRetrying, setIsRetrying] = useState(false)
-
-  const loadTourists = useCallback(() => {
-    setIsRetrying(true)
-    return apiFetch('/api/tourists')
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
-        return res.json()
-      })
-      .then((json) => {
-        if (json?.data && Array.isArray(json.data)) {
-          // Normalisasi path image & gallery agar menggunakan helper getImageUrl
-          const normalized = json.data.map((item) => ({
-            ...item,
-            image: getImageUrl(item.image),
-            gallery: Array.isArray(item.gallery) ? item.gallery.map(getImageUrl) : [],
-          }))
-=======
   const [isErrorBannerDismissed, setIsErrorBannerDismissed] = useState(false)
   const [isRetryingBackend, setIsRetryingBackend] = useState(false)
   const isMountedRef = useRef(true)
@@ -78,7 +59,6 @@ export default function App() {
     fetchTouristsData()
       .then((normalized) => {
         if (isMounted && normalized) {
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
           setTourists(normalized)
           setIsBackendError(false)
           setIsErrorBannerDismissed(false)
@@ -86,15 +66,6 @@ export default function App() {
       })
       .catch((err) => {
         console.error('Gagal memuat data objek wisata dari backend Laravel:', err)
-<<<<<<< HEAD
-        setTourists([])
-        setIsBackendError(true)
-      })
-      .finally(() => {
-        setIsRetrying(false)
-      })
-  }, [])
-=======
         if (isMounted) {
           setTourists([])
           setIsBackendError(true)
@@ -137,11 +108,6 @@ export default function App() {
         }
       })
   }, [fetchTouristsData])
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
-
-  useEffect(() => {
-    loadTourists()
-  }, [loadTourists])
 
   // 1. State aktif untuk tab navigasi (Explore, Untuk Anda, Navigasi, Tersimpan, Aktivitas)
   const [activeTab, setActiveTab] = useState('Explore')
@@ -322,66 +288,6 @@ export default function App() {
     <main className="relative flex flex-col h-dvh w-full overflow-hidden bg-forest-900">
       <h1 className="sr-only">SIG Wisata Bogor</h1>
 
-<<<<<<< HEAD
-      {/* Banner Peringatan jika Backend Laravel Belum Dijalankan */}
-      {isBackendError && (
-        <aside
-          role="alert"
-          aria-live="polite"
-          className="fixed top-4 inset-x-4 max-w-sm mx-auto z-[2500] animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-none"
-        >
-          <div className="pointer-events-auto flex items-center justify-between gap-3 rounded-2xl bg-rose-950/95 backdrop-blur-md px-4 py-3 border border-rose-500/40 shadow-2xl text-rose-200">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="text-xl shrink-0">⚠️</span>
-              <div className="text-left text-[11px] leading-tight min-w-0">
-                <p className="font-bold text-white">Gagal terhubung ke Backend!</p>
-                <p className="mt-0.5 text-rose-200/80 truncate">
-                  Memeriksa cookie / koneksi server...
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              disabled={isRetrying}
-              onClick={loadTourists}
-              className="shrink-0 px-3 py-1.5 rounded-lg bg-rose-800 hover:bg-rose-700 active:scale-95 disabled:opacity-50 text-[11px] font-semibold text-white transition shadow cursor-pointer"
-            >
-              {isRetrying ? 'Memuat...' : 'Coba Lagi'}
-            </button>
-          </div>
-        </aside>
-      )}
-
-      {/* 3. TAMPILAN HALAMAN PROFIL (Akun Sendiri vs Orang Lain) */}
-      {profileUser ? (
-        <ProfilePage
-          user={profileUser === 'self' && currentUser ? { isSelf: true, ...currentUser } : profileUser}
-          tourists={enrichedTourists}
-          onBack={() => setProfileUser(null)}
-          onLogout={handleLogout}
-          onStartCustomRoute={handleStartCustomRoute}
-          onUpdateUser={(updatedUser) => {
-            setCurrentUser(updatedUser)
-          }}
-          currentUser={currentUser}
-          isLoggedIn={isLoggedIn}
-          onRequireLogin={() => setShowLoginModal(true)}
-        />
-      ) : selectedPlace ? (
-        /* 1 & 2. Tampilkan Detail Wisata penuh jika selectedPlace tidak null */
-        <TouristDetailPage
-          place={selectedPlace}
-          onBack={handleBackToExplore}
-          onStartNavigation={handleStartNavigation}
-          isFavorite={isFavorite}
-          toggleFavorite={toggleFavorite}
-        />
-      ) : (
-        <>
-          {/* Menu Explore: Tampilkan Peta Leaflet + Sidebar wisata */}
-          {activeTab === 'Explore' && (
-            <div className="relative h-full w-full">
-=======
       {/* Banner Peringatan Inline jika Backend Laravel Belum Dijalankan (mendorong konten secara natural tanpa overlap) */}
       <div
         className={`relative z-30 shrink-0 grid transition-all duration-300 ease-out ${
@@ -448,6 +354,12 @@ export default function App() {
             onBack={() => setProfileUser(null)}
             onLogout={handleLogout}
             onStartCustomRoute={handleStartCustomRoute}
+            onUpdateUser={(updatedUser) => {
+              setCurrentUser(updatedUser)
+            }}
+            currentUser={currentUser}
+            isLoggedIn={isLoggedIn}
+            onRequireLogin={() => setShowLoginModal(true)}
           />
         ) : selectedPlace ? (
           /* 1 & 2. Tampilkan Detail Wisata penuh jika selectedPlace tidak null */
@@ -463,7 +375,6 @@ export default function App() {
             {/* Menu Explore: Tampilkan Peta Leaflet + Sidebar wisata */}
             {activeTab === 'Explore' && (
               <div className="relative h-full w-full animate-fade-enter">
->>>>>>> 36503365f261623debceee820c5b8b217c5b1085
               <MapView
                 places={mapPlaces}
                 selected={selected}
