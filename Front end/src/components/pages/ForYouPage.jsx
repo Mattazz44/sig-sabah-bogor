@@ -2,11 +2,20 @@ import { memo, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiFetch } from '../../utils/api'
 import SafeImage from '../ui/SafeImage'
-import { SparklesDuotoneIcon } from '../ui/VectorIcons'
+import {
+  CompassIcon,
+  HeartIcon,
+  RefreshIcon,
+  StarIcon,
+  UserIcon,
+} from '../ui/VectorIcons'
 import { DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageHelper'
 
 function ForYouPage({
   tourists = [],
+  isLoading: isLoadingTourists = false,
+  isBackendError = false,
+  onRetryBackend,
   favorites = [],
   toggleFavorite,
   isFavorite,
@@ -18,12 +27,20 @@ function ForYouPage({
   onOpenProfile,
 }) {
   const navigate = useNavigate()
-  const [recommendedItems, setRecommendedItems] = useState([])
-  const [continueItem, setContinueItem] = useState(null)
+  const [reloadTick, setReloadTick] = useState(0)
+  const requestKey = isLoggedIn
+    ? `${favorites.join(',')}|${recentSlugs.join(',')}|${tourists.length}|${reloadTick}`
+    : 'guest'
 
-  // Fetch data rekomendasi 'Untuk Anda' dari Backend API HANYA JIKA LOGGED IN
+  const [recState, setRecState] = useState({
+    key: '',
+    recommended: [],
+    continueItem: null,
+    error: false,
+  })
+
   useEffect(() => {
-    if (!isLoggedIn) return
+    if (!isLoggedIn) return undefined
 
     let isMounted = true
     const favParam = encodeURIComponent(favorites.join(','))
@@ -36,59 +53,67 @@ function ForYouPage({
         return res.json()
       })
       .then((json) => {
-        if (isMounted && json?.data) {
-          if (Array.isArray(json.data.recommended)) {
-            setRecommendedItems(json.data.recommended)
-          }
-          if (json.data.continue_item) {
-            setContinueItem(json.data.continue_item)
-          }
-        }
+        if (!isMounted) return
+        setRecState({
+          key: requestKey,
+          recommended: Array.isArray(json?.data?.recommended) ? json.data.recommended : [],
+          continueItem: json?.data?.continue_item ?? null,
+          error: false,
+        })
       })
-      .catch((err) => {
-        console.warn('Gagal memuat rekomendasi Untuk Anda dari API, fallback ke kalkulasi lokal:', err)
-        if (isMounted) {
-          // Fallback dinamis dari array tourists yang ada dari API Backend
-          if (Array.isArray(tourists) && tourists.length > 0) {
-            const lastPlace = recentSlugs.length > 0
+      .catch(() => {
+        if (!isMounted) return
+        if (Array.isArray(tourists) && tourists.length > 0) {
+          const lastPlace =
+            recentSlugs.length > 0
               ? tourists.find((t) => t.slug === recentSlugs[0]) || tourists[0]
               : tourists[0]
 
-            setContinueItem({
-              id: 'continue-' + lastPlace.slug,
-              slug: lastPlace.slug,
-              name: lastPlace.name,
-              location: lastPlace.address || 'Bogor, Jawa Barat',
-              rating: Number(lastPlace.rating || 4.5).toFixed(1),
-              image: lastPlace.image,
-            })
-
-            const recList = tourists
-              .filter((t) => t.slug !== lastPlace.slug)
-              .slice(0, 4)
-              .map((t) => ({
-                id: t.slug,
-                slug: t.slug,
-                name: t.name,
-                location: t.address || 'Bogor, Jawa Barat',
-                rating: Number(t.rating || 4.5).toFixed(1),
-                image: t.image,
-              }))
-            setRecommendedItems(recList)
-          } else {
-            setRecommendedItems([])
-            setContinueItem(null)
+          const continueEntry = {
+            id: `continue-${lastPlace.slug}`,
+            slug: lastPlace.slug,
+            name: lastPlace.name,
+            location: lastPlace.address || 'Bogor, Jawa Barat',
+            rating: Number(lastPlace.rating || 0).toFixed(1),
+            image: lastPlace.image,
           }
+
+          const recList = tourists
+            .filter((t) => t.slug !== lastPlace.slug)
+            .slice(0, 4)
+            .map((t) => ({
+              id: t.slug,
+              slug: t.slug,
+              name: t.name,
+              location: t.address || 'Bogor, Jawa Barat',
+              rating: Number(t.rating || 0).toFixed(1),
+              image: t.image,
+            }))
+
+          setRecState({
+            key: requestKey,
+            recommended: recList,
+            continueItem: continueEntry,
+            error: false,
+          })
+        } else {
+          setRecState({
+            key: requestKey,
+            recommended: [],
+            continueItem: null,
+            error: true,
+          })
         }
       })
 
     return () => {
       isMounted = false
     }
-  }, [isLoggedIn, favorites, recentSlugs, tourists])
+  }, [isLoggedIn, favorites, recentSlugs, tourists, requestKey])
 
-  const effectiveRecommended = isLoggedIn ? recommendedItems : []
-  const effectiveContinue = isLoggedIn ? continueItem : null
+  const isFetching = isLoggedIn && recState.key !== requestKey
+  const effectiveRecommended = isLoggedIn ? recState.recommended : []
+  const effectiveContinue = isLoggedIn ? recState.continueItem : null
 
   const handleCardClick = (slug) => {
     if (onSelectPlace) {
@@ -104,61 +129,55 @@ function ForYouPage({
     return (
       <div
         key={item.id}
-        className="group flex items-center justify-between gap-3 py-3 transition"
+        className="group flex items-center justify-between gap-3 py-3"
       >
         <button
           type="button"
           onClick={() => handleCardClick(item.slug)}
-          className="flex flex-1 cursor-pointer items-center gap-3.5 text-left active:scale-[0.98] transition-transform duration-150 focus-visible:outline-none"
+          className="flex flex-1 items-center gap-3.5 rounded-2xl p-1 text-left transition-colors duration-150 hover:bg-[#233020]/70 active:scale-[0.98]"
         >
           <SafeImage
             src={item.image}
             alt={item.name}
-            className="h-16 w-16 shrink-0 rounded-2xl object-cover shadow-sm transition group-hover:scale-105"
+            className="h-16 w-16 shrink-0 rounded-2xl object-cover shadow-sm"
           />
           <div className="min-w-0 flex-1">
-            <h3 className="truncate text-[13px] font-semibold text-white group-hover:text-amber-200 transition-colors">
+            <h3 className="truncate text-[13.5px] font-semibold text-[#EBF0EB] transition-colors group-hover:text-[#E2D7B5]">
               {item.name}
             </h3>
-            <p className="mt-0.5 text-[11px] text-white/60">{item.location}</p>
-            <div className="mt-1 flex items-center gap-1.5 text-[11px]">
-              <span className="text-amber-400">★</span>
-              <span className="font-medium text-white/80">{item.rating}</span>
+            <p className="mt-0.5 truncate text-[12px] text-[#C8D3C8]">{item.location}</p>
+            <div className="mt-1 flex items-center gap-1.5 text-[12px]">
+              <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-amber-300" />
+              <span className="font-medium tabular-nums text-[#EBF0EB]">{item.rating}</span>
             </div>
           </div>
         </button>
 
         <button
           type="button"
-          aria-label={`Favoritkan ${item.name}`}
+          aria-pressed={favoriteActive}
+          aria-label={favoriteActive ? `Hapus ${item.name} dari favorit` : `Favoritkan ${item.name}`}
           onClick={() => toggleFavorite && toggleFavorite(item.slug)}
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition ${favoriteActive
-            ? 'text-rose-400 hover:text-rose-300'
-            : 'text-white/65 hover:text-white hover:bg-white/10'
-            }`}
+          className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors before:absolute before:-inset-1 ${
+            favoriteActive
+              ? 'text-rose-300 hover:bg-[#3B1D24]/60'
+              : 'text-[#C8D3C8] hover:bg-[#EBF0EB]/10 hover:text-[#EBF0EB]'
+          }`}
         >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill={favoriteActive ? 'currentColor' : 'none'}
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-          </svg>
+          <HeartIcon filled={favoriteActive} className="h-5 w-5" />
         </button>
       </div>
     )
   }
 
   return (
-    <div className="animate-tab-enter h-full min-h-0 w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
+    <div
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
+      className="animate-tab-enter mx-auto h-full min-h-0 w-full max-w-md overflow-y-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu bg-forest-900 px-5 pt-6 text-[#EBF0EB]"
+    >
       {/* Top Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-[24px] font-bold tracking-tight text-white">Untuk Kamu</h1>
+        <h1 className="text-[24px] font-bold tracking-tight text-[#EBF0EB]">Untuk Anda</h1>
         <button
           type="button"
           onClick={() => {
@@ -168,81 +187,109 @@ function ForYouPage({
               onOpenProfile('self')
             }
           }}
-          aria-label="Profil pengguna"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-white/90 active:scale-[0.97] transition-all duration-150 ease-out hover:bg-white/10 cursor-pointer overflow-hidden"
+          aria-label={isLoggedIn ? 'Buka profil pengguna' : 'Masuk ke akun'}
+          className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-[#EBF0EB]/20 bg-[#253320] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#2F4128] active:scale-[0.97]"
         >
           {isLoggedIn ? (
             <SafeImage
               src={currentUser?.avatar}
               fallback={DEFAULT_AVATAR_PLACEHOLDER}
-              alt={currentUser?.name || 'Avatar'}
+              alt={currentUser?.name || 'Foto profil'}
               className="h-full w-full object-cover"
             />
           ) : (
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
+            <UserIcon className="h-5 w-5" />
           )}
         </button>
       </div>
 
       {!isLoggedIn ? (
-        /* Empty State Jika Pengguna Belum Login */
-        <div className="mt-12 flex flex-col items-center justify-center text-center px-4">
-          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-[#34462c]/80 border border-white/10 text-emerald-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_10px_24px_rgba(0,0,0,0.22)]">
-            <SparklesDuotoneIcon className="h-9 w-9" />
+        <div className="mt-12 flex flex-col items-center justify-center px-4 text-center">
+          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl border border-[#EBF0EB]/16 bg-[#253320] text-[#E2D7B5] shadow-md">
+            <CompassIcon className="h-9 w-9" duotone />
           </div>
-          <h2 className="text-[17px] font-bold text-white tracking-tight">
-            Rekomendasi Spesial Untuk Anda
+          <h2 className="text-[17px] font-bold tracking-tight text-[#EBF0EB]">
+            Rekomendasi untuk Anda
           </h2>
-          <p className="mt-2 text-[12.5px] text-white/65 max-w-xs leading-relaxed">
-            Masuk dengan akun Anda untuk melihat kurasi tempat wisata berdasarkan aktivitas, riwayat perjalanan, dan preferensi Anda.
+          <p className="mt-2 max-w-xs text-[13px] leading-relaxed text-[#C8D3C8]">
+            Masuk untuk melihat daftar destinasi yang disesuaikan dengan riwayat kunjungan dan tempat favorit Anda.
           </p>
           <button
             type="button"
             onClick={onRequireLogin}
-            className="mt-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.97] px-6 py-3 text-[13px] font-semibold text-white border border-white/15 shadow-[0_6px_16px_rgba(5,150,105,0.3),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-150 ease-out cursor-pointer"
+            className="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#EBF0EB] px-6 py-2.5 text-[13px] font-semibold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.97]"
           >
-            Masuk ke Akun
+            Masuk ke akun
+          </button>
+        </div>
+      ) : (isLoadingTourists || isFetching) && effectiveRecommended.length === 0 ? (
+        <div className="mt-6 space-y-3" aria-live="polite">
+          {[1, 2, 3].map((row) => (
+            <div
+              key={row}
+              className="flex items-center gap-3.5 rounded-2xl border border-[#EBF0EB]/10 bg-[#233020] p-3"
+            >
+              <div className="h-16 w-16 shrink-0 rounded-2xl bg-[#1C2719]" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-2/3 rounded bg-[#2E3E2A]" />
+                <div className="h-3 w-1/2 rounded bg-[#2A3826]" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (recState.error || isBackendError) && effectiveRecommended.length === 0 ? (
+        <div className="mt-8 rounded-2xl border border-rose-400/25 bg-[#2a1216] p-5 text-center">
+          <p className="text-[14px] font-semibold text-[#EBF0EB]">
+            Rekomendasi belum bisa dimuat
+          </p>
+          <p className="mt-1 text-[12px] text-rose-100/85">
+            Periksa sambungan ke server backend lalu coba muat ulang.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              if (onRetryBackend) onRetryBackend()
+              setReloadTick((prev) => prev + 1)
+            }}
+            className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/12 px-4 text-[12px] font-semibold text-[#EBF0EB] transition-colors hover:bg-[#EBF0EB]/20"
+          >
+            <RefreshIcon className="h-3.5 w-3.5" />
+            <span>Coba lagi</span>
           </button>
         </div>
       ) : (
         <>
-          {/* Section 1: Berdasarkan aktivitas terakhir kamu */}
-          <div className="mt-6">
-            <h2 className="text-[14px] font-bold tracking-tight text-white">
-              Berdasarkan aktivitas terakhir kamu
+          <section className="mt-6" aria-labelledby="rec-heading">
+            <h2 id="rec-heading" className="text-[14px] font-bold tracking-tight text-[#EBF0EB]">
+              Rekomendasi destinasi
             </h2>
-            <p className="mt-0.5 text-[11px] text-white/60">
-              Beberapa tempat yang kami rekomendasikan
+            <p className="mt-0.5 text-[12px] text-[#C8D3C8]">
+              Disusun dari preferensi dan lokasi favorit Anda
             </p>
 
-            <div className="mt-3 flex flex-col divide-y divide-white/10">
-              {effectiveRecommended.map((item) => renderItem(item))}
-            </div>
-          </div>
+            {effectiveRecommended.length > 0 ? (
+              <div className="mt-3 flex flex-col divide-y divide-[#EBF0EB]/10">
+                {effectiveRecommended.map((item) => renderItem(item))}
+              </div>
+            ) : (
+              <p className="mt-4 rounded-2xl border border-[#EBF0EB]/10 bg-[#233020] p-4 text-[12.5px] text-[#C8D3C8]">
+                Belum ada rekomendasi tersedia saat ini.
+              </p>
+            )}
+          </section>
 
-          {/* Section 2: Lanjutkan Perjalanan ? */}
-          <div className="mt-6">
-            <h2 className="text-[14px] font-bold tracking-tight text-white">
-              Lanjutkan Perjalanan ?
-            </h2>
-            <p className="mt-0.5 text-[11px] text-white/60">Terakhir dilihat</p>
+          {effectiveContinue && (
+            <section className="mt-6" aria-labelledby="continue-heading">
+              <h2 id="continue-heading" className="text-[14px] font-bold tracking-tight text-[#EBF0EB]">
+                Lanjutkan perjalanan
+              </h2>
+              <p className="mt-0.5 text-[12px] text-[#C8D3C8]">Terakhir dilihat</p>
 
-            <div className="mt-3 flex flex-col divide-y divide-white/10">
-              {effectiveContinue && renderItem(effectiveContinue)}
-            </div>
-          </div>
+              <div className="mt-3 flex flex-col divide-y divide-[#EBF0EB]/10">
+                {renderItem(effectiveContinue)}
+              </div>
+            </section>
+          )}
         </>
       )}
     </div>

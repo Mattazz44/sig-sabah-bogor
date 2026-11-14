@@ -24,6 +24,7 @@ import { AlertTriangleIcon, RefreshIcon, XIcon } from './components/ui/VectorIco
 export default function App() {
   // Data destinasi wisata: murni di-fetch dari API backend Laravel (PostgreSQL / PostGIS)
   const [tourists, setTourists] = useState([])
+  const [isLoadingTourists, setIsLoadingTourists] = useState(true)
   const [isBackendError, setIsBackendError] = useState(false)
   const [isErrorBannerDismissed, setIsErrorBannerDismissed] = useState(false)
   const [isRetryingBackend, setIsRetryingBackend] = useState(false)
@@ -71,6 +72,11 @@ export default function App() {
           setIsErrorBannerDismissed(false)
         }
       })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoadingTourists(false)
+        }
+      })
 
     return () => {
       isMounted = false
@@ -98,6 +104,7 @@ export default function App() {
       .finally(() => {
         if (isMountedRef.current) {
           setIsRetryingBackend(false)
+          setIsLoadingTourists(false)
         }
       })
   }, [fetchTouristsData])
@@ -294,39 +301,39 @@ export default function App() {
           <aside
             role="alert"
             aria-live="polite"
-            className="w-full bg-[#2a1216]/95 border-b border-rose-500/30 px-4 py-2.5 text-rose-100 shadow-sm backdrop-blur-md"
+            className="w-full border-b border-rose-400/35 bg-[#2a1216] px-4 py-2.5 text-rose-100 shadow-sm"
           >
             <div className="mx-auto flex max-w-md items-center justify-between gap-2.5">
               <div className="flex min-w-0 items-start gap-2.5">
-                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-500/20 border border-rose-400/25 text-rose-300">
+                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-400/25 bg-rose-500/20 text-rose-200">
                   <AlertTriangleIcon className="h-4 w-4" />
                 </span>
-                <div className="min-w-0 text-left text-[11px] leading-snug">
-                  <p className="font-semibold text-white">Gagal terhubung ke Backend!</p>
-                  <p className="mt-0.5 text-rose-200/80">
-                    Jalankan backend Laravel (<code className="rounded bg-black/30 px-1 font-mono text-[10px]">php artisan serve</code>) untuk memuat data wisata.
+                <div className="min-w-0 text-left text-[12px] leading-snug">
+                  <p className="font-semibold text-[#EBF0EB]">Koneksi ke server terputus</p>
+                  <p className="mt-0.5 text-rose-100/85">
+                    Jalankan server Laravel (<code className="rounded bg-black/35 px-1 font-mono text-[11px]">php artisan serve</code>) untuk memuat destinasi.
                   </p>
                 </div>
               </div>
 
-              <div className="flex shrink-0 items-center gap-1">
+              <div className="flex shrink-0 items-center gap-1.5">
                 <button
                   type="button"
                   onClick={handleRetryBackend}
                   disabled={isRetryingBackend}
                   aria-label="Coba hubungkan ulang ke backend"
-                  className="inline-flex h-7 items-center gap-1 rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 px-2 text-[11px] font-medium text-white active:scale-[0.97] transition-all duration-150 ease-out disabled:opacity-50 cursor-pointer"
+                  className="relative inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/10 px-3 text-[12px] font-semibold text-[#EBF0EB] transition-colors duration-150 hover:bg-[#EBF0EB]/18 active:scale-[0.97] disabled:opacity-50 before:absolute before:-inset-1"
                 >
                   <RefreshIcon className={`h-3.5 w-3.5 ${isRetryingBackend ? 'animate-spin' : ''}`} />
-                  <span>{isRetryingBackend ? 'Memuat...' : 'Coba Lagi'}</span>
+                  <span>{isRetryingBackend ? 'Memuat...' : 'Coba lagi'}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsErrorBannerDismissed(true)}
                   aria-label="Tutup peringatan backend"
-                  className="flex h-7 w-7 items-center justify-center rounded-lg text-rose-200/75 hover:bg-white/10 hover:text-white active:scale-[0.97] transition-all duration-150 ease-out cursor-pointer"
+                  className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/10 text-[#EBF0EB] transition-colors duration-150 hover:bg-[#EBF0EB]/18 active:scale-[0.97] before:absolute before:-inset-1"
                 >
-                  <XIcon className="h-3.5 w-3.5" />
+                  <XIcon className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -341,6 +348,9 @@ export default function App() {
           <ProfilePage
             user={profileUser === 'self' && currentUser ? { isSelf: true, ...currentUser } : profileUser}
             tourists={enrichedTourists}
+            favorites={favorites}
+            recentSlugs={recentSlugs}
+            onSelectPlace={handleSelect}
             onBack={() => setProfileUser(null)}
             onLogout={handleLogout}
             onStartCustomRoute={handleStartCustomRoute}
@@ -380,6 +390,12 @@ export default function App() {
                 onSelect={handleSelect}
                 expanded={sheetExpanded}
                 onExpandedChange={setSheetExpanded}
+                isLoading={isLoadingTourists}
+                isBackendError={isBackendError}
+                isRetryingBackend={isRetryingBackend}
+                onRetryBackend={handleRetryBackend}
+                isFavorite={isFavorite}
+                toggleFavorite={toggleFavorite}
               />
             </div>
           )}
@@ -407,10 +423,13 @@ export default function App() {
             </div>
           )}
 
-          {/* Menu Untuk Anda: Halaman Rekomendasi "Untuk Kamu" */}
+          {/* Menu Untuk Anda: Halaman Rekomendasi "Untuk Anda" */}
           {activeTab === 'Untuk Anda' && (
             <ForYouPage
               tourists={enrichedTourists}
+              isLoading={isLoadingTourists}
+              isBackendError={isBackendError}
+              onRetryBackend={handleRetryBackend}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
               isFavorite={isFavorite}
@@ -427,6 +446,7 @@ export default function App() {
           {(activeTab === 'Tersimpan' || activeTab === 'Aktivitas Tersimpan') && (
             <SavedActivitiesPage
               tourists={enrichedTourists}
+              isLoadingTourists={isLoadingTourists}
               favorites={favorites}
               recentSlugs={recentSlugs}
               onSelectPlace={handleSelect}
@@ -441,6 +461,10 @@ export default function App() {
             {/* Menu Aktivitas: Halaman Utama Aktivitas & Komunitas */}
             {activeTab === 'Aktivitas' && (
               <ActivitiesPage
+                tourists={enrichedTourists}
+                favorites={favorites}
+                recentSlugs={recentSlugs}
+                onSelectPlace={handleSelect}
                 isLoggedIn={isLoggedIn}
                 currentUser={currentUser}
                 onRequireLogin={() => setShowLoginModal(true)}

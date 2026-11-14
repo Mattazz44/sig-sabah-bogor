@@ -1,6 +1,6 @@
 /**
- * Kumpulan Vector Icons (gaya outline/duotone Lucide & Heroicons)
- * yang ringan dan konsisten dengan tema Forest Green Sabah Bogor.
+ * Ikon vektor spesifik domain GIS & jelajah wisata Sabah Bogor.
+ * Menggunakan geometri bersih dengan aksen duotone opsional bertema hutan tropis.
  */
 
 export function CompassIcon({ className = 'h-6 w-6', duotone = false }) {
@@ -31,27 +31,22 @@ export function CompassIcon({ className = 'h-6 w-6', duotone = false }) {
   )
 }
 
-export function SparklesDuotoneIcon({ className = 'h-9 w-9' }) {
+export function RouteWaypointsIcon({ className = 'h-9 w-9' }) {
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.7"
+      strokeWidth="1.75"
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
       aria-hidden="true"
     >
-      <path
-        d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"
-        fill="currentColor"
-        fillOpacity="0.16"
-      />
-      <path d="M20 3v4" />
-      <path d="M22 5h-4" />
-      <path d="M4 17v2" />
-      <path d="M5 18H3" />
+      <circle cx="6" cy="18" r="3" fill="currentColor" fillOpacity="0.2" />
+      <circle cx="18" cy="6" r="3" fill="currentColor" fillOpacity="0.2" />
+      <path d="M8.5 16.2c2.2-1.8 1.5-4.7 4-6.2 1.6-1 3-.8 4-2" />
+      <path d="M12 4.5v2" />
     </svg>
   )
 }
@@ -116,15 +111,35 @@ export function HeartIcon({ className = 'h-5 w-5', filled = false }) {
     <svg
       viewBox="0 0 24 24"
       fill={filled ? 'currentColor' : 'none'}
-      fillOpacity={filled ? '0.2' : undefined}
       stroke="currentColor"
-      strokeWidth="1.8"
+      strokeWidth="1.9"
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
       aria-hidden="true"
     >
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  )
+}
+
+export function ShareIcon({ className = 'h-4 w-4' }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
     </svg>
   )
 }
@@ -202,11 +217,11 @@ export function ClockIcon({ className = 'h-4 w-4' }) {
   )
 }
 
-export function StarIcon({ className = 'h-4 w-4' }) {
+export function StarIcon({ className = 'h-4 w-4', filled = false }) {
   return (
     <svg
       viewBox="0 0 24 24"
-      fill="none"
+      fill={filled ? 'currentColor' : 'none'}
       stroke="currentColor"
       strokeWidth="1.8"
       strokeLinecap="round"
@@ -257,3 +272,71 @@ export function RefreshIcon({ className = 'h-3.5 w-3.5' }) {
   )
 }
 
+export function CheckIcon({ className = 'h-3.5 w-3.5' }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  )
+}
+
+export function ChevronRightIcon({ className = 'h-4 w-4' }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <polyline points="9 18 15 12 9 6" />
+    </svg>
+  )
+}
+
+export function ChevronLeftIcon({ className = 'h-5 w-5' }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  )
+}
+
+export function UserIcon({ className = 'h-4 w-4' }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  )
+}

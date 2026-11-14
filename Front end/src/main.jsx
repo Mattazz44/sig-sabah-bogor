@@ -49,9 +49,8 @@ class ErrorBoundary extends Component {
             type="button"
             onClick={() => window.location.href = '/'}
             style={{
-              backgroundColor: '#4f5f3b',
-              color: '#ffffff',
-              border: '1px solid rgba(255,255,255,0.2)',
+              backgroundColor: '#EBF0EB',
+              color: '#161E16',
               borderRadius: '9999px',
               padding: '10px 24px',
               fontSize: '13px',

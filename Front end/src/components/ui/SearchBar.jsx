@@ -1,17 +1,19 @@
+import { XIcon } from './VectorIcons'
+
 export default function SearchBar({ value, onChange }) {
   return (
     <div className="relative w-full">
       <label
         htmlFor="search-input"
-        className="flex h-10 w-full items-center gap-3 rounded-full bg-white px-4 shadow-sm transition hover:shadow focus-within:ring-2 focus-within:ring-white/50"
+        className="flex min-h-[44px] w-full items-center gap-2.5 rounded-2xl bg-white px-3.5 shadow-sm transition focus-within:ring-2 focus-within:ring-[#E2D7B5]"
       >
         <svg
           width="16"
           height="16"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#737373"
-          strokeWidth="2.5"
+          stroke="#2c3b26"
+          strokeWidth="2.3"
           strokeLinecap="round"
           strokeLinejoin="round"
           className="shrink-0"
@@ -25,20 +27,17 @@ export default function SearchBar({ value, onChange }) {
           type="search"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Temukan tempat wisata terdekat"
-          className="w-full bg-transparent text-[13px] font-normal text-forest-900 outline-none placeholder:text-neutral-500 placeholder:text-center text-center pr-2"
+          placeholder="Cari destinasi wisata di Bogor"
+          className="w-full bg-transparent text-left text-[13px] font-normal text-forest-900 placeholder:text-left placeholder:text-[#4B584B] focus:outline-none"
         />
         {value && (
           <button
             type="button"
             onClick={() => onChange('')}
             aria-label="Hapus pencarian"
-            className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-neutral-200 text-neutral-600 hover:bg-neutral-300"
+            className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#E4EAE4] text-forest-900 transition-colors hover:bg-[#D2DCD2] before:absolute before:-inset-1.5"
           >
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
+            <XIcon className="h-3.5 w-3.5" />
           </button>
         )}
       </label>

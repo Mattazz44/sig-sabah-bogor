@@ -87,9 +87,9 @@ export default function MapView({
       {isNavigationMode && !hasDestination && (
         <aside
           aria-label="Petunjuk navigasi"
-          className="absolute top-4 inset-x-4 max-w-sm mx-auto z-[900] pointer-events-none animate-tab-enter"
+          className="pointer-events-none absolute top-4 inset-x-4 z-[900] mx-auto max-w-sm animate-tab-enter"
         >
-          <div className="pointer-events-auto flex items-center gap-3 rounded-2xl bg-[#253320]/95 backdrop-blur-md px-4 py-3 border border-white/10 shadow-xl">
+          <div className="pointer-events-auto flex items-center gap-3 rounded-2xl border border-[#EBF0EB]/15 bg-[#1F2C1C] px-4 py-3 shadow-xl">
             <svg
               width="20"
               height="20"
@@ -99,27 +99,31 @@ export default function MapView({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="shrink-0 text-amber-300"
+              className="shrink-0 text-[#E2D7B5]"
+              aria-hidden="true"
             >
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
-            <p className="text-[12px] font-medium text-white/90 leading-snug">
-              Silakan pilih tempat wisata di menu Explore atau Rute Custom untuk memulai navigasi.
+            <p className="text-[12px] font-medium leading-snug text-[#EBF0EB]">
+              Pilih destinasi di menu Explore atau susun Rute Custom untuk mulai navigasi.
             </p>
           </div>
         </aside>
       )}
 
-      {/* Tombol Melayang "Akhiri Perjalanan" di atas peta */}
+      {/* Tombol Melayang "Akhiri Perjalanan" di atas Floating Dock */}
       {isNavigationMode && hasDestination && (
-        <div className="fixed bottom-20 inset-x-0 flex justify-center z-[1000] pointer-events-none">
+        <div
+          style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 94px)' }}
+          className="pointer-events-none fixed inset-x-0 z-[1000] flex justify-center"
+        >
           <button
             type="button"
             id="btn-akhiri-perjalanan"
             onClick={onStopNavigation}
-            className="pointer-events-auto flex items-center gap-2 rounded-full bg-rose-600 hover:bg-rose-700 active:scale-[0.97] px-6 py-2.5 text-[13px] font-bold text-white shadow-lg transition-all duration-150 ease-out border border-rose-400/30 cursor-pointer"
+            className="pointer-events-auto flex min-h-[44px] items-center gap-2 rounded-full border border-[#EBF0EB]/20 bg-[#253320] px-6 py-2.5 text-[13px] font-semibold text-[#EBF0EB] shadow-md transition-colors duration-150 hover:bg-[#31442B] active:scale-[0.97]"
           >
             <svg
               width="14"
@@ -130,11 +134,12 @@ export default function MapView({
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
             >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
-            <span>Akhiri Perjalanan</span>
+            <span>Akhiri perjalanan</span>
           </button>
         </div>
       )}

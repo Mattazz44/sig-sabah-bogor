@@ -45,7 +45,10 @@ export default function LocateControl({
   else if (isGranted) tooltipText = 'Pusatkan ke lokasi Anda'
 
   return (
-    <div className="fixed bottom-24 right-4 !pointer-events-auto z-[450] flex flex-col items-end gap-2.5">
+    <div
+      style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 96px)' }}
+      className="fixed right-4 !pointer-events-auto z-[450] flex flex-col items-end gap-2.5"
+    >
       {/* Toggle Batas Wilayah Kota Bogor (WBS 1.2.7) */}
       {onToggleBoundary && (
         <button
@@ -58,10 +61,10 @@ export default function LocateControl({
             e.preventDefault()
             onToggleBoundary()
           }}
-          className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl shadow-xl backdrop-blur-md transition-all duration-200 active:scale-90 cursor-pointer border ${
+          className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2A3B2A] hover:bg-[#354A35] shadow-md transition-all duration-150 ease-out active:scale-[0.97] cursor-pointer border ${
             showBoundary
-              ? 'bg-emerald-700/95 text-white border-emerald-400/50 hover:bg-emerald-600'
-              : 'bg-forest-900/85 text-white/60 border-white/15 hover:bg-forest-800/95 hover:text-white'
+              ? 'text-[#E2D7B5] border-[#EBF0EB]/30'
+              : 'text-[#EBF0EB]/80 border-[#EBF0EB]/[0.16] hover:text-[#EBF0EB]'
           }`}
         >
           <svg
@@ -94,10 +97,10 @@ export default function LocateControl({
             e.preventDefault()
             onToggleClustering()
           }}
-          className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl shadow-xl backdrop-blur-md transition-all duration-200 active:scale-90 cursor-pointer border ${
+          className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2A3B2A] hover:bg-[#354A35] shadow-md transition-all duration-150 ease-out active:scale-[0.97] cursor-pointer border ${
             clusteringEnabled
-              ? 'bg-emerald-700/95 text-white border-emerald-400/50 hover:bg-emerald-600'
-              : 'bg-forest-900/85 text-white/60 border-white/15 hover:bg-forest-800/95 hover:text-white'
+              ? 'text-[#E2D7B5] border-[#EBF0EB]/30'
+              : 'text-[#EBF0EB]/80 border-[#EBF0EB]/[0.16] hover:text-[#EBF0EB]'
           }`}
         >
           <svg
@@ -125,12 +128,12 @@ export default function LocateControl({
         aria-label={tooltipText}
         title={tooltipText}
         onClick={handleLocateClick}
-        className={`group relative flex h-12 w-12 items-center justify-center rounded-2xl shadow-xl backdrop-blur-md transition-all duration-200 active:scale-90 cursor-pointer border ${
+        className={`group relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#2A3B2A] hover:bg-[#354A35] shadow-md transition-all duration-150 ease-out active:scale-[0.97] cursor-pointer border ${
           isGranted
-            ? 'bg-blue-600 text-white border-blue-400/40 hover:bg-blue-500 shadow-blue-900/40'
+            ? 'text-[#EBF0EB] border-[#EBF0EB]/30'
             : isDenied
-            ? 'bg-rose-950/90 text-rose-300 border-rose-500/40 hover:bg-rose-900/90'
-            : 'bg-forest-900/90 text-white hover:bg-forest-800/95 border-white/20'
+            ? 'text-rose-300 border-[#EBF0EB]/[0.16]'
+            : 'text-[#EBF0EB] border-[#EBF0EB]/[0.16]'
         }`}
       >
         {isRequesting ? (
@@ -167,7 +170,7 @@ export default function LocateControl({
             strokeLinecap="round"
             strokeLinejoin="round"
             className={`transition-transform duration-200 group-hover:scale-110 ${
-              isGranted ? 'text-white' : isDenied ? 'text-rose-400' : 'text-emerald-400'
+              isGranted ? 'text-[#EBF0EB]' : isDenied ? 'text-rose-400' : 'text-[#EBF0EB]'
             }`}
           >
             <circle cx="12" cy="12" r="7" />
@@ -179,12 +182,9 @@ export default function LocateControl({
           </svg>
         )}
 
-        {/* Pulse effect saat lokasi aktif */}
+        {/* Penanda statis saat lokasi GPS aktif */}
         {isGranted && (
-          <span className="absolute -top-1 -right-1 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-          </span>
+          <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full border border-[#1B261B] bg-[#E2D7B5]" aria-hidden="true" />
         )}
       </button>
     </div>

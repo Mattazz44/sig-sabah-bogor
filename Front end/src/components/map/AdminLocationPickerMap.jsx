@@ -40,13 +40,13 @@ function AdminLocationPickerMap({ lat, lng, onPickCoordinate }) {
   )
 
   return (
-    <div className="relative h-[180px] w-full overflow-hidden rounded-xl border border-white/10 bg-[#253520] shadow-inner">
+    <div className="relative h-[180px] w-full overflow-hidden rounded-xl border border-[#EBF0EB]/16 bg-[#233020] shadow-inner">
       <LeafletMap
         center={markerPosition}
         zoom={13}
         attributionControl={false}
         zoomControl={false}
-        className="h-full w-full z-0 cursor-crosshair"
+        className="z-0 h-full w-full cursor-crosshair"
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -55,12 +55,6 @@ function AdminLocationPickerMap({ lat, lng, onPickCoordinate }) {
         <MapClickHandler onPickCoordinate={onPickCoordinate} />
         {hasValidCoord && <Marker position={markerPosition} icon={adminPinIcon} />}
       </LeafletMap>
-
-      {/* Subtle grid & label overlay matching schema mockup */}
-      <div className="pointer-events-none absolute inset-0 z-[400] bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:48px_32px]" />
-      <span className="pointer-events-none absolute bottom-2 left-2.5 z-[400] rounded bg-[#2c3b26]/85 px-1.5 py-0.5 text-[10px] text-white/60 backdrop-blur-xs">
-        Peta skema
-      </span>
     </div>
   )
 }

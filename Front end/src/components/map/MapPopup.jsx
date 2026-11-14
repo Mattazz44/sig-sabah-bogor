@@ -1,5 +1,6 @@
 import { Popup } from 'react-leaflet'
 import SafeImage from '../ui/SafeImage'
+import { ChevronRightIcon, StarIcon } from '../ui/VectorIcons'
 
 export default function MapPopup({ place, onSelect, isTransit = false }) {
   if (!place) return null
@@ -14,14 +15,12 @@ export default function MapPopup({ place, onSelect, isTransit = false }) {
       maxWidth={200}
       autoPan={true}
       autoPanPaddingTopLeft={[20, 120]}
-      autoPanPaddingBottomRight={[20, 100]}
+      autoPanPaddingBottomRight={[20, 110]}
     >
-      <div
-        role="button"
-        tabIndex={0}
+      <button
+        type="button"
         onClick={() => onSelect && onSelect(place)}
-        onKeyDown={(e) => e.key === 'Enter' && onSelect && onSelect(place)}
-        className="w-[190px] max-w-[200px] cursor-pointer text-left active:scale-[0.98] transition-transform duration-150 focus:outline-none"
+        className="block w-[190px] max-w-[200px] text-left transition-transform duration-150 active:scale-[0.98]"
       >
         <div className="relative">
           <SafeImage
@@ -31,28 +30,29 @@ export default function MapPopup({ place, onSelect, isTransit = false }) {
             loading="lazy"
             decoding="async"
           />
-          {/* 1. BADGE LOKASI TRANSIT PADA MULTI-ROUTE */}
           {isTransit && (
-            <span className="absolute top-1.5 left-1.5 z-[2] rounded-full bg-emerald-600/90 backdrop-blur-sm px-2 py-0.5 text-[8.5px] font-bold text-white border border-emerald-400/40 shadow-sm flex items-center gap-1">
-              <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-              <span>Lokasi Transit 1</span>
+            <span className="absolute top-1.5 left-1.5 z-[2] inline-flex items-center gap-1 rounded-md border border-[#E2D7B5]/40 bg-[#1B261B]/95 px-2 py-0.5 text-[9px] font-semibold text-[#E2D7B5] shadow-sm">
+              <span>Lokasi Transit</span>
             </span>
           )}
         </div>
 
         <div className="px-2.5 py-2">
-          <p className="text-[12px] font-semibold text-white leading-tight truncate">
+          <p className="truncate text-[12px] font-semibold leading-tight text-[#EBF0EB]">
             {place.name}
           </p>
-          <p className="mt-0.5 text-[10px] text-white/70 truncate">
-            {place.category} · ★ {ratingText}
+          <p className="mt-0.5 flex items-center gap-1 truncate text-[11px] text-[#C8D3C8]">
+            <span>{place.category}</span>
+            <span aria-hidden="true">·</span>
+            <StarIcon filled className="h-3 w-3 shrink-0 text-amber-300" />
+            <span className="tabular-nums">{ratingText}</span>
           </p>
-          <p className="mt-1 text-[9.5px] font-semibold text-amber-300 flex items-center gap-1">
-            <span>{isTransit ? 'Arah Menuju Sini' : 'Lihat Detail'}</span>
-            <span>→</span>
+          <p className="mt-1 flex items-center gap-0.5 text-[10px] font-semibold text-[#E2D7B5]">
+            <span>{isTransit ? 'Arah menuju sini' : 'Lihat detail'}</span>
+            <ChevronRightIcon className="h-3 w-3 shrink-0" />
           </p>
         </div>
-      </div>
+      </button>
     </Popup>
   )
 }
