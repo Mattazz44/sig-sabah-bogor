@@ -45,6 +45,8 @@ function SavedActivitiesPage({
             setUserActivities(
               json.data.activities.map((a) => ({
                 id: a.id,
+                tourist_spot_id: a.tourist_spot_id,
+                spot_slug: a.spot_slug,
                 name: a.name,
                 location: a.location,
                 date: a.date_label || 'Baru saja',
@@ -147,6 +149,8 @@ function SavedActivitiesPage({
     return (
       <CustomRoutePage
         tourists={tourists}
+        favorites={favorites}
+        userActivities={effectiveUserActivities}
         currentUser={currentUser}
         onBack={() => setActiveFolderView(null)}
         onStartCustomRoute={onStartCustomRoute}

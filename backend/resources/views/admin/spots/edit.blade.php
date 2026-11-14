@@ -481,10 +481,58 @@
             }
         });
 
-        function handleNewFiles(files) {
+        async function compressImageClient(file, maxWidth = 1280, maxHeight = 1280, quality = 0.82) {
+            if (!file || !file.type.startsWith('image/') || file.type === 'image/svg+xml' || file.type === 'image/gif') {
+                return file;
+            }
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = new Image();
+                    img.onload = function () {
+                        let width = img.naturalWidth || img.width;
+                        let height = img.naturalHeight || img.height;
+                        if (width > maxWidth || height > maxHeight) {
+                            const ratio = Math.min(maxWidth / width, maxHeight / height);
+                            width = Math.max(1, Math.round(width * ratio));
+                            height = Math.max(1, Math.round(height * ratio));
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        if (!ctx) { resolve(file); return; }
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, 0, 0, width, height);
+                        const targetMime = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                        canvas.toBlob(function (blob) {
+                            if (!blob || blob.size >= file.size) {
+                                resolve(file);
+                                return;
+                            }
+                            const compressed = new File([blob], file.name, {
+                                type: targetMime,
+                                lastModified: Date.now()
+                            });
+                            resolve(compressed);
+                        }, targetMime, quality);
+                    };
+                    img.onerror = () => resolve(file);
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => resolve(file);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function handleNewFiles(files) {
             for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                if (!file.type.startsWith('image/')) continue;
+                const originalFile = files[i];
+                if (!originalFile.type.startsWith('image/')) continue;
+
+                // Kompresi foto otomatis di browser sebelum form diunggah
+                const file = await compressImageClient(originalFile, 1280, 1280, 0.82);
 
                 const fileId = 'new_' + newFileCounter++;
                 fileStore.items.add(file);

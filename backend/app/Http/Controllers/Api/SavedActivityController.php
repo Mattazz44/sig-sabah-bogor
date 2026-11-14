@@ -13,9 +13,14 @@ class SavedActivityController extends Controller
     /**
      * Mengambil daftar aktivitas perjalanan tersimpan & rute custom.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $activities = SavedActivity::orderBy('created_at', 'desc')->get();
+        $userId = $request->query('user_id');
+        $query = SavedActivity::with('touristSpot')->orderBy('created_at', 'desc');
+        if ($userId) {
+            $query->where('user_id', $userId);
+        }
+        $activities = $query->get();
         $customRoutes = CustomRoute::orderBy('is_primary', 'desc')->orderBy('created_at', 'desc')->get();
 
         return response()->json([
@@ -28,16 +33,24 @@ class SavedActivityController extends Controller
     }
 
     /**
-     * Menyimpan aktivitas perjalanan baru buatan user.
+     * Menyimpan aktivitas / tempat wisata tersimpan baru buatan user.
      */
     public function storeActivity(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
+            'tourist_spot_id' => 'nullable|integer',
+            'spot_slug' => 'nullable|string',
+            'user_id' => 'nullable|integer',
         ]);
 
+        $userId = $request->input('user_id') ?: ($request->user()?->id ?? null);
+
         $activity = SavedActivity::create([
+            'user_id' => $userId,
+            'tourist_spot_id' => $request->input('tourist_spot_id'),
+            'spot_slug' => $request->input('spot_slug'),
             'name' => $validated['name'],
             'location' => $validated['location'],
             'date_label' => 'Baru saja',

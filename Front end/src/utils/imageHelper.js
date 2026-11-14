@@ -36,8 +36,8 @@ export function getImageUrl(imagePath, fallback = DEFAULT_IMAGE_PLACEHOLDER) {
     return trimmed
   }
 
-  // Bersihkan baseUrl dari spasi (whitespace) dan trailing slash
-  const rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').trim()
+  // Bersihkan baseUrl dari spasi (whitespace) dan trailing slash (kosong = same-origin)
+  const rawBase = (import.meta.env.VITE_API_BASE_URL ?? '').trim()
   const baseUrl = rawBase.replace(/\/+$/, '')
 
   // Ganti domain localhost/127.0.0.1 bawaan Laravel jika diakses lewat ngrok / server lain

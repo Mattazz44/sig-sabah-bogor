@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('saved_activities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('tourist_spot_id')->nullable()->constrained('tourist_spots')->nullOnDelete();
+            $table->string('spot_slug')->nullable();
             $table->string('name');
             $table->string('location');
             $table->string('date_label')->nullable();

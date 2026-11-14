@@ -6,16 +6,35 @@ export const CATEGORIES = [ALL_CATEGORY, 'Alam & Curug', 'Kuliner', 'Edukasi & B
 
 export const CATEGORY_COLORS = {
   'Alam & Curug': 'var(--color-pin-alam)',
+  'Wisata Alam': 'var(--color-pin-alam)',
+  'Ruang Publik': 'var(--color-pin-alam)',
+  'Rekreasi Keluarga': 'var(--color-pin-alam)',
+  Agrowisata: 'var(--color-pin-alam)',
   Kuliner: 'var(--color-pin-kuliner)',
+  Belanja: 'var(--color-pin-kuliner)',
   'Edukasi & Budaya': 'var(--color-pin-edukasi)',
+  'Sejarah & Budaya': 'var(--color-pin-edukasi)',
+  Edukasi: 'var(--color-pin-edukasi)',
+  Landmark: 'var(--color-pin-edukasi)',
+  'Kampung Wisata': 'var(--color-pin-edukasi)',
 }
 
 // White glyphs drawn in a 24x24 viewBox, used inside map pins.
+const GLYPH_ALAM = '<path fill="#fff" d="M12 2 5 12h4l-3.5 5h13L15 12h4L12 2Z"/><rect fill="#fff" x="10.75" y="17" width="2.5" height="5" rx="1"/>'
+const GLYPH_KULINER = '<g fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v7a3 3 0 0 0 6 0V2M9 2v20"/><path d="M18 22V2c-2.2 1.6-3 5-3 9h3"/></g>'
+const GLYPH_EDUKASI = '<path fill="#fff" d="M12 2 2 8v2h20V8L12 2Z"/><rect fill="#fff" x="4" y="11" width="2.6" height="7"/><rect fill="#fff" x="10.7" y="11" width="2.6" height="7"/><rect fill="#fff" x="17.4" y="11" width="2.6" height="7"/><rect fill="#fff" x="2" y="19" width="20" height="3"/>'
+
 export const CATEGORY_GLYPHS = {
-  'Alam & Curug':
-    '<path fill="#fff" d="M12 2 5 12h4l-3.5 5h13L15 12h4L12 2Z"/><rect fill="#fff" x="10.75" y="17" width="2.5" height="5" rx="1"/>',
-  Kuliner:
-    '<g fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v7a3 3 0 0 0 6 0V2M9 2v20"/><path d="M18 22V2c-2.2 1.6-3 5-3 9h3"/></g>',
-  'Edukasi & Budaya':
-    '<path fill="#fff" d="M12 2 2 8v2h20V8L12 2Z"/><rect fill="#fff" x="4" y="11" width="2.6" height="7"/><rect fill="#fff" x="10.7" y="11" width="2.6" height="7"/><rect fill="#fff" x="17.4" y="11" width="2.6" height="7"/><rect fill="#fff" x="2" y="19" width="20" height="3"/>',
+  'Alam & Curug': GLYPH_ALAM,
+  'Wisata Alam': GLYPH_ALAM,
+  'Ruang Publik': GLYPH_ALAM,
+  'Rekreasi Keluarga': GLYPH_ALAM,
+  Agrowisata: GLYPH_ALAM,
+  Kuliner: GLYPH_KULINER,
+  Belanja: GLYPH_KULINER,
+  'Edukasi & Budaya': GLYPH_EDUKASI,
+  'Sejarah & Budaya': GLYPH_EDUKASI,
+  Edukasi: GLYPH_EDUKASI,
+  Landmark: GLYPH_EDUKASI,
+  'Kampung Wisata': GLYPH_EDUKASI,
 }

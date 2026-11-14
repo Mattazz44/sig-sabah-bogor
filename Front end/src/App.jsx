@@ -24,17 +24,17 @@ export default function App() {
   // Data destinasi wisata: murni di-fetch dari API backend Laravel (PostgreSQL / PostGIS)
   const [tourists, setTourists] = useState([])
   const [isBackendError, setIsBackendError] = useState(false)
+  const [isRetrying, setIsRetrying] = useState(false)
 
-  useEffect(() => {
-    let isMounted = true
-
-    apiFetch('/api/tourists')
+  const loadTourists = useCallback(() => {
+    setIsRetrying(true)
+    return apiFetch('/api/tourists')
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
         return res.json()
       })
       .then((json) => {
-        if (isMounted && json?.data && Array.isArray(json.data)) {
+        if (json?.data && Array.isArray(json.data)) {
           // Normalisasi path image & gallery agar menggunakan helper getImageUrl
           const normalized = json.data.map((item) => ({
             ...item,
@@ -47,16 +47,17 @@ export default function App() {
       })
       .catch((err) => {
         console.error('Gagal memuat data objek wisata dari backend Laravel:', err)
-        if (isMounted) {
-          setTourists([])
-          setIsBackendError(true)
-        }
+        setTourists([])
+        setIsBackendError(true)
       })
-
-    return () => {
-      isMounted = false
-    }
+      .finally(() => {
+        setIsRetrying(false)
+      })
   }, [])
+
+  useEffect(() => {
+    loadTourists()
+  }, [loadTourists])
 
   // 1. State aktif untuk tab navigasi (Explore, Untuk Anda, Navigasi, Tersimpan, Aktivitas)
   const [activeTab, setActiveTab] = useState('Explore')
@@ -240,16 +241,26 @@ export default function App() {
         <aside
           role="alert"
           aria-live="polite"
-          className="fixed top-4 inset-x-4 max-w-sm mx-auto z-[2500] pointer-events-none animate-in fade-in slide-in-from-top-4 duration-300"
+          className="fixed top-4 inset-x-4 max-w-sm mx-auto z-[2500] animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-none"
         >
-          <div className="pointer-events-auto flex items-center gap-3 rounded-2xl bg-rose-950/95 backdrop-blur-md px-4 py-3 border border-rose-500/40 shadow-2xl text-rose-200">
-            <span className="text-xl shrink-0">⚠️</span>
-            <div className="text-left text-[11px] leading-tight">
-              <p className="font-bold text-white">Gagal terhubung ke Backend!</p>
-              <p className="mt-0.5 text-rose-200/80">
-                Silakan jalankan backend Laravel (<code className="font-mono bg-black/30 px-1 rounded">php artisan serve</code>) untuk memuat data wisata dari database.
-              </p>
+          <div className="pointer-events-auto flex items-center justify-between gap-3 rounded-2xl bg-rose-950/95 backdrop-blur-md px-4 py-3 border border-rose-500/40 shadow-2xl text-rose-200">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="text-xl shrink-0">⚠️</span>
+              <div className="text-left text-[11px] leading-tight min-w-0">
+                <p className="font-bold text-white">Gagal terhubung ke Backend!</p>
+                <p className="mt-0.5 text-rose-200/80 truncate">
+                  Memeriksa cookie / koneksi server...
+                </p>
+              </div>
             </div>
+            <button
+              type="button"
+              disabled={isRetrying}
+              onClick={loadTourists}
+              className="shrink-0 px-3 py-1.5 rounded-lg bg-rose-800 hover:bg-rose-700 active:scale-95 disabled:opacity-50 text-[11px] font-semibold text-white transition shadow cursor-pointer"
+            >
+              {isRetrying ? 'Memuat...' : 'Coba Lagi'}
+            </button>
           </div>
         </aside>
       )}
@@ -262,6 +273,12 @@ export default function App() {
           onBack={() => setProfileUser(null)}
           onLogout={handleLogout}
           onStartCustomRoute={handleStartCustomRoute}
+          onUpdateUser={(updatedUser) => {
+            setCurrentUser(updatedUser)
+          }}
+          currentUser={currentUser}
+          isLoggedIn={isLoggedIn}
+          onRequireLogin={() => setShowLoginModal(true)}
         />
       ) : selectedPlace ? (
         /* 1 & 2. Tampilkan Detail Wisata penuh jika selectedPlace tidak null */
