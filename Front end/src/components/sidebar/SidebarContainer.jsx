@@ -11,6 +11,7 @@ export default function SidebarContainer({
   query,
   onQueryChange,
   onSelect,
+  onHoverPlace,
   expanded,
   onExpandedChange,
   isLoading = false,
@@ -38,6 +39,7 @@ export default function SidebarContainer({
               query={query}
               onQueryChange={onQueryChange}
               onSelect={onSelect}
+              onHoverPlace={onHoverPlace}
               isLoading={isLoading}
               isBackendError={isBackendError}
               isRetryingBackend={isRetryingBackend}

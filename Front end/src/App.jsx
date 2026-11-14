@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useMatch, useNavigate } from 'react-router-dom'
+import { useLocation, useMatch, useNavigate } from 'react-router-dom'
 import { useFilteredTourists } from './hooks/useMapControls'
 import { useFavorites } from './hooks/useFavorites'
 import { useRecentlyViewed } from './hooks/useRecentlyViewed'
@@ -13,9 +13,7 @@ import SavedActivitiesPage from './components/pages/SavedActivitiesPage'
 import ActivitiesPage from './components/pages/ActivitiesPage'
 import TouristDetailPage from './components/pages/TouristDetailPage'
 import ProfilePage from './components/pages/ProfilePage'
-import AdminPage from './components/pages/AdminPage'
 import LoginModal from './components/ui/LoginModal'
-import { useAdminLocations } from './hooks/useAdminLocations'
 import { enrichTouristWithUserLocation } from './utils/distance'
 import { apiFetch } from './utils/api'
 import { getImageUrl } from './utils/imageHelper'
@@ -29,6 +27,15 @@ export default function App() {
   const [isErrorBannerDismissed, setIsErrorBannerDismissed] = useState(false)
   const [isRetryingBackend, setIsRetryingBackend] = useState(false)
   const isMountedRef = useRef(true)
+  const mapHoverHandlerRef = useRef(null)
+
+  const handleRegisterMapHover = useCallback((fn) => {
+    mapHoverHandlerRef.current = fn
+  }, [])
+
+  const handleHoverPlace = useCallback((placeId) => {
+    mapHoverHandlerRef.current?.(placeId)
+  }, [])
 
   useEffect(() => {
     isMountedRef.current = true
@@ -119,13 +126,11 @@ export default function App() {
     requestLocation: handleRequestLocation,
   } = useUserLocation()
 
-  const { locations: adminLocations } = useAdminLocations()
-
   // Perkaya data tempat wisata dengan jarak dan waktu tempuh dinamis dari lokasi user
-  const enrichedTourists = useMemo(() => {
-    const combined = [...adminLocations, ...tourists]
-    return combined.map((place) => enrichTouristWithUserLocation(place, userPosition))
-  }, [adminLocations, tourists, userPosition])
+  const enrichedTourists = useMemo(
+    () => tourists.map((place) => enrichTouristWithUserLocation(place, userPosition)),
+    [tourists, userPosition],
+  )
 
   // State mode navigasi internal peta (destination object atau array rute custom)
   const [navigationTarget, setNavigationTarget] = useState(null)
@@ -142,6 +147,7 @@ export default function App() {
   const { favorites, toggleFavorite, isFavorite } = useFavorites()
   const { recentSlugs, addRecentlyViewed } = useRecentlyViewed()
 
+  const location = useLocation()
   const navigate = useNavigate()
   const isAdminRoute = Boolean(useMatch('/admin'))
   const match = useMatch('/place/:slug')
@@ -152,9 +158,15 @@ export default function App() {
     [selectedSlug, enrichedTourists],
   )
 
-  // State untuk menyimpan data objek tempat wisata yang sedang dipilih untuk Detail Wisata
+  // State untuk menyimpan objek tempat wisata terpilih sekaligus selalu tersinkron ke URL slug
   const [clickedPlace, setClickedPlace] = useState(null)
-  const selectedPlace = clickedPlace ? enrichTouristWithUserLocation(clickedPlace, userPosition) : routePlace
+  const selectedPlace = useMemo(() => {
+    if (!selectedSlug) return null
+    const matchedClicked =
+      clickedPlace && clickedPlace.slug === selectedSlug ? clickedPlace : null
+    const targetPlace = routePlace ?? matchedClicked
+    return targetPlace ? enrichTouristWithUserLocation(targetPlace, userPosition) : null
+  }, [selectedSlug, routePlace, clickedPlace, userPosition])
   const selected = selectedPlace
 
   const filtered = useFilteredTourists(enrichedTourists, category, query)
@@ -167,18 +179,25 @@ export default function App() {
   // Trigger klik kartu wisata di sidebar ATAU popup marker di peta
   const handleSelect = useCallback(
     (slugOrPlace) => {
-      const place =
+      const incomingSlug =
         typeof slugOrPlace === 'object' && slugOrPlace !== null
-          ? slugOrPlace
-          : enrichedTourists.find((t) => t.slug === slugOrPlace) ?? null
+          ? slugOrPlace.slug
+          : slugOrPlace
+      const canonicalPlace = incomingSlug
+        ? enrichedTourists.find((t) => t.slug === incomingSlug) ?? null
+        : null
+      const place =
+        canonicalPlace ??
+        (typeof slugOrPlace === 'object' && slugOrPlace !== null ? slugOrPlace : null)
 
       setClickedPlace(place)
       setProfileUser(null)
       setSheetExpanded(false)
       setActiveTab('Explore')
-      if (place) {
-        addRecentlyViewed(place.slug)
-        navigate(`/place/${place.slug}`, { replace: selectedSlug !== null })
+      const targetSlug = place?.slug ?? incomingSlug
+      if (targetSlug) {
+        addRecentlyViewed(targetSlug)
+        navigate(`/place/${targetSlug}`, { replace: selectedSlug !== null })
       }
     },
     [navigate, selectedSlug, enrichedTourists, addRecentlyViewed],
@@ -271,21 +290,57 @@ export default function App() {
       setClickedPlace(null)
       setProfileUser(null)
       setActiveTab(tabName)
-      if (tabName === 'Explore' && selectedSlug) {
+      if (location.pathname !== '/') {
         navigate('/')
       }
     },
-    [navigate, selectedSlug],
+    [location.pathname, navigate],
   )
 
+  useEffect(() => {
+    if (isAdminRoute) {
+      window.location.replace('http://localhost:8000/admin')
+    }
+  }, [isAdminRoute])
+
   if (isAdminRoute) {
-    return <AdminPage />
+    return (
+      <div className="flex h-dvh w-full flex-col items-center justify-center bg-forest-900 px-6 text-center text-[#EBF0EB]">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-[#141C14]/70 text-[#E2D7B5] shadow-lg backdrop-blur-xl">
+          <RefreshIcon className="h-6 w-6 animate-spin" />
+        </div>
+        <h1 className="mt-4 text-[18px] font-bold tracking-tight text-[#EBF0EB]">
+          Mengarahkan ke Panel Admin...
+        </h1>
+        <p className="mt-1.5 max-w-sm text-[13px] leading-relaxed text-[#C8D3C8]">
+          Anda sedang dialihkan ke sistem manajemen destinasi backend di{' '}
+          <code className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-[12px] text-[#E2D7B5]">
+            localhost:8000/admin
+          </code>
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="http://localhost:8000/admin"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#EBF0EB] px-6 text-[13px] font-semibold text-[#161E16] shadow-sm transition-colors hover:bg-[#DCE4DC] active:scale-[0.98]"
+          >
+            Buka Panel Admin (Port 8000)
+          </a>
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-white/20 bg-[#141C14]/60 px-5 text-[13px] font-medium text-[#C8D3C8] transition-colors hover:bg-white/10 hover:text-[#EBF0EB]"
+          >
+            Kembali ke Peta
+          </button>
+        </div>
+      </div>
+    )
   }
 
   const showBackendBanner = isBackendError && !isErrorBannerDismissed
 
   return (
-    <main className="relative flex flex-col h-dvh w-full overflow-hidden bg-forest-900">
+    <main className="relative inset-x-0 left-0 right-0 mx-0 flex flex-col h-dvh w-full overflow-hidden bg-forest-900">
       <h1 className="sr-only">SIG Wisata Bogor</h1>
 
       {/* Banner Peringatan Inline jika Backend Laravel Belum Dijalankan (mendorong konten secara natural tanpa overlap) */}
@@ -342,7 +397,7 @@ export default function App() {
       </div>
 
       {/* Kontainer Utama Fleksibel: menjaga seluruh halaman & peta tetap proporsional di bawah banner */}
-      <div className="relative flex-1 min-h-0 w-full overflow-hidden">
+      <div className="relative inset-x-0 left-0 right-0 mx-0 flex-1 min-h-0 w-full overflow-hidden">
         {/* 3. TAMPILAN HALAMAN PROFIL (Akun Sendiri vs Orang Lain) */}
         {profileUser ? (
           <ProfilePage
@@ -364,6 +419,7 @@ export default function App() {
         ) : selectedPlace ? (
           /* 1 & 2. Tampilkan Detail Wisata penuh jika selectedPlace tidak null */
           <TouristDetailPage
+            key={selectedPlace.slug}
             place={selectedPlace}
             onBack={handleBackToExplore}
             onStartNavigation={handleStartNavigation}
@@ -374,7 +430,7 @@ export default function App() {
           <>
             {/* Menu Explore: Tampilkan Peta Leaflet + Sidebar wisata */}
             {activeTab === 'Explore' && (
-              <div className="relative h-full w-full animate-fade-enter">
+              <div className="relative inset-x-0 left-0 right-0 mx-0 h-full w-full overflow-hidden animate-fade-enter">
               <MapView
                 places={mapPlaces}
                 selected={selected}
@@ -385,6 +441,7 @@ export default function App() {
                 navigationTarget={null}
                 onStopNavigation={handleStopNavigation}
                 isNavigationMode={false}
+                onRegisterHoverHandler={handleRegisterMapHover}
               />
               <SidebarContainer
                 places={filtered}
@@ -394,6 +451,7 @@ export default function App() {
                 query={query}
                 onQueryChange={setQuery}
                 onSelect={handleSelect}
+                onHoverPlace={handleHoverPlace}
                 expanded={sheetExpanded}
                 onExpandedChange={setSheetExpanded}
                 isLoading={isLoadingTourists}
@@ -441,6 +499,7 @@ export default function App() {
               isFavorite={isFavorite}
               recentSlugs={recentSlugs}
               onSelectPlace={handleSelect}
+              onStartNavigation={handleStartNavigation}
               isLoggedIn={isLoggedIn}
               currentUser={currentUser}
               onRequireLogin={() => setShowLoginModal(true)}

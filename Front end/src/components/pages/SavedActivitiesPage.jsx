@@ -1,9 +1,64 @@
 import { memo, useEffect, useMemo, useState } from 'react'
 import CustomRoutePage from './CustomRoutePage'
 import NotificationDrawer from '../ui/NotificationDrawer'
+import GlassModal from '../ui/GlassModal'
 import SafeImage from '../ui/SafeImage'
 import { apiFetch } from '../../utils/api'
 import { DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageHelper'
+import {
+  BellIcon,
+  CheckIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  CompassIcon,
+  FlagIcon,
+  HeartIcon,
+  MapIcon,
+  MapPinIcon,
+  StarIcon,
+  UserIcon,
+} from '../ui/VectorIcons'
+
+function SavedPlaceCard({ place, secondaryMeta, onSelect }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect?.(place)}
+      className="group flex min-w-0 items-center gap-3.5 rounded-2xl border border-white/[0.14] bg-[#233020] p-3.5 text-left shadow-sm transition-colors duration-150 hover:border-white/[0.28] hover:bg-[#2A3A27] active:scale-[0.99]"
+    >
+      <SafeImage
+        src={place.image}
+        alt={place.name}
+        className="h-16 w-16 shrink-0 rounded-xl object-cover"
+      />
+      <div className="min-w-0 flex-1">
+        {place.category && (
+          <span className="block truncate text-[11px] font-semibold text-[#E2D7B5]">
+            {place.category}
+          </span>
+        )}
+        <h3 className="mt-0.5 truncate text-[14px] font-bold text-[#EBF0EB] transition-colors group-hover:text-[#E2D7B5]">
+          {place.name}
+        </h3>
+        <div className="mt-1 flex items-center gap-2 text-[12px] text-[#C8D3C8]">
+          <span className="inline-flex items-center gap-1 font-medium tabular-nums text-[#EBF0EB]">
+            <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-amber-300" />
+            {Number(place.rating || 0).toFixed(1)}
+          </span>
+          {secondaryMeta && (
+            <>
+              <span aria-hidden="true" className="text-[#C8D3C8]/50">·</span>
+              <span className="truncate">{secondaryMeta}</span>
+            </>
+          )}
+        </div>
+      </div>
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/[0.14] bg-[#1B261B] text-[#EBF0EB] transition-colors group-hover:bg-[#EBF0EB] group-hover:text-[#161E16]">
+        <ChevronRightIcon className="h-4 w-4" />
+      </span>
+    </button>
+  )
+}
 
 function SavedActivitiesPage({
   tourists = [],
@@ -16,22 +71,18 @@ function SavedActivitiesPage({
   onRequireLogin,
   onOpenProfile,
 }) {
-  // SUB-VIEW STATE: null (grid folder) | 'recent' | 'favorites' | 'custom-route'
   const [activeFolderView, setActiveFolderView] = useState(null)
   const [showNotificationDrawer, setShowNotificationDrawer] = useState(false)
 
-  // 2. STATE MODAL "TAMBAH AKTIVITAS PERJALANAN BARU"
   const [showActivityModal, setShowActivityModal] = useState(false)
   const [newActivityName, setNewActivityName] = useState('')
   const [newActivityLocation, setNewActivityLocation] = useState('')
 
-  // State daftar aktivitas & rute custom tersimpan yang dibuat user
   const [userActivities, setUserActivities] = useState([])
   const [customRoutesCount, setCustomRoutesCount] = useState(2)
 
-  // Fetch daftar aktivitas & rute custom dari API database HANYA JIKA LOGGED IN
   useEffect(() => {
-    if (!isLoggedIn) return
+    if (!isLoggedIn) return undefined
 
     let isMounted = true
     apiFetch('/api/saved-activities')
@@ -50,7 +101,7 @@ function SavedActivitiesPage({
                 name: a.name,
                 location: a.location,
                 date: a.date_label || 'Baru saja',
-              }))
+              })),
             )
           }
           if (Array.isArray(json.data.custom_routes)) {
@@ -69,12 +120,9 @@ function SavedActivitiesPage({
 
   const effectiveUserActivities = isLoggedIn ? userActivities : []
 
-  // STATE DROPDOWN "URUTKAN"
   const [showSortMenu, setShowSortMenu] = useState(false)
   const [sortOption, setSortOption] = useState('Terbaru')
 
-  // 2. HANDLER TOMBOL TAMBAH (+):
-  // Cek login -> jika false munculkan Log in page; jika true buka form "Tambah Aktivitas Perjalanan Baru"
   const handleAddPlusClick = () => {
     if (!isLoggedIn) {
       if (onRequireLogin) onRequireLogin()
@@ -83,7 +131,6 @@ function SavedActivitiesPage({
     }
   }
 
-  // SUBMIT FORM "TAMBAH AKTIVITAS PERJALANAN BARU"
   const handleActivitySubmit = (e) => {
     e.preventDefault()
     if (!newActivityName.trim() || !newActivityLocation.trim()) return
@@ -100,7 +147,6 @@ function SavedActivitiesPage({
 
     setUserActivities((prev) => [newAct, ...prev])
 
-    // Kirim juga ke database backend
     apiFetch('/api/saved-activities', {
       method: 'POST',
       headers: {
@@ -120,7 +166,6 @@ function SavedActivitiesPage({
     setShowActivityModal(false)
   }
 
-  // Filter dan sort places favorit berdasarkan opsi yang dipilih
   const favoritePlaces = useMemo(() => {
     const list = tourists.filter((t) => favorites.includes(t.slug))
     if (sortOption === 'Nama A-Z') {
@@ -132,7 +177,6 @@ function SavedActivitiesPage({
     return list
   }, [tourists, favorites, sortOption])
 
-  // Recently viewed preview items yang dinamis berdasarkan riwayat klik user
   const recentPlaces = useMemo(() => {
     if (!Array.isArray(tourists) || tourists.length === 0) return []
     if (Array.isArray(recentSlugs) && recentSlugs.length > 0) {
@@ -140,11 +184,9 @@ function SavedActivitiesPage({
         .map((slug) => tourists.find((t) => t.slug === slug))
         .filter(Boolean)
     }
-    // Fallback jika belum ada yang dilihat
     return tourists.slice(0, 2)
   }, [tourists, recentSlugs])
 
-  // JIKA TAMPILAN AKTIF ADALAH RUTE CUSTOM
   if (activeFolderView === 'custom-route') {
     return (
       <CustomRoutePage
@@ -158,574 +200,524 @@ function SavedActivitiesPage({
     )
   }
 
-  // 6. SUB-VIEW: DAFTAR TEMPAT WISATA "TERAKHIR DILIHAT" (LIST VIEW SEBELUM KE DETAIL)
   if (activeFolderView === 'recent') {
     return (
-      <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
-        <div className="flex items-center gap-3 pb-4 border-b border-white/10">
-          <button
-            type="button"
-            id="btn-back-recent-list"
-            onClick={() => setActiveFolderView(null)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-[0.98] transition-transform duration-150 text-white cursor-pointer"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-          <div>
-            <h1 className="text-[19px] font-bold text-white tracking-tight">
-              Terakhir Dilihat
-            </h1>
-            <p className="text-[11px] text-white/60">
-              Daftar tempat wisata yang baru saja Anda buka
-            </p>
-          </div>
-        </div>
-
-        {/* List baris tempat wisata */}
-        <div className="mt-5 flex flex-col gap-3.5">
-          {recentPlaces.map((place) => (
-            <div
-              key={place.id}
-              onClick={() => onSelectPlace && onSelectPlace(place.slug)}
-              className="flex items-center gap-3.5 rounded-2xl bg-forest-700/70 border border-white/10 p-3 shadow-sm hover:bg-forest-700 hover:border-white/20 cursor-pointer active:scale-[0.98] transition-transform duration-150"
+      <div
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
+        className="animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu bg-forest-900 text-[#EBF0EB]"
+      >
+        <div className="mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
+          <header className="flex items-center gap-3 border-b border-white/[0.12] pb-4">
+            <button
+              type="button"
+              id="btn-back-recent-list"
+              onClick={() => setActiveFolderView(null)}
+              aria-label="Kembali ke daftar folder tersimpan"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.14] bg-[#233020] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97]"
             >
-              <SafeImage
-                src={place.image}
-                alt={place.name}
-                className="h-16 w-16 rounded-xl object-cover shrink-0"
-              />
-              <div className="flex-1 min-w-0">
-                <span className="text-[10px] font-semibold text-emerald-300">
-                  {place.category}
-                </span>
-                <h3 className="text-[14px] font-bold text-white truncate">
-                  {place.name}
-                </h3>
-                <p className="text-[11px] text-white/60 truncate mt-0.5">
-                  ★ {place.rating} · {place.travelTime || '15 Menit'}
-                </p>
-              </div>
-              <button
-                type="button"
-                className="shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-white/10 text-white hover:bg-emerald-600 transition"
-              >
-                →
-              </button>
+              <ChevronLeftIcon className="h-5 w-5" />
+            </button>
+            <div className="min-w-0">
+              <h1 className="truncate text-[21px] font-bold tracking-tight text-[#EBF0EB] sm:text-[24px]">
+                Terakhir Dilihat
+              </h1>
+              <p className="text-[12.5px] text-[#C8D3C8]">
+                Daftar tempat wisata yang baru saja Anda buka
+              </p>
             </div>
-          ))}
+          </header>
+
+          {recentPlaces.length === 0 ? (
+            <div className="mt-10 rounded-2xl border border-white/[0.14] bg-[#233020] p-8 text-center">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.14] bg-[#1B261B] text-[#E2D7B5]">
+                <CompassIcon className="h-7 w-7" duotone />
+              </div>
+              <p className="text-[14px] font-bold text-[#EBF0EB]">Belum Ada Riwayat Dilihat</p>
+              <p className="mx-auto mt-1 max-w-xs text-[12.5px] text-[#C8D3C8]">
+                Jelajahi destinasi di peta Explore untuk menyimpan jejak tempat yang pernah Anda lihat.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {recentPlaces.map((place) => (
+                <SavedPlaceCard
+                  key={place.id || place.slug}
+                  place={place}
+                  secondaryMeta={place.travelTime || place.distance || 'Bogor'}
+                  onSelect={onSelectPlace}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     )
   }
 
-  // 6. SUB-VIEW: DAFTAR TEMPAT WISATA "FAVORIT" (LIST VIEW SEBELUM KE DETAIL)
   if (activeFolderView === 'favorites') {
     return (
-      <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
-        <div className="flex items-center gap-3 pb-4 border-b border-white/10">
-          <button
-            type="button"
-            id="btn-back-favorites-list"
-            onClick={() => setActiveFolderView(null)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-[0.98] transition-transform duration-150 text-white cursor-pointer"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-          <div>
-            <h1 className="text-[19px] font-bold text-white tracking-tight">
-              Tempat Wisata Favorit
-            </h1>
-            <p className="text-[11px] text-white/60">
-              {favoritePlaces.length} tempat wisata favorit tersimpan
-            </p>
-          </div>
-        </div>
+      <div
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
+        className="animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu bg-forest-900 text-[#EBF0EB]"
+      >
+        <div className="mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
+          <header className="flex items-center gap-3 border-b border-white/[0.12] pb-4">
+            <button
+              type="button"
+              id="btn-back-favorites-list"
+              onClick={() => setActiveFolderView(null)}
+              aria-label="Kembali ke daftar folder tersimpan"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.14] bg-[#233020] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97]"
+            >
+              <ChevronLeftIcon className="h-5 w-5" />
+            </button>
+            <div className="min-w-0">
+              <h1 className="truncate text-[21px] font-bold tracking-tight text-[#EBF0EB] sm:text-[24px]">
+                Tempat Wisata Favorit
+              </h1>
+              <p className="text-[12.5px] text-[#C8D3C8]">
+                {favoritePlaces.length} tempat wisata favorit tersimpan
+              </p>
+            </div>
+          </header>
 
-        {favoritePlaces.length === 0 ? (
-          <div className="mt-12 text-center text-white/60">
-            <span className="text-4xl block mb-2">💚</span>
-            <p className="text-[13px] font-semibold text-white">Belum Ada Wisata Favorit</p>
-            <p className="text-[11px] mt-1 max-w-xs mx-auto">
-              Simpan tempat wisata favoritmu dengan menekan ikon hati pada menu Explore!
-            </p>
-          </div>
-        ) : (
-          <div className="mt-5 flex flex-col gap-3.5">
-            {favoritePlaces.map((place) => (
-              <div
-                key={place.id}
-                onClick={() => onSelectPlace && onSelectPlace(place.slug)}
-                className="flex items-center gap-3.5 rounded-2xl bg-forest-700/70 border border-white/10 p-3 shadow-sm hover:bg-forest-700 hover:border-white/20 cursor-pointer active:scale-[0.98] transition-transform duration-150"
-              >
-                <SafeImage
-                  src={place.image}
-                  alt={place.name}
-                  className="h-16 w-16 rounded-xl object-cover shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <span className="text-[10px] font-semibold text-amber-300">
-                    {place.category}
-                  </span>
-                  <h3 className="text-[14px] font-bold text-white truncate">
-                    {place.name}
-                  </h3>
-                  <p className="text-[11px] text-white/60 truncate mt-0.5">
-                    ★ {place.rating} · {place.distance}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  className="shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-white/10 text-white hover:bg-emerald-600 transition"
-                >
-                  →
-                </button>
+          {favoritePlaces.length === 0 ? (
+            <div className="mt-10 rounded-2xl border border-white/[0.14] bg-[#233020] p-8 text-center">
+              <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.14] bg-[#1B261B] text-[#E2D7B5]">
+                <HeartIcon className="h-7 w-7" />
               </div>
-            ))}
-          </div>
-        )}
+              <p className="text-[14px] font-bold text-[#EBF0EB]">Belum Ada Wisata Favorit</p>
+              <p className="mx-auto mt-1 max-w-xs text-[12.5px] text-[#C8D3C8]">
+                Simpan tempat wisata favoritmu dengan menekan ikon hati pada menu Explore.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {favoritePlaces.map((place) => (
+                <SavedPlaceCard
+                  key={place.id || place.slug}
+                  place={place}
+                  secondaryMeta={place.distance || place.travelTime || 'Bogor'}
+                  onSelect={onSelectPlace}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     )
   }
 
-  // TAMPILAN UTAMA: GRID FOLDERS (Terakhir dilihat, Rute custom, Favorit)
   return (
-    <div className="relative h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
-      {/* Top Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-[22px] font-bold tracking-tight text-white">
-          Aktivitas Tersimpan
-        </h1>
-        <div className="flex items-center gap-2.5">
-          {/* 2. TOMBOL TAMBAH (+): Gated dengan status isLoggedIn */}
-          <button
-            type="button"
-            id="btn-add-activity"
-            onClick={handleAddPlusClick}
-            title="Tambah Aktivitas Perjalanan Baru"
-            aria-label="Tambah aktivitas"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-white/90 bg-white/10 hover:bg-white/20 active:scale-95 transition cursor-pointer"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          </button>
+    <div
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
+      className="animate-tab-enter relative h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu bg-forest-900 text-[#EBF0EB]"
+    >
+      <div className="mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
+        {/* Top Header */}
+        <header className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="truncate text-[24px] font-bold tracking-tight text-[#EBF0EB] sm:text-[26px]">
+              Aktivitas Tersimpan
+            </h1>
+            <p className="mt-0.5 truncate text-[12.5px] text-[#C8D3C8]">
+              Koleksi destinasi favorit, rute custom, dan catatan perjalanan Anda
+            </p>
+          </div>
 
-          {/* 5. TOMBOL NOTIFIKASI */}
-          <button
-            type="button"
-            id="btn-notifikasi-saved"
-            onClick={() => setShowNotificationDrawer(true)}
-            title="Notifikasi"
-            aria-label="Lihat notifikasi"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 active:scale-95 transition cursor-pointer"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              id="btn-add-activity"
+              onClick={handleAddPlusClick}
+              title="Tambah Aktivitas Perjalanan Baru"
+              aria-label="Tambah aktivitas"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.14] bg-[#233020] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97]"
             >
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-          </button>
-
-          {/* Profil Button */}
-          <button
-            type="button"
-            id="btn-user-profile"
-            onClick={() => {
-              if (!isLoggedIn) {
-                if (onRequireLogin) onRequireLogin()
-              } else if (onOpenProfile) {
-                onOpenProfile('self')
-              }
-            }}
-            aria-label="Profil pengguna"
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 text-white/90 transition hover:bg-white/10 active:scale-95 cursor-pointer overflow-hidden"
-          >
-            {isLoggedIn ? (
-              <SafeImage
-                src={currentUser?.avatar}
-                fallback={DEFAULT_AVATAR_PLACEHOLDER}
-                alt={currentUser?.name || 'Avatar'}
-                className="h-full w-full rounded-full object-cover"
-              />
-            ) : (
               <svg
-                width="16"
-                height="16"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              id="btn-notifikasi-saved"
+              onClick={() => setShowNotificationDrawer(true)}
+              title="Notifikasi"
+              aria-label="Lihat notifikasi"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.14] bg-[#233020] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97]"
+            >
+              <BellIcon className="h-5 w-5" />
+            </button>
+
+            <button
+              type="button"
+              id="btn-user-profile"
+              onClick={() => {
+                if (!isLoggedIn) {
+                  if (onRequireLogin) onRequireLogin()
+                } else if (onOpenProfile) {
+                  onOpenProfile('self')
+                }
+              }}
+              aria-label={isLoggedIn ? 'Profil pengguna' : 'Masuk ke akun'}
+              className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-white/[0.2] bg-[#233020] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97]"
+            >
+              {isLoggedIn ? (
+                <SafeImage
+                  src={currentUser?.avatar}
+                  fallback={DEFAULT_AVATAR_PLACEHOLDER}
+                  alt={currentUser?.name || 'Avatar'}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <UserIcon className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+        </header>
+
+        {!isLoggedIn ? (
+          <section className="mt-8 rounded-3xl border border-white/[0.14] bg-[#233020] p-6 text-center shadow-sm sm:p-8">
+            <div className="mx-auto mb-3.5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.14] bg-[#1B261B] text-[#E2D7B5]">
+              <svg
+                width="24"
+                height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                aria-hidden="true"
               >
-                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
               </svg>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {!isLoggedIn ? (
-        /* TAMPILAN JIKA BELUM LOGIN: ALBUM & AKTIVITAS DISEMBUNYIKAN */
-        <div className="mt-8 rounded-2xl bg-forest-700/40 border border-white/10 p-6 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/5 border border-white/10 mb-3 text-white/60">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-            </svg>
-          </div>
-          <h3 className="text-[15px] font-bold text-white">Album & Koleksi Tersimpan</h3>
-          <p className="mt-1 text-[12px] text-white/70 max-w-sm mx-auto">
-            Masuk untuk melihat dan menyimpan tempat wisata favorit, rute custom, serta catatan aktivitas perjalanan Anda.
-          </p>
-          <button
-            type="button"
-            onClick={onRequireLogin}
-            className="mt-4 inline-block rounded-xl bg-emerald-600/90 hover:bg-emerald-500 active:scale-95 px-6 py-2.5 text-[12px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
-          >
-            Masuk ke Akun
-          </button>
-        </div>
-      ) : (
-        <>
-{/* DROPDOWN "URUTKAN" & FLOATING POPOVER MENU */}
-      <div className="relative mt-4 inline-block">
-        <button
-          type="button"
-          id="btn-sort-saved"
-          onClick={() => setShowSortMenu((prev) => !prev)}
-          className="flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-[11px] font-medium text-white transition hover:bg-white/30 cursor-pointer active:scale-95 shadow-sm"
-        >
-          <span>Urutkan: {sortOption}</span>
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={`transition-transform duration-200 ${showSortMenu ? 'rotate-180' : ''}`}
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-
-        {showSortMenu && (
-          <>
-            <div
-              className="fixed inset-0 z-20"
-              onClick={() => setShowSortMenu(false)}
-            />
-            <div
-              id="popover-sort-menu"
-              className="absolute left-0 top-9 z-30 w-36 rounded-2xl bg-forest-700/95 backdrop-blur-md p-1.5 shadow-2xl border border-white/15 text-[11px] animate-in fade-in zoom-in-95 duration-150"
-            >
-              {['Terbaru', 'Terlama', 'Nama A-Z'].map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  id={`sort-option-${opt.replace(/\s+/g, '-').toLowerCase()}`}
-                  onClick={() => {
-                    setSortOption(opt)
-                    setShowSortMenu(false)
-                  }}
-                  className={`w-full rounded-xl px-3 py-1.5 text-left transition cursor-pointer flex items-center justify-between ${
-                    sortOption === opt
-                      ? 'bg-white/20 font-bold text-white'
-                      : 'text-white/70 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  <span>{opt}</span>
-                  {sortOption === opt && (
-                    <span className="text-emerald-300 text-[10px]">✓</span>
-                  )}
-                </button>
-              ))}
             </div>
+            <h2 className="text-[17px] font-bold text-[#EBF0EB]">Album & Koleksi Tersimpan</h2>
+            <p className="mx-auto mt-1.5 max-w-md text-[13px] leading-relaxed text-[#C8D3C8]">
+              Masuk untuk melihat dan menyimpan tempat wisata favorit, rute custom, serta catatan aktivitas perjalanan Anda.
+            </p>
+            <button
+              type="button"
+              onClick={onRequireLogin}
+              className="mt-5 inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#EBF0EB] px-6 py-2.5 text-[13px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.98]"
+            >
+              Masuk ke Akun
+            </button>
+          </section>
+        ) : (
+          <>
+            {/* Sort Dropdown */}
+            <div className="relative mt-5 inline-block">
+              <button
+                type="button"
+                id="btn-sort-saved"
+                onClick={() => setShowSortMenu((prev) => !prev)}
+                className="inline-flex min-h-[40px] items-center gap-2 rounded-xl border border-white/[0.14] bg-[#233020] px-4 py-1.5 text-[12.5px] font-semibold text-[#EBF0EB] shadow-sm transition-colors hover:bg-[#2E3E2A] active:scale-[0.98]"
+              >
+                <span>Urutkan: {sortOption}</span>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  className={`transition-transform duration-200 ${showSortMenu ? 'rotate-180' : ''}`}
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+
+              {showSortMenu && (
+                <>
+                  <div
+                    className="fixed inset-0 z-20"
+                    onClick={() => setShowSortMenu(false)}
+                  />
+                  <div
+                    id="popover-sort-menu"
+                    className="absolute left-0 top-11 z-30 w-44 rounded-2xl border border-white/[0.18] bg-[#1B261B] p-1.5 text-[12px] shadow-2xl"
+                  >
+                    {['Terbaru', 'Terlama', 'Nama A-Z'].map((opt) => (
+                      <button
+                        key={opt}
+                        type="button"
+                        id={`sort-option-${opt.replace(/\s+/g, '-').toLowerCase()}`}
+                        onClick={() => {
+                          setSortOption(opt)
+                          setShowSortMenu(false)
+                        }}
+                        className={`flex min-h-[38px] w-full items-center justify-between rounded-xl px-3 py-1.5 text-left transition-colors ${
+                          sortOption === opt
+                            ? 'bg-white/[0.14] font-bold text-[#EBF0EB]'
+                            : 'text-[#C8D3C8] hover:bg-white/[0.08] hover:text-[#EBF0EB]'
+                        }`}
+                      >
+                        <span>{opt}</span>
+                        {sortOption === opt && (
+                          <CheckIcon className="h-3.5 w-3.5 shrink-0 text-[#E2D7B5]" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Grid Koleksi Folder */}
+            <div className="mt-5 grid grid-cols-1 gap-4 min-[360px]:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+              {/* Folder 1: Terakhir dilihat */}
+              <button
+                type="button"
+                id="folder-terakhir-dilihat"
+                onClick={() => setActiveFolderView('recent')}
+                className="group flex flex-col text-left transition-transform duration-150 active:scale-[0.98]"
+              >
+                <div className="grid aspect-square w-full grid-cols-2 gap-1.5 rounded-2xl border border-white/[0.14] bg-[#233020] p-2.5 shadow-sm transition-colors duration-150 group-hover:border-white/[0.28]">
+                  {recentPlaces.length > 0 ? (
+                    recentPlaces.slice(0, 4).map((rp) => (
+                      <SafeImage
+                        key={rp.id}
+                        src={rp.image}
+                        alt={rp.name}
+                        className="h-full w-full rounded-lg object-cover"
+                      />
+                    ))
+                  ) : (
+                    <div className="col-span-2 flex h-full items-center justify-center text-[11px] text-[#C8D3C8]">
+                      Belum ada data
+                    </div>
+                  )}
+                  {Array.from({ length: Math.max(0, 4 - recentPlaces.slice(0, 4).length) }).map((_, i) => (
+                    <div key={i} className="h-full w-full rounded-lg bg-[#1B261B]" />
+                  ))}
+                </div>
+                <div className="mt-2.5 flex items-center justify-between gap-2 px-0.5">
+                  <div className="min-w-0">
+                    <h2 className="truncate text-[14.5px] font-semibold text-[#EBF0EB] transition-colors group-hover:text-[#E2D7B5]">
+                      Terakhir dilihat
+                    </h2>
+                    <p className="text-[12px] text-[#C8D3C8]">{recentPlaces.length} tempat wisata</p>
+                  </div>
+                  <ChevronRightIcon className="h-4 w-4 shrink-0 text-[#C8D3C8] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[#EBF0EB]" />
+                </div>
+              </button>
+
+              {/* Folder 2: Rute custom */}
+              <button
+                type="button"
+                id="folder-rute-custom"
+                onClick={() => setActiveFolderView('custom-route')}
+                className="group flex flex-col text-left transition-transform duration-150 active:scale-[0.98]"
+              >
+                <div className="relative grid aspect-square w-full grid-cols-2 gap-1.5 overflow-hidden rounded-2xl border border-white/[0.14] bg-[#233020] p-2.5 shadow-sm transition-colors duration-150 group-hover:border-white/[0.28]">
+                  <div className="flex h-full w-full items-center justify-center rounded-lg border border-white/[0.08] bg-[#1B261B] text-[#EBF0EB]">
+                    <MapIcon className="h-6 w-6" />
+                  </div>
+                  <div className="flex h-full w-full items-center justify-center rounded-lg border border-white/[0.08] bg-[#1B261B] text-[#E2D7B5]">
+                    <MapPinIcon className="h-6 w-6" />
+                  </div>
+                  <div className="flex h-full w-full items-center justify-center rounded-lg border border-white/[0.08] bg-[#1B261B] text-[#E2D7B5]">
+                    <FlagIcon className="h-6 w-6" />
+                  </div>
+                  <div className="flex h-full w-full items-center justify-center rounded-lg border border-white/[0.08] bg-[#1B261B] text-[#EBF0EB]">
+                    <CompassIcon className="h-6 w-6" duotone />
+                  </div>
+
+                  <div className="absolute inset-x-2.5 bottom-2.5 rounded-lg border border-white/[0.14] bg-[#161E16]/90 py-1 text-center">
+                    <span className="text-[11px] font-semibold text-[#E2D7B5]">
+                      {customRoutesCount} Rute Tersedia
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-2.5 flex items-center justify-between gap-2 px-0.5">
+                  <div className="min-w-0">
+                    <h2 className="truncate text-[14.5px] font-semibold text-[#EBF0EB] transition-colors group-hover:text-[#E2D7B5]">
+                      Rute custom
+                    </h2>
+                    <p className="text-[12px] text-[#C8D3C8]">
+                      {customRoutesCount} rute perjalanan
+                    </p>
+                  </div>
+                  <ChevronRightIcon className="h-4 w-4 shrink-0 text-[#C8D3C8] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[#EBF0EB]" />
+                </div>
+              </button>
+
+              {/* Folder 3: Favorit */}
+              <button
+                type="button"
+                id="folder-favorit"
+                onClick={() => setActiveFolderView('favorites')}
+                className="group flex flex-col text-left transition-transform duration-150 active:scale-[0.98]"
+              >
+                <div className="grid aspect-square w-full grid-cols-2 gap-1.5 rounded-2xl border border-white/[0.14] bg-[#233020] p-2.5 shadow-sm transition-colors duration-150 group-hover:border-white/[0.28]">
+                  {favoritePlaces.slice(0, 4).map((place) => (
+                    <SafeImage
+                      key={place.id}
+                      src={place.image}
+                      alt={place.name}
+                      className="h-full w-full rounded-lg object-cover"
+                    />
+                  ))}
+                  {Array.from({ length: Math.max(0, 4 - favoritePlaces.slice(0, 4).length) }).map((_, i) => (
+                    <div key={i} className="h-full w-full rounded-lg bg-[#1B261B]" />
+                  ))}
+                </div>
+                <div className="mt-2.5 flex items-center justify-between gap-2 px-0.5">
+                  <div className="min-w-0">
+                    <h2 className="truncate text-[14.5px] font-semibold text-[#EBF0EB] transition-colors group-hover:text-[#E2D7B5]">
+                      Favorit
+                    </h2>
+                    <p className="text-[12px] text-[#C8D3C8]">
+                      {favoritePlaces.length} tempat wisata
+                    </p>
+                  </div>
+                  <ChevronRightIcon className="h-4 w-4 shrink-0 text-[#C8D3C8] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[#EBF0EB]" />
+                </div>
+              </button>
+            </div>
+
+            {/* Section: Aktivitas Perjalanan Saya */}
+            <section className="mt-8" aria-labelledby="user-activities-heading">
+              <div className="flex items-center justify-between gap-3">
+                <h2
+                  id="user-activities-heading"
+                  className="text-[16px] font-bold tracking-tight text-[#EBF0EB]"
+                >
+                  Aktivitas Perjalanan Saya
+                </h2>
+                {effectiveUserActivities.length > 0 && (
+                  <span className="text-[12px] text-[#C8D3C8]">
+                    {effectiveUserActivities.length} tercatat
+                  </span>
+                )}
+              </div>
+
+              {effectiveUserActivities.length > 0 ? (
+                <div className="mt-4 grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+                  {effectiveUserActivities.map((act) => (
+                    <div
+                      key={act.id}
+                      className="flex items-start justify-between gap-3 rounded-2xl border border-white/[0.14] bg-[#233020] p-4 shadow-sm"
+                    >
+                      <div className="min-w-0">
+                        <h3 className="truncate text-[14px] font-bold text-[#EBF0EB]">{act.name}</h3>
+                        <p className="mt-1 flex items-center gap-1.5 text-[12px] text-[#E2D7B5]">
+                          <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate">{act.location}</span>
+                        </p>
+                      </div>
+                      <span className="shrink-0 text-[11px] text-[#C8D3C8]">{act.date}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-4 rounded-2xl border border-white/[0.14] bg-[#233020] p-5 text-center">
+                  <p className="text-[13px] text-[#C8D3C8]">
+                    Belum ada aktivitas perjalanan tersimpan. Klik tombol tambah (+) di atas untuk menambahkan.
+                  </p>
+                </div>
+              )}
+            </section>
           </>
         )}
       </div>
 
-      {/* Grid of Folders */}
-      <div className="mt-6 grid grid-cols-2 gap-4">
-        {/* 6. FOLDER 1: Terakhir dilihat (KLIK MEMBUKA DAFTAR LIST TERLEBIH DAHULU) */}
-        <div
-          role="button"
-          tabIndex={0}
-          id="folder-terakhir-dilihat"
-          onClick={() => setActiveFolderView('recent')}
-          onKeyDown={(e) => e.key === 'Enter' && setActiveFolderView('recent')}
-          className="group flex flex-col text-left cursor-pointer active:scale-[0.98] transition-transform duration-150 focus-visible:outline-none"
-        >
-          <div className="aspect-square w-full rounded-2xl bg-white/5 border border-white/10 p-2 grid grid-cols-2 gap-1.5 transition-transform duration-200 group-hover:scale-[1.02] shadow-sm">
-            {recentPlaces.length > 0 ? (
-              recentPlaces.map((rp) => (
-                <SafeImage
-                  key={rp.id}
-                  src={rp.image}
-                  alt={rp.name}
-                  className="h-full w-full rounded-lg object-cover"
-                />
-              ))
-            ) : (
-              <div className="col-span-2 flex items-center justify-center h-full text-[10px] text-white/40">
-                Belum ada data
-              </div>
-            )}
-            {Array.from({ length: Math.max(0, 4 - recentPlaces.length) }).map((_, i) => (
-              <div key={i} className="h-full w-full rounded-lg bg-white/10" />
-            ))}
-          </div>
-          <h3 className="mt-2.5 text-[14px] font-semibold text-white group-hover:text-amber-200 transition-colors flex items-center justify-between">
-            <span>Terakhir dilihat</span>
-            <span className="text-white/40 group-hover:text-white transition">→</span>
-          </h3>
-          <p className="text-[11px] text-white/60">
-            {recentPlaces.length} tempat wisata
-          </p>
+      {/* Modal Form: "Tambah Aktivitas Perjalanan Baru" (Liquid Glass) */}
+      <GlassModal
+        isOpen={showActivityModal}
+        onClose={() => setShowActivityModal(false)}
+        overlayId="modal-tambah-aktivitas-overlay"
+        modalId="modal-tambah-aktivitas"
+        closeButtonId="btn-close-activity-modal"
+        titleId="modal-activity-title"
+        closeAriaLabel="Tutup modal tambah aktivitas"
+        maxWidthClass="max-w-sm"
+      >
+        <div className="-mt-3 mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.2] bg-[rgba(20,28,20,0.45)] text-[#E2D7B5] shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22)]">
+          <CompassIcon className="h-6 w-6" duotone />
         </div>
 
-        {/* FOLDER 2: Rute custom (MEMBUKA DAFTAR LIST RUTE CUSTOM) */}
-        <div
-          role="button"
-          tabIndex={0}
-          id="folder-rute-custom"
-          onClick={() => {
-            if (!isLoggedIn) {
-              if (onRequireLogin) onRequireLogin()
-            } else {
-              setActiveFolderView('custom-route')
-            }
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              if (!isLoggedIn) {
-                if (onRequireLogin) onRequireLogin()
-              } else {
-                setActiveFolderView('custom-route')
-              }
-            }
-          }}
-          className="group flex flex-col text-left cursor-pointer active:scale-[0.98] transition-transform duration-150 focus-visible:outline-none"
-        >
-          <div className="aspect-square w-full rounded-2xl bg-white/5 border border-white/10 p-2 grid grid-cols-2 gap-1.5 transition-transform duration-200 group-hover:scale-[1.02] group-hover:border-emerald-400/40 shadow-sm relative overflow-hidden">
-            <div className="h-full w-full rounded-lg bg-white/10 flex items-center justify-center">
-              <span className="text-[16px]">🗺️</span>
-            </div>
-            <div className="h-full w-full rounded-lg bg-white/10 flex items-center justify-center">
-              <span className="text-[16px]">📍</span>
-            </div>
-            <div className="h-full w-full rounded-lg bg-white/10 flex items-center justify-center">
-              <span className="text-[16px]">🚩</span>
-            </div>
-            <div className="h-full w-full rounded-lg bg-white/10 flex items-center justify-center">
-              <span className="text-[16px]">🧭</span>
-            </div>
+        <h3 id="modal-activity-title" className="text-center text-[19px] font-bold tracking-tight text-white">
+          Tambah Aktivitas Perjalanan Baru
+        </h3>
+        <p className="mt-1 text-center text-[12.5px] text-[#E2EAE2]">
+          Catat dan simpan rencana aktivitas wisata Anda
+        </p>
 
-            <div className="absolute inset-x-2 bottom-2 rounded-lg bg-forest-900/90 py-1 text-center backdrop-blur-sm border border-white/10">
-              <span className="text-[9px] font-semibold text-emerald-300">
-                {isLoggedIn ? `${customRoutesCount} Rute Tersedia` : 'Perlu Login'}
-              </span>
-            </div>
-          </div>
-          <h3 className="mt-2.5 text-[14px] font-semibold text-white group-hover:text-emerald-300 transition-colors flex items-center justify-between">
-            <span>Rute custom</span>
-            <span className="text-white/40 group-hover:text-white transition">→</span>
-          </h3>
-          <p className="text-[11px] text-white/60">
-            {isLoggedIn ? `${customRoutesCount} rute perjalanan` : 'Masuk untuk akses'}
-          </p>
-        </div>
-
-        {/* 6. FOLDER 3: Favorit (KLIK MEMBUKA DAFTAR LIST WISATA FAVORIT TERLEBIH DAHULU) */}
-        <div
-          role="button"
-          tabIndex={0}
-          id="folder-favorit"
-          onClick={() => setActiveFolderView('favorites')}
-          onKeyDown={(e) => e.key === 'Enter' && setActiveFolderView('favorites')}
-          className="group flex flex-col text-left cursor-pointer active:scale-[0.98] transition-transform duration-150 focus-visible:outline-none"
-        >
-          <div className="aspect-square w-full rounded-2xl bg-white/5 border border-white/10 p-2 grid grid-cols-2 gap-1.5 transition-transform duration-200 group-hover:scale-[1.02] shadow-sm">
-            {favoritePlaces.slice(0, 4).map((place) => (
-              <SafeImage
-                key={place.id}
-                src={place.image}
-                alt={place.name}
-                className="h-full w-full rounded-lg object-cover"
-              />
-            ))}
-            {Array.from({ length: Math.max(0, 4 - favoritePlaces.length) }).map((_, i) => (
-              <div key={i} className="h-full w-full rounded-lg bg-white/10" />
-            ))}
-          </div>
-          <h3 className="mt-2.5 text-[14px] font-semibold text-white group-hover:text-amber-200 transition-colors flex items-center justify-between">
-            <span>Favorit</span>
-            <span className="text-white/40 group-hover:text-white transition">→</span>
-          </h3>
-          <p className="text-[11px] text-white/60">{favoritePlaces.length} tempat wisata</p>
-        </div>
-      </div>
-
-      {/* SECTION: AKTIVITAS PERJALANAN USER */}
-      {effectiveUserActivities.length > 0 ? (
-        <div className="mt-8">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-[14px] font-bold text-white tracking-tight">
-              Aktivitas Perjalanan Saya
-            </h3>
-            <span className="text-[11px] text-white/60">
-              {effectiveUserActivities.length} tercatat
-            </span>
+        <form onSubmit={handleActivitySubmit} className="mt-5 flex flex-col gap-3.5">
+          <div>
+            <label htmlFor="input-activity-name" className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]">
+              Nama Aktivitas
+            </label>
+            <input
+              type="text"
+              id="input-activity-name"
+              value={newActivityName}
+              onChange={(e) => setNewActivityName(e.target.value)}
+              placeholder="Contoh: Bersepeda di Kebun Raya"
+              className="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13px] text-[#EBF0EB] placeholder:text-[#C8D3C8] transition-colors duration-150"
+              required
+            />
           </div>
 
-          <div className="flex flex-col gap-2.5">
-            {effectiveUserActivities.map((act) => (
-              <div
-                key={act.id}
-                className="flex items-center justify-between rounded-2xl bg-forest-700/60 border border-white/10 px-4 py-3"
-              >
-                <div>
-                  <h4 className="text-[13px] font-bold text-white">{act.name}</h4>
-                  <p className="text-[11px] text-emerald-300 mt-0.5">
-                    📍 {act.location}
-                  </p>
-                </div>
-                <span className="text-[10px] text-white/50">{act.date}</span>
-              </div>
-            ))}
+          <div>
+            <label htmlFor="input-activity-location" className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]">
+              Lokasi Wisata
+            </label>
+            <input
+              type="text"
+              id="input-activity-location"
+              value={newActivityLocation}
+              onChange={(e) => setNewActivityLocation(e.target.value)}
+              placeholder="Contoh: Kebun Raya Bogor"
+              className="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13px] text-[#EBF0EB] placeholder:text-[#C8D3C8] transition-colors duration-150"
+              required
+            />
           </div>
-        </div>
-      ) : (
-        <div className="mt-8 rounded-2xl bg-forest-700/40 border border-white/10 p-4 text-center">
-          <p className="text-[11px] text-white/60">
-            Belum ada aktivitas perjalanan tersimpan. Klik tombol (+) di atas untuk menambahkan.
-          </p>
-        </div>
-      )}
 
-              </>
-      )}
-
-      {/* 2. MODAL FORM: "TAMBAH AKTIVITAS PERJALANAN BARU" */}
-      {showActivityModal && (
-        <div
-          id="modal-tambah-aktivitas-overlay"
-          className="fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
-        >
-          <div
-            id="modal-tambah-aktivitas"
-            className="relative w-full max-w-xs rounded-3xl bg-forest-900 border border-white/20 p-6 shadow-2xl animate-in zoom-in-95 duration-200"
-          >
+          <div className="mt-2 flex items-center gap-2.5">
             <button
               type="button"
-              id="btn-close-activity-modal"
               onClick={() => setShowActivityModal(false)}
-              className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 transition cursor-pointer"
+              className="min-h-[44px] flex-1 rounded-xl border border-white/[0.14] bg-white/[0.06] py-2.5 text-[13px] font-semibold text-[#EBF0EB] transition-colors duration-150 hover:bg-white/[0.12] active:scale-[0.98]"
             >
-              ✕
+              Batal
             </button>
-
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xl shadow-inner">
-              ✨
-            </div>
-
-            <h3 className="text-[18px] font-bold text-white tracking-tight text-center">
-              Tambah Aktivitas Perjalanan Baru
-            </h3>
-            <p className="text-[11px] text-white/60 text-center mt-1">
-              Catat dan simpan rencana aktivitas wisata Anda
-            </p>
-
-            <form onSubmit={handleActivitySubmit} className="mt-4 flex flex-col gap-3">
-              <div>
-                <label className="text-[11px] font-semibold text-white/80 block mb-1">
-                  Nama Aktivitas
-                </label>
-                <input
-                  type="text"
-                  id="input-activity-name"
-                  value={newActivityName}
-                  onChange={(e) => setNewActivityName(e.target.value)}
-                  placeholder="Contoh: Bersepeda di Kebun Raya"
-                  className="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3 py-2 text-[12px] text-white placeholder-white/40 focus:outline-none focus:border-emerald-400"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="text-[11px] font-semibold text-white/80 block mb-1">
-                  Lokasi Wisata
-                </label>
-                <input
-                  type="text"
-                  id="input-activity-location"
-                  value={newActivityLocation}
-                  onChange={(e) => setNewActivityLocation(e.target.value)}
-                  placeholder="Contoh: Kebun Raya Bogor"
-                  className="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3 py-2 text-[12px] text-white placeholder-white/40 focus:outline-none focus:border-emerald-400"
-                  required
-                />
-              </div>
-
-              <div className="mt-2 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowActivityModal(false)}
-                  className="flex-1 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 py-2.5 text-[12px] font-semibold text-white transition cursor-pointer"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  id="btn-save-activity"
-                  className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 py-2.5 text-[12px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
-                >
-                  Simpan
-                </button>
-              </div>
-            </form>
+            <button
+              type="submit"
+              id="btn-save-activity"
+              className="min-h-[44px] flex-1 rounded-xl bg-[#EBF0EB] py-2.5 text-[13px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.98]"
+            >
+              Simpan
+            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </GlassModal>
 
-      {/* 5. DRAWER NOTIFIKASI */}
       <NotificationDrawer
         isOpen={showNotificationDrawer}
         onClose={() => setShowNotificationDrawer(false)}
+        tourists={tourists}
+        favorites={favorites}
+        recentSlugs={recentSlugs}
+        onSelectPlace={onSelectPlace}
       />
     </div>
   )

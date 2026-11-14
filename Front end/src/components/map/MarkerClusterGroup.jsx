@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import { Marker, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import MapMarker from './MapMarker'
@@ -58,12 +58,76 @@ export default function MarkerClusterGroup({
   selected,
   onSelect,
   registerMarker,
+  markerRefs = null,
+  onRegisterHoverHandler = null,
   isNavigationMode = false,
   activeDestination = null,
   clusteringEnabled = true,
 }) {
   const map = useMap()
   const [zoom, setZoom] = useState(() => map.getZoom())
+  const clusterRefs = useRef(new Map())
+
+  useEffect(() => {
+    if (!onRegisterHoverHandler) return undefined
+    let activeEl = null
+    let activeMarker = null
+    let activeClass = ''
+
+    const clearActive = () => {
+      if (activeEl && activeClass) {
+        activeEl.classList.remove(activeClass)
+      }
+      if (activeMarker?.setZIndexOffset) {
+        try {
+          activeMarker.setZIndexOffset(0)
+        } catch {
+          // abaikan bila marker sudah unmount
+        }
+      }
+      activeEl = null
+      activeMarker = null
+      activeClass = ''
+    }
+
+    const highlightPlace = (placeId) => {
+      clearActive()
+      if (placeId === null || placeId === undefined) return
+
+      const directMarker = markerRefs?.current?.get(placeId)
+      if (directMarker) {
+        const el = directMarker.getElement?.()
+        if (el) {
+          el.classList.add('wisata-marker-hovered')
+          directMarker.setZIndexOffset?.(900)
+          activeEl = el
+          activeMarker = directMarker
+          activeClass = 'wisata-marker-hovered'
+          return
+        }
+      }
+
+      for (const entry of clusterRefs.current.values()) {
+        if (entry.itemIds.has(placeId)) {
+          const el = entry.marker?.getElement?.()
+          if (el) {
+            el.classList.add('wisata-cluster-hovered')
+            entry.marker.setZIndexOffset?.(900)
+            activeEl = el
+            activeMarker = entry.marker
+            activeClass = 'wisata-cluster-hovered'
+            return
+          }
+        }
+      }
+    }
+
+    onRegisterHoverHandler(highlightPlace)
+    return () => {
+      clearActive()
+      onRegisterHoverHandler(null)
+    }
+  }, [onRegisterHoverHandler, markerRefs])
 
   useMapEvents({
     zoomend: () => {
@@ -174,6 +238,16 @@ export default function MarkerClusterGroup({
         return (
           <Marker
             key={cluster.id}
+            ref={(instance) => {
+              if (instance) {
+                clusterRefs.current.set(cluster.id, {
+                  marker: instance,
+                  itemIds: new Set(cluster.items.map((item) => item.id)),
+                })
+              } else {
+                clusterRefs.current.delete(cluster.id)
+              }
+            }}
             position={cluster.center}
             icon={getClusterIcon(cluster.items.length)}
             eventHandlers={{

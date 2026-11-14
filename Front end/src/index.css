@@ -49,8 +49,11 @@
 html,
 body,
 #root {
+  width: 100%;
   height: 100%;
   margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
 body {
@@ -143,6 +146,29 @@ img {
 }
 
 .wisata-marker,
+.wisata-marker > svg {
+  transform-origin: 50% 95%;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), filter 220ms ease-out;
+}
+
+@keyframes marker-hover-ring {
+  0%,
+  100% {
+    transform: scale(1.14) translateY(-2px);
+    filter: drop-shadow(0 0 8px rgba(226, 215, 181, 0.85))
+      drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+  }
+  50% {
+    transform: scale(1.22) translateY(-4px);
+    filter: drop-shadow(0 0 14px rgba(226, 215, 181, 1))
+      drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+  }
+}
+
+.wisata-marker-hovered > svg {
+  animation: marker-hover-ring 1.3s ease-in-out infinite;
+}
+
 .wisata-cluster-marker {
   background: transparent;
   border: none;
@@ -150,6 +176,13 @@ img {
 
 .wisata-cluster-marker:hover > div {
   transform: scale(1.1);
+}
+
+.wisata-cluster-hovered > div {
+  transform: scale(1.16);
+  box-shadow:
+    0 0 0 6px rgba(226, 215, 181, 0.35),
+    0 6px 16px rgba(0, 0, 0, 0.35) !important;
 }
 
 .wisata-popup .leaflet-popup-content-wrapper {
@@ -289,6 +322,34 @@ img {
   animation: notif-item-in 230ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+.animate-tourist-card {
+  opacity: 0;
+  animation: notif-item-in 220ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Lapisan kilau specular menyapu diagonal kiri-atas ke kanan-bawah pada hover/touch */
+.card-specular-sheen {
+  background: linear-gradient(
+    135deg,
+    transparent 24%,
+    rgba(255, 255, 255, 0.12) 48%,
+    rgba(255, 255, 255, 0.04) 58%,
+    transparent 76%
+  );
+  opacity: 0;
+  transform: translate3d(-120%, -15%, 0);
+  transition:
+    transform 680ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 260ms ease-out;
+  will-change: transform, opacity;
+}
+
+.group:hover .card-specular-sheen,
+.group[data-pressed="true"] .card-specular-sheen {
+  opacity: 1;
+  transform: translate3d(120%, 15%, 0);
+}
+
 /* Smooth edge fade masking for scrollable lists without clipping first/last rested items */
 .scroll-fade-mask {
   -webkit-mask-image: linear-gradient(
@@ -314,9 +375,16 @@ img {
   .animate-fade-enter,
   .animate-backdrop-fade,
   .animate-modal-pop,
-  .animate-notif-item {
+  .animate-notif-item,
+  .animate-tourist-card,
+  .wisata-marker-hovered > svg {
     animation: none !important;
     opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .card-specular-sheen {
+    transition: none !important;
     transform: none !important;
   }
 

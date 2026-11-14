@@ -15,9 +15,12 @@ Route::post('/auth/update-avatar', [AuthController::class, 'updateAvatar']);
 Route::get('/users/{usernameOrId}', [AuthController::class, 'userProfile']);
 Route::post('/users/{usernameOrId}/follow', [AuthController::class, 'toggleFollow']);
 
-// 2. API Wisata Bogor (Explore & Detail & Batas Wilayah)
+// 2. API Wisata Bogor (Explore & Detail & Batas Wilayah & Manajemen Admin)
 Route::get('/tourists', [TouristSpotController::class, 'index']);
+Route::post('/tourists', [TouristSpotController::class, 'store']);
 Route::get('/tourists/{slugOrId}', [TouristSpotController::class, 'show']);
+Route::match(['put', 'patch', 'post'], '/tourists/{id}', [TouristSpotController::class, 'update']);
+Route::delete('/tourists/{id}', [TouristSpotController::class, 'destroy']);
 Route::get('/boundary', [TouristSpotController::class, 'boundary']);
 
 // Endpoint Media Gambar dengan CORS penuh (pencarian di folder spots, avatars, dan root images)

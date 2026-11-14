@@ -23,6 +23,7 @@ export default function MapView({
   navigationTarget,
   onStopNavigation,
   isNavigationMode = false,
+  onRegisterHoverHandler = null,
 }) {
   const markerRefs = useRef(new Map())
   const registerMarker = useCallback((id, instance) => {
@@ -176,6 +177,8 @@ export default function MapView({
           selected={selected}
           onSelect={onSelect}
           registerMarker={registerMarker}
+          markerRefs={markerRefs}
+          onRegisterHoverHandler={onRegisterHoverHandler}
           isNavigationMode={isNavigationMode}
           activeDestination={activeDestination}
           clusteringEnabled={clusteringEnabled}

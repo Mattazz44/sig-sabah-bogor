@@ -18,6 +18,8 @@ function SafeImage({
   alt = '',
   fallback = DEFAULT_IMAGE_PLACEHOLDER,
   className = '',
+  imgClassName = '',
+  fit = 'cover',
   loading = 'lazy',
   decoding = 'async',
   fetchPriority,
@@ -82,17 +84,28 @@ function SafeImage({
 
   const isLoaded = isInstantSource || (Boolean(displaySrc) && loadedUrl === displaySrc)
 
-  // Pisahkan class efek hover scale agar berada di elemen <img> sementara ukuran berada di wrapper
+  const isContain = fit === 'contain'
+
+  // Pisahkan class efek hover scale dan object-fit agar dimensi tetap di wrapper dan object-fit konsisten
   const wrapperClasses = className
     .replace(/\b(group-hover|hover):scale-[^\s]+/g, '')
+    .replace(/\bobject-(cover|contain|fill|none|scale-down)\b/g, '')
     .trim()
 
+  const imageFitClasses = isContain
+    ? 'max-h-full max-w-full w-auto h-auto object-contain'
+    : 'h-full w-full object-cover'
+
   return (
-    <div className={`relative overflow-hidden ${wrapperClasses}`}>
+    <div
+      className={`relative overflow-hidden ${isContain ? 'flex items-center justify-center' : ''} ${wrapperClasses}`}
+    >
       {!isLoaded && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-[1] shimmer-skeleton bg-[#384931]"
+          className={`pointer-events-none shimmer-skeleton bg-[#384931] ${
+            isContain ? 'h-56 w-72 sm:h-72 sm:w-96 rounded-2xl' : 'absolute inset-0 z-[1]'
+          }`}
         />
       )}
 
@@ -114,8 +127,9 @@ function SafeImage({
               handleImageError(e, fallback)
             }
           }}
-          className={`h-full w-full object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'
-            } ${className}`}
+          className={`${imageFitClasses} transition-opacity duration-300 ${
+            isLoaded ? 'opacity-100' : isContain ? 'opacity-0 absolute pointer-events-none' : 'opacity-0'
+          } ${isContain ? wrapperClasses.replace(/\bw-full\b|\bh-full\b/g, '') : className} ${imgClassName}`}
           {...rest}
         />
       )}

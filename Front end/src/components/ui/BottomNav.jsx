@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const stroke = {
   fill: 'none',
@@ -91,6 +92,8 @@ function prefersReducedMotion() {
 }
 
 export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabChange }) {
+  const location = useLocation()
+  const navigate = useNavigate()
   const activeIndex = useMemo(() => resolveActiveIndex(activeTab), [activeTab])
 
   const trackRef = useRef(null)
@@ -118,8 +121,14 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
     (label) => {
       if (setActiveTab) setActiveTab(label)
       if (onTabChange && onTabChange !== setActiveTab) onTabChange(label)
+      if (
+        location.pathname !== '/' &&
+        (typeof window === 'undefined' || window.location.pathname !== '/')
+      ) {
+        navigate('/')
+      }
     },
-    [setActiveTab, onTabChange],
+    [setActiveTab, onTabChange, location.pathname, navigate],
   )
 
   const applyVisuals = useCallback((floatIdx, stretch, sheenShift, isDraggingNow) => {

@@ -1,8 +1,15 @@
 import { memo, useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '../../utils/api'
 import SafeImage from '../ui/SafeImage'
+import GlassModal from '../ui/GlassModal'
 import { DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageHelper'
-import { CheckIcon } from '../ui/VectorIcons'
+import {
+  CheckIcon,
+  ChevronLeftIcon,
+  ClockIcon,
+  MapIcon,
+  MapPinIcon,
+} from '../ui/VectorIcons'
 
 function CustomRoutePage({
   tourists = [],
@@ -12,7 +19,6 @@ function CustomRoutePage({
   onBack,
   onStartCustomRoute,
 }) {
-  // Destinasi bawaan yang diambil dari daftar tempat wisata backend
   const museumZoologi = tourists.find((t) => t.slug === 'museum-zoologi-bogor') || {
     id: 10,
     slug: 'museum-zoologi-bogor',
@@ -33,9 +39,6 @@ function CustomRoutePage({
     distance: '3 KM',
   }
 
-  // Tempat wisata yang sudah di-save / disukai oleh pengguna:
-  // 1. Dari daftar favorites (disukai lewat ikon bookmark di detail wisata & for-you)
-  // 2. Dari daftar aktivitas / tempat tersimpan user di database (userActivities)
   const savedTouristSpots = useMemo(() => {
     if (!Array.isArray(tourists) || tourists.length === 0) return []
 
@@ -65,11 +68,10 @@ function CustomRoutePage({
     })
   }, [tourists, favorites, userActivities])
 
-  // 3. STATE DAFTAR RUTE CUSTOM (Dapat Ditambahkan Dinamis)
   const [customRoutesList, setCustomRoutesList] = useState([
     {
       id: 'cr-museum',
-      title: 'Tur Edukasi: Museum of Zoology ➔ Museum PETA',
+      title: 'Tur Edukasi: Museum of Zoology ke Museum PETA',
       desc: 'Rute Favorit Edukasi & Sejarah Bogor',
       isPrimary: true,
       stops: [
@@ -94,7 +96,6 @@ function CustomRoutePage({
     },
   ])
 
-  // Fetch rute custom dari database backend
   useEffect(() => {
     let isMounted = true
     apiFetch('/api/saved-activities')
@@ -112,10 +113,10 @@ function CustomRoutePage({
               title: cr.title,
               desc: cr.desc || '',
               isPrimary: Boolean(cr.is_primary),
-              stops: stops,
+              stops,
               totalDistance: cr.total_distance || '3.0 KM',
               totalDuration: cr.total_duration || '10 Menit',
-              places: places.length > 0 ? places : [tourists[0]],
+              places: places.length > 0 ? places : [tourists[0]].filter(Boolean),
             }
           })
           setCustomRoutesList(mapped)
@@ -130,19 +131,9 @@ function CustomRoutePage({
     }
   }, [tourists])
 
-  // 3. STATE MODAL "RANCANG RUTE CUSTOM BARU"
   const [showCreateRouteModal, setShowCreateRouteModal] = useState(false)
   const [newRouteTitle, setNewRouteTitle] = useState('')
   const [selectedDestIds, setSelectedDestIds] = useState([])
-
-  useEffect(() => {
-    if (!showCreateRouteModal) return undefined
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') setShowCreateRouteModal(false)
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [showCreateRouteModal])
 
   const handleOpenCreateModal = () => {
     const pool = savedTouristSpots.length > 0 ? savedTouristSpots : tourists
@@ -156,14 +147,12 @@ function CustomRoutePage({
     setShowCreateRouteModal(true)
   }
 
-  // Toggle pilihan destinasi di modal
   const handleToggleDest = (id) => {
     setSelectedDestIds((prev) =>
       prev.includes(id) ? prev.filter((dId) => dId !== id) : [...prev, id],
     )
   }
 
-  // SUBMIT FORM "RANCANG RUTE CUSTOM BARU"
   const handleCreateRouteSubmit = (e) => {
     e.preventDefault()
     if (!newRouteTitle.trim() || selectedDestIds.length === 0) return
@@ -192,7 +181,6 @@ function CustomRoutePage({
 
     setCustomRoutesList((prev) => [newRoute, ...prev])
 
-    // Simpan ke database backend
     apiFetch('/api/custom-routes', {
       method: 'POST',
       headers: {
@@ -212,310 +200,290 @@ function CustomRoutePage({
     setShowCreateRouteModal(false)
   }
 
+  const modalCandidates = savedTouristSpots.length > 0 ? savedTouristSpots : tourists.slice(0, 10)
+
   return (
-    <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
-      {/* Top Header with Back button */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            id="btn-back-custom-route"
-            onClick={onBack}
-            aria-label="Kembali ke aktivitas tersimpan"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition text-white cursor-pointer"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-          <div>
-            <h1 className="text-[20px] font-bold tracking-tight text-white leading-tight">
-              Rute Custom
-            </h1>
-            <p className="text-[11px] text-white/60">
-              Rute perjalanan tersimpan akun Anda
-            </p>
-          </div>
-        </div>
-
-        {/* 3. TOMBOL "+ Buat Rute" (AKTIF KLIK UNTUK MEMUNCULKAN MODAL RANCANG RUTE) */}
-        <button
-          type="button"
-          id="btn-add-custom-route"
-          onClick={handleOpenCreateModal}
-          className="flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-xl border border-[#EBF0EB]/18 bg-[#253320] px-3.5 py-2 text-[12px] font-semibold text-[#EBF0EB] shadow-sm transition-colors duration-150 hover:bg-[#31442B] active:scale-[0.97]"
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          <span>+ Buat Rute</span>
-        </button>
-      </div>
-
-      {/* Info Status Akun Terhubung */}
-      <div className="mt-5 flex items-center justify-between rounded-2xl bg-forest-700/60 border border-white/10 px-4 py-3">
-        <div className="flex items-center gap-3">
-          <SafeImage
-            src={currentUser?.avatar}
-            fallback={DEFAULT_AVATAR_PLACEHOLDER}
-            alt="Foto profil pengguna"
-            className="h-10 w-10 shrink-0 rounded-full object-cover border border-emerald-400"
-          />
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[13px] font-bold text-[#EBF0EB]">
-                {currentUser?.name || 'Pengguna'}
-              </span>
-              <span className="rounded-lg border border-emerald-400/30 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-200">
-                Terhubung
-              </span>
-            </div>
-            <p className="text-[11px] text-white/60">
-              {customRoutesList.length} Rute Aktif Tersimpan
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* DAFTAR LIST RUTE CUSTOM */}
-      <div className="mt-6 flex flex-col gap-5">
-        {customRoutesList.map((route) => (
-          <article
-            key={route.id}
-            id={`card-${route.id}`}
-            className={`group flex flex-col rounded-2xl p-4 shadow-md active:scale-[0.98] transition-transform duration-150 ${route.isPrimary
-              ? 'bg-forest-700/80 border-2 border-emerald-500/40 hover:border-emerald-400'
-              : 'bg-forest-700/60 border border-white/10 hover:border-white/20'
-              }`}
-          >
-            {/* Header Rute */}
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <div className="flex items-center gap-2">
-                  {route.isPrimary && (
-                    <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                  )}
-                  <h3 className="text-[15px] font-bold text-white group-hover:text-emerald-300 transition-colors">
-                    {route.title}
-                  </h3>
-                </div>
-                <span className="text-[11px] text-white/50 mt-0.5 block">
-                  {route.desc}
-                </span>
-              </div>
-              <span className="rounded-full bg-emerald-500/20 border border-emerald-400/30 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-300 shrink-0">
-                {route.stops.length} Tujuan Wisata
-              </span>
-            </div>
-
-            {/* Stepper Titik Lokasi */}
-            <div className="my-3 flex flex-col gap-2.5 border-y border-white/10 py-3">
-              {route.stops.map((stop, idx) => (
-                <div key={idx} className="flex items-center gap-3">
-                  <span
-                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white shadow-sm ${idx === 0
-                      ? 'bg-emerald-500'
-                      : idx === route.stops.length - 1
-                        ? 'bg-rose-500'
-                        : 'bg-amber-500'
-                      }`}
-                  >
-                    {idx + 1}
-                  </span>
-                  <div className="flex flex-1 items-center justify-between text-[12px]">
-                    <div className="flex flex-col min-w-0 pr-2">
-                      <span className="font-bold text-white truncate">{stop.name}</span>
-                      <span className="text-[10px] text-emerald-300">{stop.type}</span>
-                    </div>
-                    <span className="text-[10px] text-white/50 shrink-0">{stop.distance}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Footer Rute: Jarak, Durasi, & Tombol Mulai Perjalanan */}
-            <div className="flex items-center justify-between pt-1">
-              <div className="flex items-center gap-3 text-[11px] text-white/80">
-                <span className="font-semibold text-emerald-300">📍 Total: {route.totalDistance}</span>
-                <span>⏱ Total: {route.totalDuration}</span>
-              </div>
-
-              {/* TOMBOL "MULAI PERJALANAN" */}
-              <button
-                type="button"
-                id={`btn-mulai-${route.id}`}
-                onClick={() => {
-                  if (onStartCustomRoute && route.places) {
-                    onStartCustomRoute(route.places.filter(Boolean))
-                  }
-                }}
-                className="flex items-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 px-4 py-2 text-[12px] font-bold text-white shadow-[0_4px_16px_rgba(16,185,129,0.4)] transition cursor-pointer border border-emerald-400/30"
-              >
-                <svg
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" />
-                </svg>
-                <span>Mulai Perjalanan</span>
-              </button>
-            </div>
-          </article>
-        ))}
-      </div>
-
-      {/* 3. MODAL FORM: "RANCANG RUTE CUSTOM BARU" */}
-      {showCreateRouteModal && (
-        <div
-          id="modal-rancang-rute-overlay"
-          className="fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
-        >
-          <div
-            id="modal-rancang-rute"
-            className="relative w-full max-w-sm rounded-3xl bg-forest-900 border border-white/20 p-6 shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto"
-          >
+    <div
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
+      className="animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu bg-forest-900 text-[#EBF0EB]"
+    >
+      <div className="mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
+        {/* Top Header */}
+        <header className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
-              id="btn-close-rancang-rute"
-              onClick={() => setShowCreateRouteModal(false)}
-              className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 transition cursor-pointer"
+              id="btn-back-custom-route"
+              onClick={onBack}
+              aria-label="Kembali ke aktivitas tersimpan"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.14] bg-[#233020] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97]"
             >
-              ✕
+              <ChevronLeftIcon className="h-5 w-5" />
             </button>
-
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xl shadow-inner">
-              🗺️
+            <div className="min-w-0">
+              <h1 className="truncate text-[22px] font-bold tracking-tight text-[#EBF0EB] sm:text-[24px]">
+                Rute Custom
+              </h1>
+              <p className="truncate text-[12.5px] text-[#C8D3C8]">
+                Rute perjalanan tersimpan akun Anda
+              </p>
             </div>
+          </div>
 
-            <h3 className="text-[18px] font-bold text-white tracking-tight text-center">
-              Rancang Rute Custom Baru
-            </h3>
-            <p className="text-[11px] text-white/60 text-center mt-1">
-              Pilih destinasi wisata untuk rute perjalanan Anda
-            </p>
+          <button
+            type="button"
+            id="btn-add-custom-route"
+            onClick={handleOpenCreateModal}
+            className="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl border border-white/[0.14] bg-[#233020] px-4 py-2 text-[13px] font-semibold text-[#EBF0EB] shadow-sm transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97]"
+          >
+            <span aria-hidden="true" className="text-[15px] leading-none font-bold text-[#E2D7B5]">+</span>
+            <span>Buat Rute</span>
+          </button>
+        </header>
 
-            <form onSubmit={handleCreateRouteSubmit} className="mt-4 flex flex-col gap-3.5">
-              <div>
-                <label className="text-[11px] font-semibold text-white/80 block mb-1">
-                  Nama Rute
-                </label>
-                <input
-                  type="text"
-                  id="input-new-route-title"
-                  value={newRouteTitle}
-                  onChange={(e) => setNewRouteTitle(e.target.value)}
-                  placeholder="Contoh: Tur Budaya & Kebun Raya"
-                  className="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3 py-2 text-[12px] text-white placeholder-white/40 focus:outline-none focus:border-emerald-400"
-                  required
-                />
+        {/* Info Status Akun Terhubung */}
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/[0.14] bg-[#233020] px-4 py-3.5 shadow-sm">
+          <div className="flex min-w-0 items-center gap-3">
+            <SafeImage
+              src={currentUser?.avatar}
+              fallback={DEFAULT_AVATAR_PLACEHOLDER}
+              alt={currentUser?.name ? `Foto profil ${currentUser.name}` : 'Foto profil pengguna'}
+              className="h-11 w-11 shrink-0 rounded-full border border-white/[0.2] object-cover"
+            />
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="truncate text-[14px] font-bold text-[#EBF0EB]">
+                  {currentUser?.name || 'Pengguna'}
+                </span>
+                <span className="rounded-lg border border-white/[0.14] bg-[#1B261B] px-2.5 py-0.5 text-[11px] font-semibold text-[#E2D7B5]">
+                  Terhubung
+                </span>
               </div>
-
-              <div>
-                <div className="mb-1.5 flex items-center justify-between">
-                  <p className="block text-[12px] font-semibold text-[#EBF0EB]">
-                    Pilih destinasi singgah:
-                  </p>
-                  {savedTouristSpots.length > 0 && (
-                    <span className="text-[10px] font-medium text-emerald-300">
-                      {savedTouristSpots.length} tempat tersimpan
-                    </span>
-                  )}
-                </div>
-                <div className="flex max-h-48 flex-col gap-2 overflow-y-auto pr-1">
-                  {(savedTouristSpots.length > 0 ? savedTouristSpots : tourists.slice(0, 10)).map((place) => {
-                    const isChecked = selectedDestIds.includes(place.id)
-                    return (
-                      <button
-                        key={place.id}
-                        type="button"
-                        role="checkbox"
-                        aria-checked={isChecked}
-                        onClick={() => handleToggleDest(place.id)}
-                        className={`flex min-h-[52px] w-full items-center justify-between rounded-xl border p-2.5 text-left transition-colors ${
-                          isChecked
-                            ? 'border-emerald-400/50 bg-[#253B27]'
-                            : 'border-[#EBF0EB]/12 bg-[#233020] hover:bg-[#2B3B28]'
-                        }`}
-                      >
-                        <div className="flex min-w-0 items-center gap-2.5">
-                          <SafeImage
-                            src={place.image}
-                            alt={place.name}
-                            className="h-9 w-9 shrink-0 rounded-lg object-cover"
-                          />
-                          <div className="min-w-0">
-                            <p className="truncate text-[12px] font-bold text-[#EBF0EB]">
-                              {place.name}
-                            </p>
-                            <span className="block text-[11px] text-[#C8D3C8]">
-                              {place.category}
-                            </span>
-                          </div>
-                        </div>
-
-                        <span
-                          aria-hidden="true"
-                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
-                            isChecked
-                              ? 'border-emerald-300 bg-emerald-400 text-[#161E16]'
-                              : 'border-[#EBF0EB]/35 text-transparent'
-                          }`}
-                        >
-                          <CheckIcon className="h-3.5 w-3.5" />
-                        </span>
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              <div className="mt-2 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateRouteModal(false)}
-                  className="flex-1 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 py-2.5 text-[12px] font-semibold text-white transition cursor-pointer"
-                >
-                  Batal
-                </button>
-                <button
-                  type="submit"
-                  id="btn-save-new-custom-route"
-                  disabled={selectedDestIds.length === 0}
-                  className="min-h-[44px] flex-1 rounded-xl bg-[#EBF0EB] py-2.5 text-[12.5px] font-semibold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.97] disabled:opacity-50"
-                >
-                  Simpan Rute
-                </button>
-              </div>
-            </form>
+              <p className="mt-0.5 text-[12px] text-[#C8D3C8]">
+                {customRoutesList.length} rute perjalanan aktif tersimpan
+              </p>
+            </div>
           </div>
         </div>
-      )}
+
+        {/* Grid Daftar Rute Custom */}
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {customRoutesList.map((route) => (
+            <article
+              key={route.id}
+              id={`card-${route.id}`}
+              className="group flex min-w-0 flex-col rounded-2xl border border-white/[0.14] bg-[#233020] p-4 shadow-sm transition-colors duration-150 hover:border-white/[0.28] sm:p-5"
+            >
+              {/* Header Rute */}
+              <div className="flex items-start justify-between gap-2.5">
+                <div className="min-w-0 flex-1">
+                  {route.isPrimary && (
+                    <span className="mb-1.5 inline-block rounded-md border border-[#E2D7B5]/30 bg-[#1B261B] px-2 py-0.5 text-[10.5px] font-semibold text-[#E2D7B5]">
+                      Rute Utama
+                    </span>
+                  )}
+                  <h2 className="text-[15px] font-bold leading-snug text-[#EBF0EB] transition-colors group-hover:text-[#E2D7B5]">
+                    {route.title}
+                  </h2>
+                  {route.desc && (
+                    <p className="mt-1 text-[12px] text-[#C8D3C8]">{route.desc}</p>
+                  )}
+                </div>
+                <span className="shrink-0 rounded-lg border border-white/[0.14] bg-[#1B261B] px-2.5 py-1 text-[11px] font-semibold text-[#E2D7B5]">
+                  {route.stops.length} Tujuan
+                </span>
+              </div>
+
+              {/* Stepper Titik Lokasi */}
+              <div className="my-4 flex flex-col gap-3 border-y border-white/[0.1] py-3.5">
+                {route.stops.map((stop, idx) => {
+                  const isEdgeStop = idx === 0 || idx === route.stops.length - 1
+                  return (
+                    <div key={`${route.id}-stop-${idx}`} className="flex items-center gap-3">
+                      <span
+                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+                          isEdgeStop
+                            ? 'bg-[#E2D7B5] text-[#161E16]'
+                            : 'border border-white/[0.22] bg-[#1B261B] text-[#EBF0EB]'
+                        }`}
+                      >
+                        {idx + 1}
+                      </span>
+                      <div className="flex min-w-0 flex-1 items-center justify-between gap-2 text-[12.5px]">
+                        <div className="min-w-0">
+                          <p className="truncate font-semibold text-[#EBF0EB]">{stop.name}</p>
+                          <span className="block text-[11px] text-[#C8D3C8]">{stop.type}</span>
+                        </div>
+                        <span className="shrink-0 text-[11px] tabular-nums text-[#C8D3C8]">
+                          {stop.distance}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              {/* Footer Rute */}
+              <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-1">
+                <div className="flex flex-wrap items-center gap-3 text-[12px] text-[#C8D3C8]">
+                  <span className="inline-flex items-center gap-1 font-semibold text-[#E2D7B5]">
+                    <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
+                    <span className="tabular-nums">{route.totalDistance}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <ClockIcon className="h-3.5 w-3.5 shrink-0 text-[#C8D3C8]" />
+                    <span className="tabular-nums">{route.totalDuration}</span>
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  id={`btn-mulai-${route.id}`}
+                  onClick={() => {
+                    if (onStartCustomRoute && route.places) {
+                      onStartCustomRoute(route.places.filter(Boolean))
+                    }
+                  }}
+                  className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-[#EBF0EB] px-4 py-2 text-[12.5px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.98] sm:w-auto"
+                >
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" />
+                  </svg>
+                  <span>Mulai Perjalanan</span>
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      {/* Modal Form: "Rancang Rute Custom Baru" (Liquid Glass) */}
+      <GlassModal
+        isOpen={showCreateRouteModal}
+        onClose={() => setShowCreateRouteModal(false)}
+        overlayId="modal-rancang-rute-overlay"
+        modalId="modal-rancang-rute"
+        closeButtonId="btn-close-rancang-rute"
+        titleId="modal-rancang-rute-title"
+        closeAriaLabel="Tutup modal rancang rute custom"
+        maxWidthClass="max-w-md"
+      >
+        <div className="-mt-3 mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.2] bg-[rgba(20,28,20,0.45)] text-[#E2D7B5] shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22)]">
+          <MapIcon className="h-6 w-6" />
+        </div>
+
+        <h3 id="modal-rancang-rute-title" className="text-center text-[19px] font-bold tracking-tight text-white">
+          Rancang Rute Custom Baru
+        </h3>
+        <p className="mt-1 text-center text-[12.5px] text-[#E2EAE2]">
+          Pilih destinasi wisata untuk menyusun rute perjalanan Anda
+        </p>
+
+        <form onSubmit={handleCreateRouteSubmit} className="mt-5 flex flex-col gap-4">
+          <div>
+            <label htmlFor="input-new-route-title" className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]">
+              Nama Rute
+            </label>
+            <input
+              type="text"
+              id="input-new-route-title"
+              value={newRouteTitle}
+              onChange={(e) => setNewRouteTitle(e.target.value)}
+              placeholder="Contoh: Tur Budaya & Kebun Raya"
+              className="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13px] text-[#EBF0EB] placeholder:text-[#C8D3C8] transition-colors duration-150"
+              required
+            />
+          </div>
+
+          <div>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <p className="text-[12px] font-medium text-[#EBF0EB]">
+                Pilih destinasi singgah:
+              </p>
+              {savedTouristSpots.length > 0 && (
+                <span className="text-[11px] font-medium text-[#E2D7B5]">
+                  {savedTouristSpots.length} tempat tersimpan
+                </span>
+              )}
+            </div>
+
+            <div className="flex max-h-52 flex-col gap-2 overflow-y-auto pr-1">
+              {modalCandidates.map((place) => {
+                const isChecked = selectedDestIds.includes(place.id)
+                return (
+                  <button
+                    key={place.id}
+                    type="button"
+                    role="checkbox"
+                    aria-checked={isChecked}
+                    onClick={() => handleToggleDest(place.id)}
+                    className={`flex min-h-[54px] w-full items-center justify-between gap-3 rounded-xl border p-2.5 text-left transition-colors duration-150 ${
+                      isChecked
+                        ? 'border-[#E2D7B5]/70 bg-white/[0.14]'
+                        : 'border-white/[0.14] bg-white/[0.06] hover:bg-white/[0.1]'
+                    }`}
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <SafeImage
+                        src={place.image}
+                        alt={place.name}
+                        className="h-10 w-10 shrink-0 rounded-lg object-cover"
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate text-[13px] font-semibold text-[#EBF0EB]">
+                          {place.name}
+                        </p>
+                        <span className="block text-[11px] text-[#C8D3C8]">
+                          {place.category}
+                        </span>
+                      </div>
+                    </div>
+
+                    <span
+                      aria-hidden="true"
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
+                        isChecked
+                          ? 'border-[#EBF0EB] bg-[#EBF0EB] text-[#161E16]'
+                          : 'border-white/[0.3] bg-white/[0.04] text-transparent'
+                      }`}
+                    >
+                      <CheckIcon className="h-3.5 w-3.5" />
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div className="mt-1 flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setShowCreateRouteModal(false)}
+              className="min-h-[44px] flex-1 rounded-xl border border-white/[0.14] bg-white/[0.06] py-2.5 text-[13px] font-semibold text-[#EBF0EB] transition-colors duration-150 hover:bg-white/[0.12] active:scale-[0.98]"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              id="btn-save-new-custom-route"
+              disabled={selectedDestIds.length === 0}
+              className="min-h-[44px] flex-1 rounded-xl bg-[#EBF0EB] py-2.5 text-[13px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.98] disabled:opacity-50"
+            >
+              Simpan Rute
+            </button>
+          </div>
+        </form>
+      </GlassModal>
     </div>
   )
 }
