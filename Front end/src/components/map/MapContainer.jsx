@@ -72,7 +72,7 @@ export default function MapView({
     <section
       id="map-section"
       aria-label="Peta wisata Bogor"
-      className="fixed inset-0 z-0 h-dvh w-full"
+      className="relative z-0 h-full w-full"
     >
       {/* 3. PANEL METRICS MELAYANG (RouteMetrics.jsx) */}
       {isNavigationMode && hasDestination && (
@@ -87,9 +87,9 @@ export default function MapView({
       {isNavigationMode && !hasDestination && (
         <aside
           aria-label="Petunjuk navigasi"
-          className="fixed top-5 inset-x-4 max-w-sm mx-auto z-[1000] pointer-events-none"
+          className="absolute top-4 inset-x-4 max-w-sm mx-auto z-[900] pointer-events-none animate-tab-enter"
         >
-          <div className="pointer-events-auto flex items-center gap-3 rounded-2xl bg-forest-900/95 backdrop-blur-md px-4 py-3 border border-white/20 shadow-2xl">
+          <div className="pointer-events-auto flex items-center gap-3 rounded-2xl bg-[#253320]/95 backdrop-blur-md px-4 py-3 border border-white/10 shadow-xl">
             <svg
               width="20"
               height="20"
@@ -119,7 +119,7 @@ export default function MapView({
             type="button"
             id="btn-akhiri-perjalanan"
             onClick={onStopNavigation}
-            className="pointer-events-auto flex items-center gap-2 rounded-full bg-rose-600 hover:bg-rose-700 active:scale-95 px-6 py-2.5 text-[13px] font-bold text-white shadow-lg transition border border-rose-400/30 cursor-pointer"
+            className="pointer-events-auto flex items-center gap-2 rounded-full bg-rose-600 hover:bg-rose-700 active:scale-[0.97] px-6 py-2.5 text-[13px] font-bold text-white shadow-lg transition-all duration-150 ease-out border border-rose-400/30 cursor-pointer"
           >
             <svg
               width="14"

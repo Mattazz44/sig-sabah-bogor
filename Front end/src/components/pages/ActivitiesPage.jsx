@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from 'react'
 import NotificationDrawer from '../ui/NotificationDrawer'
 import SafeImage from '../ui/SafeImage'
+import { BellIcon, CameraIcon, XIcon } from '../ui/VectorIcons'
 import { apiFetch } from '../../utils/api'
 import {
   DEFAULT_AVATAR_PLACEHOLDER,
@@ -147,7 +148,7 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
   }
 
   return (
-    <div className="relative h-full w-full bg-forest-900 text-white flex flex-col overflow-hidden max-w-md mx-auto select-none">
+    <div className="animate-tab-enter relative h-full w-full bg-forest-900 text-white flex flex-col overflow-hidden max-w-md mx-auto select-none">
       {/* HEADER & SUB-TAB NAVIGATION TERKUNCI DI ATAS */}
       <header className="shrink-0 px-5 pt-6 pb-0 bg-forest-900 z-10">
         <div className="flex items-center justify-between">
@@ -163,21 +164,9 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
               onClick={handleCreatePostClick}
               title="Posting foto aktivitas perjalanan"
               aria-label="Posting foto perjalanan"
-              className="flex items-center gap-1.5 rounded-full bg-emerald-600/90 hover:bg-emerald-500 active:scale-95 px-3 py-1.5 text-[11px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
+              className="flex items-center gap-1.5 rounded-full bg-emerald-600/90 hover:bg-emerald-500 active:scale-[0.97] px-3.5 py-1.5 text-[11px] font-semibold text-white shadow-sm transition-all duration-150 ease-out cursor-pointer border border-white/15"
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
+              <CameraIcon className="h-3.5 w-3.5" />
               <span>+ Post</span>
             </button>
 
@@ -188,21 +177,9 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
               onClick={() => setShowNotificationDrawer(true)}
               title="Lihat Notifikasi"
               aria-label="Notifikasi aktivitas"
-              className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 active:scale-95 transition cursor-pointer"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/10 active:scale-[0.97] transition-all duration-150 ease-out cursor-pointer"
             >
-              <svg
-                width="19"
-                height="19"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-              </svg>
+              <BellIcon className="h-[19px] w-[19px]" />
             </button>
 
             {/* Profile Avatar Badge */}
@@ -217,7 +194,7 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
                 }
               }}
               aria-label="Profil pengguna"
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 overflow-hidden bg-forest-700 hover:ring-2 hover:ring-white/40 active:scale-[0.98] transition-transform duration-150 cursor-pointer shadow-sm text-white/90"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/25 overflow-hidden bg-forest-700 hover:ring-2 hover:ring-white/30 active:scale-[0.97] transition-all duration-150 ease-out cursor-pointer shadow-sm text-white/90"
             >
               {isLoggedIn ? (
                 <SafeImage
@@ -294,26 +271,26 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
       >
         {subTab === 'Kamu' && !isLoggedIn ? (
           /* Empty State Tab Kamu jika Pengguna Belum Login */
-          <div className="mt-14 flex flex-col items-center justify-center text-center px-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-forest-700/60 border border-white/15 text-3xl shadow-inner mb-4">
-              📸
+          <div key="empty-kamu" className="animate-tab-enter mt-12 flex flex-col items-center justify-center text-center px-4">
+            <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-[#34462c]/80 border border-white/10 text-emerald-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_10px_24px_rgba(0,0,0,0.22)]">
+              <CameraIcon className="h-9 w-9" />
             </div>
             <h2 className="text-[17px] font-bold text-white tracking-tight">
               Aktivitas Perjalanan Kamu
             </h2>
-            <p className="mt-2 text-[12px] text-white/60 max-w-xs leading-relaxed">
+            <p className="mt-2 text-[12.5px] text-white/65 max-w-xs leading-relaxed">
               Masuk dengan akun Anda untuk melihat dan membagikan dokumentasi aktivitas wisata pribadi Anda di Bogor.
             </p>
             <button
               type="button"
               onClick={onRequireLogin}
-              className="mt-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 px-6 py-3 text-[13px] font-bold text-white shadow-lg transition cursor-pointer border border-emerald-400/30"
+              className="mt-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.97] px-6 py-3 text-[13px] font-semibold text-white border border-white/15 shadow-[0_6px_16px_rgba(5,150,105,0.3),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-150 ease-out cursor-pointer"
             >
               Masuk ke Akun
             </button>
           </div>
         ) : (
-          <>
+          <div key={subTab} className="animate-tab-enter">
             <h2 className="text-[13px] font-semibold text-white/90 mb-4 tracking-tight">
               {subTab === 'Kamu'
                 ? `${myActivities.length} Aktivitas Kamu Bulan Ini`
@@ -404,7 +381,7 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
                 ))}
               </div>
             )}
-          </>
+          </div>
         )}
       </section>
 
@@ -412,15 +389,20 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
       {showPostModal && (
         <div
           id="modal-post-foto-overlay"
-          className="fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setShowPostModal(false)}
+          className="animate-backdrop-fade fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
         >
-          <div className="relative w-full max-w-xs rounded-3xl bg-forest-900 border border-white/20 p-6 shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="animate-modal-pop relative w-full max-w-xs rounded-3xl bg-[#253320] border border-white/10 p-6 shadow-[0_24px_48px_-12px_rgba(0,0,0,0.65)] max-h-[90vh] overflow-y-auto"
+          >
             <button
               type="button"
               onClick={() => setShowPostModal(false)}
-              className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 transition cursor-pointer"
+              aria-label="Tutup modal posting foto"
+              className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.06] border border-white/10 text-white/80 hover:bg-white/15 active:scale-[0.97] transition-all duration-150 cursor-pointer"
             >
-              ✕
+              <XIcon className="h-3.5 w-3.5" />
             </button>
 
             <h3 className="text-[17px] font-bold text-white tracking-tight text-center">
@@ -460,12 +442,12 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
                       </span>
                     </div>
                   ) : (
-                    <div className="flex flex-col items-center gap-1.5 py-2">
-                      <span className="text-3xl">📷</span>
-                      <p className="text-[12px] font-bold text-white">
+                    <div className="flex flex-col items-center gap-2 py-3 text-emerald-300">
+                      <CameraIcon className="h-7 w-7" />
+                      <p className="text-[12px] font-semibold text-white">
                         Pilih foto dari galeri HP
                       </p>
-                      <p className="text-[10px] text-white/50">
+                      <p className="text-[10px] text-white/55">
                         Klik area ini untuk unggah gambar JPG/PNG
                       </p>
                     </div>
@@ -504,7 +486,7 @@ function ActivitiesPage({ isLoggedIn, currentUser = null, onRequireLogin, onOpen
               <button
                 type="submit"
                 id="btn-submit-post-foto"
-                className="mt-2 w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 py-2.5 text-[12px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
+                className="mt-2 w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.97] py-2.5 text-[12px] font-semibold text-white shadow-[0_6px_16px_rgba(5,150,105,0.28)] transition-all duration-150 ease-out cursor-pointer border border-white/15"
               >
                 Bagikan ke Komunitas
               </button>

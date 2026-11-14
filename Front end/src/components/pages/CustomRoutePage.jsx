@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from 'react'
 import { apiFetch } from '../../utils/api'
 import SafeImage from '../ui/SafeImage'
 import { DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageHelper'
+import { ClockIcon, MapIcon, MapPinIcon, XIcon } from '../ui/VectorIcons'
 
 function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCustomRoute }) {
   // Destinasi bawaan yang diambil dari daftar tempat wisata backend
@@ -149,7 +150,7 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
   }
 
   return (
-    <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
+    <div className="h-full min-h-0 w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain overflow-y-auto animate-tab-enter">
       {/* Top Header with Back button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -158,7 +159,7 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
             id="btn-back-custom-route"
             onClick={onBack}
             aria-label="Kembali ke aktivitas tersimpan"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition text-white cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-[0.97] transition-all duration-150 ease-out text-white cursor-pointer"
           >
             <svg
               width="20"
@@ -188,7 +189,7 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
           type="button"
           id="btn-add-custom-route"
           onClick={() => setShowCreateRouteModal(true)}
-          className="flex items-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 px-3 py-1.5 text-[11px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
+          className="flex items-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.97] px-3 py-1.5 text-[11px] font-bold text-white shadow-md transition-all duration-150 ease-out cursor-pointer border border-emerald-400/30"
         >
           <svg
             width="14"
@@ -289,8 +290,14 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
             {/* Footer Rute: Jarak, Durasi, & Tombol Mulai Perjalanan */}
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-3 text-[11px] text-white/80">
-                <span className="font-semibold text-emerald-300">📍 Total: {route.totalDistance}</span>
-                <span>⏱ Total: {route.totalDuration}</span>
+                <span className="inline-flex items-center gap-1 font-semibold text-emerald-300">
+                  <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
+                  <span>Total: {route.totalDistance}</span>
+                </span>
+                <span className="inline-flex items-center gap-1 text-white/75">
+                  <ClockIcon className="h-3.5 w-3.5 shrink-0" />
+                  <span>Total: {route.totalDuration}</span>
+                </span>
               </div>
 
               {/* TOMBOL "MULAI PERJALANAN" */}
@@ -302,7 +309,7 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
                     onStartCustomRoute(route.places.filter(Boolean))
                   }
                 }}
-                className="flex items-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 px-4 py-2 text-[12px] font-bold text-white shadow-[0_4px_16px_rgba(16,185,129,0.4)] transition cursor-pointer border border-emerald-400/30"
+                className="flex items-center gap-2 rounded-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.97] px-4 py-2 text-[12px] font-bold text-white shadow-[0_4px_16px_rgba(16,185,129,0.35)] transition-all duration-150 ease-out cursor-pointer border border-emerald-400/30"
               >
                 <svg
                   width="13"
@@ -327,23 +334,26 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
       {showCreateRouteModal && (
         <div
           id="modal-rancang-rute-overlay"
-          className="fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setShowCreateRouteModal(false)}
+          className="fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-backdrop-fade"
         >
           <div
             id="modal-rancang-rute"
-            className="relative w-full max-w-sm rounded-3xl bg-forest-900 border border-white/20 p-6 shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-sm rounded-3xl bg-[#253320] border border-white/10 p-6 shadow-2xl animate-modal-pop max-h-[90vh] overflow-y-auto"
           >
             <button
               type="button"
               id="btn-close-rancang-rute"
               onClick={() => setShowCreateRouteModal(false)}
-              className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 transition cursor-pointer"
+              aria-label="Tutup dialog"
+              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 border border-white/10 text-white/80 hover:bg-white/20 hover:text-white active:scale-[0.97] transition-all duration-150 ease-out cursor-pointer"
             >
-              ✕
+              <XIcon className="h-3.5 w-3.5" />
             </button>
 
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xl shadow-inner">
-              🗺️
+            <div className="mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300 border border-emerald-400/25 shadow-inner">
+              <MapIcon className="h-6 w-6" />
             </div>
 
             <h3 className="text-[18px] font-bold text-white tracking-tight text-center">
@@ -364,7 +374,7 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
                   value={newRouteTitle}
                   onChange={(e) => setNewRouteTitle(e.target.value)}
                   placeholder="Contoh: Tur Budaya & Kebun Raya"
-                  className="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3 py-2 text-[12px] text-white placeholder-white/40 focus:outline-none focus:border-emerald-400"
+                  className="w-full rounded-xl bg-[#1d2818] border border-white/10 px-3 py-2 text-[12px] text-white placeholder-white/40 focus:outline-none focus:border-emerald-400/70 focus:ring-1 focus:ring-emerald-400/30 transition-colors"
                   required
                 />
               </div>
@@ -402,12 +412,23 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
                         </div>
 
                         <span
-                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[10px] font-bold ${isChecked
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${isChecked
                             ? 'bg-emerald-500 border-emerald-400 text-white'
-                            : 'border-white/30 text-transparent'
+                            : 'border-white/25 text-transparent'
                             }`}
                         >
-                          ✓
+                          <svg
+                            width="11"
+                            height="11"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
                         </span>
                       </div>
                     )
@@ -419,14 +440,14 @@ function CustomRoutePage({ tourists = [], currentUser = null, onBack, onStartCus
                 <button
                   type="button"
                   onClick={() => setShowCreateRouteModal(false)}
-                  className="flex-1 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 py-2.5 text-[12px] font-semibold text-white transition cursor-pointer"
+                  className="flex-1 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 active:scale-[0.97] py-2.5 text-[12px] font-semibold text-white transition-all duration-150 ease-out cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   id="btn-save-new-custom-route"
-                  className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 py-2.5 text-[12px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
+                  className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.97] py-2.5 text-[12px] font-bold text-white shadow-md transition-all duration-150 ease-out cursor-pointer border border-emerald-400/30"
                 >
                   Simpan Rute
                 </button>

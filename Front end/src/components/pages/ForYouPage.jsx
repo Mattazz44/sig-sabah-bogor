@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiFetch } from '../../utils/api'
 import SafeImage from '../ui/SafeImage'
+import { SparklesDuotoneIcon } from '../ui/VectorIcons'
 import { DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageHelper'
 
 function ForYouPage({
@@ -154,7 +155,7 @@ function ForYouPage({
   }
 
   return (
-    <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
+    <div className="animate-tab-enter h-full min-h-0 w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-[24px] font-bold tracking-tight text-white">Untuk Kamu</h1>
@@ -168,7 +169,7 @@ function ForYouPage({
             }
           }}
           aria-label="Profil pengguna"
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white/90 active:scale-[0.98] transition-transform duration-150 hover:bg-white/10 cursor-pointer overflow-hidden"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/[0.04] text-white/90 active:scale-[0.97] transition-all duration-150 ease-out hover:bg-white/10 cursor-pointer overflow-hidden"
         >
           {isLoggedIn ? (
             <SafeImage
@@ -197,20 +198,20 @@ function ForYouPage({
 
       {!isLoggedIn ? (
         /* Empty State Jika Pengguna Belum Login */
-        <div className="mt-14 flex flex-col items-center justify-center text-center px-4">
-          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-forest-700/60 border border-white/15 text-3xl shadow-inner mb-4">
-            ✨
+        <div className="mt-12 flex flex-col items-center justify-center text-center px-4">
+          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-[#34462c]/80 border border-white/10 text-emerald-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_10px_24px_rgba(0,0,0,0.22)]">
+            <SparklesDuotoneIcon className="h-9 w-9" />
           </div>
           <h2 className="text-[17px] font-bold text-white tracking-tight">
             Rekomendasi Spesial Untuk Anda
           </h2>
-          <p className="mt-2 text-[12px] text-white/60 max-w-xs leading-relaxed">
+          <p className="mt-2 text-[12.5px] text-white/65 max-w-xs leading-relaxed">
             Masuk dengan akun Anda untuk melihat kurasi tempat wisata berdasarkan aktivitas, riwayat perjalanan, dan preferensi Anda.
           </p>
           <button
             type="button"
             onClick={onRequireLogin}
-            className="mt-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 px-6 py-3 text-[13px] font-bold text-white shadow-lg transition cursor-pointer border border-emerald-400/30"
+            className="mt-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.97] px-6 py-3 text-[13px] font-semibold text-white border border-white/15 shadow-[0_6px_16px_rgba(5,150,105,0.3),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-150 ease-out cursor-pointer"
           >
             Masuk ke Akun
           </button>

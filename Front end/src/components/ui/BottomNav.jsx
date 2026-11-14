@@ -83,7 +83,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
                 type="button"
                 onClick={() => handleItemClick(item.label)}
                 aria-current={isActive ? 'page' : undefined}
-                className={`group flex w-full cursor-pointer flex-col items-center justify-center py-1 active:scale-[0.98] transition-transform duration-150 ${
+                className={`group flex w-full cursor-pointer flex-col items-center justify-center py-1 active:scale-[0.97] transition-transform duration-150 ease-out ${
                   isActive ? 'opacity-100 font-bold' : 'opacity-65 hover:opacity-95 font-normal'
                 }`}
               >

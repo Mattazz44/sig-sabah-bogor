@@ -63,8 +63,9 @@ function TouristDetailPage({
       id="tourist-detail-page"
       className="relative h-full w-full max-w-md mx-auto bg-forest-900 text-white overflow-y-auto overscroll-contain overscroll-y-contain pb-36"
     >
-      {/* 1. Hero Section (Atas) with Full-Width Background Photo */}
-      <section className="relative h-[340px] w-full shrink-0 overflow-hidden">
+      <div className="animate-tab-enter">
+        {/* 1. Hero Section (Atas) with Full-Width Background Photo */}
+        <section className="relative h-[340px] w-full shrink-0 overflow-hidden">
         <SafeImage
           src={place.image}
           alt={place.name}
@@ -259,14 +260,15 @@ function TouristDetailPage({
             />
           </div>
         </div>
-      </section>
+        </section>
+      </div>
 
       {/* 5. Tombol Navigasi Melayang ("Mulai Perjalanan" terkunci di atas BottomNav) */}
       <button
         type="button"
         id="btn-mulai-perjalanan"
         onClick={handleStartJourney}
-        className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 shadow-lg flex items-center gap-2 whitespace-nowrap rounded-full bg-[#7a6649] px-6 py-2.5 text-[13px] font-semibold text-white active:scale-[0.98] transition-transform duration-150 hover:bg-[#887353] cursor-pointer border border-white/15"
+        className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 shadow-lg flex items-center gap-2 whitespace-nowrap rounded-full bg-[#7a6649] px-6 py-2.5 text-[13px] font-semibold text-white active:scale-[0.97] transition-all duration-150 ease-out hover:bg-[#887353] cursor-pointer border border-white/15"
       >
         {/* Compass / Paper Airplane Navigation Icon */}
         <svg

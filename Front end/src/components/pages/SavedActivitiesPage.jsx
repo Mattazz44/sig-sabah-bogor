@@ -4,6 +4,15 @@ import NotificationDrawer from '../ui/NotificationDrawer'
 import SafeImage from '../ui/SafeImage'
 import { apiFetch } from '../../utils/api'
 import { DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageHelper'
+import {
+  CompassIcon,
+  FlagIcon,
+  HeartIcon,
+  MapIcon,
+  MapPinIcon,
+  SparklesDuotoneIcon,
+  XIcon,
+} from '../ui/VectorIcons'
 
 function SavedActivitiesPage({
   tourists = [],
@@ -157,7 +166,7 @@ function SavedActivitiesPage({
   // 6. SUB-VIEW: DAFTAR TEMPAT WISATA "TERAKHIR DILIHAT" (LIST VIEW SEBELUM KE DETAIL)
   if (activeFolderView === 'recent') {
     return (
-      <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
+      <div className="h-full min-h-0 w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain overflow-y-auto animate-tab-enter">
         <div className="flex items-center gap-3 pb-4 border-b border-white/10">
           <button
             type="button"
@@ -219,13 +228,13 @@ function SavedActivitiesPage({
   // 6. SUB-VIEW: DAFTAR TEMPAT WISATA "FAVORIT" (LIST VIEW SEBELUM KE DETAIL)
   if (activeFolderView === 'favorites') {
     return (
-      <div className="h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
+      <div className="h-full min-h-0 w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain overflow-y-auto animate-tab-enter">
         <div className="flex items-center gap-3 pb-4 border-b border-white/10">
           <button
             type="button"
             id="btn-back-favorites-list"
             onClick={() => setActiveFolderView(null)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-[0.98] transition-transform duration-150 text-white cursor-pointer"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-[0.97] transition-all duration-150 ease-out text-white cursor-pointer"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
@@ -242,10 +251,12 @@ function SavedActivitiesPage({
         </div>
 
         {favoritePlaces.length === 0 ? (
-          <div className="mt-12 text-center text-white/60">
-            <span className="text-4xl block mb-2">💚</span>
-            <p className="text-[13px] font-semibold text-white">Belum Ada Wisata Favorit</p>
-            <p className="text-[11px] mt-1 max-w-xs mx-auto">
+          <div className="mt-12 flex flex-col items-center text-center text-white/60">
+            <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#253320] border border-white/10 text-emerald-300 shadow-lg">
+              <HeartIcon className="h-7 w-7" />
+            </div>
+            <p className="text-[14px] font-semibold text-white">Belum Ada Wisata Favorit</p>
+            <p className="text-[11px] mt-1 max-w-xs mx-auto leading-relaxed">
               Simpan tempat wisata favoritmu dengan menekan ikon hati pada menu Explore!
             </p>
           </div>
@@ -289,7 +300,7 @@ function SavedActivitiesPage({
 
   // TAMPILAN UTAMA: GRID FOLDERS (Terakhir dilihat, Rute custom, Favorit)
   return (
-    <div className="relative h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
+    <div className="relative h-full min-h-0 w-full bg-forest-900 text-white px-5 pt-7 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain overflow-y-auto animate-tab-enter">
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-[22px] font-bold tracking-tight text-white">
@@ -386,8 +397,8 @@ function SavedActivitiesPage({
 
       {!isLoggedIn ? (
         /* TAMPILAN JIKA BELUM LOGIN: ALBUM & AKTIVITAS DISEMBUNYIKAN */
-        <div className="mt-8 rounded-2xl bg-forest-700/40 border border-white/10 p-6 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/5 border border-white/10 mb-3 text-white/60">
+        <div className="mt-8 rounded-2xl bg-[#253320] border border-white/10 shadow-xl p-6 text-center">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5 border border-white/10 mb-3 text-emerald-300 shadow-inner">
             <svg
               width="24"
               height="24"
@@ -402,13 +413,13 @@ function SavedActivitiesPage({
             </svg>
           </div>
           <h3 className="text-[15px] font-bold text-white">Album & Koleksi Tersimpan</h3>
-          <p className="mt-1 text-[12px] text-white/70 max-w-sm mx-auto">
+          <p className="mt-1 text-[12px] text-white/70 max-w-sm mx-auto leading-relaxed">
             Masuk untuk melihat dan menyimpan tempat wisata favorit, rute custom, serta catatan aktivitas perjalanan Anda.
           </p>
           <button
             type="button"
             onClick={onRequireLogin}
-            className="mt-4 inline-block rounded-xl bg-emerald-600/90 hover:bg-emerald-500 active:scale-95 px-6 py-2.5 text-[12px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
+            className="mt-4 inline-block rounded-xl bg-emerald-600/95 hover:bg-emerald-500 active:scale-[0.97] px-6 py-2.5 text-[12px] font-bold text-white shadow-md transition-all duration-150 ease-out cursor-pointer border border-emerald-400/30"
           >
             Masuk ke Akun
           </button>
@@ -421,7 +432,7 @@ function SavedActivitiesPage({
           type="button"
           id="btn-sort-saved"
           onClick={() => setShowSortMenu((prev) => !prev)}
-          className="flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-[11px] font-medium text-white transition hover:bg-white/30 cursor-pointer active:scale-95 shadow-sm"
+          className="flex items-center gap-1.5 rounded-full bg-white/15 border border-white/10 px-3.5 py-1 text-[11px] font-medium text-white transition-all duration-150 ease-out hover:bg-white/25 cursor-pointer active:scale-[0.97] shadow-sm"
         >
           <span>Urutkan: {sortOption}</span>
           <svg
@@ -447,7 +458,7 @@ function SavedActivitiesPage({
             />
             <div
               id="popover-sort-menu"
-              className="absolute left-0 top-9 z-30 w-36 rounded-2xl bg-forest-700/95 backdrop-blur-md p-1.5 shadow-2xl border border-white/15 text-[11px] animate-in fade-in zoom-in-95 duration-150"
+              className="absolute left-0 top-9 z-30 w-36 rounded-2xl bg-[#253320]/95 backdrop-blur-md p-1.5 shadow-2xl border border-white/15 text-[11px] animate-modal-pop"
             >
               {['Terbaru', 'Terlama', 'Nama A-Z'].map((opt) => (
                 <button
@@ -538,17 +549,17 @@ function SavedActivitiesPage({
           className="group flex flex-col text-left cursor-pointer active:scale-[0.98] transition-transform duration-150 focus-visible:outline-none"
         >
           <div className="aspect-square w-full rounded-2xl bg-white/5 border border-white/10 p-2 grid grid-cols-2 gap-1.5 transition-transform duration-200 group-hover:scale-[1.02] group-hover:border-emerald-400/40 shadow-sm relative overflow-hidden">
-            <div className="h-full w-full rounded-lg bg-white/10 flex items-center justify-center">
-              <span className="text-[16px]">🗺️</span>
+            <div className="h-full w-full rounded-lg bg-[#253320]/90 border border-white/10 flex items-center justify-center text-emerald-300">
+              <MapIcon className="h-5 w-5" />
             </div>
-            <div className="h-full w-full rounded-lg bg-white/10 flex items-center justify-center">
-              <span className="text-[16px]">📍</span>
+            <div className="h-full w-full rounded-lg bg-[#253320]/90 border border-white/10 flex items-center justify-center text-amber-300">
+              <MapPinIcon className="h-5 w-5" />
             </div>
-            <div className="h-full w-full rounded-lg bg-white/10 flex items-center justify-center">
-              <span className="text-[16px]">🚩</span>
+            <div className="h-full w-full rounded-lg bg-[#253320]/90 border border-white/10 flex items-center justify-center text-emerald-200">
+              <FlagIcon className="h-5 w-5" />
             </div>
-            <div className="h-full w-full rounded-lg bg-white/10 flex items-center justify-center">
-              <span className="text-[16px]">🧭</span>
+            <div className="h-full w-full rounded-lg bg-[#253320]/90 border border-white/10 flex items-center justify-center text-white/85">
+              <CompassIcon className="h-5 w-5" />
             </div>
 
             <div className="absolute inset-x-2 bottom-2 rounded-lg bg-forest-900/90 py-1 text-center backdrop-blur-sm border border-white/10">
@@ -616,8 +627,9 @@ function SavedActivitiesPage({
               >
                 <div>
                   <h4 className="text-[13px] font-bold text-white">{act.name}</h4>
-                  <p className="text-[11px] text-emerald-300 mt-0.5">
-                    📍 {act.location}
+                  <p className="flex items-center gap-1 text-[11px] text-emerald-300 mt-0.5">
+                    <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
+                    <span>{act.location}</span>
                   </p>
                 </div>
                 <span className="text-[10px] text-white/50">{act.date}</span>
@@ -640,23 +652,26 @@ function SavedActivitiesPage({
       {showActivityModal && (
         <div
           id="modal-tambah-aktivitas-overlay"
-          className="fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setShowActivityModal(false)}
+          className="fixed inset-0 z-[1500] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-backdrop-fade"
         >
           <div
             id="modal-tambah-aktivitas"
-            className="relative w-full max-w-xs rounded-3xl bg-forest-900 border border-white/20 p-6 shadow-2xl animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-xs rounded-3xl bg-[#253320] border border-white/10 p-6 shadow-2xl animate-modal-pop"
           >
             <button
               type="button"
               id="btn-close-activity-modal"
               onClick={() => setShowActivityModal(false)}
-              className="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 transition cursor-pointer"
+              aria-label="Tutup dialog"
+              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 border border-white/10 text-white/80 hover:bg-white/20 hover:text-white active:scale-[0.97] transition-all duration-150 ease-out cursor-pointer"
             >
-              ✕
+              <XIcon className="h-3.5 w-3.5" />
             </button>
 
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xl shadow-inner">
-              ✨
+            <div className="mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/15 text-emerald-300 border border-emerald-400/25 shadow-inner">
+              <SparklesDuotoneIcon className="h-6 w-6" />
             </div>
 
             <h3 className="text-[18px] font-bold text-white tracking-tight text-center">
@@ -677,7 +692,7 @@ function SavedActivitiesPage({
                   value={newActivityName}
                   onChange={(e) => setNewActivityName(e.target.value)}
                   placeholder="Contoh: Bersepeda di Kebun Raya"
-                  className="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3 py-2 text-[12px] text-white placeholder-white/40 focus:outline-none focus:border-emerald-400"
+                  className="w-full rounded-xl bg-[#1d2818] border border-white/10 px-3 py-2 text-[12px] text-white placeholder-white/40 focus:outline-none focus:border-emerald-400/70 focus:ring-1 focus:ring-emerald-400/30 transition-colors"
                   required
                 />
               </div>
@@ -692,7 +707,7 @@ function SavedActivitiesPage({
                   value={newActivityLocation}
                   onChange={(e) => setNewActivityLocation(e.target.value)}
                   placeholder="Contoh: Kebun Raya Bogor"
-                  className="w-full rounded-xl bg-forest-700/80 border border-white/20 px-3 py-2 text-[12px] text-white placeholder-white/40 focus:outline-none focus:border-emerald-400"
+                  className="w-full rounded-xl bg-[#1d2818] border border-white/10 px-3 py-2 text-[12px] text-white placeholder-white/40 focus:outline-none focus:border-emerald-400/70 focus:ring-1 focus:ring-emerald-400/30 transition-colors"
                   required
                 />
               </div>
@@ -701,14 +716,14 @@ function SavedActivitiesPage({
                 <button
                   type="button"
                   onClick={() => setShowActivityModal(false)}
-                  className="flex-1 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 py-2.5 text-[12px] font-semibold text-white transition cursor-pointer"
+                  className="flex-1 rounded-xl bg-white/10 border border-white/10 hover:bg-white/15 active:scale-[0.97] py-2.5 text-[12px] font-semibold text-white transition-all duration-150 ease-out cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   id="btn-save-activity"
-                  className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 py-2.5 text-[12px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30"
+                  className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.97] py-2.5 text-[12px] font-bold text-white shadow-md transition-all duration-150 ease-out cursor-pointer border border-emerald-400/30"
                 >
                   Simpan
                 </button>

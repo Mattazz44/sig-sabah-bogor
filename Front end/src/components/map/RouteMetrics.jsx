@@ -35,9 +35,9 @@ function RouteMetrics({
     <aside
       id="route-metrics-panel"
       aria-label="Panel perkiraan rute navigasi"
-      className="fixed top-4 inset-x-4 max-w-sm mx-auto z-[1000] pointer-events-none animate-in fade-in slide-in-from-top-4 duration-300"
+      className="absolute top-4 inset-x-4 max-w-sm mx-auto z-[900] pointer-events-none animate-tab-enter"
     >
-      <div className="pointer-events-auto flex flex-col gap-1.5 rounded-2xl bg-forest-900/95 backdrop-blur-md px-4 py-3 border border-white/20 shadow-2xl">
+      <div className="pointer-events-auto flex flex-col gap-1.5 rounded-2xl bg-[#253320]/95 backdrop-blur-md px-4 py-3 border border-white/10 shadow-xl">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <span className="flex h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-400 animate-pulse" />

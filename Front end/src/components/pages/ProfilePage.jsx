@@ -19,7 +19,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
   const museumPeta = tourists.find((t) => t.slug === 'museum-peta')
 
   return (
-    <div className="relative h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
+    <div className="relative h-full min-h-0 w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain overflow-y-auto animate-tab-enter">
       {/* Top Bar Header */}
       <div className="flex items-center justify-between">
         <button
@@ -27,7 +27,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
           id="btn-back-profile"
           onClick={onBack}
           aria-label="Kembali"
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition text-white cursor-pointer"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-[0.97] transition-all duration-150 ease-out text-white cursor-pointer"
         >
           <svg
             width="20"
@@ -55,7 +55,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
             onClick={onLogout}
             title="Keluar dari Akun"
             aria-label="Logout"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 hover:text-white transition active:scale-95 cursor-pointer border border-rose-500/30"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 hover:text-white transition-all duration-150 ease-out active:scale-[0.97] cursor-pointer border border-rose-500/30"
           >
             <svg
               width="18"
@@ -115,7 +115,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
             type="button"
             id="btn-follow-user"
             onClick={() => setIsFollowing((prev) => !prev)}
-            className={`mt-4 flex items-center gap-2 rounded-full px-5 py-2 text-[12px] font-bold transition shadow-md cursor-pointer active:scale-95 border ${
+            className={`mt-4 flex items-center gap-2 rounded-full px-5 py-2 text-[12px] font-bold transition-all duration-150 ease-out shadow-md cursor-pointer active:scale-[0.97] border ${
               isFollowing
                 ? 'bg-white/15 text-white/90 border-white/20'
                 : 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400/30'
@@ -181,7 +181,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
 
             {/* Rute 1 */}
             <div className="flex flex-col gap-3">
-              <div className="flex flex-col rounded-2xl bg-forest-700/70 border border-white/10 p-3.5 shadow">
+              <div className="flex flex-col rounded-2xl bg-[#253320]/85 border border-white/10 p-3.5 shadow-md">
                 <div className="flex items-center justify-between">
                   <span className="text-[13px] font-bold text-white">
                     Museum of Zoology ➔ Museum PETA
@@ -197,7 +197,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
                   <button
                     type="button"
                     onClick={() => onStartCustomRoute([museumZoologi, museumPeta])}
-                    className="mt-3 flex items-center justify-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 py-1.5 text-[11px] font-bold text-white transition cursor-pointer"
+                    className="mt-3 flex items-center justify-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.97] py-1.5 text-[11px] font-bold text-white transition-all duration-150 ease-out cursor-pointer border border-emerald-400/25"
                   >
                     <span>Mulai Navigasi Rute</span>
                   </button>
@@ -205,7 +205,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
               </div>
 
               {/* Rute 2 */}
-              <div className="flex flex-col rounded-2xl bg-forest-700/70 border border-white/10 p-3.5 shadow">
+              <div className="flex flex-col rounded-2xl bg-[#253320]/85 border border-white/10 p-3.5 shadow-md">
                 <div className="flex items-center justify-between">
                   <span className="text-[13px] font-bold text-white">
                     Kuliner Surya Kencana
@@ -226,7 +226,7 @@ function ProfilePage({ user = 'self', tourists = [], onBack, onLogout, onStartCu
                 type="button"
                 id="btn-logout-profile"
                 onClick={onLogout}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-600/90 hover:bg-rose-600 active:scale-95 py-3 text-[13px] font-bold text-white shadow-lg transition cursor-pointer border border-rose-400/30"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-600/90 hover:bg-rose-600 active:scale-[0.97] py-3 text-[13px] font-bold text-white shadow-lg transition-all duration-150 ease-out cursor-pointer border border-rose-400/30"
               >
                 <svg
                   width="16"
