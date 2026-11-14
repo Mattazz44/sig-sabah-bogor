@@ -1,87 +1,105 @@
-import { memo } from 'react'
+import { memo, useEffect, useState } from 'react'
 import SafeImage from '../ui/SafeImage'
+import { CheckIcon, HeartIcon, ShareIcon, StarIcon } from '../ui/VectorIcons'
 
-function TouristCard({ place, onSelect }) {
-  const displayLocation = place.address.toLowerCase().includes('bogor barat')
-    ? 'Bogor, jawa barat'
-    : place.address.toLowerCase().includes('kabupaten')
-      ? 'Bogor, jawa barat'
-      : 'Bogor, jawa barat'
+function formatLocationLabel(address) {
+  if (!address || typeof address !== 'string') return 'Bogor, Jawa Barat'
+  const parts = address
+    .split(',')
+    .map((part) => part.trim())
+    .filter(Boolean)
+  if (parts.length >= 2) {
+    return `${parts[parts.length - 2]}, ${parts[parts.length - 1]}`
+  }
+  return parts[0] || 'Bogor, Jawa Barat'
+}
+
+function TouristCard({ place, onSelect, saved = false, onToggleFavorite }) {
+  const [copied, setCopied] = useState(false)
+  const displayLocation = formatLocationLabel(place.address)
+
+  useEffect(() => {
+    if (!copied) return undefined
+    const timer = window.setTimeout(() => setCopied(false), 1800)
+    return () => window.clearTimeout(timer)
+  }, [copied])
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/place/${place.slug}`
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `${place.name} - Sabah Bogor`,
+          text: `Lihat destinasi ${place.name} di Sabah Bogor`,
+          url: shareUrl,
+        })
+        return
+      }
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl)
+      }
+      setCopied(true)
+    } catch {
+      // Abaikan jika pengguna membatalkan dialog bagikan bawaan
+    }
+  }
 
   return (
-    <button
-      type="button"
-      id={`card-${place.slug}`}
-      onClick={() => onSelect(place.slug)}
-      className="group block w-full cursor-pointer text-left active:scale-[0.98] transition-transform duration-150 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-    >
-      <div className="relative overflow-hidden rounded-[22px] shadow-sm">
-        <SafeImage
-          src={place.image}
-          alt={place.name}
-          loading="lazy"
-          decoding="async"
-          className="aspect-[16/10] w-full object-cover transition-transform duration-300 group-hover:scale-105"
-        />
-        {/* Floating action buttons on top-right: Share and Save/Heart */}
-        <div
-          className="absolute top-3 right-3 z-[2] flex items-center gap-2"
-          onClick={(e) => e.stopPropagation()}
+    <article className="group relative">
+      <div className="relative overflow-hidden rounded-2xl border border-[#EBF0EB]/10 bg-[#233020] shadow-sm">
+        <button
+          type="button"
+          id={`card-${place.slug}`}
+          onClick={() => onSelect(place.slug)}
+          className="block w-full text-left transition-transform duration-150 active:scale-[0.99]"
         >
-          <button
-            type="button"
-            aria-label={`Bagikan ${place.name}`}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white active:scale-[0.98] transition-transform duration-150 hover:bg-black/60"
-          >
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="18" cy="5" r="3" />
-              <circle cx="6" cy="12" r="3" />
-              <circle cx="18" cy="19" r="3" />
-              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            aria-label={`Simpan ${place.name}`}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white active:scale-[0.98] transition-transform duration-150 hover:bg-black/60"
-          >
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-          </button>
-        </div>
-      </div>
+          <SafeImage
+            src={place.image}
+            alt={place.name}
+            loading="lazy"
+            decoding="async"
+            className="aspect-[16/10] w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          />
+          <div className="p-3.5">
+            <h3 className="text-[15px] font-semibold tracking-tight text-[#EBF0EB]">{place.name}</h3>
+            <p className="mt-0.5 text-[12px] text-[#C8D3C8]">{displayLocation}</p>
+            <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#EBF0EB]/90">
+              <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-amber-300" />
+              <span className="font-semibold text-[#EBF0EB] tabular-nums">
+                {Number(place.rating || 0).toFixed(1)}
+              </span>
+              <span className="text-[#9AA89A]" aria-hidden="true">·</span>
+              <span className="text-[#C8D3C8]">{place.distance || place.category}</span>
+            </div>
+          </div>
+        </button>
 
-      <div className="mt-2.5 px-0.5">
-        <h3 className="text-[15px] font-semibold tracking-tight text-white">{place.name}</h3>
-        <p className="mt-0.5 text-[11px] text-white/70">{displayLocation}</p>
-        <div className="mt-1 flex items-center gap-1.5 text-[11px] text-white/80">
-          <span className="text-amber-400">★</span>
-          <span className="font-medium text-white">{place.rating.toFixed(1)}</span>
-          <span className="text-white/40">·</span>
-          <span>{place.distance || `${place.category}`}</span>
+        {/* Tombol aksi non-bersarang di pojok kanan atas */}
+        <div className="pointer-events-auto absolute top-2.5 right-2.5 z-[2] flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleShare}
+            aria-label={copied ? `Tautan ${place.name} tersalin` : `Bagikan ${place.name}`}
+            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[#EBF0EB]/20 bg-[#1B261B]/92 text-[#EBF0EB] shadow-sm transition-colors duration-150 hover:bg-[#253320] active:scale-[0.96] before:absolute before:-inset-1"
+          >
+            {copied ? <CheckIcon className="h-4 w-4 text-[#E2D7B5]" /> : <ShareIcon className="h-4 w-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => onToggleFavorite?.(place.slug)}
+            aria-pressed={saved}
+            aria-label={saved ? `Hapus ${place.name} dari favorit` : `Simpan ${place.name} ke favorit`}
+            className={`relative flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition-colors duration-150 active:scale-[0.96] before:absolute before:-inset-1 ${
+              saved
+                ? 'border-rose-300/35 bg-[#3B1D24]/92 text-rose-200 hover:bg-[#49242D]'
+                : 'border-[#EBF0EB]/20 bg-[#1B261B]/92 text-[#EBF0EB] hover:bg-[#253320]'
+            }`}
+          >
+            <HeartIcon filled={saved} className="h-4 w-4" />
+          </button>
         </div>
       </div>
-    </button>
+    </article>
   )
 }
 

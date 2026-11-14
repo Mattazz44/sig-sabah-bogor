@@ -2,7 +2,7 @@
 
 export const PEEK_RATIO = 0.44 // Collapsed sheet covers ~44% of the screen bottom (shows search, categories, and top of first card)
 export const PEEK_MIN = 340
-export const NAV_HEIGHT = 60
+export const NAV_HEIGHT = 82 // Floating Liquid Glass Dock height + bottom margin offset
 export const DESKTOP_BREAKPOINT = 768
 export const SHEET_DESKTOP_LEFT = 24
 export const SHEET_DESKTOP_WIDTH = 420

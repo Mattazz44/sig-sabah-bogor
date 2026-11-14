@@ -7,11 +7,11 @@ import {
 
 /**
  * Komponen gambar teroptimasi (60 FPS Mobile PWA):
- * 1. Shimmer Skeleton Loader (animate-pulse + shimmer-skeleton) selama proses fetch/loading.
- * 2. Transisi fade-in halus (transition-opacity duration-300 opacity-100) saat gambar siap.
- * 3. Atribut HTML loading="lazy" dan decoding="async" untuk mencegah main-thread jank.
- * 4. Bypass halaman peringatan ngrok via fetch header 'ngrok-skip-browser-warning': 'true'.
- * 5. Pembersihan memori otomatis dengan URL.revokeObjectURL saat komponen unmount.
+ * 1. Shimmer skeleton loader selama proses fetch/loading (menghormati prefers-reduced-motion).
+ * 2. Transisi fade-in halus (transition-opacity duration-300) saat gambar siap.
+ * 3. Mendukung loading, decoding, fetchPriority, serta ukuran eksplisit untuk mencegah CLS.
+ * 4. Bypass halaman peringatan ngrok via header 'ngrok-skip-browser-warning': 'true'.
+ * 5. Pembersihan memori otomatis dengan URL.revokeObjectURL saat unmount.
  */
 function SafeImage({
   src,
@@ -20,32 +20,25 @@ function SafeImage({
   className = '',
   loading = 'lazy',
   decoding = 'async',
+  fetchPriority,
+  width,
+  height,
   onError,
   ...rest
 }) {
   const resolvedUrl = getImageUrl(src, fallback)
   const isInstantSource =
-    resolvedUrl.startsWith('data:') || resolvedUrl.startsWith('blob:')
+    !src || resolvedUrl.startsWith('data:') || resolvedUrl.startsWith('blob:')
 
-  const [displaySrc, setDisplaySrc] = useState(() =>
-    isInstantSource ? resolvedUrl : null,
-  )
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [fetched, setFetched] = useState({ forUrl: null, objectUrl: null })
+  const [loadedUrl, setLoadedUrl] = useState(null)
 
   useEffect(() => {
+    if (isInstantSource) return undefined
+
     let isMounted = true
     let createdObjectUrl = null
     const controller = new AbortController()
-
-    if (!src || isInstantSource) {
-      setDisplaySrc(resolvedUrl)
-      setIsLoaded(true)
-      return () => {
-        isMounted = false
-      }
-    }
-
-    setIsLoaded(false)
 
     fetch(resolvedUrl, {
       method: 'GET',
@@ -65,12 +58,11 @@ function SafeImage({
       .then((blob) => {
         if (!isMounted) return
         createdObjectUrl = URL.createObjectURL(blob)
-        setDisplaySrc(createdObjectUrl)
+        setFetched({ forUrl: resolvedUrl, objectUrl: createdObjectUrl })
       })
       .catch((err) => {
         if (!isMounted || err?.name === 'AbortError') return
-        // Fallback ke URL langsung atau placeholder jika fetch gagal
-        setDisplaySrc(resolvedUrl || fallback)
+        setFetched({ forUrl: resolvedUrl, objectUrl: resolvedUrl || fallback })
       })
 
     return () => {
@@ -80,7 +72,15 @@ function SafeImage({
         URL.revokeObjectURL(createdObjectUrl)
       }
     }
-  }, [src, resolvedUrl, fallback, isInstantSource])
+  }, [resolvedUrl, fallback, isInstantSource])
+
+  const displaySrc = isInstantSource
+    ? resolvedUrl
+    : fetched.forUrl === resolvedUrl
+      ? fetched.objectUrl
+      : null
+
+  const isLoaded = isInstantSource || (Boolean(displaySrc) && loadedUrl === displaySrc)
 
   // Pisahkan class efek hover scale agar berada di elemen <img> sementara ukuran berada di wrapper
   const wrapperClasses = className
@@ -89,11 +89,10 @@ function SafeImage({
 
   return (
     <div className={`relative overflow-hidden ${wrapperClasses}`}>
-      {/* Shimmer Skeleton Loader selama gambar sedang di-fetch / di-decode */}
       {!isLoaded && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-[1] animate-pulse shimmer-skeleton bg-[#384931]"
+          className="pointer-events-none absolute inset-0 z-[1] shimmer-skeleton bg-[#384931]"
         />
       )}
 
@@ -101,20 +100,22 @@ function SafeImage({
         <img
           src={displaySrc}
           alt={alt}
+          width={width}
+          height={height}
           loading={loading}
           decoding={decoding}
-          onLoad={() => setIsLoaded(true)}
+          fetchPriority={fetchPriority}
+          onLoad={() => setLoadedUrl(displaySrc)}
           onError={(e) => {
-            setIsLoaded(true)
+            setLoadedUrl(displaySrc)
             if (onError) {
               onError(e)
             } else {
               handleImageError(e, fallback)
             }
           }}
-          className={`h-full w-full object-cover transition-opacity duration-300 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          } ${className}`}
+          className={`h-full w-full object-cover transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'
+            } ${className}`}
           {...rest}
         />
       )}
@@ -123,4 +124,3 @@ function SafeImage({
 }
 
 export default memo(SafeImage)
-

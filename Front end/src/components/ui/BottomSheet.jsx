@@ -227,10 +227,11 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
         onTouchMove={handleTouchMove}
         className={`no-scrollbar flex-1 overscroll-contain overscroll-y-contain will-change-transform transform-gpu ${
           expanded ? 'overflow-y-auto' : 'overflow-hidden'
-        } pb-[96px]`}
+        }`}
         style={{
           WebkitOverflowScrolling: 'touch',
           touchAction: expanded ? 'pan-y' : 'none',
+          paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)',
         }}
       >
         {children}

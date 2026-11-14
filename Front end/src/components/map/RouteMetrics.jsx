@@ -10,60 +10,59 @@ function RouteMetrics({
   const isCustomRoute =
     Array.isArray(activeDestination) || Boolean(routeInfo?.isCustomRoute)
 
-  // Judul & Badge
-  let title = 'Destinasi Wisata'
-  let badgeLabel = 'Navigasi Aktif'
+  let title = 'Destinasi wisata'
+  let badgeLabel = 'Navigasi aktif'
 
   if (isCustomRoute) {
-    badgeLabel = 'Rute Custom Aktif'
+    badgeLabel = 'Rute custom'
     if (Array.isArray(activeDestination)) {
       title = activeDestination
         .map((p) => p.name?.split('-')[0].trim() || 'Titik')
-        .join(' ➔ ')
+        .join(' ke ')
     } else {
-      title = activeDestination?.name || 'Rute Custom Wisata'
+      title = activeDestination?.name || 'Rute custom wisata'
     }
   } else {
-    title = activeDestination?.name || 'Destinasi Wisata'
+    title = activeDestination?.name || 'Destinasi wisata'
   }
 
-  // Estimasi Waktu & Jarak
-  const estimatedTime = routeInfo?.timeText || (isCustomRoute ? '15 Menit' : activeDestination?.travelTime || '20 Menit')
-  const estimatedDistance = routeInfo?.distanceText || (isCustomRoute ? '5.4 KM' : activeDestination?.distance || '16 KM')
+  const estimatedTime =
+    routeInfo?.timeText || activeDestination?.travelTime || 'Menghitung...'
+  const estimatedDistance =
+    routeInfo?.distanceText || activeDestination?.distance || 'Menghitung...'
 
   return (
     <aside
       id="route-metrics-panel"
       aria-label="Panel perkiraan rute navigasi"
-      className="fixed top-4 inset-x-4 max-w-sm mx-auto z-[1000] pointer-events-none animate-in fade-in slide-in-from-top-4 duration-300"
+      className="pointer-events-none fixed top-4 inset-x-4 z-[900] mx-auto max-w-sm animate-tab-enter"
     >
-      <div className="pointer-events-auto flex flex-col gap-1.5 rounded-2xl bg-forest-900/95 backdrop-blur-md px-4 py-3 border border-white/20 shadow-2xl">
+      <div className="pointer-events-auto flex flex-col gap-1.5 rounded-2xl border border-[#EBF0EB]/15 bg-[#1F2C1C] px-4 py-3 shadow-xl">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="flex h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-400 animate-pulse" />
-            <h2 className="text-[13px] font-bold text-white truncate" title={title}>
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-400" aria-hidden="true" />
+            <h2 className="truncate text-[13px] font-bold text-[#EBF0EB]" title={title}>
               {title}
             </h2>
           </div>
-          <span className="shrink-0 rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-300 border border-emerald-400/30">
+          <span className="shrink-0 rounded-lg border border-emerald-400/30 bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-200">
             {badgeLabel}
           </span>
         </div>
 
-        {/* Perkiraan Akumulasi Waktu & Jarak Multi-titik */}
-        <div className="mt-0.5 flex items-center justify-between border-t border-white/10 pt-2 text-[12px]">
-          <div className="flex items-center gap-1.5 text-white/90">
-            <span className="text-white/60">
-              {isCustomRoute ? 'Estimasi Total:' : 'Estimasi:'}
+        <div className="mt-0.5 flex items-center justify-between border-t border-[#EBF0EB]/12 pt-2 text-[12px]">
+          <div className="flex items-center gap-1.5 text-[#EBF0EB]">
+            <span className="text-[#C8D3C8]">
+              {isCustomRoute ? 'Estimasi total:' : 'Estimasi:'}
             </span>
-            <span className="font-bold text-white">{estimatedTime}</span>
+            <span className="font-bold tabular-nums text-[#EBF0EB]">{estimatedTime}</span>
           </div>
-          <span className="text-white/30">|</span>
-          <div className="flex items-center gap-1.5 text-white/90">
-            <span className="text-white/60">
-              {isCustomRoute ? 'Jarak Total:' : 'Jarak:'}
+          <span className="text-[#EBF0EB]/30" aria-hidden="true">|</span>
+          <div className="flex items-center gap-1.5 text-[#EBF0EB]">
+            <span className="text-[#C8D3C8]">
+              {isCustomRoute ? 'Jarak total:' : 'Jarak:'}
             </span>
-            <span className="font-bold text-white">{estimatedDistance}</span>
+            <span className="font-bold tabular-nums text-[#EBF0EB]">{estimatedDistance}</span>
           </div>
         </div>
       </div>

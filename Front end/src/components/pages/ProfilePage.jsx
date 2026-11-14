@@ -1,15 +1,25 @@
+<<<<<<< HEAD
 import { memo, useEffect, useRef, useState } from 'react'
+=======
+import { memo, useEffect, useState } from 'react'
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
 import SafeImage from '../ui/SafeImage'
+import { apiFetch } from '../../utils/api'
 import {
   DEFAULT_AVATAR_PLACEHOLDER,
   DEFAULT_IMAGE_PLACEHOLDER,
 } from '../../utils/imageHelper'
+<<<<<<< HEAD
 import { apiFetch } from '../../utils/api'
 import { compressImage } from '../../utils/imageCompressor'
+=======
+import { CheckIcon, ChevronLeftIcon } from '../ui/VectorIcons'
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
 
 function ProfilePage({
   user = 'self',
   tourists = [],
+<<<<<<< HEAD
   onBack,
   onLogout,
   onStartCustomRoute,
@@ -17,9 +27,17 @@ function ProfilePage({
   currentUser = null,
   isLoggedIn = false,
   onRequireLogin,
+=======
+  favorites = [],
+  recentSlugs = [],
+  onBack,
+  onLogout,
+  onStartCustomRoute,
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
 }) {
   const isSelf = user === 'self' || Boolean(user?.isSelf)
 
+<<<<<<< HEAD
   // Target identifier akun yang sedang dilihat
   const targetIdentifier = isSelf
     ? currentUser?.username || currentUser?.name || ''
@@ -281,51 +299,106 @@ function ProfilePage({
       }
     }
   }
+=======
+  const profileName = isSelf ? user?.name || 'Pengguna' : user?.name || 'Penjelajah Bogor'
+  const profileAvatar = user?.avatar
+  const profileEmail = isSelf ? user?.email || null : null
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
 
-  // Destinasi sampel untuk Rute Saya
-  const museumZoologi = tourists.find((t) => t.slug === 'museum-zoologi-bogor')
-  const museumPeta = tourists.find((t) => t.slug === 'museum-peta')
+  const [profileState, setProfileState] = useState({
+    loaded: false,
+    routes: [],
+    posts: [],
+  })
+
+  useEffect(() => {
+    let isMounted = true
+
+    if (isSelf) {
+      apiFetch('/api/saved-activities')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          if (!isMounted) return
+          const mappedRoutes = Array.isArray(json?.data?.custom_routes)
+            ? json.data.custom_routes.map((cr) => {
+                const stops = Array.isArray(cr.stops) ? cr.stops : []
+                const places = stops.map((s) => s.place).filter(Boolean)
+                return {
+                  id: cr.slug || `cr-${cr.id}`,
+                  title: String(cr.title || '').replace(/\s*➔\s*/g, ' ke '),
+                  desc: cr.desc || `${stops.length} titik singgah`,
+                  totalDistance: cr.total_distance || `${stops.length} titik`,
+                  places: places.length > 0 ? places : tourists.slice(0, 1),
+                }
+              })
+            : []
+          setProfileState({ loaded: true, routes: mappedRoutes, posts: [] })
+        })
+        .catch(() => {
+          if (isMounted) setProfileState({ loaded: true, routes: [], posts: [] })
+        })
+    } else {
+      apiFetch('/api/activities')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          if (!isMounted) return
+          const rows = Array.isArray(json?.data) ? json.data : []
+          const matching = rows
+            .filter(
+              (item) =>
+                item.user_name &&
+                item.user_name.toLowerCase() === profileName.toLowerCase(),
+            )
+            .map((item) => ({
+              id: item.id,
+              title: item.title,
+              location: item.location,
+              image: item.image,
+              date: item.date,
+            }))
+          setProfileState({ loaded: true, routes: [], posts: matching })
+        })
+        .catch(() => {
+          if (isMounted) setProfileState({ loaded: true, routes: [], posts: [] })
+        })
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [isSelf, profileName, tourists])
 
   const activeAvatar = localAvatar || profileAvatar
 
   return (
-    <div className="relative h-full min-h-screen w-full bg-forest-900 text-white px-5 pt-6 pb-28 max-w-md mx-auto overscroll-contain overscroll-y-contain will-change-transform transform-gpu overflow-y-auto">
-      {/* Top Bar Header */}
+    <div
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
+      className="animate-tab-enter relative mx-auto h-full min-h-0 w-full max-w-md overflow-y-auto overscroll-contain overscroll-y-contain bg-forest-900 px-5 pt-6 text-[#EBF0EB]"
+    >
+      {/* Top Bar */}
       <div className="flex items-center justify-between">
         <button
           type="button"
           id="btn-back-profile"
           onClick={onBack}
           aria-label="Kembali"
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition text-white cursor-pointer"
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-[#EBF0EB]/18 bg-[#253320] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#31442B] active:scale-[0.97]"
         >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
+          <ChevronLeftIcon className="h-5 w-5" />
         </button>
 
-        <h1 className="text-[17px] font-bold tracking-tight text-white">
-          {isSelf ? 'Profil Saya' : 'Profil Penjelajah'}
+        <h1 className="text-[17px] font-bold tracking-tight text-[#EBF0EB]">
+          {isSelf ? 'Profil saya' : 'Profil penjelajah'}
         </h1>
 
-        {/* 4. TOMBOL LOGOUT ATAS (Hanya pada Akun Sendiri) */}
         {isSelf ? (
           <button
             type="button"
             id="btn-logout-icon"
             onClick={onLogout}
-            title="Keluar dari Akun"
-            aria-label="Logout"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 hover:text-white transition active:scale-95 cursor-pointer border border-rose-500/30"
+            title="Keluar dari akun"
+            aria-label="Keluar dari akun"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-[#EBF0EB]/18 bg-[#253320] text-rose-200 transition-colors duration-150 hover:bg-[#3B1D24] hover:text-rose-100 active:scale-[0.97]"
           >
             <svg
               width="18"
@@ -336,6 +409,7 @@ function ProfilePage({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
             >
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
               <polyline points="16 17 21 12 16 7" />
@@ -343,10 +417,11 @@ function ProfilePage({
             </svg>
           </button>
         ) : (
-          <div className="w-9" />
+          <div className="h-11 w-11" aria-hidden="true" />
         )}
       </div>
 
+<<<<<<< HEAD
       {/* Toast Notifikasi Sukses / Gagal */}
       {toast && (
         <div
@@ -418,19 +493,26 @@ function ProfilePage({
             </>
           )}
         </div>
+=======
+      {/* Header Identitas */}
+      <div className="mt-6 flex flex-col items-center text-center">
+        <SafeImage
+          src={profileAvatar}
+          fallback={DEFAULT_AVATAR_PLACEHOLDER}
+          alt={profileName}
+          className="h-24 w-24 rounded-full border-4 border-emerald-400/40 object-cover shadow-md"
+        />
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
 
-        {/* Nama Pengguna */}
-        <h2 className="mt-3 text-[20px] font-bold text-white tracking-tight">
+        <h2 className="mt-3 text-[20px] font-bold tracking-tight text-[#EBF0EB]">
           {profileName}
         </h2>
 
-        {/* Email Pengguna (Hanya Tampil Jika Akun Sendiri) */}
         {isSelf && profileEmail && (
-          <p className="text-[12px] text-white/60 font-medium mt-0.5">
-            {profileEmail}
-          </p>
+          <p className="mt-0.5 text-[12px] font-medium text-[#C8D3C8]">{profileEmail}</p>
         )}
 
+<<<<<<< HEAD
         {/* Bio Pengguna */}
         {profileBio && (
           <p className="mt-1 text-[11px] text-white/65 max-w-xs leading-relaxed px-2">
@@ -444,23 +526,33 @@ function ProfilePage({
             {isSelf ? 'Penjelajah Aktif' : 'Petualang Alam Bogor'}
           </span>
         </div>
+=======
+        <span className="mt-2 rounded-lg border border-[#EBF0EB]/14 bg-[#253320] px-3 py-1 text-[11px] font-semibold text-emerald-200">
+          {isSelf ? 'Akun penjelajah' : 'Komunitas Sabah Bogor'}
+        </span>
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
 
-        {/* 3. TOMBOL "IKUTI PERJALANAN" (Hanya pada Akun Orang Lain) */}
         {!isSelf && (
           <button
             type="button"
             id="btn-follow-user"
+<<<<<<< HEAD
             onClick={handleToggleFollow}
             className={`mt-4 flex items-center gap-2 rounded-full px-5 py-2 text-[12px] font-bold transition shadow-md cursor-pointer active:scale-95 border ${
+=======
+            aria-pressed={isFollowing}
+            onClick={() => setIsFollowing((prev) => !prev)}
+            className={`mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-xl px-5 py-2 text-[12.5px] font-semibold shadow-sm transition-colors duration-150 active:scale-[0.97] ${
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
               isFollowing
-                ? 'bg-white/15 text-white/90 border-white/20'
-                : 'bg-emerald-600 hover:bg-emerald-500 text-white border-emerald-400/30'
+                ? 'border border-[#EBF0EB]/18 bg-[#253320] text-[#EBF0EB] hover:bg-[#31442B]'
+                : 'bg-[#EBF0EB] text-[#161E16] hover:bg-[#DCE4DC]'
             }`}
           >
             {isFollowing ? (
               <>
                 <span>Mengikuti</span>
-                <span className="text-emerald-300">✓</span>
+                <CheckIcon className="h-3.5 w-3.5 text-emerald-300" />
               </>
             ) : (
               <>
@@ -470,21 +562,23 @@ function ProfilePage({
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.5"
+                  strokeWidth="2.4"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                 >
                   <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                   <circle cx="8.5" cy="7" r="4" />
                   <line x1="20" y1="8" x2="20" y2="14" />
                   <line x1="23" y1="11" x2="17" y2="11" />
                 </svg>
-                <span>Ikuti Perjalanan</span>
+                <span>Ikuti perjalanan</span>
               </>
             )}
           </button>
         )}
 
+<<<<<<< HEAD
         {/* Quick Stats Row (Dinamis Sesuai Data Real Server) */}
         <div className="mt-6 flex w-full max-w-xs items-center justify-around rounded-2xl bg-forest-700/50 border border-white/10 py-3 px-2">
           <div className="flex flex-col items-center">
@@ -501,68 +595,108 @@ function ProfilePage({
             <span className="text-[16px] font-bold text-white">{followingCount}</span>
             <span className="text-[10px] text-white/60">Mengikuti</span>
           </div>
+=======
+        {/* Ringkasan Statistik Riil */}
+        <div className="mt-6 flex w-full max-w-xs items-center justify-around rounded-2xl border border-[#EBF0EB]/12 bg-[#233020] px-3 py-3">
+          {isSelf ? (
+            <>
+              <div className="flex flex-col items-center">
+                <span className="text-[16px] font-bold tabular-nums text-[#EBF0EB]">
+                  {favorites.length}
+                </span>
+                <span className="text-[11px] text-[#C8D3C8]">Favorit</span>
+              </div>
+              <div className="h-6 w-px bg-[#EBF0EB]/12" aria-hidden="true" />
+              <div className="flex flex-col items-center">
+                <span className="text-[16px] font-bold tabular-nums text-[#EBF0EB]">
+                  {recentSlugs.length}
+                </span>
+                <span className="text-[11px] text-[#C8D3C8]">Dilihat</span>
+              </div>
+              <div className="h-6 w-px bg-[#EBF0EB]/12" aria-hidden="true" />
+              <div className="flex flex-col items-center">
+                <span className="text-[16px] font-bold tabular-nums text-[#EBF0EB]">
+                  {profileState.loaded ? profileState.routes.length : '-'}
+                </span>
+                <span className="text-[11px] text-[#C8D3C8]">Rute custom</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col items-center">
+                <span className="text-[16px] font-bold tabular-nums text-[#EBF0EB]">
+                  {profileState.loaded ? profileState.posts.length : '-'}
+                </span>
+                <span className="text-[11px] text-[#C8D3C8]">Aktivitas</span>
+              </div>
+              <div className="h-6 w-px bg-[#EBF0EB]/12" aria-hidden="true" />
+              <div className="flex flex-col items-center">
+                <span className="text-[14px] font-bold text-[#E2D7B5]">
+                  {isFollowing ? 'Mengikuti' : 'Aktif'}
+                </span>
+                <span className="text-[11px] text-[#C8D3C8]">Status</span>
+              </div>
+            </>
+          )}
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
         </div>
       </div>
 
-      {/* SECTION CONTENT: Rute Saya vs Aktivitas Pengguna */}
+      {/* Konten Rute / Aktivitas */}
       <div className="mt-8">
         {isSelf ? (
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-[14px] font-bold text-white tracking-tight">
-                Rute Saya
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-[14px] font-bold tracking-tight text-[#EBF0EB]">
+                Rute saya
               </h3>
-              <span className="text-[11px] text-white/60">2 Rute Tersimpan</span>
+              <span className="text-[12px] text-[#C8D3C8] tabular-nums">
+                {profileState.loaded ? `${profileState.routes.length} rute tersimpan` : 'Memuat...'}
+              </span>
             </div>
 
-            {/* Rute 1 */}
-            <div className="flex flex-col gap-3">
-              <div className="flex flex-col rounded-2xl bg-forest-700/70 border border-white/10 p-3.5 shadow">
-                <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-bold text-white">
-                    Museum of Zoology ➔ Museum PETA
-                  </span>
-                  <span className="text-[10px] font-semibold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-400/20">
-                    5.4 KM
-                  </span>
-                </div>
-                <p className="text-[11px] text-white/60 mt-1">
-                  2 titik singgah edukasi sejarah Bogor
-                </p>
-                {onStartCustomRoute && museumZoologi && museumPeta && (
-                  <button
-                    type="button"
-                    onClick={() => onStartCustomRoute([museumZoologi, museumPeta])}
-                    className="mt-3 flex items-center justify-center gap-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 active:scale-95 py-1.5 text-[11px] font-bold text-white transition cursor-pointer"
+            {!profileState.loaded ? (
+              <div className="h-28 rounded-2xl border border-[#EBF0EB]/10 bg-[#233020]" />
+            ) : profileState.routes.length > 0 ? (
+              <div className="flex flex-col gap-3">
+                {profileState.routes.map((route) => (
+                  <div
+                    key={route.id}
+                    className="flex flex-col rounded-2xl border border-[#EBF0EB]/12 bg-[#233020] p-3.5 shadow-sm"
                   >
-                    <span>Mulai Navigasi Rute</span>
-                  </button>
-                )}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[13px] font-bold text-[#EBF0EB]">{route.title}</span>
+                      <span className="shrink-0 rounded-lg border border-emerald-400/25 bg-emerald-500/20 px-2 py-0.5 text-[11px] font-semibold text-emerald-200">
+                        {route.totalDistance}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-[12px] text-[#C8D3C8]">{route.desc}</p>
+                    {onStartCustomRoute && route.places?.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => onStartCustomRoute(route.places)}
+                        className="mt-3 flex min-h-[42px] items-center justify-center rounded-xl bg-[#EBF0EB] py-2 text-[12px] font-semibold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.97]"
+                      >
+                        Mulai navigasi rute
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
-
-              {/* Rute 2 */}
-              <div className="flex flex-col rounded-2xl bg-forest-700/70 border border-white/10 p-3.5 shadow">
-                <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-bold text-white">
-                    Kuliner Surya Kencana
-                  </span>
-                  <span className="text-[10px] font-semibold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-400/20">
-                    3.0 KM
-                  </span>
-                </div>
-                <p className="text-[11px] text-white/60 mt-1">
-                  Pusat kuliner legendaris Bogor
+            ) : (
+              <div className="rounded-2xl border border-[#EBF0EB]/12 bg-[#233020] p-4 text-center">
+                <p className="text-[12.5px] text-[#C8D3C8]">
+                  Belum ada rute custom tersimpan di akun Anda.
                 </p>
               </div>
-            </div>
+            )}
 
-            {/* 4. TOMBOL LOGOUT BAWAH DI PROFIL AKUN SENDIRI */}
-            <div className="mt-8 pt-4 border-t border-white/10">
+            <div className="mt-8 border-t border-[#EBF0EB]/12 pt-4">
               <button
                 type="button"
                 id="btn-logout-profile"
                 onClick={onLogout}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-600/90 hover:bg-rose-600 active:scale-95 py-3 text-[13px] font-bold text-white shadow-lg transition cursor-pointer border border-rose-400/30"
+                className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-rose-300/25 bg-[#3B1D24] py-3 text-[13px] font-semibold text-rose-100 shadow-sm transition-colors duration-150 hover:bg-[#49242D] active:scale-[0.97]"
               >
                 <svg
                   width="16"
@@ -573,17 +707,19 @@ function ProfilePage({
                   strokeWidth="2.2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                 >
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                   <polyline points="16 17 21 12 16 7" />
                   <line x1="21" y1="12" x2="9" y2="12" />
                 </svg>
-                <span>Keluar dari Akun (Logout)</span>
+                <span>Keluar dari akun</span>
               </button>
             </div>
           </div>
         ) : (
           <div>
+<<<<<<< HEAD
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-[14px] font-bold text-white tracking-tight">
                 Aktivitas Terkini {profileName}
@@ -654,6 +790,40 @@ function ProfilePage({
                 <p className="text-[12px] font-bold text-white">Belum Ada Aktivitas Terkini</p>
                 <p className="text-[10px] text-white/50 mt-0.5 max-w-[200px]">
                   {profileName} belum membagikan momen perjalanan terbarunya.
+=======
+            <h3 className="mb-3 text-[14px] font-bold tracking-tight text-[#EBF0EB]">
+              Aktivitas terkini {profileName}
+            </h3>
+            {!profileState.loaded ? (
+              <div className="h-44 rounded-2xl border border-[#EBF0EB]/10 bg-[#233020]" />
+            ) : profileState.posts.length > 0 ? (
+              <div className="flex flex-col gap-4">
+                {profileState.posts.map((post) => (
+                  <article
+                    key={post.id}
+                    className="flex flex-col overflow-hidden rounded-2xl border border-[#EBF0EB]/12 bg-[#233020] p-3 shadow-sm"
+                  >
+                    <div className="aspect-[16/10] w-full overflow-hidden rounded-xl bg-[#1C2719]">
+                      <SafeImage
+                        src={post.image}
+                        fallback={DEFAULT_IMAGE_PLACEHOLDER}
+                        alt={post.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <h4 className="mt-2.5 text-[13.5px] font-bold text-[#EBF0EB]">{post.title}</h4>
+                    <p className="mt-0.5 text-[12px] text-[#C8D3C8]">
+                      {post.location}
+                      {post.date ? ` · ${post.date}` : ''}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-[#EBF0EB]/12 bg-[#233020] p-4 text-center">
+                <p className="text-[12.5px] text-[#C8D3C8]">
+                  Belum ada postingan publik dari {profileName}.
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
                 </p>
               </div>
             )}

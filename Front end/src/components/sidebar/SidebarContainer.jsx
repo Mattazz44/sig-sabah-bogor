@@ -13,6 +13,12 @@ export default function SidebarContainer({
   onSelect,
   expanded,
   onExpandedChange,
+  isLoading = false,
+  isBackendError = false,
+  isRetryingBackend = false,
+  onRetryBackend,
+  isFavorite,
+  toggleFavorite,
 }) {
   return (
     <BottomSheet
@@ -32,6 +38,12 @@ export default function SidebarContainer({
               query={query}
               onQueryChange={onQueryChange}
               onSelect={onSelect}
+              isLoading={isLoading}
+              isBackendError={isBackendError}
+              isRetryingBackend={isRetryingBackend}
+              onRetryBackend={onRetryBackend}
+              isFavorite={isFavorite}
+              toggleFavorite={toggleFavorite}
             />
           }
         />

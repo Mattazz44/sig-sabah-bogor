@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { useFilteredTourists } from './hooks/useMapControls'
 import { useFavorites } from './hooks/useFavorites'
@@ -19,11 +19,14 @@ import { useAdminLocations } from './hooks/useAdminLocations'
 import { enrichTouristWithUserLocation } from './utils/distance'
 import { apiFetch } from './utils/api'
 import { getImageUrl } from './utils/imageHelper'
+import { AlertTriangleIcon, RefreshIcon, XIcon } from './components/ui/VectorIcons'
 
 export default function App() {
   // Data destinasi wisata: murni di-fetch dari API backend Laravel (PostgreSQL / PostGIS)
   const [tourists, setTourists] = useState([])
+  const [isLoadingTourists, setIsLoadingTourists] = useState(true)
   const [isBackendError, setIsBackendError] = useState(false)
+<<<<<<< HEAD
   const [isRetrying, setIsRetrying] = useState(false)
 
   const loadTourists = useCallback(() => {
@@ -41,12 +44,49 @@ export default function App() {
             image: getImageUrl(item.image),
             gallery: Array.isArray(item.gallery) ? item.gallery.map(getImageUrl) : [],
           }))
+=======
+  const [isErrorBannerDismissed, setIsErrorBannerDismissed] = useState(false)
+  const [isRetryingBackend, setIsRetryingBackend] = useState(false)
+  const isMountedRef = useRef(true)
+
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
+  const fetchTouristsData = useCallback(async () => {
+    const res = await apiFetch('/api/tourists')
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+    const json = await res.json()
+
+    if (json?.data && Array.isArray(json.data)) {
+      // Normalisasi path image & gallery agar menggunakan helper getImageUrl
+      return json.data.map((item) => ({
+        ...item,
+        image: getImageUrl(item.image),
+        gallery: Array.isArray(item.gallery) ? item.gallery.map(getImageUrl) : [],
+      }))
+    }
+    return null
+  }, [])
+
+  useEffect(() => {
+    let isMounted = true
+
+    fetchTouristsData()
+      .then((normalized) => {
+        if (isMounted && normalized) {
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
           setTourists(normalized)
           setIsBackendError(false)
+          setIsErrorBannerDismissed(false)
         }
       })
       .catch((err) => {
         console.error('Gagal memuat data objek wisata dari backend Laravel:', err)
+<<<<<<< HEAD
         setTourists([])
         setIsBackendError(true)
       })
@@ -54,6 +94,50 @@ export default function App() {
         setIsRetrying(false)
       })
   }, [])
+=======
+        if (isMounted) {
+          setTourists([])
+          setIsBackendError(true)
+          setIsErrorBannerDismissed(false)
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoadingTourists(false)
+        }
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [fetchTouristsData])
+
+  const handleRetryBackend = useCallback(() => {
+    setIsRetryingBackend(true)
+    fetchTouristsData()
+      .then((normalized) => {
+        if (isMountedRef.current && normalized) {
+          setTourists(normalized)
+          setIsBackendError(false)
+          setIsErrorBannerDismissed(false)
+        }
+      })
+      .catch((err) => {
+        console.error('Gagal memuat data objek wisata dari backend Laravel:', err)
+        if (isMountedRef.current) {
+          setTourists([])
+          setIsBackendError(true)
+          setIsErrorBannerDismissed(false)
+        }
+      })
+      .finally(() => {
+        if (isMountedRef.current) {
+          setIsRetryingBackend(false)
+          setIsLoadingTourists(false)
+        }
+      })
+  }, [fetchTouristsData])
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
 
   useEffect(() => {
     loadTourists()
@@ -232,10 +316,13 @@ export default function App() {
     return <AdminPage />
   }
 
+  const showBackendBanner = isBackendError && !isErrorBannerDismissed
+
   return (
-    <main className="relative h-dvh w-full overflow-hidden bg-forest-900">
+    <main className="relative flex flex-col h-dvh w-full overflow-hidden bg-forest-900">
       <h1 className="sr-only">SIG Wisata Bogor</h1>
 
+<<<<<<< HEAD
       {/* Banner Peringatan jika Backend Laravel Belum Dijalankan */}
       {isBackendError && (
         <aside
@@ -294,6 +381,89 @@ export default function App() {
           {/* Menu Explore: Tampilkan Peta Leaflet + Sidebar wisata */}
           {activeTab === 'Explore' && (
             <div className="relative h-full w-full">
+=======
+      {/* Banner Peringatan Inline jika Backend Laravel Belum Dijalankan (mendorong konten secara natural tanpa overlap) */}
+      <div
+        className={`relative z-30 shrink-0 grid transition-all duration-300 ease-out ${
+          showBackendBanner
+            ? 'grid-rows-[1fr] opacity-100 translate-y-0'
+            : 'grid-rows-[0fr] opacity-0 -translate-y-2 pointer-events-none'
+        }`}
+        aria-hidden={!showBackendBanner}
+      >
+        <div className="overflow-hidden">
+          <aside
+            role="alert"
+            aria-live="polite"
+            className="w-full border-b border-rose-400/35 bg-[#2a1216] px-4 py-2.5 text-rose-100 shadow-sm"
+          >
+            <div className="mx-auto flex max-w-md items-center justify-between gap-2.5">
+              <div className="flex min-w-0 items-start gap-2.5">
+                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-400/25 bg-rose-500/20 text-rose-200">
+                  <AlertTriangleIcon className="h-4 w-4" />
+                </span>
+                <div className="min-w-0 text-left text-[12px] leading-snug">
+                  <p className="font-semibold text-[#EBF0EB]">Koneksi ke server terputus</p>
+                  <p className="mt-0.5 text-rose-100/85">
+                    Jalankan server Laravel (<code className="rounded bg-black/35 px-1 font-mono text-[11px]">php artisan serve</code>) untuk memuat destinasi.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleRetryBackend}
+                  disabled={isRetryingBackend}
+                  aria-label="Coba hubungkan ulang ke backend"
+                  className="relative inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/10 px-3 text-[12px] font-semibold text-[#EBF0EB] transition-colors duration-150 hover:bg-[#EBF0EB]/18 active:scale-[0.97] disabled:opacity-50 before:absolute before:-inset-1"
+                >
+                  <RefreshIcon className={`h-3.5 w-3.5 ${isRetryingBackend ? 'animate-spin' : ''}`} />
+                  <span>{isRetryingBackend ? 'Memuat...' : 'Coba lagi'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsErrorBannerDismissed(true)}
+                  aria-label="Tutup peringatan backend"
+                  className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/10 text-[#EBF0EB] transition-colors duration-150 hover:bg-[#EBF0EB]/18 active:scale-[0.97] before:absolute before:-inset-1"
+                >
+                  <XIcon className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      {/* Kontainer Utama Fleksibel: menjaga seluruh halaman & peta tetap proporsional di bawah banner */}
+      <div className="relative flex-1 min-h-0 w-full overflow-hidden">
+        {/* 3. TAMPILAN HALAMAN PROFIL (Akun Sendiri vs Orang Lain) */}
+        {profileUser ? (
+          <ProfilePage
+            user={profileUser === 'self' && currentUser ? { isSelf: true, ...currentUser } : profileUser}
+            tourists={enrichedTourists}
+            favorites={favorites}
+            recentSlugs={recentSlugs}
+            onSelectPlace={handleSelect}
+            onBack={() => setProfileUser(null)}
+            onLogout={handleLogout}
+            onStartCustomRoute={handleStartCustomRoute}
+          />
+        ) : selectedPlace ? (
+          /* 1 & 2. Tampilkan Detail Wisata penuh jika selectedPlace tidak null */
+          <TouristDetailPage
+            place={selectedPlace}
+            onBack={handleBackToExplore}
+            onStartNavigation={handleStartNavigation}
+            isFavorite={isFavorite}
+            toggleFavorite={toggleFavorite}
+          />
+        ) : (
+          <>
+            {/* Menu Explore: Tampilkan Peta Leaflet + Sidebar wisata */}
+            {activeTab === 'Explore' && (
+              <div className="relative h-full w-full animate-fade-enter">
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
               <MapView
                 places={mapPlaces}
                 selected={selected}
@@ -315,13 +485,19 @@ export default function App() {
                 onSelect={handleSelect}
                 expanded={sheetExpanded}
                 onExpandedChange={setSheetExpanded}
+                isLoading={isLoadingTourists}
+                isBackendError={isBackendError}
+                isRetryingBackend={isRetryingBackend}
+                onRetryBackend={handleRetryBackend}
+                isFavorite={isFavorite}
+                toggleFavorite={toggleFavorite}
               />
             </div>
           )}
 
           {/* Menu Navigasi: CLEAN UI (Peta Rute Navigasi dengan Single Titik atau Multi-Waypoints) */}
           {activeTab === 'Navigasi' && (
-            <div className="relative h-full w-full">
+            <div className="relative h-full w-full animate-fade-enter">
               <MapView
                 places={
                   navigationTarget
@@ -342,10 +518,13 @@ export default function App() {
             </div>
           )}
 
-          {/* Menu Untuk Anda: Halaman Rekomendasi "Untuk Kamu" */}
+          {/* Menu Untuk Anda: Halaman Rekomendasi "Untuk Anda" */}
           {activeTab === 'Untuk Anda' && (
             <ForYouPage
               tourists={enrichedTourists}
+              isLoading={isLoadingTourists}
+              isBackendError={isBackendError}
+              onRetryBackend={handleRetryBackend}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
               isFavorite={isFavorite}
@@ -362,6 +541,7 @@ export default function App() {
           {(activeTab === 'Tersimpan' || activeTab === 'Aktivitas Tersimpan') && (
             <SavedActivitiesPage
               tourists={enrichedTourists}
+              isLoadingTourists={isLoadingTourists}
               favorites={favorites}
               recentSlugs={recentSlugs}
               onSelectPlace={handleSelect}
@@ -373,17 +553,22 @@ export default function App() {
             />
           )}
 
-          {/* Menu Aktivitas: Halaman Utama Aktivitas & Komunitas */}
-          {activeTab === 'Aktivitas' && (
-            <ActivitiesPage
-              isLoggedIn={isLoggedIn}
-              currentUser={currentUser}
-              onRequireLogin={() => setShowLoginModal(true)}
-              onOpenProfile={setProfileUser}
-            />
-          )}
-        </>
-      )}
+            {/* Menu Aktivitas: Halaman Utama Aktivitas & Komunitas */}
+            {activeTab === 'Aktivitas' && (
+              <ActivitiesPage
+                tourists={enrichedTourists}
+                favorites={favorites}
+                recentSlugs={recentSlugs}
+                onSelectPlace={handleSelect}
+                isLoggedIn={isLoggedIn}
+                currentUser={currentUser}
+                onRequireLogin={() => setShowLoginModal(true)}
+                onOpenProfile={setProfileUser}
+              />
+            )}
+          </>
+        )}
+      </div>
 
       {/* 4. Fixed Bottom Navigation Bar tetap kokoh di paling bawah */}
       <BottomNav

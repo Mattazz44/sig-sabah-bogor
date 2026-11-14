@@ -1,16 +1,49 @@
 @import "tailwindcss";
 
-/* Design tokens — diambil dari mockup Figma */
+/* Design tokens: Forest Canopy & Liquid Glass accent */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --color-forest-900: #2c3b26; /* panel / bottom sheet */
-  --color-forest-700: #4f5f3b; /* bottom navigation */
+  --color-forest-700: #4f5f3b; /* elevated forest olive */
+  --color-forest-800: #253320; /* card surface */
+  --color-forest-950: #161e16; /* deep ink on ivory CTA */
+  --color-ivory: #ebf0eb;      /* primary CTA & active glass ink */
+  --color-sand: #e2d7b5;       /* deliberate warm accent */
   --color-muted: #6b6b6b;      /* placeholder search */
 
   --color-pin-alam: #1f8a5b;
   --color-pin-kuliner: #ef8a22;
   --color-pin-edukasi: #e2489a;
+}
+
+@layer base {
+  a[href],
+  button:not(:disabled),
+  summary,
+  select:not(:disabled),
+  label[for],
+  label:has(> input[type="checkbox"]:not(:disabled), > input[type="radio"]:not(:disabled)),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]),
+  [role="menuitem"]:not([aria-disabled="true"]),
+  [role="checkbox"]:not([aria-disabled="true"]),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  :disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  :focus-visible {
+    outline: 2px solid #ebf0eb;
+    outline-offset: 2px;
+  }
 }
 
 html,
@@ -36,6 +69,72 @@ img {
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* ---------- iOS 26 Liquid Glass Dock Surface (Accent-capped under R-10) ---------- */
+.liquid-glass-dock {
+  background: rgba(20, 28, 20, 0.55);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.liquid-glass-pill {
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(235, 240, 235, 0.11) 58%,
+    rgba(235, 240, 235, 0.16) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.22),
+    0 4px 12px rgba(0, 0, 0, 0.22);
+}
+
+.liquid-glass-pill[data-dragging="true"] {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(235, 240, 235, 0.16) 55%,
+    rgba(235, 240, 235, 0.22) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.42);
+  box-shadow:
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.62),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.24),
+    0 8px 18px rgba(0, 0, 0, 0.28);
+}
+
+.liquid-glass-sheen {
+  background: linear-gradient(
+    108deg,
+    transparent 12%,
+    rgba(255, 255, 255, 0.16) 36%,
+    rgba(255, 255, 255, 0.46) 50%,
+    rgba(255, 255, 255, 0.16) 64%,
+    transparent 88%
+  );
+  will-change: transform, opacity;
+}
+
+.liquid-glass-modal {
+  background: rgba(20, 28, 20, 0.45);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.liquid-glass-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.liquid-glass-input:focus {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.38);
 }
 
 /* ---------- Leaflet overrides ---------- */
@@ -126,4 +225,105 @@ img {
   animation: shimmer-sweep 1.6s ease-in-out infinite;
 }
 
+/* ---------- 60fps Micro-Interactions (ease-out, zero bounce) ---------- */
+@keyframes tab-slide-up {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
 
+@keyframes fade-enter {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes notif-item-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-tab-enter {
+  animation: tab-slide-up 250ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.animate-fade-enter {
+  animation: fade-enter 250ms ease-out;
+}
+
+.animate-backdrop-fade {
+  animation: fade-enter 200ms ease-out;
+}
+
+.animate-modal-pop {
+  animation: modal-pop 200ms ease-out;
+}
+
+.animate-notif-item {
+  opacity: 0;
+  animation: notif-item-in 230ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Smooth edge fade masking for scrollable lists without clipping first/last rested items */
+.scroll-fade-mask {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 14px,
+    black calc(100% - 14px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    black 14px,
+    black calc(100% - 14px),
+    transparent 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .user-pulse-ring,
+  .shimmer-skeleton,
+  .animate-tab-enter,
+  .animate-fade-enter,
+  .animate-backdrop-fade,
+  .animate-modal-pop,
+  .animate-notif-item {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
