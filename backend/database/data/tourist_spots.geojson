@@ -21,11 +21,11 @@
         "rating": 4.6,
         "operational_hours": "06.00-18.00",
         "ticket_price": "Gratis",
-        "image": "/images/taman-peranginan.jpg",
+        "image": "/images/spots/taman-peranginan.jpg",
         "gallery": [
-          "/images/taman-peranginan.jpg",
-          "/images/kebun-raya-bogor.jpg",
-          "/images/tugu-kujang.jpg"
+          "/images/spots/taman-peranginan.jpg",
+          "/images/spots/kebun-raya-bogor.jpg",
+          "/images/spots/tugu-kujang.jpg"
         ],
         "latitude": -6.5885,
         "longitude": 106.7978,
@@ -54,11 +54,11 @@
         "rating": 4.6,
         "operational_hours": "07.00-22.00",
         "ticket_price": "Gratis",
-        "image": "/images/lawang-surya-kencana.jpg",
+        "image": "/images/spots/lawang-surya-kencana.jpg",
         "gallery": [
-          "/images/lawang-surya-kencana.jpg",
-          "/images/jalan-suryakencana.jpg",
-          "/images/tugu-kujang.jpg"
+          "/images/spots/lawang-surya-kencana.jpg",
+          "/images/spots/jalan-suryakencana.jpg",
+          "/images/spots/tugu-kujang.jpg"
         ],
         "latitude": -6.6022,
         "longitude": 106.8003,
@@ -87,11 +87,11 @@
         "rating": 4.8,
         "operational_hours": "08.00-19.00",
         "ticket_price": "Rp175.000/pax",
-        "image": "/images/jbound-geo-edu-park.jpg",
+        "image": "/images/spots/jbound-geo-edu-park.jpg",
         "gallery": [
-          "/images/jbound-gallery-1.jpg",
-          "/images/jbound-gallery-2.jpg",
-          "/images/jbound-gallery-3.jpg"
+          "/images/spots/jbound-gallery-1.jpg",
+          "/images/spots/jbound-gallery-2.jpg",
+          "/images/spots/jbound-gallery-3.jpg"
         ],
         "latitude": -6.6115,
         "longitude": 106.7725,
@@ -120,11 +120,11 @@
         "rating": 4.6,
         "operational_hours": "08.00-16.00",
         "ticket_price": "Rp10.000/pax",
-        "image": "/images/museum-peta.jpg",
+        "image": "/images/spots/museum-peta.jpg",
         "gallery": [
-          "/images/museum-peta.jpg",
-          "/images/museum-zoologi.jpg",
-          "/images/taman-peranginan.jpg"
+          "/images/spots/museum-peta.jpg",
+          "/images/spots/museum-zoologi.jpg",
+          "/images/spots/taman-peranginan.jpg"
         ],
         "latitude": -6.5855,
         "longitude": 106.7947,
@@ -153,11 +153,11 @@
         "rating": 4.7,
         "operational_hours": "08.00-17.00",
         "ticket_price": "Rp25.000/pax",
-        "image": "/images/kebun-raya-bogor.jpg",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
         "gallery": [
-          "/images/kebun-raya-bogor.jpg",
-          "/images/taman-peranginan.jpg",
-          "/images/tugu-kujang.jpg"
+          "/images/spots/kebun-raya-bogor.jpg",
+          "/images/spots/taman-peranginan.jpg",
+          "/images/spots/tugu-kujang.jpg"
         ],
         "latitude": -6.5976,
         "longitude": 106.7996,
@@ -186,11 +186,11 @@
         "rating": 4.5,
         "operational_hours": "07.00-17.00",
         "ticket_price": "Rp25.000/pax",
-        "image": "/images/curug-leuwi-hejo.jpg",
+        "image": "/images/spots/curug-leuwi-hejo.jpg",
         "gallery": [
-          "/images/curug-leuwi-hejo.jpg",
-          "/images/curug-nangka.jpg",
-          "/images/kopi-daong.jpg"
+          "/images/spots/curug-leuwi-hejo.jpg",
+          "/images/spots/curug-nangka.jpg",
+          "/images/spots/kopi-daong.jpg"
         ],
         "latitude": -6.579,
         "longitude": 106.927,
@@ -219,11 +219,11 @@
         "rating": 4.4,
         "operational_hours": "07.00-17.00",
         "ticket_price": "Rp22.000/pax",
-        "image": "/images/curug-nangka.jpg",
+        "image": "/images/spots/curug-nangka.jpg",
         "gallery": [
-          "/images/curug-nangka.jpg",
-          "/images/curug-leuwi-hejo.jpg",
-          "/images/jbound-geo-edu-park.jpg"
+          "/images/spots/curug-nangka.jpg",
+          "/images/spots/curug-leuwi-hejo.jpg",
+          "/images/spots/jbound-geo-edu-park.jpg"
         ],
         "latitude": -6.6664,
         "longitude": 106.7247,
@@ -252,11 +252,11 @@
         "rating": 4.6,
         "operational_hours": "09.00-21.00",
         "ticket_price": "Gratis (F&B)",
-        "image": "/images/kopi-daong.jpg",
+        "image": "/images/spots/kopi-daong.jpg",
         "gallery": [
-          "/images/kopi-daong.jpg",
-          "/images/jalan-suryakencana.jpg",
-          "/images/lawang-surya-kencana.jpg"
+          "/images/spots/kopi-daong.jpg",
+          "/images/spots/jalan-suryakencana.jpg",
+          "/images/spots/lawang-surya-kencana.jpg"
         ],
         "latitude": -6.688,
         "longitude": 106.87,
@@ -285,11 +285,11 @@
         "rating": 4.5,
         "operational_hours": "08.00-21.00",
         "ticket_price": "Gratis (F&B)",
-        "image": "/images/jalan-suryakencana.jpg",
+        "image": "/images/spots/jalan-suryakencana.jpg",
         "gallery": [
-          "/images/jalan-suryakencana.jpg",
-          "/images/lawang-surya-kencana.jpg",
-          "/images/tugu-kujang.jpg"
+          "/images/spots/jalan-suryakencana.jpg",
+          "/images/spots/lawang-surya-kencana.jpg",
+          "/images/spots/tugu-kujang.jpg"
         ],
         "latitude": -6.604,
         "longitude": 106.8,
@@ -318,11 +318,11 @@
         "rating": 4.7,
         "operational_hours": "08.00-16.00",
         "ticket_price": "Rp15.000/pax",
-        "image": "/images/museum-zoologi.jpg",
+        "image": "/images/spots/museum-zoologi.jpg",
         "gallery": [
-          "/images/museum-zoologi.jpg",
-          "/images/museum-peta.jpg",
-          "/images/kebun-raya-bogor.jpg"
+          "/images/spots/museum-zoologi.jpg",
+          "/images/spots/museum-peta.jpg",
+          "/images/spots/kebun-raya-bogor.jpg"
         ],
         "latitude": -6.6014,
         "longitude": 106.7972,
@@ -351,11 +351,11 @@
         "rating": 4.3,
         "operational_hours": "08.00-16.00",
         "ticket_price": "Rp5.000/pax",
-        "image": "/images/prasasti-batutulis.jpg",
+        "image": "/images/spots/prasasti-batutulis.jpg",
         "gallery": [
-          "/images/prasasti-batutulis.jpg",
-          "/images/tugu-kujang.jpg",
-          "/images/museum-peta.jpg"
+          "/images/spots/prasasti-batutulis.jpg",
+          "/images/spots/tugu-kujang.jpg",
+          "/images/spots/museum-peta.jpg"
         ],
         "latitude": -6.626,
         "longitude": 106.8075,
@@ -384,11 +384,11 @@
         "rating": 4.4,
         "operational_hours": "24 Jam",
         "ticket_price": "Gratis",
-        "image": "/images/tugu-kujang.jpg",
+        "image": "/images/spots/tugu-kujang.jpg",
         "gallery": [
-          "/images/tugu-kujang.jpg",
-          "/images/kebun-raya-bogor.jpg",
-          "/images/lawang-surya-kencana.jpg"
+          "/images/spots/tugu-kujang.jpg",
+          "/images/spots/kebun-raya-bogor.jpg",
+          "/images/spots/lawang-surya-kencana.jpg"
         ],
         "latitude": -6.6017,
         "longitude": 106.8048,

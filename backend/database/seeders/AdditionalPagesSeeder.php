@@ -24,7 +24,7 @@ class AdditionalPagesSeeder extends Seeder
             [
                 'name' => 'Administrator',
                 'email' => 'admin@gmail.com',
-                'avatar' => '/images/avatar-ambalingham.jpg',
+                'avatar' => '/images/avatars/avatar-ambalingham.jpg',
                 'bio' => 'Administrator Pengelola SIG Pariwisata Kota Bogor.',
                 'password' => Hash::make('admin123'),
             ]
@@ -36,7 +36,7 @@ class AdditionalPagesSeeder extends Seeder
             [
                 'name' => 'Ambalingham',
                 'username' => 'ambalingham',
-                'avatar' => '/images/avatar-ambalingham.jpg',
+                'avatar' => '/images/avatars/avatar-ambalingham.jpg',
                 'bio' => 'Penjelajah alam dan pecinta curug di Bogor.',
                 'password' => Hash::make('password123'),
             ]
@@ -47,7 +47,7 @@ class AdditionalPagesSeeder extends Seeder
             [
                 'name' => 'Kirk hasibuan',
                 'username' => 'kirkhasibuan',
-                'avatar' => '/images/avatar-kirk.jpg',
+                'avatar' => '/images/avatars/avatar-kirk.jpg',
                 'bio' => 'Penggemar wisata budaya, sejarah, dan spot edukasi Bogor.',
                 'password' => Hash::make('password123'),
             ]
@@ -58,27 +58,66 @@ class AdditionalPagesSeeder extends Seeder
             [
                 'name' => 'Sarah Melati',
                 'username' => 'sarahmelati',
-                'avatar' => '/images/avatar-ambalingham.jpg',
+                'avatar' => '/images/avatars/avatar-ambalingham.jpg',
                 'bio' => 'Pecinta trekking dan petualangan jernihnya Curug Sentul.',
                 'password' => Hash::make('password123'),
             ]
         );
 
-        // 2. SEED DATA TERSIMPAN: Aktivitas Perjalanan (Milik User Ambalingham)
+        // 2. SEED DATA TERSIMPAN: Tempat Wisata yang Disimpan / Disukai (Milik User Ambalingham)
         SavedActivity::truncate();
-        SavedActivity::create([
-            'user_id' => $ambalingham->id,
-            'name' => 'Bersepeda Santai Akhir Pekan',
-            'location' => 'Taman Peranginan',
-            'date_label' => '2 hari lalu',
-        ]);
-
-        // 3. SEED DATA TERSIMPAN: Rute Custom (Milik User Ambalingham)
-        CustomRoute::truncate();
 
         $museumZoologi = TouristSpot::where('slug', 'museum-zoologi-bogor')->first();
         $museumPeta = TouristSpot::where('slug', 'museum-peta')->first();
         $lawangSurya = TouristSpot::where('slug', 'lawang-surya-kencana')->first();
+        $tuguKujang = TouristSpot::where('slug', 'tugu-kujang')->first();
+
+        if ($museumZoologi) {
+            SavedActivity::create([
+                'user_id' => $ambalingham->id,
+                'tourist_spot_id' => $museumZoologi->id,
+                'spot_slug' => $museumZoologi->slug,
+                'name' => $museumZoologi->name,
+                'location' => 'Bogor Tengah',
+                'date_label' => '3 hari lalu',
+            ]);
+        }
+
+        if ($museumPeta) {
+            SavedActivity::create([
+                'user_id' => $ambalingham->id,
+                'tourist_spot_id' => $museumPeta->id,
+                'spot_slug' => $museumPeta->slug,
+                'name' => $museumPeta->name,
+                'location' => 'Bogor Kota',
+                'date_label' => '1 minggu lalu',
+            ]);
+        }
+
+        if ($lawangSurya) {
+            SavedActivity::create([
+                'user_id' => $ambalingham->id,
+                'tourist_spot_id' => $lawangSurya->id,
+                'spot_slug' => $lawangSurya->slug,
+                'name' => $lawangSurya->name,
+                'location' => 'Suryakencana, Bogor',
+                'date_label' => '2 minggu lalu',
+            ]);
+        }
+
+        if ($tuguKujang) {
+            SavedActivity::create([
+                'user_id' => $ambalingham->id,
+                'tourist_spot_id' => $tuguKujang->id,
+                'spot_slug' => $tuguKujang->slug,
+                'name' => $tuguKujang->name,
+                'location' => 'Tegallega, Bogor',
+                'date_label' => '1 bulan lalu',
+            ]);
+        }
+
+        // 3. SEED DATA TERSIMPAN: Rute Custom (Milik User Ambalingham)
+        CustomRoute::truncate();
 
         CustomRoute::create([
             'user_id' => $ambalingham->id,
@@ -142,69 +181,7 @@ class AdditionalPagesSeeder extends Seeder
             ],
         ]);
 
-        // 4. SEED DATA AKTIVITAS: Postingan Pengguna & Komunitas
+        // 4. TABEL AKTIVITAS: Tidak di-seed sesuai instruksi pengguna (dimulai dalam keadaan kosong)
         ActivityPost::truncate();
-
-        // Aktivitas "Kamu" (Ambalingham)
-        ActivityPost::create([
-            'user_id' => $ambalingham->id,
-            'user_name' => $ambalingham->name,
-            'user_avatar' => $ambalingham->avatar,
-            'date' => '1 sep',
-            'image' => '/images/curug-cikuluwung.jpg',
-            'title' => 'Perjalanan alam ke curug cikuluwung',
-            'location' => 'Curug cikuluwung - Bogor selatan',
-            'is_community' => false,
-            'is_other_user' => false,
-        ]);
-
-        ActivityPost::create([
-            'user_id' => $ambalingham->id,
-            'user_name' => $ambalingham->name,
-            'user_avatar' => $ambalingham->avatar,
-            'date' => '1 sep',
-            'image' => '/images/curug-cikuluwung.jpg',
-            'title' => 'Perjalanan alam ke curug cikuluwung',
-            'location' => 'Curug cikuluwung - Bogor selatan',
-            'is_community' => false,
-            'is_other_user' => false,
-        ]);
-
-        // Aktivitas "Komunitas" (Kirk, Ambalingham, Sarah)
-        ActivityPost::create([
-            'user_id' => $kirk->id,
-            'user_name' => $kirk->name,
-            'user_avatar' => $kirk->avatar,
-            'date' => '1 sep',
-            'image' => '/images/curug-cikuluwung.jpg',
-            'title' => 'Perjalanan alam ke curug cikuluwung',
-            'location' => 'Curug cikuluwung - Bogor selatan',
-            'is_community' => true,
-            'is_other_user' => true,
-        ]);
-
-        ActivityPost::create([
-            'user_id' => $ambalingham->id,
-            'user_name' => $ambalingham->name,
-            'user_avatar' => $ambalingham->avatar,
-            'date' => '1 sep',
-            'image' => '/images/curug-cikuluwung.jpg',
-            'title' => 'Perjalanan alam ke curug cikuluwung',
-            'location' => 'Curug cikuluwung - Bogor selatan',
-            'is_community' => true,
-            'is_other_user' => false,
-        ]);
-
-        ActivityPost::create([
-            'user_id' => $sarah->id,
-            'user_name' => $sarah->name,
-            'user_avatar' => $sarah->avatar,
-            'date' => '28 agt',
-            'image' => '/images/curug-leuwi-hejo.jpg',
-            'title' => 'Eksplorasi jernihnya Curug Leuwi Hejo',
-            'location' => 'Curug Leuwi Hejo - Babakan Madang, Bogor',
-            'is_community' => true,
-            'is_other_user' => true,
-        ]);
     }
 }

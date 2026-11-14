@@ -1,14 +1,27 @@
 import { useEffect, useState } from 'react'
 
 const STORAGE_KEY = 'sig_wisata_favorites'
+const DEFAULT_FAVORITES = [
+  'museum-zoologi-bogor',
+  'museum-peta',
+  'lawang-surya-kencana',
+  'tugu-kujang',
+]
 
 export function useFavorites() {
   const [favorites, setFavorites] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
-      return saved ? JSON.parse(saved) : ['tugu-kujang']
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Gabungkan tempat tersimpan awal agar rute custom bawaan akun memiliki destinasi yang valid
+          return Array.from(new Set([...parsed, ...DEFAULT_FAVORITES]))
+        }
+      }
+      return DEFAULT_FAVORITES
     } catch {
-      return ['tugu-kujang']
+      return DEFAULT_FAVORITES
     }
   })
 

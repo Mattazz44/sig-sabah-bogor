@@ -20,8 +20,6 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('title');
             $table->string('location');
-            $table->boolean('is_community')->default(true); // true = Komunitas, false = Kamu
-            $table->boolean('is_other_user')->default(false);
             $table->timestamps();
         });
     }

@@ -3,6 +3,7 @@ import NotificationDrawer from '../ui/NotificationDrawer'
 import SafeImage from '../ui/SafeImage'
 import { BellIcon, CameraIcon, RefreshIcon, UserIcon, XIcon } from '../ui/VectorIcons'
 import { apiFetch } from '../../utils/api'
+import { compressImage } from '../../utils/imageCompressor'
 import {
   DEFAULT_AVATAR_PLACEHOLDER,
   DEFAULT_IMAGE_PLACEHOLDER,
@@ -38,6 +39,41 @@ function ActivitiesPage({
         return res.json()
       })
       .then((json) => {
+<<<<<<< HEAD
+        if (isMounted && Array.isArray(json?.data) && json.data.length > 0) {
+          const mapPost = (item) => {
+            const isMine = Boolean(
+              currentUser && (
+                (item.user_id && currentUser.id && Number(item.user_id) === Number(currentUser.id)) ||
+                (item.user_name && currentUser.name && item.user_name === currentUser.name)
+              )
+            )
+            return {
+              id: item.id,
+              userId: item.user_id,
+              userName: item.user_name,
+              userAvatar: item.user_avatar,
+              date: item.date,
+              image: item.image,
+              title: item.title,
+              location: item.location,
+              isOtherUser: !isMine,
+            }
+          }
+
+          const allMapped = json.data.map(mapPost)
+
+          // Aktivitas Kamu HANYA ada jika pengguna sedang logged in
+          if (isLoggedIn) {
+            setMyActivities(allMapped.filter((p) => !p.isOtherUser))
+          } else {
+            setMyActivities([])
+          }
+
+          // Aktivitas Komunitas menampilkan seluruh aktivitas komunitas publik
+          setCommunityActivities(allMapped)
+        }
+=======
         if (!isMounted) return
         const rows = Array.isArray(json?.data) ? json.data : []
         const mapPost = (item) => ({
@@ -58,6 +94,7 @@ function ActivitiesPage({
           community,
           error: false,
         })
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
       })
       .catch(() => {
         if (!isMounted) return
@@ -72,12 +109,20 @@ function ActivitiesPage({
     return () => {
       isMounted = false
     }
+<<<<<<< HEAD
+  }, [isLoggedIn, currentUser?.id, currentUser?.name])
+=======
   }, [isLoggedIn, reloadTick])
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
 
   const [showPostModal, setShowPostModal] = useState(false)
   const [postCaption, setPostCaption] = useState('')
   const [postLocation, setPostLocation] = useState('')
   const [uploadedImagePreview, setUploadedImagePreview] = useState(null)
+  const [selectedImageFile, setSelectedImageFile] = useState(null)
+  const [isPosting, setIsPosting] = useState(false)
+  const [postToDelete, setPostToDelete] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const fileInputRef = useRef(null)
   const objectUrlsRef = useRef(new Set())
@@ -103,6 +148,37 @@ function ActivitiesPage({
   const communityActivities = [...localPosts, ...feedState.community]
   const currentFeed = subTab === 'Kamu' ? myActivities : communityActivities
 
+<<<<<<< HEAD
+  // Fungsi konfirmasi hapus postingan aktivitas sendiri
+  const confirmDeletePost = async () => {
+    if (!postToDelete) return
+    const id = postToDelete
+    setIsDeleting(true)
+
+    // Optimistic removal
+    setMyActivities((prev) => prev.filter((p) => p.id !== id))
+    setCommunityActivities((prev) => prev.filter((p) => p.id !== id))
+    setPostToDelete(null)
+
+    try {
+      await apiFetch(`/api/activities/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: currentUser?.id,
+          user_name: currentUser?.name,
+        }),
+      })
+    } catch (err) {
+      console.warn('Gagal menghapus postingan:', err)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  // Cek status isLoggedIn sebelum membuka form posting foto
+=======
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
   const handleCreatePostClick = () => {
     if (!isLoggedIn) {
       if (onRequireLogin) onRequireLogin()
@@ -113,10 +189,17 @@ function ActivitiesPage({
 
   const handlePhotoFileChange = (e) => {
     const file = e.target.files?.[0]
+<<<<<<< HEAD
+    if (file) {
+      setSelectedImageFile(file)
+      const previewUrl = URL.createObjectURL(file)
+      setUploadedImagePreview(previewUrl)
+=======
     if (!file) return
     if (uploadedImagePreview && objectUrlsRef.current.has(uploadedImagePreview)) {
       URL.revokeObjectURL(uploadedImagePreview)
       objectUrlsRef.current.delete(uploadedImagePreview)
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
     }
     const previewUrl = URL.createObjectURL(file)
     objectUrlsRef.current.add(previewUrl)
@@ -132,11 +215,37 @@ function ActivitiesPage({
     setShowPostModal(false)
   }
 
+<<<<<<< HEAD
+  // Submit posting foto ke feed
+  const handlePostSubmit = async (e) => {
+=======
   const handlePostSubmit = (e) => {
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
     e.preventDefault()
 
     const titleText = postCaption.trim()
     const locText = postLocation.trim()
+<<<<<<< HEAD
+    const tempLocalPreview = uploadedImagePreview || null
+
+    if (!titleText || !locText) {
+      return
+    }
+
+    setIsPosting(true)
+
+    const tempId = `post-${Date.now()}`
+    const todayFormatted = new Intl.DateTimeFormat('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(new Date())
+
+    const optimisticPost = {
+      id: tempId,
+      userId: currentUser?.id,
+      userName: currentUser?.name || 'Pengguna',
+=======
     if (!titleText || !locText) return
 
     const imgUrl = uploadedImagePreview || ''
@@ -145,14 +254,77 @@ function ActivitiesPage({
     const newPost = {
       id: `post-${Date.now()}`,
       userName: authorName,
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
       userAvatar: currentUser?.avatar || '',
-      date: 'Baru saja',
-      image: imgUrl,
+      date: todayFormatted,
+      image: tempLocalPreview,
       title: titleText,
       location: locText,
       isOtherUser: false,
     }
 
+<<<<<<< HEAD
+    setMyActivities((prev) => [optimisticPost, ...prev])
+    setCommunityActivities((prev) => [optimisticPost, ...prev])
+    setShowPostModal(false)
+
+    try {
+      const formData = new FormData()
+      formData.append('title', titleText)
+      formData.append('location', locText)
+      formData.append('date', todayFormatted)
+      if (currentUser?.id) {
+        formData.append('user_id', String(currentUser.id))
+      }
+      if (currentUser?.email) {
+        formData.append('user_email', currentUser.email)
+      }
+      formData.append('user_name', currentUser?.name || 'Pengguna')
+      formData.append('user_avatar', currentUser?.avatar || '')
+
+      if (selectedImageFile) {
+        // Kompresi foto sebelum diunggah ke backend
+        const compressed = await compressImage(selectedImageFile, {
+          maxWidth: 1280,
+          maxHeight: 1280,
+          quality: 0.82,
+        })
+        formData.append('image', compressed)
+      }
+
+      const res = await apiFetch('/api/activities', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (res.ok) {
+        const json = await res.json()
+        if (json?.data) {
+          const savedPost = {
+            id: json.data.id || tempId,
+            userId: json.data.user_id || currentUser?.id,
+            userName: json.data.user_name || json.data.userName,
+            userAvatar: json.data.user_avatar || json.data.userAvatar,
+            date: json.data.date || todayFormatted,
+            image: json.data.image,
+            title: json.data.title,
+            location: json.data.location,
+            isOtherUser: false,
+          }
+          // Perbarui postingan dengan path image nyata yang disimpan di server (/images/activities/...)
+          setMyActivities((prev) => prev.map((p) => (p.id === tempId ? savedPost : p)))
+          setCommunityActivities((prev) => prev.map((p) => (p.id === tempId ? savedPost : p)))
+        }
+      }
+    } catch (err) {
+      console.warn('Gagal menyimpan postingan aktivitas ke server:', err)
+    } finally {
+      setIsPosting(false)
+      setPostCaption('')
+      setUploadedImagePreview(null)
+      setSelectedImageFile(null)
+    }
+=======
     setLocalPosts((prev) => [newPost, ...prev])
 
     apiFetch('/api/activities', {
@@ -177,6 +349,7 @@ function ActivitiesPage({
     setPostCaption('')
     setPostLocation('')
     setUploadedImagePreview(null)
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
   }
 
   const handleOpenAuthorProfile = (post) => {
@@ -383,6 +556,86 @@ function ActivitiesPage({
             ) : (
               <div className="flex flex-col gap-6">
                 {currentFeed.map((post) => (
+<<<<<<< HEAD
+                  <article
+                    key={post.id}
+                    className="flex flex-col text-left group"
+                  >
+                    {/* Header Post: Avatar, nama, tanggal & Tombol Hapus */}
+                    <div className="flex items-center justify-between mb-2.5">
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          if (onOpenProfile) {
+                            if (currentUser && post.userName === currentUser.name) {
+                              onOpenProfile('self')
+                            } else {
+                              onOpenProfile({
+                                isSelf: false,
+                                name: post.userName,
+                                avatar: post.userAvatar,
+                              })
+                            }
+                          }
+                        }}
+                        onKeyDown={(e) => e.key === 'Enter' && onOpenProfile && onOpenProfile('self')}
+                        className="flex items-center gap-3 cursor-pointer hover:opacity-90 active:scale-[0.98] transition-transform duration-150"
+                        title={`Lihat profil ${post.userName}`}
+                      >
+                        <SafeImage
+                          src={post.userAvatar}
+                          fallback={DEFAULT_AVATAR_PLACEHOLDER}
+                          alt={post.userName}
+                          className="h-9 w-9 shrink-0 rounded-full object-cover border border-white/20 shadow-sm"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <div className="flex flex-col justify-center">
+                          <span className="text-[13px] font-semibold text-white leading-tight hover:underline flex items-center gap-1.5">
+                            <span>{post.userName}</span>
+                            {post.isOtherUser && (
+                              <span className="text-[10px] text-emerald-300 font-normal">
+                                (Lihat profil)
+                              </span>
+                            )}
+                          </span>
+                          <span className="text-[11px] text-white/60 leading-tight mt-0.5">
+                            {post.date}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Tombol Hapus Postingan Sendiri */}
+                      {(!post.isOtherUser || (currentUser && ((post.userId && Number(post.userId) === Number(currentUser.id)) || post.userName === currentUser.name))) && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setPostToDelete(post.id)
+                          }}
+                          title="Hapus aktivitas saya"
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-white/40 hover:text-red-400 hover:bg-white/10 active:scale-95 transition cursor-pointer"
+                        >
+                          <svg
+                            width="15"
+                            height="15"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            <line x1="10" y1="11" x2="10" y2="17" />
+                            <line x1="14" y1="11" x2="14" y2="17" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+=======
                   <article key={post.id} className="group flex flex-col text-left">
                     <button
                       type="button"
@@ -407,6 +660,7 @@ function ActivitiesPage({
                         </span>
                       </span>
                     </button>
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
 
                     <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-[#EBF0EB]/12 bg-[#1C2719] shadow-sm">
                       <SafeImage
@@ -551,15 +805,68 @@ function ActivitiesPage({
               <button
                 type="submit"
                 id="btn-submit-post-foto"
+<<<<<<< HEAD
+                disabled={isPosting}
+                className="mt-2 w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 disabled:opacity-60 py-2.5 text-[12px] font-bold text-white shadow-md transition cursor-pointer border border-emerald-400/30 flex items-center justify-center gap-2"
+              >
+                {isPosting ? (
+                  <>
+                    <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <span>Mengunggah & Mengompresi...</span>
+                  </>
+                ) : (
+                  'Bagikan ke Komunitas'
+                )}
+=======
                 className="mt-2 min-h-[44px] w-full rounded-xl bg-[#EBF0EB] py-2.5 text-[13px] font-semibold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.97]"
               >
                 Bagikan ke komunitas
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
               </button>
             </form>
           </div>
         </div>
       )}
 
+<<<<<<< HEAD
+      {/* MODAL KONFIRMASI HAPUS AKTIVITAS */}
+      {postToDelete && (
+        <div className="fixed inset-0 z-[1600] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="relative w-full max-w-xs rounded-3xl bg-forest-900 border border-white/20 p-6 shadow-2xl animate-in zoom-in-95 duration-200 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-500/20 text-red-400 mb-3 border border-red-500/30">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+              </svg>
+            </div>
+            <h3 className="text-[16px] font-bold text-white">Hapus Aktivitas?</h3>
+            <p className="text-[12px] text-white/60 mt-1">
+              Postingan aktivitas ini akan dihapus secara permanen.
+            </p>
+            <div className="mt-5 flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => setPostToDelete(null)}
+                className="flex-1 rounded-xl bg-white/10 hover:bg-white/20 py-2.5 text-[12px] font-semibold text-white transition cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeletePost}
+                disabled={isDeleting}
+                className="flex-1 rounded-xl bg-red-600 hover:bg-red-500 py-2.5 text-[12px] font-bold text-white transition cursor-pointer shadow flex items-center justify-center gap-1.5"
+              >
+                {isDeleting ? 'Menghapus...' : 'Ya, Hapus'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. MODAL / DRAWER NOTIFIKASI */}
+=======
+>>>>>>> 36503365f261623debceee820c5b8b217c5b1085
       <NotificationDrawer
         isOpen={showNotificationDrawer}
         onClose={() => setShowNotificationDrawer(false)}

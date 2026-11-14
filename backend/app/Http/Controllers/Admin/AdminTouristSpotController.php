@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\TouristSpot;
+use App\Services\ImageCompressor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -84,15 +85,20 @@ class AdminTouristSpotController extends Controller
             $counter++;
         }
 
-        // Upload file foto-foto yang diunggah
+        // Upload file foto-foto yang diunggah ke folder public/images/spots/
         $uploadedMap = []; // id -> path
         if ($request->hasFile('photos')) {
+            $spotsDir = public_path('images/spots');
+            if (!file_exists($spotsDir)) {
+                mkdir($spotsDir, 0755, true);
+            }
             foreach ($request->file('photos') as $idx => $photoFile) {
                 $ext = $photoFile->getClientOriginalExtension();
                 $cleanName = Str::slug(pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME));
                 $fileName = time() . '_' . uniqid() . '_' . $cleanName . '.' . $ext;
-                $photoFile->move(public_path('images'), $fileName);
-                $uploadedMap['new_' . $idx] = '/images/' . $fileName;
+                // Kompresi foto tempat wisata: maksimal resolusi 1280x1280 px dengan kualitas 82%
+                ImageCompressor::compressAndSave($photoFile, $spotsDir, $fileName, 1280, 1280, 82);
+                $uploadedMap['new_' . $idx] = '/images/spots/' . $fileName;
             }
         }
 
@@ -118,7 +124,7 @@ class AdminTouristSpotController extends Controller
 
         // Jika sama sekali tidak ada foto yang diupload, gunakan foto default
         if (empty($orderedGallery)) {
-            $orderedGallery = ['/images/taman-peranginan.jpg'];
+            $orderedGallery = ['/images/spots/taman-peranginan.jpg'];
         }
 
         // Foto paling atas (indeks 0) menjadi foto utama!
@@ -180,15 +186,20 @@ class AdminTouristSpotController extends Controller
             'photo_order' => 'nullable|string',
         ]);
 
-        // Upload file foto baru yang diunggah
+        // Upload file foto baru yang diunggah ke public/images/spots/
         $uploadedMap = [];
         if ($request->hasFile('photos')) {
+            $spotsDir = public_path('images/spots');
+            if (!file_exists($spotsDir)) {
+                mkdir($spotsDir, 0755, true);
+            }
             foreach ($request->file('photos') as $idx => $photoFile) {
                 $ext = $photoFile->getClientOriginalExtension();
                 $cleanName = Str::slug(pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME));
                 $fileName = time() . '_' . uniqid() . '_' . $cleanName . '.' . $ext;
-                $photoFile->move(public_path('images'), $fileName);
-                $uploadedMap['new_' . $idx] = '/images/' . $fileName;
+                // Kompresi foto tempat wisata: maksimal resolusi 1280x1280 px dengan kualitas 82%
+                ImageCompressor::compressAndSave($photoFile, $spotsDir, $fileName, 1280, 1280, 82);
+                $uploadedMap['new_' . $idx] = '/images/spots/' . $fileName;
             }
         }
 
