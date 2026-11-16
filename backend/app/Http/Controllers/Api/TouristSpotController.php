@@ -38,22 +38,33 @@ class TouristSpotController extends Controller
             $query->where('is_popular', filter_var($request->popular, FILTER_VALIDATE_BOOLEAN));
         }
 
-        // Optional: Urutkan berdasarkan jarak spasial jika latitude & longitude user dikirim
+        // Optional: Urutkan & filter radius berdasarkan jarak spasial jika latitude & longitude user dikirim
         if ($request->filled('lat') && $request->filled('lon')) {
             $userLat = (float) $request->lat;
             $userLon = (float) $request->lon;
+            $hasRadiusFilter = $request->filled('radius_km') && is_numeric($request->radius_km) && (float) $request->radius_km > 0;
+            $radiusMeters = $hasRadiusFilter ? (float) $request->radius_km * 1000 : null;
 
             if (\Illuminate\Support\Facades\DB::getDriverName() === 'pgsql') {
                 $query->selectRaw(
                     'ST_DistanceSphere(geom, ST_SetSRID(ST_MakePoint(?, ?), 4326)) as distance_meters',
                     [$userLon, $userLat]
-                )->orderBy('distance_meters', 'asc');
+                );
+                if ($radiusMeters !== null) {
+                    $query->whereRaw(
+                        'ST_DistanceSphere(geom, ST_SetSRID(ST_MakePoint(?, ?), 4326)) <= ?',
+                        [$userLon, $userLat, $radiusMeters]
+                    );
+                }
+                $query->orderBy('distance_meters', 'asc');
             } else {
                 // Haversine formula dalam meter (kompatibel MySQL / MariaDB)
-                $query->selectRaw(
-                    '(6371000 * acos(LEAST(1, GREATEST(-1, cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude)))))) as distance_meters',
-                    [$userLat, $userLon, $userLat]
-                )->orderBy('distance_meters', 'asc');
+                $haversineSql = '(6371000 * acos(LEAST(1, GREATEST(-1, cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude))))))';
+                $query->selectRaw("{$haversineSql} as distance_meters", [$userLat, $userLon, $userLat]);
+                if ($radiusMeters !== null) {
+                    $query->whereRaw("{$haversineSql} <= ?", [$userLat, $userLon, $userLat, $radiusMeters]);
+                }
+                $query->orderBy('distance_meters', 'asc');
             }
         } else {
             $query->orderBy('id', 'asc');

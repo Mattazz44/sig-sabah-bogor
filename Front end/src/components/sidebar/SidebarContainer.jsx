@@ -10,6 +10,10 @@ export default function SidebarContainer({
   onCategoryChange,
   query,
   onQueryChange,
+  radiusKm = 0,
+  onRadiusChange,
+  hasUserLocation = false,
+  onRequestLocation,
   onSelect,
   onHoverPlace,
   expanded,
@@ -38,6 +42,10 @@ export default function SidebarContainer({
               onCategoryChange={onCategoryChange}
               query={query}
               onQueryChange={onQueryChange}
+              radiusKm={radiusKm}
+              onRadiusChange={onRadiusChange}
+              hasUserLocation={hasUserLocation}
+              onRequestLocation={onRequestLocation}
               onSelect={onSelect}
               onHoverPlace={onHoverPlace}
               isLoading={isLoading}

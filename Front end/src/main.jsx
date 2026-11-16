@@ -1,14 +1,13 @@
-import L from 'leaflet'
-if (typeof window !== 'undefined') {
-  window.L = L
-}
-
 import { Component, StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
-import 'leaflet/dist/leaflet.css'
+import { setWorkerUrl } from 'maplibre-gl'
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
+import 'maplibre-gl/dist/maplibre-gl.css'
 import './index.css'
 import App from './App.jsx'
+
+setWorkerUrl(maplibreWorkerUrl)
 
 class ErrorBoundary extends Component {
   constructor(props) {

@@ -8,12 +8,23 @@ const RATING_OPTIONS = [
   { label: '4.5+', value: 4.5 },
 ]
 
+const RADIUS_OPTIONS = [
+  { label: 'Semua', value: 0 },
+  { label: '≤ 2 km', value: 2 },
+  { label: '≤ 5 km', value: 5 },
+  { label: '≤ 10 km', value: 10 },
+]
+
 export default function CategoryFilter({
   active,
   onChange,
   minRating = 0,
   onlyPopular = false,
   onlyFavorites = false,
+  radiusKm = 0,
+  onRadiusChange,
+  hasUserLocation = false,
+  onRequestLocation,
   onFilterChange,
   onResetFilters,
   resultCount = 0,
@@ -66,7 +77,10 @@ export default function CategoryFilter({
   }, [filterOpen, setOpenState])
 
   const activeAdvancedCount =
-    (minRating > 0 ? 1 : 0) + (onlyPopular ? 1 : 0) + (onlyFavorites ? 1 : 0)
+    (minRating > 0 ? 1 : 0) +
+    (onlyPopular ? 1 : 0) +
+    (onlyFavorites ? 1 : 0) +
+    (radiusKm > 0 ? 1 : 0)
   const hasAnyFilter = active !== ALL_CATEGORY || activeAdvancedCount > 0
 
   return (
@@ -218,6 +232,43 @@ export default function CategoryFilter({
                 >
                   {opt.value > 0 && <StarIcon filled className="h-3 w-3 text-amber-300" />}
                   <span>{opt.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Radius Terdekat (WBS 1.3.6) */}
+        <div className="mt-3">
+          <div className="mb-1.5 flex items-center justify-between">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[#C8D3C8]">
+              Radius Terdekat
+            </p>
+            {!hasUserLocation && (
+              <span className="text-[10px] text-[#E2D7B5]/80">Perlu GPS aktif</span>
+            )}
+          </div>
+          <div className="grid grid-cols-4 gap-1.5">
+            {RADIUS_OPTIONS.map((opt) => {
+              const selected = radiusKm === opt.value
+              return (
+                <button
+                  key={`rad-${opt.value}`}
+                  type="button"
+                  tabIndex={filterOpen ? 0 : -1}
+                  onClick={() => {
+                    if (opt.value > 0 && !hasUserLocation) {
+                      onRequestLocation?.()
+                    }
+                    onRadiusChange?.(opt.value)
+                  }}
+                  className={`flex items-center justify-center rounded-xl border py-1.5 text-[11px] font-medium transition-all duration-150 active:scale-[0.95] ${
+                    selected
+                      ? 'border-[#E2D7B5]/45 bg-white/[0.14] font-semibold text-[#E2D7B5]'
+                      : 'border-white/10 bg-white/[0.05] text-[#EBF0EB] hover:bg-white/[0.1]'
+                  }`}
+                >
+                  {opt.label}
                 </button>
               )
             })}

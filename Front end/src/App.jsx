@@ -160,6 +160,7 @@ export default function App() {
 
   const [category, setCategory] = useState(ALL_CATEGORY)
   const [query, setQuery] = useState('')
+  const [radiusKm, setRadiusKm] = useState(0)
   const [sheetExpanded, setSheetExpanded] = useState(false)
 
   const userFavoriteKey = currentUser?.id ? `user_${currentUser.id}` : (currentUser?.email ? `email_${currentUser.email}` : 'guest')
@@ -188,7 +189,7 @@ export default function App() {
   }, [selectedSlug, routePlace, clickedPlace, userPosition])
   const selected = selectedPlace
 
-  const filtered = useFilteredTourists(enrichedTourists, category, query)
+  const filtered = useFilteredTourists(enrichedTourists, category, query, radiusKm)
 
   const mapPlaces = useMemo(
     () => (selected && !filtered.includes(selected) ? [...filtered, selected] : filtered),
@@ -470,7 +471,7 @@ export default function App() {
           />
         ) : (
           <>
-            {/* Menu Explore: Tampilkan Peta Leaflet + Sidebar wisata */}
+            {/* Menu Explore: Tampilkan Peta MapLibre 3D + Sidebar wisata */}
             {activeTab === 'Explore' && (
               <div className="relative inset-x-0 left-0 right-0 mx-0 h-full w-full overflow-hidden animate-fade-enter">
               <MapView
@@ -492,6 +493,10 @@ export default function App() {
                 onCategoryChange={setCategory}
                 query={query}
                 onQueryChange={setQuery}
+                radiusKm={radiusKm}
+                onRadiusChange={setRadiusKm}
+                hasUserLocation={Boolean(userPosition)}
+                onRequestLocation={handleRequestLocation}
                 onSelect={handleSelect}
                 onHoverPlace={handleHoverPlace}
                 expanded={sheetExpanded}

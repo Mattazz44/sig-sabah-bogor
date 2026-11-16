@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState } from 'react'
-import { AttributionControl, MapContainer as LeafletMap, TileLayer } from 'react-leaflet'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { AttributionControl, Map as MapLibreMap } from 'maplibre-gl'
+import { MapLibreContext } from './mapContext'
 import MapController from './MapController'
 import UserLocationMarker from './UserLocationMarker'
 import LocateControl from './LocateControl'
@@ -9,9 +10,10 @@ import BogorBoundaryLayer from './BogorBoundaryLayer'
 import MarkerClusterGroup from './MarkerClusterGroup'
 import { getMapFocusOffset } from '../ui/sheetMetrics'
 
-const BOGOR_CENTER = [-6.598, 106.805]
-const DEFAULT_ZOOM = 13
-const PLACE_ZOOM = 15
+const BOGOR_CENTER = [106.805, -6.598] // [lng, lat]
+const DEFAULT_ZOOM = 15.5
+const DEFAULT_PITCH = 55
+const PLACE_ZOOM = 15.5
 
 export default function MapView({
   places,
@@ -25,7 +27,11 @@ export default function MapView({
   isNavigationMode = false,
   onRegisterHoverHandler = null,
 }) {
+  const mapContainerRef = useRef(null)
+  const [mapInstance, setMapInstance] = useState(null)
+  const [isStyleLoaded, setIsStyleLoaded] = useState(false)
   const markerRefs = useRef(new Map())
+
   const registerMarker = useCallback((id, instance) => {
     if (instance) markerRefs.current.set(id, instance)
     else markerRefs.current.delete(id)
@@ -34,6 +40,7 @@ export default function MapView({
   const [routeInfo, setRouteInfo] = useState(null)
   const [showBoundary, setShowBoundary] = useState(true)
   const [clusteringEnabled, setClusteringEnabled] = useState(true)
+  const [is3D, setIs3D] = useState(true)
 
   const handleToggleBoundary = useCallback(() => {
     setShowBoundary((prev) => !prev)
@@ -42,6 +49,16 @@ export default function MapView({
   const handleToggleClustering = useCallback(() => {
     setClusteringEnabled((prev) => !prev)
   }, [])
+
+  const handleToggle3D = useCallback(() => {
+    if (!mapInstance) return
+    const nextIs3D = mapInstance.getPitch() < 20
+    mapInstance.easeTo({
+      pitch: nextIs3D ? DEFAULT_PITCH : 0,
+      duration: 600,
+    })
+    setIs3D(nextIs3D)
+  }, [mapInstance])
 
   // Target destinasi: objek tempat wisata tunggal ATAU array rute custom (multi-titik)
   const activeDestination = navigationTarget || (isNavigationMode ? selected : null)
@@ -61,19 +78,80 @@ export default function MapView({
     [activeDestinationKey],
   )
 
-  // Initial view is computed once
   const [initialView] = useState(() => {
     if (selected && !Array.isArray(selected) && selected.coordinates) {
-      return { center: [selected.coordinates.lat, selected.coordinates.lng], zoom: PLACE_ZOOM }
+      return {
+        center: [Number(selected.coordinates.lng), Number(selected.coordinates.lat)],
+        zoom: PLACE_ZOOM,
+        pitch: DEFAULT_PITCH,
+      }
     }
-    return { center: BOGOR_CENTER, zoom: DEFAULT_ZOOM }
+    return { center: BOGOR_CENTER, zoom: DEFAULT_ZOOM, pitch: DEFAULT_PITCH }
   })
+
+  useEffect(() => {
+    const container = mapContainerRef.current
+    if (!container) return undefined
+
+    const cappedPixelRatio =
+      typeof window !== 'undefined' ? Math.min(window.devicePixelRatio || 1, 1.5) : 1
+
+    const map = new MapLibreMap({
+      container,
+      style: '/style.json',
+      center: initialView.center,
+      zoom: initialView.zoom,
+      pitch: initialView.pitch,
+      bearing: 0,
+      minZoom: 5,
+      maxZoom: 19,
+      maxPitch: 60,
+      pixelRatio: cappedPixelRatio,
+      fadeDuration: 150,
+      attributionControl: false,
+      canvasContextAttributes: {
+        antialias: false,
+        powerPreference: 'high-performance',
+      },
+    })
+
+    map.addControl(new AttributionControl({ compact: true }), 'top-right')
+
+    const handleStyleLoad = () => {
+      setIsStyleLoaded(true)
+    }
+
+    const handlePitchEnd = () => {
+      setIs3D(map.getPitch() >= 20)
+    }
+
+    map.on('style.load', handleStyleLoad)
+    map.on('pitchend', handlePitchEnd)
+
+    setMapInstance(map)
+    if (map.isStyleLoaded()) {
+      setIsStyleLoaded(true)
+    }
+
+    return () => {
+      map.off('style.load', handleStyleLoad)
+      map.off('pitchend', handlePitchEnd)
+      setIsStyleLoaded(false)
+      setMapInstance(null)
+      map.remove()
+    }
+  }, [initialView])
+
+  const contextValue = useMemo(
+    () => ({ map: mapInstance, isStyleLoaded }),
+    [mapInstance, isStyleLoaded],
+  )
 
   return (
     <section
       id="map-section"
       aria-label="Peta wisata Bogor"
-      className="relative z-0 h-full w-full"
+      className="relative z-0 h-full w-full bg-[#F5F5F7]"
     >
       {/* 3. PANEL METRICS MELAYANG (RouteMetrics.jsx) */}
       {isNavigationMode && hasDestination && (
@@ -145,75 +223,58 @@ export default function MapView({
         </div>
       )}
 
-      <LeafletMap
-        center={initialView.center}
-        zoom={initialView.zoom}
-        preferCanvas={true}
-        updateWhenIdle={true}
-        attributionControl={false}
-        zoomControl={false}
-        className="h-full w-full"
-      >
-        <AttributionControl position="topright" prefix={false} />
+      <div ref={mapContainerRef} className="h-full w-full" />
 
-        {/* Base map tiles */}
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={19}
-          updateWhenIdle={true}
-          keepBuffer={2}
-        />
+      <MapLibreContext.Provider value={contextValue}>
+        {mapInstance && (
+          <>
+            <BogorBoundaryLayer visible={showBoundary} />
 
-        {/* Layer Batas Administrasi Kota Bogor (WBS 1.2.7) */}
-        <BogorBoundaryLayer visible={showBoundary} />
+            {userPosition && <UserLocationMarker position={userPosition} />}
 
-        {/* 2c. Custom GPS User Marker */}
-        {userPosition && <UserLocationMarker position={userPosition} />}
+            <MarkerClusterGroup
+              places={places}
+              selected={selected}
+              onSelect={onSelect}
+              registerMarker={registerMarker}
+              markerRefs={markerRefs}
+              onRegisterHoverHandler={onRegisterHoverHandler}
+              isNavigationMode={isNavigationMode}
+              activeDestination={activeDestination}
+              clusteringEnabled={clusteringEnabled}
+            />
 
-        {/* Tourist spots markers dengan fitur Marker Clustering (WBS 1.4.1) */}
-        <MarkerClusterGroup
-          places={places}
-          selected={selected}
-          onSelect={onSelect}
-          registerMarker={registerMarker}
-          markerRefs={markerRefs}
-          onRegisterHoverHandler={onRegisterHoverHandler}
-          isNavigationMode={isNavigationMode}
-          activeDestination={activeDestination}
-          clusteringEnabled={clusteringEnabled}
-        />
+            {hasDestination && userPosition && (
+              <RoutingMachine
+                key={activeDestinationKey}
+                userPosition={userPosition}
+                destination={activeDestination}
+                onRouteFound={handleRouteUpdate}
+              />
+            )}
 
-        {/* 1 & 2. Internal Routing Machine: Mendukung Single Titik maupun Multi-Waypoints */}
-        {hasDestination && userPosition && (
-          <RoutingMachine
-            key={activeDestinationKey}
-            userPosition={userPosition}
-            destination={activeDestination}
-            onRouteFound={handleRouteUpdate}
-          />
+            {!isMultiDestination && (
+              <MapController
+                selected={selected}
+                markerRefs={markerRefs}
+                getFocusOffset={getMapFocusOffset}
+              />
+            )}
+
+            <LocateControl
+              userPosition={userPosition}
+              status={locationStatus}
+              onRequestLocation={onRequestLocation}
+              is3D={is3D}
+              onToggle3D={handleToggle3D}
+              showBoundary={showBoundary}
+              onToggleBoundary={handleToggleBoundary}
+              clusteringEnabled={clusteringEnabled}
+              onToggleClustering={handleToggleClustering}
+            />
+          </>
         )}
-
-        {/* Map Controller untuk pan/zoom ketika memilih destinasi tunggal dari sidebar */}
-        {!isMultiDestination && (
-          <MapController
-            selected={selected}
-            markerRefs={markerRefs}
-            getFocusOffset={getMapFocusOffset}
-          />
-        )}
-
-        {/* Tombol GPS & Toggle Layer Batas Wilayah + Marker Clustering */}
-        <LocateControl
-          userPosition={userPosition}
-          status={locationStatus}
-          onRequestLocation={onRequestLocation}
-          showBoundary={showBoundary}
-          onToggleBoundary={handleToggleBoundary}
-          clusteringEnabled={clusteringEnabled}
-          onToggleClustering={handleToggleClustering}
-        />
-      </LeafletMap>
+      </MapLibreContext.Provider>
     </section>
   )
 }
