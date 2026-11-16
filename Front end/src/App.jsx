@@ -180,6 +180,9 @@ export default function App() {
 
   // State untuk menyimpan objek tempat wisata terpilih sekaligus selalu tersinkron ke URL slug
   const [clickedPlace, setClickedPlace] = useState(null)
+  // State untuk destinasi yang sedang di-preview di peta (hasil search / klik marker / klik list di Explore)
+  const [previewPlace, setPreviewPlace] = useState(null)
+
   const selectedPlace = useMemo(() => {
     if (!selectedSlug) return null
     const matchedClicked =
@@ -187,17 +190,25 @@ export default function App() {
     const targetPlace = routePlace ?? matchedClicked
     return targetPlace ? enrichTouristWithUserLocation(targetPlace, userPosition) : null
   }, [selectedSlug, routePlace, clickedPlace, userPosition])
-  const selected = selectedPlace
+
+  const selectedForMap = useMemo(() => {
+    const target = previewPlace ?? selectedPlace
+    return target ? enrichTouristWithUserLocation(target, userPosition) : null
+  }, [previewPlace, selectedPlace, userPosition])
+
+  const selected = selectedForMap
 
   const filtered = useFilteredTourists(enrichedTourists, category, query, radiusKm)
 
-  const mapPlaces = useMemo(
-    () => (selected && !filtered.includes(selected) ? [...filtered, selected] : filtered),
-    [filtered, selected],
-  )
+  const mapPlaces = useMemo(() => {
+    if (selectedForMap && !filtered.some((p) => p.id === selectedForMap.id)) {
+      return [...filtered, selectedForMap]
+    }
+    return filtered
+  }, [filtered, selectedForMap])
 
-  // Trigger klik kartu wisata di sidebar ATAU popup marker di peta
-  const handleSelect = useCallback(
+  // Membuka halaman detail penuh (/place/:slug) dari popup marker atau menu lainnya
+  const handleOpenDetail = useCallback(
     (slugOrPlace) => {
       const incomingSlug =
         typeof slugOrPlace === 'object' && slugOrPlace !== null
@@ -211,21 +222,58 @@ export default function App() {
         (typeof slugOrPlace === 'object' && slugOrPlace !== null ? slugOrPlace : null)
 
       setClickedPlace(place)
+      setPreviewPlace(place)
       setProfileUser(null)
       setSheetExpanded(false)
-      setActiveTab('Explore')
       const targetSlug = place?.slug ?? incomingSlug
       if (targetSlug) {
         addRecentlyViewed(targetSlug)
-        navigate(`/place/${targetSlug}`, { replace: selectedSlug !== null })
+        navigate(`/place/${targetSlug}`)
       }
     },
-    [navigate, selectedSlug, enrichedTourists, addRecentlyViewed],
+    [navigate, enrichedTourists, addRecentlyViewed],
   )
+
+  // Klik hasil pencarian, list destinasi, atau marker di peta:
+  // Zoom in ke titik lokasi & tampilkan pop up (JANGAN langsung pindah ke halaman detail wisata)
+  const handleSelectOnMap = useCallback(
+    (slugOrPlace) => {
+      const incomingSlug =
+        typeof slugOrPlace === 'object' && slugOrPlace !== null
+          ? slugOrPlace.slug
+          : slugOrPlace
+      const canonicalPlace = incomingSlug
+        ? enrichedTourists.find((t) => t.slug === incomingSlug) ?? null
+        : null
+      const place =
+        canonicalPlace ??
+        (typeof slugOrPlace === 'object' && slugOrPlace !== null ? slugOrPlace : null)
+
+      if (!place) return
+
+      // Buat referensi objek baru dengan timestamp agar trigger flyTo peta selalu aktif
+      setPreviewPlace({ ...place, _selectedAt: Date.now() })
+      setClickedPlace(place)
+      setProfileUser(null)
+      setSheetExpanded(false)
+      setActiveTab('Explore')
+
+      if (place.slug) {
+        addRecentlyViewed(place.slug)
+      }
+
+      if (location.pathname !== '/') {
+        navigate('/', { replace: true })
+      }
+    },
+    [enrichedTourists, addRecentlyViewed, location.pathname, navigate],
+  )
+
+  // Alias handleSelect ke handleSelectOnMap untuk fleksibilitas
+  const handleSelect = handleSelectOnMap
 
   // Tombol kembali (<-) mengosongkan state selectedPlace dan kembali ke peta utama
   const handleBackToExplore = useCallback(() => {
-    setClickedPlace(null)
     setProfileUser(null)
     navigate('/')
   }, [navigate])
@@ -331,6 +379,7 @@ export default function App() {
   const handleTabChange = useCallback(
     (tabName) => {
       setClickedPlace(null)
+      setPreviewPlace(null)
       setProfileUser(null)
       setActiveTab(tabName)
       if (location.pathname !== '/') {
@@ -477,7 +526,8 @@ export default function App() {
               <MapView
                 places={mapPlaces}
                 selected={selected}
-                onSelect={handleSelect}
+                onSelect={handleSelectOnMap}
+                onOpenDetail={handleOpenDetail}
                 userPosition={userPosition}
                 locationStatus={locationStatus}
                 onRequestLocation={handleRequestLocation}
@@ -497,7 +547,7 @@ export default function App() {
                 onRadiusChange={setRadiusKm}
                 hasUserLocation={Boolean(userPosition)}
                 onRequestLocation={handleRequestLocation}
-                onSelect={handleSelect}
+                onSelect={handleSelectOnMap}
                 onHoverPlace={handleHoverPlace}
                 expanded={sheetExpanded}
                 onExpandedChange={setSheetExpanded}
@@ -523,7 +573,8 @@ export default function App() {
                     : mapPlaces
                 }
                 selected={Array.isArray(navigationTarget) ? null : navigationTarget}
-                onSelect={handleSelect}
+                onSelect={handleSelectOnMap}
+                onOpenDetail={handleOpenDetail}
                 userPosition={userPosition}
                 locationStatus={locationStatus}
                 onRequestLocation={handleRequestLocation}
@@ -545,7 +596,7 @@ export default function App() {
               toggleFavorite={toggleFavorite}
               isFavorite={isFavorite}
               recentSlugs={recentSlugs}
-              onSelectPlace={handleSelect}
+              onSelectPlace={handleOpenDetail}
               onStartNavigation={handleStartNavigation}
               isLoggedIn={isLoggedIn}
               currentUser={currentUser}
@@ -561,7 +612,7 @@ export default function App() {
               isLoadingTourists={isLoadingTourists}
               favorites={favorites}
               recentSlugs={recentSlugs}
-              onSelectPlace={handleSelect}
+              onSelectPlace={handleOpenDetail}
               onStartCustomRoute={handleStartCustomRoute}
               isLoggedIn={isLoggedIn}
               currentUser={currentUser}
@@ -576,7 +627,7 @@ export default function App() {
                 tourists={enrichedTourists}
                 favorites={favorites}
                 recentSlugs={recentSlugs}
-                onSelectPlace={handleSelect}
+                onSelectPlace={handleOpenDetail}
                 isLoggedIn={isLoggedIn}
                 currentUser={currentUser}
                 onRequireLogin={() => setShowLoginModal(true)}

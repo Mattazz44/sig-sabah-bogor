@@ -1,6 +1,6 @@
 import { XIcon } from './VectorIcons'
 
-export default function SearchBar({ value, onChange }) {
+export default function SearchBar({ value, onChange, onSubmit }) {
   return (
     <div className="relative w-full">
       <label
@@ -27,6 +27,12 @@ export default function SearchBar({ value, onChange }) {
           type="search"
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              onSubmit?.()
+            }
+          }}
           placeholder="Cari destinasi wisata di Bogor"
           className="w-full bg-transparent text-left text-[13px] font-normal text-forest-900 placeholder:text-left placeholder:text-[#4B584B] focus:outline-none"
         />

@@ -120,6 +120,7 @@ export default function MarkerClusterGroup({
   places,
   selected,
   onSelect,
+  onOpenDetail,
   registerMarker,
   markerRefs = null,
   onRegisterHoverHandler = null,
@@ -328,6 +329,7 @@ export default function MarkerClusterGroup({
             key={place.id}
             place={place}
             onSelect={onSelect}
+            onOpenDetail={onOpenDetail}
             registerMarker={registerMarker}
             autoOpenPopup={isTransit}
             isTransit={isTransit}

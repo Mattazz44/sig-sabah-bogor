@@ -137,7 +137,15 @@ export default function TouristList({
   return (
     <div className="px-5 pt-2">
       {/* 1. Search Bar */}
-      <SearchBar value={query} onChange={onQueryChange} />
+      <SearchBar
+        value={query}
+        onChange={onQueryChange}
+        onSubmit={() => {
+          if (sortedPlaces.length > 0) {
+            onSelect?.(sortedPlaces[0])
+          }
+        }}
+      />
 
       {/* 2. Category Filter + Tombol Filter Lanjutan */}
       <CategoryFilter

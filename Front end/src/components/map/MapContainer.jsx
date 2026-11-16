@@ -19,6 +19,7 @@ export default function MapView({
   places,
   selected,
   onSelect,
+  onOpenDetail,
   userPosition,
   locationStatus,
   onRequestLocation,
@@ -236,6 +237,7 @@ export default function MapView({
               places={places}
               selected={selected}
               onSelect={onSelect}
+              onOpenDetail={onOpenDetail}
               registerMarker={registerMarker}
               markerRefs={markerRefs}
               onRegisterHoverHandler={onRegisterHoverHandler}

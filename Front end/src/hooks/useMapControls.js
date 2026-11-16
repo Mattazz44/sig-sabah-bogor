@@ -42,8 +42,22 @@ export function useFlyToSelected(selected, markerRefs, getFocusOffset) {
     const lng = Number(selected.coordinates.lng)
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return undefined
 
+    // Tutup popup lain agar hanya popup tempat yang aktif yang terbuka
+    markerRefs.current?.forEach((handle, id) => {
+      if (id !== selected.id) {
+        handle?.closePopup?.()
+      }
+    })
+
     const openPopup = () => {
-      markerRefs.current?.get(selected.id)?.openPopup?.()
+      const handle = markerRefs.current?.get(selected.id)
+      if (handle?.openPopup) {
+        handle.openPopup()
+      } else {
+        setTimeout(() => {
+          markerRefs.current?.get(selected.id)?.openPopup?.()
+        }, 150)
+      }
     }
 
     const zoom = Math.max(map.getZoom(), FLY_ZOOM)

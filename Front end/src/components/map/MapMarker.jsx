@@ -19,7 +19,14 @@ function getCategorySvgHtml(category) {
   return html
 }
 
-function MapMarker({ place, onSelect, registerMarker, autoOpenPopup = false, isTransit = false }) {
+function MapMarker({
+  place,
+  onSelect,
+  onOpenDetail,
+  registerMarker,
+  autoOpenPopup = false,
+  isTransit = false,
+}) {
   const { map } = useMapLibre()
   const onSelectRef = useRef(onSelect)
   const markerRef = useRef(null)
@@ -58,7 +65,7 @@ function MapMarker({ place, onSelect, registerMarker, autoOpenPopup = false, isT
     const popup = new Popup({
       className: 'wisata-popup',
       closeButton: false,
-      maxWidth: '210px',
+      maxWidth: '220px',
       offset: [0, -38],
     }).setDOMContent(popupContainer)
 
@@ -74,7 +81,10 @@ function MapMarker({ place, onSelect, registerMarker, autoOpenPopup = false, isT
 
     const handleClick = (e) => {
       e.stopPropagation()
-      onSelectRef.current?.(placeSlug)
+      if (!popup.isOpen()) {
+        marker.togglePopup()
+      }
+      onSelectRef.current?.(place)
     }
 
     el.addEventListener('click', handleClick)
@@ -104,7 +114,7 @@ function MapMarker({ place, onSelect, registerMarker, autoOpenPopup = false, isT
       markerRef.current = null
       popupRef.current = null
     }
-  }, [map, placeId, placeSlug, placeName, placeCategory, lng, lat, isValidCoord, registerMarker, popupContainer])
+  }, [map, placeId, placeSlug, placeName, placeCategory, lng, lat, isValidCoord, registerMarker, popupContainer, place])
 
   // Otomatis buka popup saat mode navigasi transit multi-titik aktif
   useEffect(() => {
@@ -124,7 +134,12 @@ function MapMarker({ place, onSelect, registerMarker, autoOpenPopup = false, isT
   if (!place || !isValidCoord) return null
 
   return createPortal(
-    <MapPopup place={place} onSelect={onSelect} isTransit={isTransit} />,
+    <MapPopup
+      place={place}
+      onOpenDetail={onOpenDetail}
+      onSelect={onSelect}
+      isTransit={isTransit}
+    />,
     popupContainer,
   )
 }
