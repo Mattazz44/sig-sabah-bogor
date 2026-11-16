@@ -428,7 +428,7 @@ export default function App() {
           />
         ) : (
           <>
-            {/* Menu Explore: Tampilkan Peta Leaflet + Sidebar wisata */}
+            {/* Menu Explore: Tampilkan Peta MapLibre 3D + Sidebar wisata */}
             {activeTab === 'Explore' && (
               <div className="relative inset-x-0 left-0 right-0 mx-0 h-full w-full overflow-hidden animate-fade-enter">
               <MapView

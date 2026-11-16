@@ -1,16 +1,18 @@
 import { useState } from 'react'
-import { useMap } from 'react-leaflet'
+import { useMapLibre } from './mapContext'
 
 export default function LocateControl({
   userPosition,
   status,
   onRequestLocation,
+  is3D = true,
+  onToggle3D,
   showBoundary = true,
   onToggleBoundary,
   clusteringEnabled = true,
   onToggleClustering,
 }) {
-  const map = useMap()
+  const { map } = useMapLibre()
   const [isLocating, setIsLocating] = useState(false)
 
   const handleLocateClick = (e) => {
@@ -18,15 +20,17 @@ export default function LocateControl({
     e.preventDefault()
 
     if (userPosition && Array.isArray(userPosition) && userPosition.length >= 2) {
-      // Pengguna sudah mengizinkan & lokasi tersedia -> Geser kamera peta ke posisi pengguna
-      map.flyTo(userPosition, 16, {
-        animate: true,
-        duration: 1.2,
-      })
+      if (map) {
+        map.flyTo({
+          center: [Number(userPosition[1]), Number(userPosition[0])],
+          zoom: 16,
+          pitch: map.getPitch(),
+          duration: 1100,
+        })
+      }
       return
     }
 
-    // Jika belum ada posisi, picu permintaan lokasi GPS
     setIsLocating(true)
     if (onRequestLocation) {
       onRequestLocation()
@@ -49,11 +53,37 @@ export default function LocateControl({
       style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 96px)' }}
       className="fixed right-4 !pointer-events-auto z-[450] flex flex-col items-end gap-2.5"
     >
-      {/* Toggle Batas Wilayah Kota Bogor (WBS 1.2.7) */}
+      {/* Toggle Tampilan Peta 2D (pitch: 0) / 3D (pitch: 55) */}
+      {onToggle3D && (
+        <button
+          type="button"
+          id="btn-toggle-3d"
+          aria-pressed={is3D}
+          aria-label={is3D ? 'Beralih ke tampilan datar 2D' : 'Beralih ke tampilan miring 3D'}
+          title={is3D ? 'Mode 3D Aktif (Klik untuk 2D Datar)' : 'Mode 2D Aktif (Klik untuk 3D Miring)'}
+          onClick={(e) => {
+            e.stopPropagation()
+            e.preventDefault()
+            onToggle3D()
+          }}
+          className={`group relative flex h-11 w-11 flex-col items-center justify-center rounded-2xl bg-[#2A3B2A] hover:bg-[#354A35] shadow-md transition-all duration-150 ease-out active:scale-[0.97] cursor-pointer border ${
+            is3D
+              ? 'text-[#E2D7B5] border-[#EBF0EB]/30'
+              : 'text-[#EBF0EB]/80 border-[#EBF0EB]/[0.16] hover:text-[#EBF0EB]'
+          }`}
+        >
+          <span className="text-[12px] font-extrabold tracking-tight leading-none transition-transform duration-200 group-hover:scale-105">
+            {is3D ? '3D' : '2D'}
+          </span>
+        </button>
+      )}
+
+      {/* Toggle Batas Wilayah Kota Bogor */}
       {onToggleBoundary && (
         <button
           type="button"
           id="btn-toggle-boundary"
+          aria-pressed={showBoundary}
           aria-label={showBoundary ? 'Sembunyikan Batas Wilayah Kota Bogor' : 'Tampilkan Batas Wilayah Kota Bogor'}
           title={showBoundary ? 'Batas Wilayah Kota Bogor: Aktif (Klik untuk nonaktifkan)' : 'Batas Wilayah Kota Bogor: Nonaktif (Klik untuk aktifkan)'}
           onClick={(e) => {
@@ -85,11 +115,12 @@ export default function LocateControl({
         </button>
       )}
 
-      {/* Toggle Marker Clustering (WBS 1.4.1) */}
+      {/* Toggle Marker Clustering */}
       {onToggleClustering && (
         <button
           type="button"
           id="btn-toggle-clustering"
+          aria-pressed={clusteringEnabled}
           aria-label={clusteringEnabled ? 'Nonaktifkan Pengelompokan Marker (Cluster)' : 'Aktifkan Pengelompokan Marker (Cluster)'}
           title={clusteringEnabled ? 'Marker Clustering: Aktif (Klik untuk nonaktifkan)' : 'Marker Clustering: Nonaktif (Klik untuk aktifkan)'}
           onClick={(e) => {
@@ -137,7 +168,6 @@ export default function LocateControl({
         }`}
       >
         {isRequesting ? (
-          // Spinner animasi loading
           <svg
             className="h-5 w-5 animate-spin"
             xmlns="http://www.w3.org/2000/svg"
@@ -159,7 +189,6 @@ export default function LocateControl({
             />
           </svg>
         ) : (
-          // Ikon GPS Crosshair ala Google Maps
           <svg
             width="22"
             height="22"
@@ -182,12 +211,13 @@ export default function LocateControl({
           </svg>
         )}
 
-        {/* Penanda statis saat lokasi GPS aktif */}
         {isGranted && (
-          <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full border border-[#1B261B] bg-[#E2D7B5]" aria-hidden="true" />
+          <span
+            className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full border border-[#1B261B] bg-[#E2D7B5]"
+            aria-hidden="true"
+          />
         )}
       </button>
     </div>
   )
 }
-

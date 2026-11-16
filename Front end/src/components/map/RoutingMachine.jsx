@@ -1,62 +1,63 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { useMap } from 'react-leaflet'
-import L from 'leaflet'
-import 'leaflet-routing-machine/dist/leaflet-routing-machine.css'
+import { LngLatBounds } from 'maplibre-gl'
+import { useMapLibre } from './mapContext'
+import { calculateDistanceKm } from '../../utils/distance'
+
+const ROUTE_SOURCE_ID = 'navigation-route'
+const ROUTE_CASING_LAYER_ID = 'navigation-route-casing'
+const ROUTE_LINE_LAYER_ID = 'navigation-route-line'
+
+function removeRouteLayers(map) {
+  if (!map) return
+  try {
+    if (!map.getStyle()) return
+    if (map.getLayer(ROUTE_LINE_LAYER_ID)) map.removeLayer(ROUTE_LINE_LAYER_ID)
+    if (map.getLayer(ROUTE_CASING_LAYER_ID)) map.removeLayer(ROUTE_CASING_LAYER_ID)
+    if (map.getSource(ROUTE_SOURCE_ID)) map.removeSource(ROUTE_SOURCE_ID)
+  } catch {
+    // Abaikan bila map sudah unmount
+  }
+}
 
 export default function RoutingMachine({ userPosition, destination, onRouteFound }) {
-  const map = useMap()
-  const routingControlRef = useRef(null)
+  const { map, isStyleLoaded } = useMapLibre()
   const hasFittedBoundsRef = useRef(false)
   const prevDestRef = useRef(null)
   const onRouteFoundRef = useRef(onRouteFound)
 
-  // Jaga callback reference selalu mutakhir tanpa memicu re-render / re-run effect
   useEffect(() => {
     onRouteFoundRef.current = onRouteFound
   }, [onRouteFound])
 
-  // 1. Ekstrak koordinat GPS User
   const userLat = userPosition ? Number(userPosition[0].toFixed(4)) : null
   const userLng = userPosition ? Number(userPosition[1].toFixed(4)) : null
 
-  // 1. TERIMA ARRAY MULTI-WAYPOINTS: Normalisasi destination baik single titik maupun multi-titik (array)
   const destPoints = useMemo(() => {
     if (!destination) return []
 
-    // Jika destination adalah array
     if (Array.isArray(destination)) {
       if (destination.length === 0) return []
-
-      // Format: [[lat1, lng1], [lat2, lng2], ...]
       if (Array.isArray(destination[0])) {
         return destination.map(([lat, lng]) => [Number(lat), Number(lng)])
       }
-
-      // Format: [place1, place2, ...] (objek tempat wisata dengan coordinates { lat, lng })
       if (destination[0]?.coordinates) {
         return destination.map((p) => [
           Number(p.coordinates.lat),
           Number(p.coordinates.lng),
         ])
       }
-
-      // Format: [{ lat, lng }, ...]
       if (destination[0]?.lat !== undefined) {
         return destination.map((p) => [Number(p.lat), Number(p.lng)])
       }
-
-      // Single coordinate pair [lat, lng]
       if (typeof destination[0] === 'number') {
         return [[Number(destination[0]), Number(destination[1])]]
       }
     }
 
-    // Jika destination adalah single object dengan coordinates { lat, lng }
     if (destination?.coordinates) {
       return [[Number(destination.coordinates.lat), Number(destination.coordinates.lng)]]
     }
 
-    // Jika destination adalah single object { lat, lng }
     if (destination?.lat !== undefined) {
       return [[Number(destination.lat), Number(destination.lng)]]
     }
@@ -64,7 +65,6 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
     return []
   }, [destination])
 
-  // Buat string signature stabil untuk membandingkan perubahan tujuan rute
   const destSignature = destPoints
     .map(([lat, lng]) => `${lat.toFixed(5)},${lng.toFixed(5)}`)
     .join('|')
@@ -74,7 +74,6 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
     destPointsRef.current = destPoints
   }, [destPoints])
 
-  // Reset flag auto-fitBounds HANYA jika susunan titik koordinat tujuan berubah
   useEffect(() => {
     if (destSignature && prevDestRef.current !== destSignature) {
       hasFittedBoundsRef.current = false
@@ -83,141 +82,150 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
   }, [destSignature])
 
   useEffect(() => {
-    if (!map || userLat === null || userLng === null || !destSignature) {
-      return
+    if (!map || !isStyleLoaded || userLat === null || userLng === null || !destSignature) {
+      return undefined
     }
 
     let isDisposed = false
+    const controller = new AbortController()
     const currentDestPoints = destPointsRef.current
+    const waypointsLngLat = [
+      [userLng, userLat],
+      ...currentDestPoints.map(([lat, lng]) => [lng, lat]),
+    ]
 
-    const setupRouting = async () => {
-      // Pastikan window.L terdefinisi sebelum modul leaflet-routing-machine dievaluasi
-      if (typeof window !== 'undefined') {
-        window.L = L
-      }
+    const drawRouteGeoJson = (geometry, totalMeters, totalSecs) => {
+      if (isDisposed || !map || !map.getStyle()) return
 
-      // Load modul leaflet-routing-machine secara dinamis jika belum terpasang
-      if (!L.Routing || !L.Routing.control) {
-        try {
-          await import('leaflet-routing-machine')
-        } catch (importErr) {
-          console.warn('Could not load leaflet-routing-machine:', importErr)
-        }
-      }
-
-      if (isDisposed || !map || !L.Routing || !L.Routing.control) return
-
-      // 1. CLEANUP EFFECT: Hapus instansiasi kontrol yang lama sebelum membuat rute baru
-      if (routingControlRef.current) {
-        try {
-          map.removeControl(routingControlRef.current)
-        } catch {
-          // ignore
-        }
-        routingControlRef.current = null
-      }
-
-      try {
-        // 2. SUSUN URUTAN TITIK JALAN (WAYPOINTS):
-        // Titik 1: GPS User saat ini
-        // Titik 2...N: Titik destinasi berurutan (contoh: Museum Zoologi -> Museum PETA)
-        const waypoints = [
-          L.latLng(userLat, userLng),
-          ...currentDestPoints.map(([lat, lng]) => L.latLng(lat, lng)),
-        ]
-
-        const control = L.Routing.control({
-          waypoints,
-          router: L.Routing.osrmv1({
-            serviceUrl: 'https://router.project-osrm.org/route/v1',
-            profile: 'car',
-          }),
-          // Styling garis rute biru tegas
-          lineOptions: {
-            styles: [{ color: '#3b82f6', weight: 6, opacity: 0.8 }],
-            extendToWaypoints: true,
-            missingRouteTolerance: 0,
+      const featureCollection = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry,
+            properties: {},
           },
-          // Matikan interaksi edit waypoints di peta
-          addWaypoints: false,
-          draggableWaypoints: false,
-          routeWhileDragging: false,
-          fitSelectedRoutes: false, // Matikan auto-zoom bawaan
-          show: false, // Sembunyikan panel teks instruksi bawaan
-          collapsible: true,
-          createMarker: () => null, // Hindari marker duplikat bawaan leaflet
+        ],
+      }
+
+      const existingSource = map.getSource(ROUTE_SOURCE_ID)
+      if (existingSource) {
+        existingSource.setData(featureCollection)
+      } else {
+        map.addSource(ROUTE_SOURCE_ID, {
+          type: 'geojson',
+          data: featureCollection,
         })
+      }
 
-        control.on('routesfound', (e) => {
-          if (isDisposed) return
-          const routes = e.routes
-          if (routes && routes.length > 0) {
-            const route = routes[0]
+      const beforeId = map.getLayer('building-3d') ? 'building-3d' : undefined
 
-            // 4. AUTO-FITBOUNDS UNTUK MULTI-TITIK:
-            // Pastikan posisi User, Museum Zoologi, dan Museum PETA terlihat proporsional dalam 1 layar
-            if (!hasFittedBoundsRef.current && map) {
-              const allPoints = [
-                L.latLng(userLat, userLng),
-                ...currentDestPoints.map(([lat, lng]) => L.latLng(lat, lng)),
-                ...(route.coordinates || []),
-              ]
-              const bounds = L.latLngBounds(allPoints)
-              map.fitBounds(bounds, {
-                paddingTopLeft: [20, 140],
-                paddingBottomRight: [20, 160],
-                maxZoom: 15,
-                animate: true,
-              })
-              hasFittedBoundsRef.current = true
-            }
+      if (!map.getLayer(ROUTE_CASING_LAYER_ID)) {
+        map.addLayer(
+          {
+            id: ROUTE_CASING_LAYER_ID,
+            type: 'line',
+            source: ROUTE_SOURCE_ID,
+            layout: {
+              'line-cap': 'round',
+              'line-join': 'round',
+            },
+            paint: {
+              'line-color': '#1d4ed8',
+              'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 16, 10],
+              'line-opacity': 0.85,
+            },
+          },
+          beforeId,
+        )
+      }
 
-            // 3. SESUAIKAN ESTIMASI TOTAL PADA PANEL METRICS
-            if (onRouteFoundRef.current) {
-              const totalSecs = route.summary?.totalTime ?? 0
-              const totalMeters = route.summary?.totalDistance ?? 0
-              const minutes = Math.max(1, Math.round(totalSecs / 60))
-              const km = (totalMeters / 1000).toFixed(1)
-              onRouteFoundRef.current({
-                timeText: `${minutes} Menit`,
-                distanceText: `${km} KM`,
-                totalMinutes: minutes,
-                totalKm: km,
-                isCustomRoute: currentDestPoints.length > 1,
-              })
-            }
-          }
-        })
+      if (!map.getLayer(ROUTE_LINE_LAYER_ID)) {
+        map.addLayer(
+          {
+            id: ROUTE_LINE_LAYER_ID,
+            type: 'line',
+            source: ROUTE_SOURCE_ID,
+            layout: {
+              'line-cap': 'round',
+              'line-join': 'round',
+            },
+            paint: {
+              'line-color': '#3b82f6',
+              'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 16, 6.5],
+              'line-opacity': 0.95,
+            },
+          },
+          beforeId,
+        )
+      }
 
-        control.on('routingerror', (err) => {
-          if (isDisposed) return
-          console.warn('Routing machine error:', err)
-        })
-
-        if (!isDisposed && map) {
-          control.addTo(map)
-          routingControlRef.current = control
+      if (!hasFittedBoundsRef.current) {
+        const bounds = new LngLatBounds()
+        waypointsLngLat.forEach((coord) => bounds.extend(coord))
+        if (Array.isArray(geometry?.coordinates)) {
+          geometry.coordinates.forEach((coord) => bounds.extend(coord))
         }
-      } catch (err) {
-        console.warn('Leaflet routing machine setup error:', err)
+        map.fitBounds(bounds, {
+          padding: { top: 140, bottom: 160, left: 24, right: 24 },
+          maxZoom: 15.5,
+          pitch: map.getPitch(),
+          duration: 850,
+        })
+        hasFittedBoundsRef.current = true
+      }
+
+      if (onRouteFoundRef.current) {
+        const minutes = Math.max(1, Math.round(totalSecs / 60))
+        const km = (totalMeters / 1000).toFixed(1)
+        onRouteFoundRef.current({
+          timeText: `${minutes} Menit`,
+          distanceText: `${km} KM`,
+          totalMinutes: minutes,
+          totalKm: km,
+          isCustomRoute: currentDestPoints.length > 1,
+        })
       }
     }
 
-    setupRouting()
+    const coordParam = waypointsLngLat.map(([lng, lat]) => `${lng},${lat}`).join(';')
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coordParam}?overview=full&geometries=geojson`
 
-    // 1. CLEANUP EFFECT: Hapus instansiasi kontrol yang lama saat unmount / dependencies berubah
+    fetch(osrmUrl, { signal: controller.signal })
+      .then((res) => {
+        if (!res.ok) throw new Error(`OSRM HTTP ${res.status}`)
+        return res.json()
+      })
+      .then((data) => {
+        if (isDisposed) return
+        const route = data?.routes?.[0]
+        if (!route?.geometry) throw new Error('Rute tidak ditemukan')
+        drawRouteGeoJson(route.geometry, route.distance ?? 0, route.duration ?? 0)
+      })
+      .catch((err) => {
+        if (isDisposed || err?.name === 'AbortError') return
+        console.warn('OSRM routing error, menggunakan garis estimasi:', err)
+        let totalKm = 0
+        for (let i = 0; i < waypointsLngLat.length - 1; i++) {
+          const [lng1, lat1] = waypointsLngLat[i]
+          const [lng2, lat2] = waypointsLngLat[i + 1]
+          totalKm += (calculateDistanceKm(lat1, lng1, lat2, lng2) ?? 0) * 1.35
+        }
+        const totalMeters = totalKm * 1000
+        const totalSecs = (totalKm / 25) * 3600
+        drawRouteGeoJson(
+          { type: 'LineString', coordinates: waypointsLngLat },
+          totalMeters,
+          totalSecs,
+        )
+      })
+
     return () => {
       isDisposed = true
-      if (routingControlRef.current && map) {
-        try {
-          map.removeControl(routingControlRef.current)
-        } catch {
-          // ignore
-        }
-        routingControlRef.current = null
-      }
+      controller.abort()
+      removeRouteLayers(map)
     }
-  }, [map, userLat, userLng, destSignature])
+  }, [map, isStyleLoaded, userLat, userLng, destSignature])
 
   return null
 }

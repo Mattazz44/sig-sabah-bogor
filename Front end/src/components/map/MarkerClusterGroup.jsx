@@ -1,23 +1,53 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import L from 'leaflet'
-import { Marker, Tooltip, useMap, useMapEvents } from 'react-leaflet'
+import { LngLatBounds, Marker } from 'maplibre-gl'
 import MapMarker from './MapMarker'
+import { useMapLibre } from './mapContext'
 
-// Clustering aktif saat zoom <= 14; terurai otomatis saat zoom >= 15 (PLACE_ZOOM)
+// Clustering aktif saat zoom <= 14; terurai otomatis saat zoom > 14 (default 15.5)
 const CLUSTER_MAX_ZOOM = 14
 const CLUSTER_RADIUS_PX = 62
+const MERCATOR_TILE_SIZE = 512
 
-const clusterIconCache = new Map()
+function projectMercatorPx(lng, lat, zoom) {
+  const scale = MERCATOR_TILE_SIZE * Math.pow(2, zoom)
+  const x = ((lng + 180) / 360) * scale
+  const clampedLat = Math.max(-85.05112878, Math.min(85.05112878, lat))
+  const sinLat = Math.sin((clampedLat * Math.PI) / 180)
+  const y = (0.5 - Math.log((1 + sinLat) / (1 - sinLat)) / (4 * Math.PI)) * scale
+  return [x, y]
+}
 
-function getClusterIcon(count) {
-  if (clusterIconCache.has(count)) return clusterIconCache.get(count)
+function ClusterBadgeMarker({ cluster, map, clusterRefs, onClusterClick }) {
+  const onClickRef = useRef(onClusterClick)
 
-  const size = count >= 20 ? 48 : count >= 10 ? 44 : 40
-  const icon = L.divIcon({
-    className: 'wisata-cluster-marker',
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-    html: `
+  useEffect(() => {
+    onClickRef.current = onClusterClick
+  }, [onClusterClick])
+
+  useEffect(() => {
+    if (!map || !cluster) return undefined
+
+    const count = cluster.items.length
+    const size = count >= 20 ? 48 : count >= 10 ? 44 : 40
+    const previewNames = cluster.items
+      .slice(0, 3)
+      .map((item) => item.name)
+      .join(', ')
+    const moreCount = count - 3
+    const tooltipLabel = `${count} Objek Wisata: ${previewNames}${moreCount > 0 ? ` +${moreCount} lainnya` : ''}`
+
+    const el = document.createElement('button')
+    el.type = 'button'
+    el.className = 'wisata-cluster-marker'
+    el.style.width = `${size}px`
+    el.style.height = `${size}px`
+    el.style.padding = '0'
+    el.style.border = '0'
+    el.style.background = 'transparent'
+    el.style.cursor = 'pointer'
+    el.setAttribute('title', tooltipLabel)
+    el.setAttribute('aria-label', tooltipLabel)
+    el.innerHTML = `
       <div style="
         width: ${size}px;
         height: ${size}px;
@@ -46,11 +76,44 @@ function getClusterIcon(count) {
           ${count}
         </div>
       </div>
-    `,
-  })
+    `
 
-  clusterIconCache.set(count, icon)
-  return icon
+    const [lng, lat] = cluster.center
+    const marker = new Marker({
+      element: el,
+      anchor: 'center',
+      pitchAlignment: 'viewport',
+      rotationAlignment: 'viewport',
+    })
+      .setLngLat([lng, lat])
+      .addTo(map)
+
+    const handleClick = (e) => {
+      e.stopPropagation()
+      onClickRef.current?.(cluster)
+    }
+
+    el.addEventListener('click', handleClick)
+
+    const clusterMap = clusterRefs.current
+    clusterMap.set(cluster.id, {
+      marker: {
+        getElement: () => el,
+        setZIndexOffset: (offset) => {
+          el.style.zIndex = offset > 0 ? String(offset) : ''
+        },
+      },
+      itemIds: new Set(cluster.items.map((item) => item.id)),
+    })
+
+    return () => {
+      el.removeEventListener('click', handleClick)
+      clusterMap.delete(cluster.id)
+      marker.remove()
+    }
+  }, [map, cluster, clusterRefs])
+
+  return null
 }
 
 export default function MarkerClusterGroup({
@@ -64,9 +127,24 @@ export default function MarkerClusterGroup({
   activeDestination = null,
   clusteringEnabled = true,
 }) {
-  const map = useMap()
-  const [zoom, setZoom] = useState(() => map.getZoom())
+  const { map } = useMapLibre()
+  const [zoom, setZoom] = useState(() => (map ? map.getZoom() : 15.5))
   const clusterRefs = useRef(new Map())
+
+  useEffect(() => {
+    if (!map) return undefined
+    const rafId = requestAnimationFrame(() => {
+      setZoom(map.getZoom())
+    })
+    const handleZoomEnd = () => {
+      setZoom(map.getZoom())
+    }
+    map.on('zoomend', handleZoomEnd)
+    return () => {
+      cancelAnimationFrame(rafId)
+      map.off('zoomend', handleZoomEnd)
+    }
+  }, [map])
 
   useEffect(() => {
     if (!onRegisterHoverHandler) return undefined
@@ -129,17 +207,10 @@ export default function MarkerClusterGroup({
     }
   }, [onRegisterHoverHandler, markerRefs])
 
-  useMapEvents({
-    zoomend: () => {
-      setZoom(map.getZoom())
-    },
-  })
-
   const isMultiDestination = Array.isArray(activeDestination)
   const selectedId = selected && !Array.isArray(selected) ? selected.id : null
 
   const { clusters, singles } = useMemo(() => {
-    // Jika clustering dinonaktifkan atau zoom sudah cukup dekat (>= 15), tampilkan semua marker
     if (!clusteringEnabled || zoom > CLUSTER_MAX_ZOOM) {
       return { clusters: [], singles: places }
     }
@@ -163,7 +234,6 @@ export default function MarkerClusterGroup({
       }
     }
 
-    // Greedy spatial clustering berbasis jarak piksel pada level zoom saat ini
     const visited = new Set()
     const clusterList = []
 
@@ -171,7 +241,11 @@ export default function MarkerClusterGroup({
       const p1 = candidates[i]
       if (visited.has(p1.id)) continue
 
-      const pt1 = map.project([p1.coordinates.lat, p1.coordinates.lng], zoom)
+      const [x1, y1] = projectMercatorPx(
+        Number(p1.coordinates.lng),
+        Number(p1.coordinates.lat),
+        zoom,
+      )
       const group = [p1]
       visited.add(p1.id)
 
@@ -179,8 +253,12 @@ export default function MarkerClusterGroup({
         const p2 = candidates[j]
         if (visited.has(p2.id)) continue
 
-        const pt2 = map.project([p2.coordinates.lat, p2.coordinates.lng], zoom)
-        const distPx = pt1.distanceTo(pt2)
+        const [x2, y2] = projectMercatorPx(
+          Number(p2.coordinates.lng),
+          Number(p2.coordinates.lat),
+          zoom,
+        )
+        const distPx = Math.hypot(x2 - x1, y2 - y1)
 
         if (distPx <= CLUSTER_RADIUS_PX) {
           group.push(p2)
@@ -191,11 +269,11 @@ export default function MarkerClusterGroup({
       if (group.length === 1) {
         unclustered.push(p1)
       } else {
-        const sumLat = group.reduce((acc, item) => acc + item.coordinates.lat, 0)
-        const sumLng = group.reduce((acc, item) => acc + item.coordinates.lng, 0)
+        const sumLat = group.reduce((acc, item) => acc + Number(item.coordinates.lat), 0)
+        const sumLng = group.reduce((acc, item) => acc + Number(item.coordinates.lng), 0)
         clusterList.push({
           id: 'cluster-' + group.map((g) => g.id).join('-'),
-          center: [sumLat / group.length, sumLng / group.length],
+          center: [sumLng / group.length, sumLat / group.length],
           items: group,
         })
       }
@@ -205,7 +283,6 @@ export default function MarkerClusterGroup({
   }, [
     places,
     zoom,
-    map,
     clusteringEnabled,
     selectedId,
     isNavigationMode,
@@ -214,60 +291,32 @@ export default function MarkerClusterGroup({
   ])
 
   const handleClusterClick = (cluster) => {
-    const bounds = L.latLngBounds(
-      cluster.items.map((item) => [item.coordinates.lat, item.coordinates.lng]),
-    )
+    if (!map) return
+    const bounds = new LngLatBounds()
+    cluster.items.forEach((item) => {
+      bounds.extend([Number(item.coordinates.lng), Number(item.coordinates.lat)])
+    })
     const nextZoom = Math.min(Math.max(map.getZoom() + 2, CLUSTER_MAX_ZOOM + 1), 17)
-    map.flyToBounds(bounds, {
-      padding: [70, 70],
+    map.fitBounds(bounds, {
+      padding: 70,
       maxZoom: nextZoom,
-      duration: 0.85,
+      pitch: map.getPitch(),
+      duration: 850,
     })
   }
 
   return (
     <>
-      {/* Render Cluster Badges */}
-      {clusters.map((cluster) => {
-        const previewNames = cluster.items
-          .slice(0, 3)
-          .map((item) => item.name)
-          .join(', ')
-        const moreCount = cluster.items.length - 3
+      {clusters.map((cluster) => (
+        <ClusterBadgeMarker
+          key={cluster.id}
+          cluster={cluster}
+          map={map}
+          clusterRefs={clusterRefs}
+          onClusterClick={handleClusterClick}
+        />
+      ))}
 
-        return (
-          <Marker
-            key={cluster.id}
-            ref={(instance) => {
-              if (instance) {
-                clusterRefs.current.set(cluster.id, {
-                  marker: instance,
-                  itemIds: new Set(cluster.items.map((item) => item.id)),
-                })
-              } else {
-                clusterRefs.current.delete(cluster.id)
-              }
-            }}
-            position={cluster.center}
-            icon={getClusterIcon(cluster.items.length)}
-            eventHandlers={{
-              click: () => handleClusterClick(cluster),
-            }}
-          >
-            <Tooltip direction="top" offset={[0, -20]} opacity={0.95}>
-              <div className="text-xs font-semibold text-forest-900">
-                {cluster.items.length} Objek Wisata:{' '}
-                <span className="font-normal">
-                  {previewNames}
-                  {moreCount > 0 ? ` +${moreCount} lainnya` : ''}
-                </span>
-              </div>
-            </Tooltip>
-          </Marker>
-        )
-      })}
-
-      {/* Render Individual Tourist Markers */}
       {singles.map((place) => {
         const isTransit =
           isNavigationMode &&

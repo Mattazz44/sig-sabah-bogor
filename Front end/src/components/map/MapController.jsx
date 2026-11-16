@@ -1,14 +1,15 @@
 import { useEffect } from 'react'
-import { useMap } from 'react-leaflet'
+import { useMapLibre } from './mapContext'
 import { useFlyToSelected } from '../../hooks/useMapControls'
 
-/** Renders nothing; syncs the selected place and resizes the Leaflet map when its container changes. */
+/** Renders nothing; syncs the selected place and resizes the MapLibre map when its container changes. */
 export default function MapController({ selected, markerRefs, getFocusOffset }) {
-  const map = useMap()
+  const { map } = useMapLibre()
 
   useFlyToSelected(selected, markerRefs, getFocusOffset)
 
   useEffect(() => {
+    if (!map) return undefined
     const container = map.getContainer()
     if (!container || typeof ResizeObserver === 'undefined') return undefined
 
@@ -16,7 +17,7 @@ export default function MapController({ selected, markerRefs, getFocusOffset }) 
     const observer = new ResizeObserver(() => {
       cancelAnimationFrame(frameId)
       frameId = requestAnimationFrame(() => {
-        map.invalidateSize({ pan: false })
+        map.resize()
       })
     })
 

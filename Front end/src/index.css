@@ -140,12 +140,19 @@ img {
   border-color: rgba(255, 255, 255, 0.38);
 }
 
-/* ---------- Leaflet overrides ---------- */
-.leaflet-container {
+/* ---------- MapLibre GL overrides ---------- */
+.maplibregl-map {
   font-family: var(--font-sans);
 }
 
-.wisata-marker,
+.maplibregl-ctrl-attrib.maplibregl-compact {
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-radius: 9999px;
+  color: #1c1c1e;
+}
+
 .wisata-marker > svg {
   transform-origin: 50% 95%;
   transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), filter 220ms ease-out;
@@ -185,7 +192,7 @@ img {
     0 6px 16px rgba(0, 0, 0, 0.35) !important;
 }
 
-.wisata-popup .leaflet-popup-content-wrapper {
+.wisata-popup .maplibregl-popup-content {
   padding: 0;
   border-radius: 16px;
   overflow: hidden;
@@ -194,18 +201,24 @@ img {
   box-shadow: 0 6px 20px rgb(0 0 0 / 0.25);
 }
 
-.wisata-popup .leaflet-popup-content {
-  margin: 0;
-  line-height: 1.35;
-}
-
-.wisata-popup .leaflet-popup-content p {
+.wisata-popup .maplibregl-popup-content p {
   margin: 0;
 }
 
-.wisata-popup .leaflet-popup-tip {
-  background: var(--color-forest-900);
-  box-shadow: none;
+.wisata-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+  border-top-color: var(--color-forest-900);
+}
+
+.wisata-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+  border-bottom-color: var(--color-forest-900);
+}
+
+.wisata-popup.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  border-right-color: var(--color-forest-900);
+}
+
+.wisata-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-left-color: var(--color-forest-900);
 }
 
 @keyframes user-pulse {
@@ -225,14 +238,6 @@ img {
 
 .user-pulse-ring {
   animation: user-pulse 2.2s cubic-bezier(0.2, 0, 0.4, 1) infinite;
-}
-
-/* Leaflet Routing Machine overrides (clean mobile view without bulky text panel) */
-.leaflet-routing-container,
-.leaflet-routing-alt,
-.leaflet-routing-geocoders,
-.leaflet-routing-collapse-btn {
-  display: none !important;
 }
 
 /* Shimmer Skeleton Loader animation for SafeImage */
