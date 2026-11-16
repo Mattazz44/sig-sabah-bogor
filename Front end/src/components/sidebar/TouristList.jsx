@@ -26,6 +26,10 @@ export default function TouristList({
   onCategoryChange,
   query,
   onQueryChange,
+  radiusKm = 0,
+  onRadiusChange,
+  hasUserLocation = false,
+  onRequestLocation,
   onSelect,
   onHoverPlace,
   isLoading = false,
@@ -78,6 +82,7 @@ export default function TouristList({
   const handleResetAllFilters = () => {
     onCategoryChange('Semua')
     onQueryChange('')
+    onRadiusChange?.(0)
     setMinRating(0)
     setOnlyPopular(false)
     setOnlyFavorites(false)
@@ -127,7 +132,7 @@ export default function TouristList({
     })
   }, [places, sortOption, minRating, onlyPopular, onlyFavorites, isFavorite])
 
-  const listTransitionKey = `${category}|${sortOption}|${minRating}|${onlyPopular}|${onlyFavorites}`
+  const listTransitionKey = `${category}|${sortOption}|${minRating}|${onlyPopular}|${onlyFavorites}|${radiusKm}`
 
   return (
     <div className="px-5 pt-2">
@@ -141,6 +146,10 @@ export default function TouristList({
         minRating={minRating}
         onlyPopular={onlyPopular}
         onlyFavorites={onlyFavorites}
+        radiusKm={radiusKm}
+        onRadiusChange={onRadiusChange}
+        hasUserLocation={hasUserLocation}
+        onRequestLocation={onRequestLocation}
         onFilterChange={handleFilterChange}
         onResetFilters={handleResetAllFilters}
         resultCount={sortedPlaces.length}

@@ -142,6 +142,7 @@ export default function App() {
 
   const [category, setCategory] = useState(ALL_CATEGORY)
   const [query, setQuery] = useState('')
+  const [radiusKm, setRadiusKm] = useState(0)
   const [sheetExpanded, setSheetExpanded] = useState(false)
 
   const { favorites, toggleFavorite, isFavorite } = useFavorites()
@@ -169,7 +170,7 @@ export default function App() {
   }, [selectedSlug, routePlace, clickedPlace, userPosition])
   const selected = selectedPlace
 
-  const filtered = useFilteredTourists(enrichedTourists, category, query)
+  const filtered = useFilteredTourists(enrichedTourists, category, query, radiusKm)
 
   const mapPlaces = useMemo(
     () => (selected && !filtered.includes(selected) ? [...filtered, selected] : filtered),
@@ -450,6 +451,10 @@ export default function App() {
                 onCategoryChange={setCategory}
                 query={query}
                 onQueryChange={setQuery}
+                radiusKm={radiusKm}
+                onRadiusChange={setRadiusKm}
+                hasUserLocation={Boolean(userPosition)}
+                onRequestLocation={handleRequestLocation}
                 onSelect={handleSelect}
                 onHoverPlace={handleHoverPlace}
                 expanded={sheetExpanded}

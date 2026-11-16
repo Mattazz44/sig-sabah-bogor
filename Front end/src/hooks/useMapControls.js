@@ -6,16 +6,21 @@ import { calculateDistanceKm } from '../utils/distance'
 const FLY_ZOOM = 15.5
 
 /**
- * Memoized category + name filter, sorted by rating ("Paling sering dikunjungi").
+ * Memoized category + name + optional radiusKm filter, sorted by rating ("Paling sering dikunjungi").
  */
-export function useFilteredTourists(tourists, category, query) {
+export function useFilteredTourists(tourists, category, query, radiusKm = 0) {
   return useMemo(() => {
     const q = query.trim().toLowerCase()
     return tourists
       .filter((t) => category === ALL_CATEGORY || t.category === category)
       .filter((t) => !q || t.name.toLowerCase().includes(q))
+      .filter((t) => {
+        if (!radiusKm || radiusKm <= 0) return true
+        if (typeof t.distanceKm !== 'number') return true
+        return t.distanceKm <= radiusKm
+      })
       .sort((a, b) => b.rating - a.rating)
-  }, [tourists, category, query])
+  }, [tourists, category, query, radiusKm])
 }
 
 /**
