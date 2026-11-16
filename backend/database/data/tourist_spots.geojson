@@ -12,146 +12,14 @@
       "type": "Feature",
       "properties": {
         "id": 1,
-        "slug": "taman-peranginan",
-        "name": "Taman Peranginan",
-        "category": "Alam & Curug",
-        "description": "Taman kota bersejarah di ketinggian tebing Jalan Jenderal Sudirman dengan panorama Sungai Ciliwung dan rimbun pepohonan rindang.",
-        "detailed_description": "Taman Peranginan merupakan taman kota peninggalan era kolonial yang terletak di ketinggian tebing Jalan Jenderal Sudirman. Dari taman ini, pengunjung dapat menikmati pemandangan aliran Sungai Ciliwung dan pemukiman Sempur yang asri di bawah rindangnya pepohonan berusia puluhan tahun.\n\nTempat ini sangat cocok untuk bersantai sore hari, berolahraga ringan, menikmati semilir angin sejuk Kota Hujan, atau sekadar melepas penat di tengah hiruk-pikuk pusat kota Bogor.",
-        "address": "Jl. Jend. Sudirman No.1, Sempur, Bogor Tengah, Kota Bogor",
-        "rating": 4.6,
-        "operational_hours": "06.00-18.00",
-        "ticket_price": "Gratis",
-        "image": "/images/spots/taman-peranginan.jpg",
-        "gallery": [
-          "/images/spots/taman-peranginan.jpg",
-          "/images/spots/kebun-raya-bogor.jpg",
-          "/images/spots/tugu-kujang.jpg"
-        ],
-        "latitude": -6.5885,
-        "longitude": 106.7978,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.7978,
-          -6.5885
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": 2,
-        "slug": "lawang-surya-kencana",
-        "name": "Lawang Surya Kencana",
-        "category": "Kuliner",
-        "description": "Gerbang megah bernuansa Tionghoa penanda kawasan pecinan legendaris Bogor yang menjadi surga aneka kuliner otentik Nusantara.",
-        "detailed_description": "Lawang Surya Kencana adalah gerbang megah berarsitektur khas Tionghoa yang berdiri kokoh sebagai gerbang masuk kawasan pecinan legendaris di Kota Bogor. Kawasan ini terkenal sebagai sentra wisata kuliner legendaris yang menawarkan perpaduan cita rasa Sunda dan Tionghoa sejak puluhan tahun lalu.\n\nDi sepanjang jalan ini, Anda dapat menjumpai aneka kuliner otentik mulai dari Soto Kuning Pak Salam, Asinan Gedung Dalam, Lumpia Basah, hingga Combro hangat yang menggugah selera.",
-        "address": "Jl. Suryakencana No.1, Babakan Pasar, Bogor Tengah, Kota Bogor",
-        "rating": 4.6,
-        "operational_hours": "07.00-22.00",
-        "ticket_price": "Gratis",
-        "image": "/images/spots/lawang-surya-kencana.jpg",
-        "gallery": [
-          "/images/spots/lawang-surya-kencana.jpg",
-          "/images/spots/jalan-suryakencana.jpg",
-          "/images/spots/tugu-kujang.jpg"
-        ],
-        "latitude": -6.6022,
-        "longitude": 106.8003,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.8003,
-          -6.6022
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": 3,
-        "slug": "jbound-geo-edu-park",
-        "name": "Jbound Geo Edu Park",
-        "category": "Edukasi & Budaya",
-        "description": "Taman wisata edukasi dan wahana outbound outdoor keluarga dengan latar belakang megah Gunung Salak dan udara perbukitan sejuk.",
-        "detailed_description": "Jbound Geo Edu Park merupakan tempat rekreasi lengkap dengan pemandangan pegunungan yang indah serta udara yang sejuk. Jbound Geo Edu Park mempunyai pemandian air panas alami yang bersumber dari air mata Gunung Salak.\n\nJbound Geo Edu Park menyediakan destinasi rekreasi alam terbuka di kawasan pegunungan yang sejuk, ideal untuk liburan keluarga. Nikmati ragam aktivitas seru mulai dari wisata edukasi, agrowisata, hingga wahana outbound.",
-        "address": "Jl. Mayjen Ishak Djuarsa, Gunungbatu, Bogor Barat, Kota Bogor",
-        "rating": 4.8,
-        "operational_hours": "08.00-19.00",
-        "ticket_price": "Rp175.000/pax",
-        "image": "/images/spots/jbound-geo-edu-park.jpg",
-        "gallery": [
-          "/images/spots/jbound-gallery-1.jpg",
-          "/images/spots/jbound-gallery-2.jpg",
-          "/images/spots/jbound-gallery-3.jpg"
-        ],
-        "latitude": -6.6115,
-        "longitude": 106.7725,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.7725,
-          -6.6115
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": 4,
-        "slug": "museum-peta",
-        "name": "Museum PETA - Bogor Kota",
-        "category": "Edukasi & Budaya",
-        "description": "Museum sejarah perjuangan Pembela Tanah Air (PETA) dengan patung Jenderal Sudirman dan koleksi persenjataan di gedung kolonial bersejarah.",
-        "detailed_description": "Museum PETA (Pembela Tanah Air) didirikan untuk mengenang jasa para pahlawan pejuang kemerdekaan Indonesia yang tergabung dalam tentara sukarela PETA. Bertempat di gedung bersejarah peninggalan militer Belanda tahun 1745.\n\nDi museum ini pengunjung dapat menyaksikan diorama peristiwa bersejarah, koleksi senjata asli era perang kemerdekaan, meriam, seragam tempur, serta monumen patung Jenderal Sudirman yang gagah berdiri di halaman depan.",
-        "address": "Jl. Jend. Sudirman No.35, Pabaton, Bogor Tengah, Kota Bogor",
-        "rating": 4.6,
-        "operational_hours": "08.00-16.00",
-        "ticket_price": "Rp10.000/pax",
-        "image": "/images/spots/museum-peta.jpg",
-        "gallery": [
-          "/images/spots/museum-peta.jpg",
-          "/images/spots/museum-zoologi.jpg",
-          "/images/spots/taman-peranginan.jpg"
-        ],
-        "latitude": -6.5855,
-        "longitude": 106.7947,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.7947,
-          -6.5855
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": 5,
         "slug": "kebun-raya-bogor",
         "name": "Kebun Raya Bogor",
         "category": "Alam & Curug",
-        "description": "Kebun botani bersejarah seluas 87 hektar yang didirikan tahun 1817, rumah bagi lebih dari 12.000 spesimen tumbuhan dan bersebelahan dengan Istana Bogor.",
+        "description": "Kebun botani dan destinasi wisata alam/edukasi di pusat Kota Bogor.",
         "detailed_description": "Kebun Raya Bogor adalah kebun botani tertua di Asia Tenggara yang berdiri sejak 18 Mei 1817 oleh Prof. Caspar Georg Karl Reinwardt. Berdampingan langsung dengan kompleks Istana Kepresidenan Bogor, kebun seluas 87 hektar ini menampung ribuan spesies tanaman tropis langka dari seluruh penjuru dunia.\n\nPengunjung dapat menjelajahi Danau Gunting yang dipenuhi teratai raksasa Victoria amazonica, Jembatan Merah legendaris, Griya Anggrek, serta Makam Belanda kuno di tengah keteduhan pepohonan purba raksasa.",
-        "address": "Jl. Ir. H. Juanda No.13, Paledang, Kota Bogor",
+        "address": "Jl. Otto Iskandardinata No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
         "rating": 4.7,
-        "operational_hours": "08.00-17.00",
+        "operational_hours": "08:00 (Senin-Jumat); 07:00 (Sabtu-Minggu) - 16",
         "ticket_price": "Rp25.000/pax",
         "image": "/images/spots/kebun-raya-bogor.jpg",
         "gallery": [
@@ -159,17 +27,131 @@
           "/images/spots/taman-peranginan.jpg",
           "/images/spots/tugu-kujang.jpg"
         ],
-        "latitude": -6.5976,
-        "longitude": 106.7996,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
+        "latitude": -6.599722,
+        "longitude": 106.8,
+        "is_popular": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.7996,
-          -6.5976
+          106.8,
+          -6.599722
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 2,
+        "slug": "situ-gede",
+        "name": "Situ Gede",
+        "category": "Alam & Curug",
+        "description": "Situ/danau yang dimanfaatkan untuk konservasi, irigasi dan pariwisata.",
+        "detailed_description": "Situ/danau yang dimanfaatkan untuk konservasi, irigasi dan pariwisata.",
+        "address": "Jl. Cilubang Malang No.37, Kelurahan Situ Gede, Kecamatan Bogor Barat, Kota Bogor",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.55225,
+        "longitude": 106.74625,
+        "is_popular": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.74625,
+          -6.55225
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 3,
+        "slug": "hutan-kota-cifor",
+        "name": "Hutan Kota Cifor",
+        "category": "Alam & Curug",
+        "description": "Hutan Kota Cifor merupakan destinasi wisata alam di Bogor Barat.",
+        "detailed_description": "Hutan Kota Cifor merupakan destinasi wisata alam di Bogor Barat.",
+        "address": "Jl. CIFOR, Situ Gede, Kecamatan Bogor Barat, Kota Bogor, Jawa Barat 16680",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5525248,
+        "longitude": 106.7487672,
+        "is_popular": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7487672,
+          -6.5525248
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 4,
+        "slug": "danau-bogor-raya",
+        "name": "Danau Bogor Raya",
+        "category": "Alam & Curug",
+        "description": "Danau Bogor Raya merupakan destinasi wisata alam di Bogor Timur.",
+        "detailed_description": "Danau Bogor Raya merupakan destinasi wisata alam di Bogor Timur.",
+        "address": "Kawasan Perumahan Bogor Raya, Katulampa, Kecamatan Bogor Timur, Kota Bogor, Jawa Barat",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6027598,
+        "longitude": 106.8246645,
+        "is_popular": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8246645,
+          -6.6027598
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 5,
+        "slug": "taman-meksiko",
+        "name": "Taman Meksiko",
+        "category": "Alam & Curug",
+        "description": "Taman Meksiko merupakan destinasi wisata alam di Bogor Tengah.",
+        "detailed_description": "Taman Meksiko merupakan destinasi wisata alam di Bogor Tengah.",
+        "address": "Jl. Ir. H. Juanda No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "08 - 17",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6022434,
+        "longitude": 106.8003444,
+        "is_popular": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8003444,
+          -6.6022434
         ]
       }
     },
@@ -177,32 +159,28 @@
       "type": "Feature",
       "properties": {
         "id": 6,
-        "slug": "curug-leuwi-hejo",
-        "name": "Curug Leuwi Hejo",
+        "slug": "taman-akuatik-kebun-raya-bogor",
+        "name": "Taman Akuatik Kebun Raya Bogor",
         "category": "Alam & Curug",
-        "description": "Air terjun dengan kolam alami berwarna hijau toska jernih di antara bebatuan besar, populer untuk berenang dan trekking ringan di kawasan Sentul.",
-        "detailed_description": "Curug Leuwi Hejo sering dijuluki sebagai 'Green Canyon-nya Bogor' karena air sungainya yang berwarna hijau toska transparan memikat diapit oleh dinding tebing batu alami yang eksotis. Terletak di perbukitan Sentul, udara di sekitar curug sangat sejuk dan menyegarkan.\n\nKolam alami dengan kedalaman bertingkat sangat digemari wisatawan untuk berenang, cliff jumping ringan, atau sekadar berendam relaksasi di air pegunungan yang sangat jernih.",
-        "address": "Bojong Koneng, Babakan Madang, Kabupaten Bogor",
+        "description": "Taman Akuatik Kebun Raya Bogor merupakan destinasi wisata alam di Bogor Tengah.",
+        "detailed_description": "Taman Akuatik Kebun Raya Bogor merupakan destinasi wisata alam di Bogor Tengah.",
+        "address": "Jl. Ir. H. Juanda No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
         "rating": 4.5,
-        "operational_hours": "07.00-17.00",
-        "ticket_price": "Rp25.000/pax",
-        "image": "/images/spots/curug-leuwi-hejo.jpg",
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
         "gallery": [
-          "/images/spots/curug-leuwi-hejo.jpg",
-          "/images/spots/curug-nangka.jpg",
-          "/images/spots/kopi-daong.jpg"
+          "/images/spots/kebun-raya-bogor.jpg"
         ],
-        "latitude": -6.579,
-        "longitude": 106.927,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
+        "latitude": -6.6007929,
+        "longitude": 106.800734,
+        "is_popular": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.927,
-          -6.579
+          106.800734,
+          -6.6007929
         ]
       }
     },
@@ -210,32 +188,28 @@
       "type": "Feature",
       "properties": {
         "id": 7,
-        "slug": "curug-nangka",
-        "name": "Curug Nangka",
+        "slug": "taman-teijsmann",
+        "name": "Taman Teijsmann",
         "category": "Alam & Curug",
-        "description": "Air terjun di kaki Gunung Salak yang dikelilingi tebing berlumut dan hutan tropis, bagian dari kawasan wisata Taman Nasional Gunung Halimun Salak.",
-        "detailed_description": "Curug Nangka terletak persis di lereng bawah Gunung Salak yang asri dan masih sangat alami. Kawasan ini dikelilingi hutan pinus yang tinggi menjulang dan dihuni oleh kawanan kera ekor panjang yang hidup bebas.\n\nUntuk mencapai curug, pengunjung akan melewati aliran sungai jernih berkerikil dan tebing batu berlumut hijau yang menyejukkan mata. Suara deburan air terjun dan semilir angin pegunungan memberikan ketenangan jiwa yang luar biasa.",
-        "address": "Sukajadi, Tamansari, Kabupaten Bogor",
-        "rating": 4.4,
-        "operational_hours": "07.00-17.00",
-        "ticket_price": "Rp22.000/pax",
-        "image": "/images/spots/curug-nangka.jpg",
+        "description": "Taman Teijsmann merupakan destinasi wisata alam di Bogor Tengah.",
+        "detailed_description": "Taman Teijsmann merupakan destinasi wisata alam di Bogor Tengah.",
+        "address": "Jl. Ir. H. Juanda No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "08:00 (Senin-Jumat); 07:00 (Sabtu-Minggu) - 16",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
         "gallery": [
-          "/images/spots/curug-nangka.jpg",
-          "/images/spots/curug-leuwi-hejo.jpg",
-          "/images/spots/jbound-geo-edu-park.jpg"
+          "/images/spots/kebun-raya-bogor.jpg"
         ],
-        "latitude": -6.6664,
-        "longitude": 106.7247,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
+        "latitude": -6.60085,
+        "longitude": 106.7958419,
+        "is_popular": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.7247,
-          -6.6664
+          106.7958419,
+          -6.60085
         ]
       }
     },
@@ -243,32 +217,28 @@
       "type": "Feature",
       "properties": {
         "id": 8,
-        "slug": "kopi-daong",
-        "name": "Kopi Daong",
-        "category": "Kuliner",
-        "description": "Kedai kopi di tengah hutan pinus Pancawati dengan meja-meja kayu dan pemandangan Gunung Pangrango, cocok untuk bersantai menikmati udara sejuk.",
-        "detailed_description": "Kopi Daong adalah destinasi kuliner dan kedai kopi bernuansa alam terbuka yang terhampar di tengah lebatnya hutan pohon pinus kawasan Pancawati, Caringin. Tempat ini menawarkan pengalaman ngopi istimewa di bawah kanopi rindang pepohonan dengan latar siluet Gunung Pangrango.\n\nMenjelang malam, lampu-lampu gantung temaram menciptakan suasana hangat nan romantis. Selain kopi arabika khas Bogor, tersedia aneka pastry, makanan berat, dan spot swafoto aesthetic yang memukau.",
-        "address": "Pancawati, Caringin, Kabupaten Bogor",
-        "rating": 4.6,
-        "operational_hours": "09.00-21.00",
-        "ticket_price": "Gratis (F&B)",
-        "image": "/images/spots/kopi-daong.jpg",
+        "slug": "taman-bambu",
+        "name": "Taman Bambu",
+        "category": "Alam & Curug",
+        "description": "Taman Bambu merupakan destinasi wisata alam di Bogor Tengah.",
+        "detailed_description": "Taman Bambu merupakan destinasi wisata alam di Bogor Tengah.",
+        "address": "Jl. Ir. H. Juanda No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "08 - 18",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
         "gallery": [
-          "/images/spots/kopi-daong.jpg",
-          "/images/spots/jalan-suryakencana.jpg",
-          "/images/spots/lawang-surya-kencana.jpg"
+          "/images/spots/kebun-raya-bogor.jpg"
         ],
-        "latitude": -6.688,
-        "longitude": 106.87,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
+        "latitude": -6.5991263,
+        "longitude": 106.7952965,
+        "is_popular": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.87,
-          -6.688
+          106.7952965,
+          -6.5991263
         ]
       }
     },
@@ -276,32 +246,28 @@
       "type": "Feature",
       "properties": {
         "id": 9,
-        "slug": "jalan-suryakencana",
-        "name": "Kuliner Jalan Suryakencana",
-        "category": "Kuliner",
-        "description": "Kawasan pecinan legendaris Bogor yang dipenuhi jajanan khas seperti soto kuning, laksa Bogor, dan asinan, berderet di antara ruko-ruko tua.",
-        "detailed_description": "Jalan Suryakencana adalah denyut nadi kuliner tradisional Kota Bogor. Sepanjang koridor trotoar yang lebar dan ramah pejalan kaki, berjejer puluhan gerobak dan kedai kuliner legendaris turun-temurun sejak era 1950-an.\n\nSensasi kulineran di sini menjadi favorit para pelancong karena Anda dapat mencicipi toge goreng khas Bogor, bir kotjok rempah segar, ngo hiang, martabak manis legendaris, hingga es pala yang menyegarkan dahaga.",
-        "address": "Jl. Suryakencana, Babakan Pasar, Kota Bogor",
+        "slug": "danau-gunting-kebun-raya-bogor",
+        "name": "Danau Gunting Kebun Raya Bogor",
+        "category": "Alam & Curug",
+        "description": "Danau Gunting Kebun Raya Bogor merupakan destinasi wisata alam di Bogor Tengah.",
+        "detailed_description": "Danau Gunting Kebun Raya Bogor merupakan destinasi wisata alam di Bogor Tengah.",
+        "address": "Kebun Raya Bogor, Paledang, Bogor Tengah, Kota Bogor, Jawa Barat 16122",
         "rating": 4.5,
-        "operational_hours": "08.00-21.00",
-        "ticket_price": "Gratis (F&B)",
-        "image": "/images/spots/jalan-suryakencana.jpg",
+        "operational_hours": "07:30 - 17",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
         "gallery": [
-          "/images/spots/jalan-suryakencana.jpg",
-          "/images/spots/lawang-surya-kencana.jpg",
-          "/images/spots/tugu-kujang.jpg"
+          "/images/spots/kebun-raya-bogor.jpg"
         ],
-        "latitude": -6.604,
-        "longitude": 106.8,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
+        "latitude": -6.6003367,
+        "longitude": 106.7978054,
+        "is_popular": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.8,
-          -6.604
+          106.7978054,
+          -6.6003367
         ]
       }
     },
@@ -309,32 +275,28 @@
       "type": "Feature",
       "properties": {
         "id": 10,
-        "slug": "museum-zoologi-bogor",
-        "name": "Museum of zoology - Bogor Tengah",
-        "category": "Edukasi & Budaya",
-        "description": "Museum zoologi tertua di Indonesia yang menyimpan koleksi fauna Nusantara, termasuk kerangka paus biru sepanjang 27 meter.",
-        "detailed_description": "Museum Zoologi Bogor didirikan pada tahun 1894 oleh Dr. J.C. Koningsberger sebagai sarana riset fauna tropis Indonesia. Terletak di area dekat Kebun Raya Bogor, museum ini menyimpan koleksi spesimen satwa liar terbesar dan terlengkap di Asia Tenggara.\n\nDaya tarik utamanya adalah kerangka utuh Paus Biru raksasa sepanjang 27 meter seberat 119 ton yang terdampar di Pameungpeuk Garut pada tahun 1916, serta awetan Harimau Jawa, Badak Jawa bercula satu, dan ribuan serangga eksotis.",
-        "address": "Jl. Ir. H. Juanda No.9, Paledang, Kota Bogor",
-        "rating": 4.7,
-        "operational_hours": "08.00-16.00",
-        "ticket_price": "Rp15.000/pax",
-        "image": "/images/spots/museum-zoologi.jpg",
+        "slug": "griya-anggrek-kebun-raya-bogor",
+        "name": "Griya Anggrek Kebun Raya Bogor",
+        "category": "Alam & Curug",
+        "description": "Griya Anggrek Kebun Raya Bogor merupakan destinasi wisata alam di Bogor Tengah.",
+        "detailed_description": "Griya Anggrek Kebun Raya Bogor merupakan destinasi wisata alam di Bogor Tengah.",
+        "address": "Jl. Kebun Raya Bogor, RT.04/RW.02, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "07:30 - 15:30",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
         "gallery": [
-          "/images/spots/museum-zoologi.jpg",
-          "/images/spots/museum-peta.jpg",
           "/images/spots/kebun-raya-bogor.jpg"
         ],
-        "latitude": -6.6014,
-        "longitude": 106.7972,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
+        "latitude": -6.595424,
+        "longitude": 106.8029573,
+        "is_popular": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.7972,
-          -6.6014
+          106.8029573,
+          -6.595424
         ]
       }
     },
@@ -342,32 +304,28 @@
       "type": "Feature",
       "properties": {
         "id": 11,
-        "slug": "prasasti-batutulis",
-        "name": "Prasasti Batutulis",
-        "category": "Edukasi & Budaya",
-        "description": "Situs cagar budaya peninggalan Kerajaan Pajajaran berupa batu bertuliskan aksara Sunda Kuno yang dibuat pada tahun 1533.",
-        "detailed_description": "Prasasti Batutulis adalah prasasti bertarikh 1533 Masehi peninggalan Kerajaan Sunda Pajajaran yang dibuat oleh Prabu Surawisesa untuk mengenang kejayaan ayahandanya, Sri Baduga Maharaja (Prabu Siliwangi).\n\nPrasasti ini terpahat dalam aksara dan bahasa Sunda Kuno pada batu andesit alami berwarna abu-abu kehitaman. Di dalam cungkup situs ini juga terdapat batu tapak kaki Prabu Surawisesa, batu tempat bersemayam pusaka, dan makam kuno pembesar Pajajaran.",
-        "address": "Jl. Batutulis, Batutulis, Bogor Selatan, Kota Bogor",
-        "rating": 4.3,
-        "operational_hours": "08.00-16.00",
-        "ticket_price": "Rp5.000/pax",
-        "image": "/images/spots/prasasti-batutulis.jpg",
+        "slug": "akuatik-park",
+        "name": "Akuatik Park",
+        "category": "Alam & Curug",
+        "description": "Akuatik Park merupakan destinasi wisata alam di Bogor Tengah.",
+        "detailed_description": "Akuatik Park merupakan destinasi wisata alam di Bogor Tengah.",
+        "address": "RT.04/RW.02, Paledang, Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
         "gallery": [
-          "/images/spots/prasasti-batutulis.jpg",
-          "/images/spots/tugu-kujang.jpg",
-          "/images/spots/museum-peta.jpg"
+          "/images/spots/kebun-raya-bogor.jpg"
         ],
-        "latitude": -6.626,
-        "longitude": 106.8075,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
+        "latitude": -6.6007929,
+        "longitude": 106.800734,
+        "is_popular": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.8075,
-          -6.626
+          106.800734,
+          -6.6007929
         ]
       }
     },
@@ -375,32 +333,1714 @@
       "type": "Feature",
       "properties": {
         "id": 12,
-        "slug": "tugu-kujang",
-        "name": "Tugu Kujang - Bogor Kota",
-        "category": "Edukasi & Budaya",
-        "description": "Monumen senjata khas Sunda yang berdiri megah di pusat persimpangan Kota Bogor, menjadi simbol kebanggaan dan identitas sejarah tanah Pajajaran.",
-        "detailed_description": "Tugu Kujang dibangun pada 4 Mei 1982 pada masa pemerintahan Walikota Achmad Sobana untuk melestarikan memori pusaka senjata tradisional suku Sunda, yaitu Kujang. Monumen setinggi 25 meter ini terletak strategis di pertemuan Jalan Pajajaran, Baranangsiang, dan Otista.\n\nDi puncaknya bertengger ornamen Kujang seberat 800 kilogram dari perunggu tebal yang dilapisi warna emas. Kawasan pedestrian di sekitar Tugu Kujang kini dilengkapi Lawang Salapan yang megah berlatar belakang Gunung Salak.",
-        "address": "Tegallega, Bogor Tengah, Kota Bogor",
-        "rating": 4.4,
+        "slug": "taman-sempur",
+        "name": "Taman Sempur",
+        "category": "Alam & Curug",
+        "description": "Taman kota skala kota dan ruang publik.",
+        "detailed_description": "Taman kota skala kota dan ruang publik.",
+        "address": "Jl. Sempur No.1, RT.01/RW.01, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+        "rating": 4.5,
         "operational_hours": "24 Jam",
-        "ticket_price": "Gratis",
-        "image": "/images/spots/tugu-kujang.jpg",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
         "gallery": [
-          "/images/spots/tugu-kujang.jpg",
-          "/images/spots/kebun-raya-bogor.jpg",
-          "/images/spots/lawang-surya-kencana.jpg"
+          "/images/spots/kebun-raya-bogor.jpg"
         ],
-        "latitude": -6.6017,
-        "longitude": 106.8048,
-        "is_popular": false,
-        "created_at": "2026-10-26T00:00:00",
-        "updated_at": "2026-10-26T00:00:00"
+        "latitude": -6.5917106,
+        "longitude": 106.8008294,
+        "is_popular": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.8048,
-          -6.6017
+          106.8008294,
+          -6.5917106
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 13,
+        "slug": "taman-heulang",
+        "name": "Taman Heulang",
+        "category": "Alam & Curug",
+        "description": "Taman Heulang merupakan destinasi ruang publik di Tanah Sareal.",
+        "detailed_description": "Taman Heulang merupakan destinasi ruang publik di Tanah Sareal.",
+        "address": "Jl. Heulang, RT.06/RW.04, Tanah Sareal, Kecamatan Tanah Sareal, Kota Bogor, Jawa Barat 16161",
+        "rating": 4.5,
+        "operational_hours": "05 - 22",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5697211,
+        "longitude": 106.8022947,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8022947,
+          -6.5697211
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 14,
+        "slug": "taman-palupuh",
+        "name": "Taman Palupuh",
+        "category": "Alam & Curug",
+        "description": "Taman Palupuh merupakan destinasi ruang publik di Bogor Utara.",
+        "detailed_description": "Taman Palupuh merupakan destinasi ruang publik di Bogor Utara.",
+        "address": "l. Villa Citra Bantarjati 3, RT.04/RW.18, Tegal Gundil, Kec. Bogor Utara, Kota Bogor, Jawa Barat 16151",
+        "rating": 4.5,
+        "operational_hours": "14:00 (Sabtu); 08:00 (Minggu) - 16:00 (Sabtu); 13:00 (Minggu); Tutup (Senin-Jumat)",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5764421,
+        "longitude": 106.8139536,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8139536,
+          -6.5764421
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 15,
+        "slug": "taman-kresna",
+        "name": "Taman Kresna",
+        "category": "Alam & Curug",
+        "description": "Taman Kresna merupakan destinasi ruang publik di Bogor Utara.",
+        "detailed_description": "Taman Kresna merupakan destinasi ruang publik di Bogor Utara.",
+        "address": "Jl. Kresna I, RT.04/RW.15, Bantarjati, Kec. Bogor Utara, Kota Bogor, Jawa Barat 16153",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5738792,
+        "longitude": 106.8110384,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8110384,
+          -6.5738792
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 16,
+        "slug": "taman-kencana",
+        "name": "Taman Kencana",
+        "category": "Alam & Curug",
+        "description": "Taman Kencana merupakan destinasi ruang publik di Bogor Tengah.",
+        "detailed_description": "Taman Kencana merupakan destinasi ruang publik di Bogor Tengah.",
+        "address": "Jl. Taman Kencana No.3, RT.03/RW.03, Babakan, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16128",
+        "rating": 4.5,
+        "operational_hours": "07 - 22",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.588824,
+        "longitude": 106.8019101,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8019101,
+          -6.588824
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 17,
+        "slug": "taman-malabar",
+        "name": "Taman Malabar",
+        "category": "Alam & Curug",
+        "description": "Taman Malabar merupakan destinasi ruang publik di Kota Bogor.",
+        "detailed_description": "Taman Malabar merupakan destinasi ruang publik di Kota Bogor.",
+        "address": "Babakan, Kota Bogor",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5969589,
+        "longitude": 106.8056054,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8056054,
+          -6.5969589
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 18,
+        "slug": "taman-peranginan",
+        "name": "Taman Peranginan",
+        "category": "Alam & Curug",
+        "description": "Taman kota bersejarah di ketinggian tebing Jalan Jenderal Sudirman dengan panorama Sungai Ciliwung dan rimbun pepohonan rindang.",
+        "detailed_description": "Taman Peranginan merupakan taman kota peninggalan era kolonial yang terletak di ketinggian tebing Jalan Jenderal Sudirman. Dari taman ini, pengunjung dapat menikmati pemandangan aliran Sungai Ciliwung dan pemukiman Sempur yang asri di bawah rindangnya pepohonan berusia puluhan tahun.\n\nTempat ini sangat cocok untuk bersantai sore hari, berolahraga ringan, menikmati semilir angin sejuk Kota Hujan, atau sekadar melepas penat di tengah hiruk-pikuk pusat kota Bogor.",
+        "address": "Jl. Jend. Sudirman No.31, RT.01/RW.04, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16121",
+        "rating": 4.6,
+        "operational_hours": "05 - 22",
+        "ticket_price": "Gratis",
+        "image": "/images/spots/taman-peranginan.jpg",
+        "gallery": [
+          "/images/spots/taman-peranginan.jpg",
+          "/images/spots/kebun-raya-bogor.jpg",
+          "/images/spots/tugu-kujang.jpg"
+        ],
+        "latitude": -6.586952,
+        "longitude": 106.7971666,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7971666,
+          -6.586952
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 19,
+        "slug": "taman-ekspresi",
+        "name": "Taman Ekspresi",
+        "category": "Alam & Curug",
+        "description": "Taman Ekspresi merupakan destinasi ruang publik di Kota Bogor.",
+        "detailed_description": "Taman Ekspresi merupakan destinasi ruang publik di Kota Bogor.",
+        "address": "RT.01/RW.01, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+        "rating": 4.5,
+        "operational_hours": "24 Jam",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.591509,
+        "longitude": 106.802117,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.802117,
+          -6.591509
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 20,
+        "slug": "taman-cipaku",
+        "name": "Taman Cipaku",
+        "category": "Alam & Curug",
+        "description": "Taman Cipaku merupakan destinasi ruang publik di Kota Bogor.",
+        "detailed_description": "Taman Cipaku merupakan destinasi ruang publik di Kota Bogor.",
+        "address": "Blok Kampung Suka Damai, Jl. Raya Cipaku, Cipaku, Kec. Bogor Selatan, Kota Bogor.",
+        "rating": 4.5,
+        "operational_hours": "05 - 22",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6305924,
+        "longitude": 106.8128536,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8128536,
+          -6.6305924
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 21,
+        "slug": "taman-corat-coret",
+        "name": "Taman Corat-Coret",
+        "category": "Alam & Curug",
+        "description": "Taman Corat-Coret merupakan destinasi ruang publik di Kota Bogor.",
+        "detailed_description": "Taman Corat-Coret merupakan destinasi ruang publik di Kota Bogor.",
+        "address": "Jl. Pandu Raya, RT.01/RW.15, Tegal Gundil, Kec. Bogor Utara, Kota Bogor.",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.581195,
+        "longitude": 106.817971,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.817971,
+          -6.581195
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 22,
+        "slug": "taman-air-mancur",
+        "name": "Taman Air Mancur",
+        "category": "Alam & Curug",
+        "description": "Taman Air Mancur merupakan destinasi ruang publik di Kota Bogor.",
+        "detailed_description": "Taman Air Mancur merupakan destinasi ruang publik di Kota Bogor.",
+        "address": "Jl. Jend. Sudirman No.56, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat.",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5810366,
+        "longitude": 106.7968074,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7968074,
+          -6.5810366
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 23,
+        "slug": "taman-pangrango",
+        "name": "Taman Pangrango",
+        "category": "Alam & Curug",
+        "description": "Taman Pangrango merupakan destinasi ruang publik di Kota Bogor.",
+        "detailed_description": "Taman Pangrango merupakan destinasi ruang publik di Kota Bogor.",
+        "address": "Jl. Pangrango No.1A, RT.04/RW.04, Babakan, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16128.",
+        "rating": 4.5,
+        "operational_hours": "24 Jam",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5906161,
+        "longitude": 106.8030045,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8030045,
+          -6.5906161
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 24,
+        "slug": "sempur-skate-park",
+        "name": "Sempur Skate Park",
+        "category": "Alam & Curug",
+        "description": "Sempur Skate Park merupakan destinasi ruang publik di Kota Bogor.",
+        "detailed_description": "Sempur Skate Park merupakan destinasi ruang publik di Kota Bogor.",
+        "address": "Jl. Sempur, RT.01/RW.01, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5921498,
+        "longitude": 106.8003058,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8003058,
+          -6.5921498
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 25,
+        "slug": "alun-alun-kota-bogor",
+        "name": "Alun-Alun Kota Bogor",
+        "category": "Alam & Curug",
+        "description": "Alun-Alun Kota Bogor merupakan destinasi ruang publik di Kota Bogor.",
+        "detailed_description": "Alun-Alun Kota Bogor merupakan destinasi ruang publik di Kota Bogor.",
+        "address": "Jl. Kapten Muslihat No.17 A, RT.04/RW.06, Pabaton, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16121",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5945848,
+        "longitude": 106.7915011,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7915011,
+          -6.5945848
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 26,
+        "slug": "taman-kaulinan",
+        "name": "Taman Kaulinan",
+        "category": "Alam & Curug",
+        "description": "Taman Kaulinan merupakan destinasi ruang publik di Bogor Tengah.",
+        "detailed_description": "Taman Kaulinan merupakan destinasi ruang publik di Bogor Tengah.",
+        "address": "Jl. Sempur No.1, RT.01/RW.01, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+        "rating": 4.5,
+        "operational_hours": "05 - 22",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5921584,
+        "longitude": 106.8003088,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8003088,
+          -6.5921584
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 27,
+        "slug": "istana-kepresidenan-bogor",
+        "name": "Istana Kepresidenan Bogor",
+        "category": "Edukasi & Budaya",
+        "description": "Istana Kepresidenan Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "detailed_description": "Istana Kepresidenan Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "address": "Jl. Ir. H. Juanda, RT.04/RW.01, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "08 - 16",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.598056,
+        "longitude": 106.796944,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.796944,
+          -6.598056
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 28,
+        "slug": "prasasti-batu-tulis",
+        "name": "Prasasti Batu Tulis",
+        "category": "Edukasi & Budaya",
+        "description": "Situs prasasti bersejarah di kawasan Batutulis.",
+        "detailed_description": "Situs prasasti bersejarah di kawasan Batutulis.",
+        "address": "Jl. Batu Tulis No.54, RT.02/RW.02, Batutulis, Kec. Bogor Selatan, Kota Bogor, Jawa Barat 16133",
+        "rating": 4.5,
+        "operational_hours": "08:00 (Senin-Sabtu) - 17:00 (Senin-Sabtu); Tutup (Minggu)",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.623659,
+        "longitude": 106.808995,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.808995,
+          -6.623659
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 29,
+        "slug": "museum-perjuangan-bogor",
+        "name": "Museum Perjuangan Bogor",
+        "category": "Edukasi & Budaya",
+        "description": "Museum sejarah perjuangan di Kota Bogor.",
+        "detailed_description": "Museum sejarah perjuangan di Kota Bogor.",
+        "address": "Jl. Merdeka No.56, Ciwaringin, Kecamatan Bogor Tengah, Kota Bogor 16124",
+        "rating": 4.5,
+        "operational_hours": "08 - 16",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5928895,
+        "longitude": 106.7883489,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7883489,
+          -6.5928895
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 30,
+        "slug": "museum-monumen-peta",
+        "name": "Museum & Monumen PETA",
+        "category": "Edukasi & Budaya",
+        "description": "Museum dan monumen sejarah PETA.",
+        "detailed_description": "Museum dan monumen sejarah PETA.",
+        "address": "Jl. Jend. Sudirman No.35, Pabaton, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16121",
+        "rating": 4.5,
+        "operational_hours": "08:00 (Senin-Jumat) - 14:30 (Senin-Jumat); Tutup (Sabtu-Minggu)",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5851731,
+        "longitude": 106.796318,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.796318,
+          -6.5851731
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 31,
+        "slug": "museum-nasional-sejarah-alam-indonesia-munasain",
+        "name": "Museum Nasional Sejarah Alam Indonesia (Munasain)",
+        "category": "Edukasi & Budaya",
+        "description": "Museum Nasional Sejarah Alam Indonesia (Munasain) merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "detailed_description": "Museum Nasional Sejarah Alam Indonesia (Munasain) merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "address": "Jl. Ir. H. Juanda No.22 - 24, RT.02/RW.08, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "08 - 16",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5991204,
+        "longitude": 106.7940571,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7940571,
+          -6.5991204
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 32,
+        "slug": "museum-zoologi-bogor",
+        "name": "Museum Zoologi Bogor",
+        "category": "Edukasi & Budaya",
+        "description": "Museum zoologi di kawasan Kebun Raya Bogor.",
+        "detailed_description": "Museum Zoologi Bogor didirikan pada tahun 1894 oleh Dr. J.C. Koningsberger sebagai sarana riset fauna tropis Indonesia. Terletak di area dekat Kebun Raya Bogor, museum ini menyimpan koleksi spesimen satwa liar terbesar dan terlengkap di Asia Tenggara.\n\nDaya tarik utamanya adalah kerangka utuh Paus Biru raksasa sepanjang 27 meter seberat 119 ton yang terdampar di Pameungpeuk Garut pada tahun 1916, serta awetan Harimau Jawa, Badak Jawa bercula satu, dan ribuan serangga eksotis.",
+        "address": "Jl. Ir. Juanda No.13, Kota Bogor",
+        "rating": 4.7,
+        "operational_hours": "08:00 (Senin-Jumat); 07:00 (Sabtu-Minggu) - 16",
+        "ticket_price": "Rp15.000/pax",
+        "image": "/images/spots/museum-zoologi.jpg",
+        "gallery": [
+          "/images/spots/museum-zoologi.jpg",
+          "/images/spots/museum-peta.jpg",
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.603647,
+        "longitude": 106.797009,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.797009,
+          -6.603647
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 33,
+        "slug": "museum-tanah-dan-pertanian",
+        "name": "Museum Tanah dan Pertanian",
+        "category": "Edukasi & Budaya",
+        "description": "Museum bertema tanah dan pertanian.",
+        "detailed_description": "Museum bertema tanah dan pertanian.",
+        "address": "Jl. Ir. H. Juanda No.98, RT.01/RW.01, Gudang, Bogor Tengah, Kota Bogor, Jawa Barat 16123",
+        "rating": 4.5,
+        "operational_hours": "09:00 (Senin-Kamis, Sabtu-Minggu) - 15:00 (Senin-Kamis); 12:00 (Sabtu-Minggu); Tutup (Jumat)",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.603208,
+        "longitude": 106.798192,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.798192,
+          -6.603208
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 34,
+        "slug": "museum-etnobotani-indonesia",
+        "name": "Museum Etnobotani Indonesia",
+        "category": "Edukasi & Budaya",
+        "description": "Museum Etnobotani Indonesia merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "detailed_description": "Museum Etnobotani Indonesia merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "address": "Jl. Ir. H. Juanda No.22 - 24, RT.02/RW.08, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "08 - 16",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5991204,
+        "longitude": 106.7940571,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7940571,
+          -6.5991204
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 35,
+        "slug": "makam-raden-saleh",
+        "name": "Makam Raden Saleh",
+        "category": "Edukasi & Budaya",
+        "description": "Makam Raden Saleh merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "detailed_description": "Makam Raden Saleh merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "address": "Jl. Kp. Sampora No.72, RT.01/RW.09, Cibinong, Kec. Cibinong, Kabupaten Bogor, Jawa Barat 16912",
+        "rating": 4.5,
+        "operational_hours": "09 - 17",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6094293,
+        "longitude": 106.7976665,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7976665,
+          -6.6094293
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 36,
+        "slug": "gereja-katedral-bogor",
+        "name": "Gereja Katedral Bogor",
+        "category": "Edukasi & Budaya",
+        "description": "Gereja Katedral Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "detailed_description": "Gereja Katedral Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "address": "Jl. Kapten Muslihat No.22, RT.04/RW.01, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "24 Jam",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.597,
+        "longitude": 106.7932,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7932,
+          -6.597
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 37,
+        "slug": "masjid-agung-bogor",
+        "name": "Masjid Agung Bogor",
+        "category": "Edukasi & Budaya",
+        "description": "Masjid Agung Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "detailed_description": "Masjid Agung Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "address": "Jl. Nyi Raja Permas No.1, RT.04/RW.06, Cibogor, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16124",
+        "rating": 4.5,
+        "operational_hours": "04 - 21:15",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5933468,
+        "longitude": 106.7916457,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7916457,
+          -6.5933468
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 38,
+        "slug": "stasiun-bogor",
+        "name": "Stasiun Bogor",
+        "category": "Edukasi & Budaya",
+        "description": "Stasiun Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "detailed_description": "Stasiun Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "address": "St. Bogor, RT.04/RW.06, Cibogor, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16124",
+        "rating": 4.5,
+        "operational_hours": "24 Jam",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5942707,
+        "longitude": 106.7908108,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7908108,
+          -6.5942707
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 39,
+        "slug": "gedung-smpsma-negeri-1-bogor",
+        "name": "Gedung SMP/SMA Negeri 1 Bogor",
+        "category": "Edukasi & Budaya",
+        "description": "Gedung SMP/SMA Negeri 1 Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "detailed_description": "Gedung SMP/SMA Negeri 1 Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "address": "Gedung SMP/SMA Negeri 1 Bogor",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5973325,
+        "longitude": 106.7933381,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7933381,
+          -6.5973325
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 40,
+        "slug": "kantor-pos-bogor",
+        "name": "Kantor Pos Bogor",
+        "category": "Edukasi & Budaya",
+        "description": "Kantor Pos Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "detailed_description": "Kantor Pos Bogor merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "address": "Jl. Ir. H. Juanda No.5, RT.04/RW.02, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "07 - 21:00 (Senin-Jumat); 18:00 (Sabtu-Minggu)",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6002733,
+        "longitude": 106.7950613,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7950613,
+          -6.6002733
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 41,
+        "slug": "gedung-pusat-penelitian-biologi",
+        "name": "Gedung Pusat Penelitian Biologi",
+        "category": "Edukasi & Budaya",
+        "description": "Gedung Pusat Penelitian Biologi merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "detailed_description": "Gedung Pusat Penelitian Biologi merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "address": "Jl. Ir. H. Juanda No.18, RT.04/RW.08, Paledang, Kec. Bogor Bar., Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5979876,
+        "longitude": 106.7935369,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7935369,
+          -6.5979876
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 42,
+        "slug": "istana-batu-tulis",
+        "name": "Istana Batu Tulis",
+        "category": "Edukasi & Budaya",
+        "description": "Istana Batu Tulis merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "detailed_description": "Istana Batu Tulis merupakan destinasi sejarah & budaya di Kota Bogor.",
+        "address": "9RG5+MGH, Unnamed Road, RT.01/RW.08, Batutulis, Kec. Bogor Sel., Kota Bogor, Jawa Barat 16133",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6233239,
+        "longitude": 106.8088548,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8088548,
+          -6.6233239
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 43,
+        "slug": "kampung-pulo-geulis",
+        "name": "Kampung Pulo Geulis",
+        "category": "Edukasi & Budaya",
+        "description": "Kampung etnik di tengah aliran Sungai Ciliwung; dikenal dengan warisan budaya, toleransi antarumat beragama, Klenteng Phan Ko Bio, dan situs petilasan.",
+        "detailed_description": "Kampung etnik di tengah aliran Sungai Ciliwung; dikenal dengan warisan budaya, toleransi antarumat beragama, Klenteng Phan Ko Bio, dan situs petilasan.",
+        "address": "Kampung Pulo Geulis, Kelurahan Babakan Pasar, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.605556,
+        "longitude": 106.804194,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.804194,
+          -6.605556
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 44,
+        "slug": "kampung-labirin",
+        "name": "Kampung Labirin",
+        "category": "Edukasi & Budaya",
+        "description": "Kampung wisata perkotaan dengan gang permukiman, atraksi komunitas, permainan tradisional, dan aktivitas budaya warga.",
+        "detailed_description": "Kampung wisata perkotaan dengan gang permukiman, atraksi komunitas, permainan tradisional, dan aktivitas budaya warga.",
+        "address": "Jl. Kebun Jukut, Kelurahan Babakan Pasar, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16126",
+        "rating": 4.5,
+        "operational_hours": "10:00 (Sabtu-Minggu) - 15:00 (Sabtu-Minggu); Tutup (Senin-Jumat)",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6080272,
+        "longitude": 106.8065876,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8065876,
+          -6.6080272
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 45,
+        "slug": "kampung-batik-cibuluh",
+        "name": "Kampung Batik Cibuluh",
+        "category": "Edukasi & Budaya",
+        "description": "Kampung wisata edukasi batik yang mengembangkan batik cap dan tulis serta aktivitas belajar membatik dan ekonomi kreatif warga.",
+        "detailed_description": "Kampung wisata edukasi batik yang mengembangkan batik cap dan tulis serta aktivitas belajar membatik dan ekonomi kreatif warga.",
+        "address": "Jl. Neglasari I, RT.02/RW.04, Kelurahan Cibuluh, Kecamatan Bogor Utara, Kota Bogor, Jawa Barat 16151",
+        "rating": 4.5,
+        "operational_hours": "09:00 (Senin-Jumat) - 15:00 (Senin-Jumat); Tutup (Sabtu-Minggu)",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.551722,
+        "longitude": 106.821194,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.821194,
+          -6.551722
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 46,
+        "slug": "the-jungle-waterpark-bogor",
+        "name": "The Jungle Waterpark Bogor",
+        "category": "Alam & Curug",
+        "description": "Taman rekreasi air keluarga di kawasan Bogor Nirwana Residence.",
+        "detailed_description": "Taman rekreasi air keluarga di kawasan Bogor Nirwana Residence.",
+        "address": "Jl. Bogor Nirwana Boulevard, Perumahan Bogor Nirwana Residence, Kelurahan Mulyaharja, Kecamatan Bogor Selatan, Kota Bogor, Jawa Barat 16132",
+        "rating": 4.5,
+        "operational_hours": "09:00 (Setiap hari) - 17:00 (Setiap hari)",
+        "ticket_price": "Rp85.000 weekday; Rp100.000 weekend/libur nasional (harga normal pada FAQ; promo dapat berubah)",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6344794,
+        "longitude": 106.7949215,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7949215,
+          -6.6344794
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 47,
+        "slug": "jbound",
+        "name": "JBound",
+        "category": "Alam & Curug",
+        "description": "JBound merupakan destinasi rekreasi keluarga di Bogor Selatan.",
+        "detailed_description": "JBound merupakan destinasi rekreasi keluarga di Bogor Selatan.",
+        "address": "Jl. Bogor Nirwana Residence, RT.1/RW.10, Ranggamekar, Kec. Bogor Sel., Kota Bogor, Jawa Barat 16135",
+        "rating": 4.5,
+        "operational_hours": "08:30 (Senin-Jumat); 08:00 (Sabtu-Minggu) - 17:00",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6181754,
+        "longitude": 106.7973796,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7973796,
+          -6.6181754
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 48,
+        "slug": "kampoeng-air-katulampa",
+        "name": "Kampoeng Air Katulampa",
+        "category": "Alam & Curug",
+        "description": "Kampoeng Air Katulampa merupakan destinasi rekreasi keluarga di Bogor Timur.",
+        "detailed_description": "Kampoeng Air Katulampa merupakan destinasi rekreasi keluarga di Bogor Timur.",
+        "address": "Jalan Bendung, Jl. Katulampa Raya No.45, RT.04/RW.19, Katulampa, Kec. Bogor Tim., Kota Bogor, Jawa Barat 16144",
+        "rating": 4.5,
+        "operational_hours": "08:00 - 18:00",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.63321,
+        "longitude": 106.8349609,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8349609,
+          -6.63321
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 49,
+        "slug": "sport-club-danau-bogor-raya",
+        "name": "Sport Club Danau Bogor Raya",
+        "category": "Alam & Curug",
+        "description": "Sport Club Danau Bogor Raya merupakan destinasi rekreasi keluarga di Bogor Timur.",
+        "detailed_description": "Sport Club Danau Bogor Raya merupakan destinasi rekreasi keluarga di Bogor Timur.",
+        "address": "blok no nk 16144 Jalan Danau Bogor Raya Blok Ai No.Nk, RT.02/RW.13, Katulampa, Kec. Bogor Tim., Kota Bogor, Jawa Barat 16144",
+        "rating": 4.5,
+        "operational_hours": "06:00 - 21:00",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5972484,
+        "longitude": 106.8295073,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8295073,
+          -6.5972484
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 50,
+        "slug": "kolam-renang-monte-carlo",
+        "name": "Kolam Renang Monte Carlo",
+        "category": "Alam & Curug",
+        "description": "Kolam Renang Monte Carlo merupakan destinasi rekreasi keluarga di Bogor Selatan.",
+        "detailed_description": "Kolam Renang Monte Carlo merupakan destinasi rekreasi keluarga di Bogor Selatan.",
+        "address": "House of Metamorfit, Jl. Tarumanegara 1, RT.03/RW.07, Cipaku, Kec. Bogor Sel., Kota Bogor, Jawa Barat 16133",
+        "rating": 4.5,
+        "operational_hours": "07:00 - 19:00 (Senin-Jumat, Minggu); 21:00 (Sabtu)",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6329752,
+        "longitude": 106.8184701,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8184701,
+          -6.6329752
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 51,
+        "slug": "sagara-swimming-pool",
+        "name": "Sagara Swimming Pool",
+        "category": "Alam & Curug",
+        "description": "Sagara Swimming Pool merupakan destinasi rekreasi keluarga di Bogor Selatan.",
+        "detailed_description": "Sagara Swimming Pool merupakan destinasi rekreasi keluarga di Bogor Selatan.",
+        "address": "Jalan Pamoyanan Blok Ranggasari No.232, RT.01/RW.07, Ranggamekar, Kec. Bogor Sel., Kota Bogor, Jawa Barat 16136",
+        "rating": 4.5,
+        "operational_hours": "06:00 - 19:00",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6279536,
+        "longitude": 106.8086118,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8086118,
+          -6.6279536
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 52,
+        "slug": "bogor-green-forest",
+        "name": "Bogor Green Forest",
+        "category": "Alam & Curug",
+        "description": "Bogor Green Forest merupakan destinasi rekreasi keluarga di Bogor Selatan.",
+        "detailed_description": "Bogor Green Forest merupakan destinasi rekreasi keluarga di Bogor Selatan.",
+        "address": "Jl. RE. Soemantadiredja No.99, RT.03/RW.12, Pamoyanan, Kec. Bogor Sel., Kota Bogor, Jawa Barat 16136",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6494907,
+        "longitude": 106.806108,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.806108,
+          -6.6494907
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 53,
+        "slug": "kidzoona-lippo-plaza-ekalokasari",
+        "name": "Kidzoona Lippo Plaza Ekalokasari",
+        "category": "Alam & Curug",
+        "description": "Kidzoona Lippo Plaza Ekalokasari merupakan destinasi rekreasi keluarga di Bogor Timur.",
+        "detailed_description": "Kidzoona Lippo Plaza Ekalokasari merupakan destinasi rekreasi keluarga di Bogor Timur.",
+        "address": "Jl. Siliwangi No.123, RT.01/RW.01, Sukasari, Kec. Bogor Tim., Kota Bogor, Jawa Barat 16142",
+        "rating": 4.5,
+        "operational_hours": "10:00 - 22:00",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6218846,
+        "longitude": 106.8183751,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8183751,
+          -6.6218846
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 54,
+        "slug": "balai-penelitian-taman-rempah-dan-obat",
+        "name": "Balai Penelitian Taman Rempah dan Obat",
+        "category": "Edukasi & Budaya",
+        "description": "Kawasan penelitian/edukasi tanaman rempah dan obat; perlu dipastikan apakah menerima kunjungan wisata publik.",
+        "detailed_description": "Kawasan penelitian/edukasi tanaman rempah dan obat; perlu dipastikan apakah menerima kunjungan wisata publik.",
+        "address": "Jl. Tentara Pelajar No.3, Kelurahan Menteng, Kecamatan Bogor Barat, Kota Bogor, Jawa Barat 16111",
+        "rating": 4.5,
+        "operational_hours": "07:30 (Senin-Jumat) - 16:00 (Senin-Kamis); 16:30 (Jumat); Tutup (Sabtu-Minggu)",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5764655,
+        "longitude": 106.7880501,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7880501,
+          -6.5764655
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 55,
+        "slug": "kebun-percobaan-cimanggu",
+        "name": "Kebun Percobaan Cimanggu",
+        "category": "Edukasi & Budaya",
+        "description": "Kebun percobaan/area edukasi pertanian; perlu konfirmasi apakah dibuka untuk kunjungan wisata.",
+        "detailed_description": "Kebun percobaan/area edukasi pertanian; perlu konfirmasi apakah dibuka untuk kunjungan wisata.",
+        "address": "Jl. Tentara Pelajar No.3, Kelurahan Ciwaringin, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16111",
+        "rating": 4.5,
+        "operational_hours": "24 Jam",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5749663,
+        "longitude": 106.7873612,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7873612,
+          -6.5749663
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 56,
+        "slug": "inti-agro-wisata-edukatif-bogor",
+        "name": "Inti Agro Wisata Edukatif Bogor",
+        "category": "Edukasi & Budaya",
+        "description": "Kandidat wisata edukatif/agro; detail program, tiket, dan akses kunjungan perlu dikonfirmasi.",
+        "detailed_description": "Kandidat wisata edukatif/agro; detail program, tiket, dan akses kunjungan perlu dikonfirmasi.",
+        "address": "Jl. KH. R. Abdullah Bin Nuh No.199, Kelurahan Bubulak, Kecamatan Bogor Barat, Kota Bogor, Jawa Barat 16117",
+        "rating": 4.5,
+        "operational_hours": "08:00 (Senin-Sabtu) - 17:00 (Senin-Sabtu); Tutup (Minggu)",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5701061,
+        "longitude": 106.7568515,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7568515,
+          -6.5701061
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 57,
+        "slug": "botani-square",
+        "name": "Botani Square",
+        "category": "Kuliner",
+        "description": "Botani Square merupakan destinasi belanja di Bogor Tengah.",
+        "detailed_description": "Botani Square merupakan destinasi belanja di Bogor Tengah.",
+        "address": "Jl. Raya Pajajaran No.40, RT.04/RW.05, Tugu Kujang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16127",
+        "rating": 4.5,
+        "operational_hours": "10:00 - 22:00",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6015649,
+        "longitude": 106.8070461,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8070461,
+          -6.6015649
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 58,
+        "slug": "bogor-trade-mall-btm",
+        "name": "Bogor Trade Mall (BTM)",
+        "category": "Kuliner",
+        "description": "Bogor Trade Mall (BTM) merupakan destinasi belanja di Bogor Tengah.",
+        "detailed_description": "Bogor Trade Mall (BTM) merupakan destinasi belanja di Bogor Tengah.",
+        "address": "Jl. Ir. H. Juanda No.68, RT.01/RW.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "09:00 - 21:00",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6050687,
+        "longitude": 106.7952921,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7952921,
+          -6.6050687
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 59,
+        "slug": "bogor-junction",
+        "name": "Bogor Junction",
+        "category": "Kuliner",
+        "description": "Bogor Junction merupakan destinasi belanja di Bogor Tengah.",
+        "detailed_description": "Bogor Junction merupakan destinasi belanja di Bogor Tengah.",
+        "address": "Jl. Jend. Sudirman No.11, RT.01/RW.03, Pabaton, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16121",
+        "rating": 4.5,
+        "operational_hours": "08:00 - 21:30",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5893914,
+        "longitude": 106.7966503,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7966503,
+          -6.5893914
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 60,
+        "slug": "plaza-indah-bogor",
+        "name": "Plaza Indah Bogor",
+        "category": "Kuliner",
+        "description": "Plaza Indah Bogor merupakan destinasi belanja di Tanah Sareal.",
+        "detailed_description": "Plaza Indah Bogor merupakan destinasi belanja di Tanah Sareal.",
+        "address": "Jl. Sholeh Iskandar, RT.01/RW.02, Kedungbadak, Tanah Sareal, Kota Bogor, Jawa Barat 16710",
+        "rating": 4.5,
+        "operational_hours": "09:00 - 21:00",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5616274,
+        "longitude": 106.7907867,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7907867,
+          -6.5616274
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 61,
+        "slug": "lippo-plaza-ekalokasari",
+        "name": "Lippo Plaza Ekalokasari",
+        "category": "Kuliner",
+        "description": "Lippo Plaza Ekalokasari merupakan destinasi belanja di Bogor Timur.",
+        "detailed_description": "Lippo Plaza Ekalokasari merupakan destinasi belanja di Bogor Timur.",
+        "address": "Jl. Siliwangi No.123, RT.02/RW.01, Sukasari, Kec. Bogor Tim., Kota Bogor, Jawa Barat 16142",
+        "rating": 4.5,
+        "operational_hours": "10:00 - 21:00 (Senin-Jumat); 22:00 (Sabtu-Minggu)",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6217484,
+        "longitude": 106.8176507,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8176507,
+          -6.6217484
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 62,
+        "slug": "pusat-grosir-bogor",
+        "name": "Pusat Grosir Bogor",
+        "category": "Kuliner",
+        "description": "Pusat Grosir Bogor merupakan destinasi belanja di Bogor Barat.",
+        "detailed_description": "Pusat Grosir Bogor merupakan destinasi belanja di Bogor Barat.",
+        "address": "Gg. Mushola No.241, RT.04/RW.03, Gunungbatu, Kec. Bogor Bar., Kota Bogor, Jawa Barat 16118",
+        "rating": 4.5,
+        "operational_hours": "09:00 - 20:00",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5929355,
+        "longitude": 106.7873042,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7873042,
+          -6.5929355
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 63,
+        "slug": "pasar-kebon-kembang",
+        "name": "Pasar Kebon Kembang",
+        "category": "Kuliner",
+        "description": "Pasar Kebon Kembang merupakan destinasi belanja di Bogor Tengah.",
+        "detailed_description": "Pasar Kebon Kembang merupakan destinasi belanja di Bogor Tengah.",
+        "address": "Jl. Dewi Sartika No.92, RT.04/RW.06, Cibogor, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16124",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5928795,
+        "longitude": 106.7915826,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7915826,
+          -6.5928795
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 64,
+        "slug": "pasar-anyar",
+        "name": "Pasar Anyar",
+        "category": "Kuliner",
+        "description": "Pasar Anyar merupakan destinasi belanja di Bogor Tengah.",
+        "detailed_description": "Pasar Anyar merupakan destinasi belanja di Bogor Tengah.",
+        "address": "Jl. Dewi Sartika, RT.04/RW.06, Cibogor, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16121",
+        "rating": 4.5,
+        "operational_hours": "09:00 - 15:30",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.591775,
+        "longitude": 106.7925075,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7925075,
+          -6.591775
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 65,
+        "slug": "pasar-sukasari",
+        "name": "Pasar Sukasari",
+        "category": "Kuliner",
+        "description": "Pasar Sukasari merupakan destinasi belanja di Bogor Timur.",
+        "detailed_description": "Pasar Sukasari merupakan destinasi belanja di Bogor Timur.",
+        "address": "Jl. Siliwangi No.35, RT.07/RW.02, Sukasari, Kec. Bogor Tim., Kota Bogor, Jawa Barat 16133",
+        "rating": 4.5,
+        "operational_hours": "07:00 - 18:00",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6183339,
+        "longitude": 106.8127788,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8127788,
+          -6.6183339
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 66,
+        "slug": "tugu-kujang-bogor",
+        "name": "Tugu Kujang Bogor",
+        "category": "Edukasi & Budaya",
+        "description": "Monumen/landmark ikonik Kota Bogor yang berada di sekitar simpang Jalan Raya Pajajaran.",
+        "detailed_description": "Monumen/landmark ikonik Kota Bogor yang berada di sekitar simpang Jalan Raya Pajajaran.",
+        "address": "Jl. Raya Pajajaran, Kelurahan Tegallega, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat",
+        "rating": 4.5,
+        "operational_hours": "24 Jam",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6014417,
+        "longitude": 106.8050738,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8050738,
+          -6.6014417
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 67,
+        "slug": "tugu-narkoba",
+        "name": "Tugu Narkoba",
+        "category": "Edukasi & Budaya",
+        "description": "Tugu Narkoba merupakan destinasi landmark di Bogor Utara.",
+        "detailed_description": "Tugu Narkoba merupakan destinasi landmark di Bogor Utara.",
+        "address": "Jl. KS Tubun No.3208, RT.06/RW.02, Kedunghalang, Kec. Bogor Utara, Kota Bogor, Jawa Barat 16151",
+        "rating": 4.5,
+        "operational_hours": "24 Jam",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5635858,
+        "longitude": 106.8105408,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8105408,
+          -6.5635858
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 68,
+        "slug": "jembatan-otista",
+        "name": "Jembatan Otista",
+        "category": "Edukasi & Budaya",
+        "description": "Jembatan di pusat Kota Bogor yang menjadi bagian koridor Jalan Otto Iskandardinata dan akses kawasan pusat kota.",
+        "detailed_description": "Jembatan di pusat Kota Bogor yang menjadi bagian koridor Jalan Otto Iskandardinata dan akses kawasan pusat kota.",
+        "address": "Jl. Otto Iskandardinata, Kelurahan Baranangsiang, Kecamatan Bogor Timur, Kota Bogor, Jawa Barat",
+        "rating": 4.5,
+        "operational_hours": "24 Jam",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6022607,
+        "longitude": 106.8022615,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8022615,
+          -6.6022607
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 69,
+        "slug": "lawang-salapan",
+        "name": "Lawang Salapan",
+        "category": "Edukasi & Budaya",
+        "description": "Bangunan/gerbang ikonik di kawasan sekitar Kebun Raya Bogor dan pusat kota.",
+        "detailed_description": "Bangunan/gerbang ikonik di kawasan sekitar Kebun Raya Bogor dan pusat kota.",
+        "address": "Jl. Otto Iskandardinata, Kelurahan Tegallega, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+        "rating": 4.5,
+        "operational_hours": "Jam operasional belum tersedia",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.6014713,
+        "longitude": 106.8050773,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8050773,
+          -6.6014713
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 70,
+        "slug": "lapangan-gor-pajajaran",
+        "name": "Lapangan GOR Pajajaran",
+        "category": "Edukasi & Budaya",
+        "description": "Kompleks fasilitas olahraga GOR Pajajaran di Kota Bogor; bukan beralamat di Pasir Kaliki, Kota Bandung.",
+        "detailed_description": "Kompleks fasilitas olahraga GOR Pajajaran di Kota Bogor; bukan beralamat di Pasir Kaliki, Kota Bandung.",
+        "address": "Jl. A. Yani, RT.04/RW.01, Kelurahan Tanah Sareal, Kecamatan Tanah Sareal, Kota Bogor, Jawa Barat 16161",
+        "rating": 4.5,
+        "operational_hours": "07:00 - 00:00",
+        "ticket_price": "Gratis / Cek lokasi",
+        "image": "/images/spots/kebun-raya-bogor.jpg",
+        "gallery": [
+          "/images/spots/kebun-raya-bogor.jpg"
+        ],
+        "latitude": -6.5773404,
+        "longitude": 106.7987441,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7987441,
+          -6.5773404
         ]
       }
     }
