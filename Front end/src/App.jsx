@@ -136,7 +136,25 @@ export default function App() {
   const [navigationTarget, setNavigationTarget] = useState(null)
 
   // 1 & 4. GLOBAL AUTH & PROFILE STATE
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search)
+      const authData = params.get('auth_data')
+      if (authData) {
+        const decodedJson = atob(decodeURIComponent(authData))
+        const user = JSON.parse(decodedJson)
+        if (user && user.id) {
+          window.localStorage.setItem('sabah_current_user', JSON.stringify(user))
+          return user
+        }
+      }
+      const saved = window.localStorage.getItem('sabah_current_user')
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
+  })
+  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(currentUser))
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [profileUser, setProfileUser] = useState(null) // null | 'self' | { isSelf: false, name: 'Kirk hasibuan', ... }
 
@@ -144,7 +162,8 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [sheetExpanded, setSheetExpanded] = useState(false)
 
-  const { favorites, toggleFavorite, isFavorite } = useFavorites()
+  const userFavoriteKey = currentUser?.id ? `user_${currentUser.id}` : (currentUser?.email ? `email_${currentUser.email}` : 'guest')
+  const { favorites, toggleFavorite, isFavorite } = useFavorites(userFavoriteKey)
   const { recentSlugs, addRecentlyViewed } = useRecentlyViewed()
 
   const location = useLocation()
@@ -237,12 +256,33 @@ export default function App() {
     [navigate],
   )
 
-  const [currentUser, setCurrentUser] = useState(null)
+  // Bersihkan parameter callback autentikasi Google dari URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const hasAuthData = params.has('auth_data')
+    const authError = params.get('auth_error')
+
+    if (hasAuthData) {
+      params.delete('auth_data')
+      params.delete('auth_provider')
+      const newSearch = params.toString()
+      const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '')
+      window.history.replaceState({}, document.title, newUrl)
+    } else if (authError) {
+      console.error('Autentikasi Google gagal:', decodeURIComponent(authError))
+      params.delete('auth_error')
+      params.delete('auth_provider')
+      const newSearch = params.toString()
+      const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '')
+      window.history.replaceState({}, document.title, newUrl)
+    }
+  }, [])
 
   const handleLoginSuccess = useCallback((userData) => {
     if (userData) {
       setCurrentUser(userData)
       setIsLoggedIn(true)
+      window.localStorage.setItem('sabah_current_user', JSON.stringify(userData))
       setShowLoginModal(false)
       return
     }
@@ -257,6 +297,7 @@ export default function App() {
       .then((json) => {
         if (json?.data) {
           setCurrentUser(json.data)
+          window.localStorage.setItem('sabah_current_user', JSON.stringify(json.data))
         }
       })
       .catch((err) => {
@@ -273,6 +314,7 @@ export default function App() {
   const handleLogout = useCallback(() => {
     setIsLoggedIn(false)
     setCurrentUser(null)
+    window.localStorage.removeItem('sabah_current_user')
     setNavigationTarget(null)
     setProfileUser(null)
     setActiveTab('Explore')

@@ -136,36 +136,11 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
     }
   }
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
     setIsLoading(true)
     setErrorMessage(null)
-
-    try {
-      const res = await apiFetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({ email: 'ambalingham@gmail.com' }),
-      })
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.message || 'Gagal masuk dengan akun Google.')
-      }
-
-      const data = await res.json()
-      if (onLoginSuccess && data?.data) {
-        onLoginSuccess(data.data)
-      } else {
-        throw new Error('Data akun tidak valid.')
-      }
-    } catch (err) {
-      setErrorMessage(err.message || 'Layanan autentikasi belum merespons. Pastikan server aktif.')
-    } finally {
-      setIsLoading(false)
-    }
+    // Metode B (Laravel Socialite): Arahkan ke rute redirect OAuth Google di backend Laravel
+    window.location.href = '/api/auth/google/redirect'
   }
 
   return (

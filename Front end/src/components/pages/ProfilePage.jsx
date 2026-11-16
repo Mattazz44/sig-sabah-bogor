@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import SafeImage from '../ui/SafeImage'
 import GlassModal from '../ui/GlassModal'
 import {
@@ -327,33 +327,51 @@ function ProfilePage({
     }
   }
 
-  const savedMyRoutes = useMemo(() => {
-    const museumZoologi = tourists.find((t) => t.slug === 'museum-zoologi-bogor')
-    const museumPeta = tourists.find((t) => t.slug === 'museum-peta')
-    const suryaKencana =
-      tourists.find((t) => t.slug === 'lawang-surya-kencana') ||
-      tourists.find((t) => t.name?.toLowerCase().includes('surya kencana')) ||
-      tourists[0]
+  const [userCustomRoutes, setUserCustomRoutes] = useState([])
 
-    return [
-      {
-        id: 'profile-route-edukasi',
-        title: 'Museum of Zoology → Museum PETA',
-        distance: '5.4 KM',
-        summary: '2 titik singgah edukasi sejarah Bogor',
-        stopsLabel: '2 destinasi wisata',
-        places: [museumZoologi, museumPeta].filter(Boolean),
-      },
-      {
-        id: 'profile-route-kuliner',
-        title: 'Kuliner Surya Kencana',
-        distance: '3.0 KM',
-        summary: 'Pusat kuliner legendaris Bogor',
-        stopsLabel: '1 destinasi wisata',
-        places: [suryaKencana].filter(Boolean),
-      },
-    ]
-  }, [tourists])
+  useEffect(() => {
+    if (!isSelf) return
+    let isMounted = true
+    const uid = currentUser?.id
+    if (!uid) {
+      setUserCustomRoutes([])
+      return
+    }
+
+    apiFetch(`/api/saved-activities?user_id=${encodeURIComponent(uid)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (!isMounted || !json?.data) return
+        if (Array.isArray(json.data.custom_routes)) {
+          const mapped = json.data.custom_routes.map((cr) => {
+            const stops = Array.isArray(cr.stops) ? cr.stops : []
+            const places = stops.map((s) => s.place).filter(Boolean)
+            return {
+              id: cr.slug || `cr-${cr.id}`,
+              title: cr.title,
+              distance: cr.total_distance || '0 KM',
+              summary: cr.desc || 'Rute kustom buatan Anda',
+              stopsLabel: `${stops.length} destinasi wisata`,
+              places,
+            }
+          })
+          setUserCustomRoutes(mapped)
+          setRoutesCount(mapped.length)
+        } else {
+          setUserCustomRoutes([])
+          setRoutesCount(0)
+        }
+      })
+      .catch(() => {
+        if (isMounted) setUserCustomRoutes([])
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [isSelf, currentUser?.id])
+
+  const savedMyRoutes = userCustomRoutes
 
   const activeAvatar = localAvatar || profileAvatar
 
@@ -591,59 +609,73 @@ function ProfilePage({
                 </div>
 
                 {/* Grid Kartu Rute Saya dengan Struktur & Tinggi Seragam */}
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  {savedMyRoutes.map((route) => {
-                    const canStartRoute = Boolean(onStartCustomRoute && route.places.length > 0)
-                    return (
-                      <article
-                        key={route.id}
-                        className="flex h-full min-w-0 flex-col rounded-2xl border border-white/[0.14] bg-[#233020] p-4 shadow-sm transition-colors duration-150 hover:border-white/[0.26] sm:p-5"
-                      >
-                        <div className="flex items-start justify-between gap-2.5">
-                          <h3 className="text-[15px] font-bold leading-snug text-[#EBF0EB]">
-                            {route.title}
-                          </h3>
-                          <span className="shrink-0 rounded-lg border border-white/[0.14] bg-[#1B261B] px-2.5 py-1 text-[11px] font-semibold tabular-nums text-[#EBF0EB]">
-                            {route.distance}
-                          </span>
-                        </div>
+                {savedMyRoutes.length > 0 ? (
+                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {savedMyRoutes.map((route) => {
+                      const canStartRoute = Boolean(onStartCustomRoute && route.places.length > 0)
+                      return (
+                        <article
+                          key={route.id}
+                          className="flex h-full min-w-0 flex-col rounded-2xl border border-white/[0.14] bg-[#233020] p-4 shadow-sm transition-colors duration-150 hover:border-white/[0.26] sm:p-5"
+                        >
+                          <div className="flex items-start justify-between gap-2.5">
+                            <h3 className="text-[15px] font-bold leading-snug text-[#EBF0EB]">
+                              {route.title}
+                            </h3>
+                            <span className="shrink-0 rounded-lg border border-white/[0.14] bg-[#1B261B] px-2.5 py-1 text-[11px] font-semibold tabular-nums text-[#EBF0EB]">
+                              {route.distance}
+                            </span>
+                          </div>
 
-                        <p className="mt-2 text-[12.5px] leading-relaxed text-[#C8D3C8]">
-                          {route.summary}
-                        </p>
+                          <p className="mt-2 text-[12.5px] leading-relaxed text-[#C8D3C8]">
+                            {route.summary}
+                          </p>
 
-                        <div className="mt-3 flex items-center gap-1.5 text-[11.5px] font-medium text-[#E2D7B5]">
-                          <RouteWaypointsIcon className="h-4 w-4 shrink-0" />
-                          <span>{route.stopsLabel}</span>
-                        </div>
+                          <div className="mt-3 flex items-center gap-1.5 text-[11.5px] font-medium text-[#E2D7B5]">
+                            <RouteWaypointsIcon className="h-4 w-4 shrink-0" />
+                            <span>{route.stopsLabel}</span>
+                          </div>
 
-                        <div className="mt-auto pt-4">
-                          <button
-                            type="button"
-                            disabled={!canStartRoute}
-                            onClick={() => canStartRoute && onStartCustomRoute(route.places)}
-                            className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-[#EBF0EB] px-4 py-2.5 text-[12.5px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.98] disabled:opacity-50"
-                          >
-                            <svg
-                              width="13"
-                              height="13"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              aria-hidden="true"
+                          <div className="mt-auto pt-4">
+                            <button
+                              type="button"
+                              disabled={!canStartRoute}
+                              onClick={() => canStartRoute && onStartCustomRoute(route.places)}
+                              className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-[#EBF0EB] px-4 py-2.5 text-[12.5px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.98] disabled:opacity-50"
                             >
-                              <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" />
-                            </svg>
-                            <span>Mulai Navigasi Rute</span>
-                          </button>
-                        </div>
-                      </article>
-                    )
-                  })}
-                </div>
+                              <svg
+                                width="13"
+                                height="13"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                aria-hidden="true"
+                              >
+                                <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" />
+                              </svg>
+                              <span>Mulai Navigasi Rute</span>
+                            </button>
+                          </div>
+                        </article>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-white/[0.14] bg-[#233020] px-4 py-10 text-center">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.14] bg-[#1B261B] text-[#E2D7B5]">
+                      <RouteWaypointsIcon className="h-6 w-6" />
+                    </div>
+                    <p className="text-[14px] font-bold text-[#EBF0EB]">
+                      Belum Ada Rute Tersimpan
+                    </p>
+                    <p className="mt-1 max-w-xs text-[12.5px] text-[#C8D3C8]">
+                      Anda belum memiliki rute kustom. Rancang rute perjalanan Anda di tab Rute Tersimpan.
+                    </p>
+                  </div>
+                )}
               </section>
             ) : (
               <section aria-labelledby="explorer-activities-heading">

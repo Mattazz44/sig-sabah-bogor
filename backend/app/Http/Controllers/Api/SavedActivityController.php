@@ -17,11 +17,15 @@ class SavedActivityController extends Controller
     {
         $userId = $request->query('user_id');
         $query = SavedActivity::with('touristSpot')->orderBy('created_at', 'desc');
+        $routeQuery = CustomRoute::orderBy('is_primary', 'desc')->orderBy('created_at', 'desc');
+
         if ($userId) {
             $query->where('user_id', $userId);
+            $routeQuery->where('user_id', $userId);
         }
+
         $activities = $query->get();
-        $customRoutes = CustomRoute::orderBy('is_primary', 'desc')->orderBy('created_at', 'desc')->get();
+        $customRoutes = $routeQuery->get();
 
         return response()->json([
             'status' => 'success',
@@ -95,7 +99,10 @@ class SavedActivityController extends Controller
             $idx++;
         }
 
+        $userId = $request->input('user_id') ?: ($request->user()?->id ?? null);
+
         $customRoute = CustomRoute::create([
+            'user_id' => $userId,
             'slug' => 'cr-' . time(),
             'title' => $validated['title'],
             'desc' => 'Rute baru dibuat oleh Anda',

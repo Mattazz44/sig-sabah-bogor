@@ -79,20 +79,27 @@ function SavedActivitiesPage({
   const [newActivityLocation, setNewActivityLocation] = useState('')
 
   const [userActivities, setUserActivities] = useState([])
-  const [customRoutesCount, setCustomRoutesCount] = useState(2)
+  const [customRoutesCount, setCustomRoutesCount] = useState(0)
 
   useEffect(() => {
-    if (!isLoggedIn) return undefined
+    if (!isLoggedIn) {
+      setUserActivities([])
+      setCustomRoutesCount(0)
+      return undefined
+    }
 
     let isMounted = true
-    apiFetch('/api/saved-activities')
+    const uid = currentUser?.id
+    const endpoint = uid ? `/api/saved-activities?user_id=${encodeURIComponent(uid)}` : '/api/saved-activities'
+
+    apiFetch(endpoint)
       .then((res) => {
         if (!res.ok) throw new Error('Network error')
         return res.json()
       })
       .then((json) => {
         if (isMounted && json?.data) {
-          if (Array.isArray(json.data.activities) && json.data.activities.length > 0) {
+          if (Array.isArray(json.data.activities)) {
             setUserActivities(
               json.data.activities.map((a) => ({
                 id: a.id,
@@ -103,20 +110,28 @@ function SavedActivitiesPage({
                 date: a.date_label || 'Baru saja',
               })),
             )
+          } else {
+            setUserActivities([])
           }
           if (Array.isArray(json.data.custom_routes)) {
             setCustomRoutesCount(json.data.custom_routes.length)
+          } else {
+            setCustomRoutesCount(0)
           }
         }
       })
       .catch((err) => {
-        console.warn('Gagal memuat aktivitas tersimpan dari API, fallback ke default:', err)
+        console.warn('Gagal memuat aktivitas tersimpan dari API:', err)
+        if (isMounted) {
+          setUserActivities([])
+          setCustomRoutesCount(0)
+        }
       })
 
     return () => {
       isMounted = false
     }
-  }, [isLoggedIn])
+  }, [isLoggedIn, currentUser?.id])
 
   const effectiveUserActivities = isLoggedIn ? userActivities : []
 
@@ -154,6 +169,7 @@ function SavedActivitiesPage({
         Accept: 'application/json',
       },
       body: JSON.stringify({
+        user_id: currentUser?.id,
         name: nameText,
         location: locText,
       }),

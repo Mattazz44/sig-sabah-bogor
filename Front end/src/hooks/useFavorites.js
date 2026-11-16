@@ -1,37 +1,47 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'sig_wisata_favorites'
-const DEFAULT_FAVORITES = [
-  'museum-zoologi-bogor',
-  'museum-peta',
-  'lawang-surya-kencana',
-  'tugu-kujang',
-]
+export function useFavorites(userKey = 'guest') {
+  const storageKey = `sig_wisata_favorites_${userKey}`
 
-export function useFavorites() {
   const [favorites, setFavorites] = useState(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY)
+      const saved = localStorage.getItem(storageKey)
       if (saved) {
         const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Gabungkan tempat tersimpan awal agar rute custom bawaan akun memiliki destinasi yang valid
-          return Array.from(new Set([...parsed, ...DEFAULT_FAVORITES]))
+        if (Array.isArray(parsed)) {
+          return parsed
         }
       }
-      return DEFAULT_FAVORITES
+      return []
     } catch {
-      return DEFAULT_FAVORITES
+      return []
     }
   })
 
+  // Sinkronisasi saat userKey berubah (misal login akun baru atau ganti akun)
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites))
+      const saved = localStorage.getItem(storageKey)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed)) {
+          setFavorites(parsed)
+          return
+        }
+      }
+      setFavorites([])
+    } catch {
+      setFavorites([])
+    }
+  }, [storageKey])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(favorites))
     } catch {
       // ignore
     }
-  }, [favorites])
+  }, [favorites, storageKey])
 
   const toggleFavorite = (slug) => {
     setFavorites((prev) =>

@@ -7,10 +7,13 @@ use App\Http\Controllers\Api\ForYouController;
 use App\Http\Controllers\Api\SavedActivityController;
 use App\Http\Controllers\Api\ActivityPostController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\GoogleAuthController;
 
 // 1. Auth & Users API
 Route::get('/auth/current-user', [AuthController::class, 'currentUser']);
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 Route::post('/auth/update-avatar', [AuthController::class, 'updateAvatar']);
 Route::get('/users/{usernameOrId}', [AuthController::class, 'userProfile']);
 Route::post('/users/{usernameOrId}/follow', [AuthController::class, 'toggleFollow']);
