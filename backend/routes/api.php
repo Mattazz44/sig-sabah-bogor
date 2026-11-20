@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\GoogleAuthController;
 // 1. Auth & Users API
 Route::get('/auth/current-user', [AuthController::class, 'currentUser']);
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/register', [AuthController::class, 'register']);
 Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 Route::post('/auth/update-avatar', [AuthController::class, 'updateAvatar']);

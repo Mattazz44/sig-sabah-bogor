@@ -1,25 +1,32 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { DESKTOP_BREAKPOINT, getPeekHeight } from './sheetMetrics'
+import { DESKTOP_BREAKPOINT, getHalfHeight, getPeekHeight } from './sheetMetrics'
 import { BottomSheetContext } from './bottomSheetContext'
 
 const DRAG_THRESHOLD = 12 // px vertical before tap becomes drag
 const FLICK_VELOCITY = 0.35 // px/ms
 const PULL_DOWN_THRESHOLD = 36 // px pulled down while at top of scroll
-const DESKTOP_COLLAPSED_HEIGHT = 112 // px exposed at bottom-left on desktop (handle bar + SearchBar)
+const DESKTOP_COLLAPSED_EXPOSED = 104 // px exposed when sidebar is collapsed (handle + SearchBar)
 const SPRING_STIFFNESS = 300 // ~300-340ms gentle ease-out spring settling
 const SPRING_DAMPING = 32
 
 function computeSnapPositions(viewportHeight) {
   const peekHeight = getPeekHeight(viewportHeight)
   const peekY = Math.max(0, viewportHeight - peekHeight)
-  const rawHalfY = Math.round(viewportHeight * 0.34)
-  const halfY = Math.max(0, Math.min(rawHalfY, Math.max(0, peekY - 84)))
+  const halfHeight = getHalfHeight(viewportHeight)
+  const rawHalfY = Math.max(0, viewportHeight - halfHeight)
+  const halfY = Math.max(0, Math.min(rawHalfY, Math.max(0, peekY - 64)))
   const fullY = 0
   return { peekY, halfY, fullY }
 }
 
-function computeDesktopCollapsedY(viewportHeight) {
-  return Math.max(0, viewportHeight - DESKTOP_COLLAPSED_HEIGHT)
+function getDesktopBottomMargin(viewportWidth) {
+  return viewportWidth < 1280 ? 96 : 12
+}
+
+function computeDesktopCollapsedY(viewportHeight, viewportWidth) {
+  const bottomMargin = getDesktopBottomMargin(viewportWidth)
+  const panelHeight = Math.max(0, viewportHeight - 12 - bottomMargin)
+  return Math.max(0, panelHeight - DESKTOP_COLLAPSED_EXPOSED)
 }
 
 function clampWithRubberBand(rawY, minY, maxY) {
@@ -42,14 +49,14 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
     width: typeof window !== 'undefined' ? window.innerWidth : 1024,
     height: typeof window !== 'undefined' ? window.innerHeight : 844,
   }))
-  const [snap, setSnap] = useState(() => (expanded ? 'full' : 'peek'))
+  const [snap, setSnap] = useState(() => (expanded ? 'full' : 'half'))
   const [desktopCollapsed, setDesktopCollapsed] = useState(false)
   const [prevExpandedProp, setPrevExpandedProp] = useState(expanded)
 
   // Sinkronisasi bersih jika parent mengubah prop `expanded` secara eksplisit
   if (expanded !== prevExpandedProp) {
     setPrevExpandedProp(expanded)
-    setSnap(expanded ? 'full' : 'peek')
+    setSnap(expanded ? 'full' : 'half')
   }
 
   const sheetRef = useRef(null)
@@ -63,7 +70,7 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
   const isDesktop = viewportSize.width >= DESKTOP_BREAKPOINT
   const viewportHeight = viewportSize.height
   const { peekY, halfY, fullY } = computeSnapPositions(viewportHeight)
-  const desktopCollapsedY = computeDesktopCollapsedY(viewportHeight)
+  const desktopCollapsedY = computeDesktopCollapsedY(viewportHeight, viewportSize.width)
 
   const getYForSnap = useCallback(
     (targetSnap) => {
@@ -171,10 +178,10 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
     animateTo(getTargetY(), initialVel)
   }, [getTargetY, animateTo])
 
-  // Reset scroll internal ke atas saat sheet dilipat agar search bar selalu terlihat penuh
+  // Reset scroll internal ke atas saat sheet tidak penuh agar search bar & kategori selalu terlihat
   useEffect(() => {
-    const isCollapsedNow = isDesktop ? desktopCollapsed : snap === 'peek'
-    if (isCollapsedNow && contentRef.current) {
+    const shouldResetScroll = isDesktop ? desktopCollapsed : snap !== 'full'
+    if (shouldResetScroll && contentRef.current) {
       contentRef.current.scrollTop = 0
     }
   }, [isDesktop, desktopCollapsed, snap])
@@ -459,9 +466,7 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
     : 'Tarik ke atas atau klik untuk membuka penuh panel'
 
   const cornerRadiusClass = isDesktop
-    ? desktopCollapsed
-      ? 'rounded-none md:rounded-tr-2xl md:border-t'
-      : 'rounded-none md:border-t-transparent'
+    ? 'rounded-3xl'
     : isFullMobile
       ? 'rounded-none'
       : 'rounded-t-[32px]'
@@ -490,15 +495,15 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
       onPointerUp={finishDrag}
       onPointerCancel={handlePointerCancel}
       onClickCapture={handleClickCapture}
-      className={`fixed top-0 bottom-0 left-0 right-0 z-[500] mx-0 ml-0 mr-0 flex w-screen max-w-none flex-col bg-forest-900 text-white shadow-lg will-change-transform transform-gpu transition-[border-radius,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:top-0 md:bottom-0 md:left-0 md:right-auto md:ml-0 md:w-[420px] md:border-r md:border-white/10 ${cornerRadiusClass}`}
+      className={`apple-maps-sidebar fixed top-0 bottom-0 left-0 right-0 z-[500] mx-0 ml-0 mr-0 flex w-screen max-w-none flex-col border-t border-white/[0.16] text-white shadow-2xl will-change-transform transform-gpu transition-[border-radius,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:top-3 md:bottom-24 xl:bottom-3 md:left-3 md:right-auto md:ml-0 md:w-[320px] lg:w-[375px] xl:w-[400px] md:rounded-3xl md:border md:border-white/[0.16] ${cornerRadiusClass}`}
       style={{
-        height: '100dvh',
+        height: isDesktop ? undefined : '100dvh',
         transform: `translate3d(0, ${getTargetY()}px, 0)`,
         touchAction: canScrollContent ? 'pan-y' : 'pan-x',
       }}
     >
       {/* Top drag handle bar + desktop collapse toggle */}
-      <div className="relative flex w-full shrink-0 items-center justify-center md:h-10">
+      <div className="relative flex w-full shrink-0 items-center justify-center md:h-9">
         <button
           type="button"
           id={`${id}-handle-container`}
@@ -568,17 +573,20 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onFocusCapture={(e) => {
-          if (isDesktop && desktopCollapsed && e.target.closest('input, textarea')) {
-            commitDesktopCollapsed(false)
+          if (e.target.closest('input, textarea')) {
+            if (isDesktop && desktopCollapsed) {
+              commitDesktopCollapsed(false)
+            } else if (!isDesktop && snap === 'peek') {
+              commitSnap('half')
+            }
           }
         }}
-        className={`no-scrollbar w-full flex-1 overscroll-contain will-change-transform transform-gpu md:pt-1 ${
+        className={`no-scrollbar w-full min-h-0 flex-1 overscroll-contain will-change-transform transform-gpu pb-[calc(env(safe-area-inset-bottom,0px)+116px)] md:pb-24 xl:pb-8 md:pt-1 ${
           canScrollContent ? 'overflow-x-hidden overflow-y-auto' : 'overflow-hidden'
         }`}
         style={{
           WebkitOverflowScrolling: 'touch',
           touchAction: canScrollContent ? 'pan-y' : 'pan-x',
-          paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)',
         }}
       >
         {children}

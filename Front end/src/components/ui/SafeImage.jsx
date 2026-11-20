@@ -1,18 +1,29 @@
 import { memo, useEffect, useState } from 'react'
 import {
+  DEFAULT_AVATAR_PLACEHOLDER,
   DEFAULT_IMAGE_PLACEHOLDER,
   getImageUrl,
   handleImageError,
 } from '../../utils/imageHelper'
+import { CompassIcon, UserIcon } from './VectorIcons'
 
 /**
  * Komponen gambar teroptimasi (60 FPS Mobile PWA):
  * 1. Shimmer skeleton loader selama proses fetch/loading (menghormati prefers-reduced-motion).
  * 2. Transisi fade-in halus (transition-opacity duration-300) saat gambar siap.
- * 3. Mendukung loading, decoding, fetchPriority, serta ukuran eksplisit untuk mencegah CLS.
+ * 3. Fallback gradient kaca estetik dengan ikon vektor halus bila URL foto kosong atau gagal dimuat.
  * 4. Bypass halaman peringatan ngrok via header 'ngrok-skip-browser-warning': 'true'.
  * 5. Pembersihan memori otomatis dengan URL.revokeObjectURL saat unmount.
  */
+function isSvgPlaceholder(url) {
+  return (
+    !url ||
+    url === DEFAULT_IMAGE_PLACEHOLDER ||
+    url === DEFAULT_AVATAR_PLACEHOLDER ||
+    url.startsWith('data:image/svg+xml')
+  )
+}
+
 function SafeImage({
   src,
   alt = '',
@@ -28,12 +39,37 @@ function SafeImage({
   onError,
   ...rest
 }) {
-  const resolvedUrl = getImageUrl(src, fallback)
-  const isInstantSource =
-    !src || resolvedUrl.startsWith('data:') || resolvedUrl.startsWith('blob:')
+  const rawSrc = typeof src === 'string' ? src.trim() : ''
+  const isEmptyOrPlaceholderSrc = isSvgPlaceholder(rawSrc)
 
-  const [fetched, setFetched] = useState({ forUrl: null, objectUrl: null })
+  const resolvedFallbackUrl = isSvgPlaceholder(fallback)
+    ? fallback
+    : getImageUrl(fallback, DEFAULT_IMAGE_PLACEHOLDER)
+  const hasPhotoFallback = !isSvgPlaceholder(resolvedFallbackUrl)
+
+  const primaryUrl = isEmptyOrPlaceholderSrc
+    ? resolvedFallbackUrl
+    : getImageUrl(rawSrc, resolvedFallbackUrl)
+
+  const [fetched, setFetched] = useState({ forUrl: null, objectUrl: null, failed: false })
   const [loadedUrl, setLoadedUrl] = useState(null)
+  const [imgFailedFor, setImgFailedFor] = useState(null)
+
+  const primaryFailed =
+    (fetched.forUrl === primaryUrl && fetched.failed) ||
+    (Boolean(fetched.forUrl === primaryUrl && fetched.objectUrl) &&
+      imgFailedFor === fetched.objectUrl) ||
+    imgFailedFor === primaryUrl
+
+  const activeTargetUrl =
+    primaryFailed && hasPhotoFallback && primaryUrl !== resolvedFallbackUrl
+      ? resolvedFallbackUrl
+      : primaryUrl
+
+  const isInstantSource =
+    isSvgPlaceholder(activeTargetUrl) ||
+    activeTargetUrl.startsWith('data:') ||
+    activeTargetUrl.startsWith('blob:')
 
   useEffect(() => {
     if (isInstantSource) return undefined
@@ -42,7 +78,7 @@ function SafeImage({
     let createdObjectUrl = null
     const controller = new AbortController()
 
-    fetch(resolvedUrl, {
+    fetch(activeTargetUrl, {
       method: 'GET',
       headers: {
         'ngrok-skip-browser-warning': 'true',
@@ -59,12 +95,15 @@ function SafeImage({
       })
       .then((blob) => {
         if (!isMounted) return
+        if (blob.type && !blob.type.startsWith('image/')) {
+          throw new Error(`Invalid image MIME: ${blob.type}`)
+        }
         createdObjectUrl = URL.createObjectURL(blob)
-        setFetched({ forUrl: resolvedUrl, objectUrl: createdObjectUrl })
+        setFetched({ forUrl: activeTargetUrl, objectUrl: createdObjectUrl, failed: false })
       })
       .catch((err) => {
         if (!isMounted || err?.name === 'AbortError') return
-        setFetched({ forUrl: resolvedUrl, objectUrl: resolvedUrl || fallback })
+        setFetched({ forUrl: activeTargetUrl, objectUrl: null, failed: true })
       })
 
     return () => {
@@ -74,22 +113,38 @@ function SafeImage({
         URL.revokeObjectURL(createdObjectUrl)
       }
     }
-  }, [resolvedUrl, fallback, isInstantSource])
+  }, [activeTargetUrl, isInstantSource])
+
+  const hasFetchFailed =
+    !isInstantSource && fetched.forUrl === activeTargetUrl && fetched.failed
 
   const displaySrc = isInstantSource
-    ? resolvedUrl
-    : fetched.forUrl === resolvedUrl
+    ? activeTargetUrl
+    : fetched.forUrl === activeTargetUrl && !fetched.failed
       ? fetched.objectUrl
       : null
 
-  const isLoaded = isInstantSource || (Boolean(displaySrc) && loadedUrl === displaySrc)
+  const showGlassFallback =
+    isSvgPlaceholder(activeTargetUrl) ||
+    hasFetchFailed ||
+    (Boolean(displaySrc) && imgFailedFor === displaySrc)
+
+  const isLoaded =
+    showGlassFallback ||
+    isInstantSource ||
+    (Boolean(displaySrc) && loadedUrl === displaySrc)
 
   const isContain = fit === 'contain'
+  const isAvatarMode = fallback === DEFAULT_AVATAR_PLACEHOLDER
 
-  // Pisahkan class efek hover scale dan object-fit agar dimensi tetap di wrapper dan object-fit konsisten
+  // Pisahkan class ukuran/border untuk wrapper vs object-fit/scale/object-position untuk img
   const wrapperClasses = className
     .replace(/\b(group-hover|hover):scale-[^\s]+/g, '')
-    .replace(/\bobject-(cover|contain|fill|none|scale-down)\b/g, '')
+    .replace(/\bobject-(cover|contain|fill|none|scale-down|top|bottom|center|left|right|left-top|right-top|left-bottom|right-bottom)\b/g, '')
+    .trim()
+
+  const innerImageClasses = className
+    .replace(/\bborder(?:-[^\s]+)?/g, '')
     .trim()
 
   const imageFitClasses = isContain
@@ -100,38 +155,64 @@ function SafeImage({
     <div
       className={`relative overflow-hidden ${isContain ? 'flex items-center justify-center' : ''} ${wrapperClasses}`}
     >
-      {!isLoaded && (
+      {showGlassFallback ? (
         <div
-          aria-hidden="true"
-          className={`pointer-events-none shimmer-skeleton bg-[#384931] ${
-            isContain ? 'h-56 w-72 sm:h-72 sm:w-96 rounded-2xl' : 'absolute inset-0 z-[1]'
+          role={alt ? 'img' : undefined}
+          aria-label={alt || undefined}
+          aria-hidden={alt ? undefined : true}
+          className={`relative flex h-full w-full items-center justify-center overflow-hidden border border-white/[0.12] bg-gradient-to-br from-[#283526]/95 via-[#1C251C] to-[#141A14] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.16)] ${
+            isAvatarMode ? 'rounded-full' : ''
           }`}
-        />
-      )}
+        >
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-6 -left-6 h-20 w-20 rounded-full bg-white/[0.06] blur-xl"
+          />
+          {isAvatarMode ? (
+            <UserIcon className="h-[46%] w-[46%] max-h-7 max-w-7 text-[#EBF0EB]/70" />
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-1.5 text-[#E2D7B5]/60">
+              <CompassIcon className="h-7 w-7" duotone />
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          {!isLoaded && (
+            <div
+              aria-hidden="true"
+              className={`pointer-events-none shimmer-skeleton bg-[#253123] ${
+                isContain ? 'h-56 w-72 sm:h-72 sm:w-96 rounded-2xl' : 'absolute inset-0 z-[1]'
+              }`}
+            />
+          )}
 
-      {displaySrc && (
-        <img
-          src={displaySrc}
-          alt={alt}
-          width={width}
-          height={height}
-          loading={loading}
-          decoding={decoding}
-          fetchPriority={fetchPriority}
-          onLoad={() => setLoadedUrl(displaySrc)}
-          onError={(e) => {
-            setLoadedUrl(displaySrc)
-            if (onError) {
-              onError(e)
-            } else {
-              handleImageError(e, fallback)
-            }
-          }}
-          className={`${imageFitClasses} transition-opacity duration-300 ${
-            isLoaded ? 'opacity-100' : isContain ? 'opacity-0 absolute pointer-events-none' : 'opacity-0'
-          } ${isContain ? wrapperClasses.replace(/\bw-full\b|\bh-full\b/g, '') : className} ${imgClassName}`}
-          {...rest}
-        />
+          {displaySrc && (
+            <img
+              src={displaySrc}
+              alt={alt}
+              width={width}
+              height={height}
+              loading={loading}
+              decoding={decoding}
+              fetchPriority={fetchPriority}
+              onLoad={() => setLoadedUrl(displaySrc)}
+              onError={(e) => {
+                setLoadedUrl(displaySrc)
+                setImgFailedFor(displaySrc)
+                if (onError) {
+                  onError(e)
+                } else {
+                  handleImageError(e, fallback)
+                }
+              }}
+              className={`${imageFitClasses} transition-opacity duration-300 ${
+                isLoaded ? 'opacity-100' : isContain ? 'opacity-0 absolute pointer-events-none' : 'opacity-0'
+              } ${isContain ? wrapperClasses.replace(/\bw-full\b|\bh-full\b/g, '') : innerImageClasses} ${imgClassName}`}
+              {...rest}
+            />
+          )}
+        </>
       )}
     </div>
   )

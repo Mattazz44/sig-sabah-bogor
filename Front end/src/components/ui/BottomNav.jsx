@@ -67,8 +67,8 @@ const SPRING_DAMPING = 21.5
 const STRETCH_STIFFNESS = 280
 const STRETCH_DAMPING = 22
 
-const INACTIVE_RGB = [184, 197, 184] // #B8C5B8
-const ACTIVE_RGB = [235, 240, 235]   // #EBF0EB
+const INACTIVE_RGB = [176, 181, 173] // Warm Charcoal Muted Cream
+const ACTIVE_RGB = [245, 242, 235]   // #F5F2EB Classic Warm Ivory
 
 function clamp(val, min, max) {
   return Math.min(Math.max(val, min), max)
@@ -434,7 +434,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
         <nav
           id="bottom-navigation"
           aria-label="Navigasi utama"
-          className="liquid-glass-dock pointer-events-auto relative w-full max-w-[424px] overflow-hidden rounded-full p-1.5 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.25),0_14px_34px_-6px_rgba(0,0,0,0.48)] select-none transform-gpu"
+          className="liquid-glass-dock pointer-events-auto relative w-full max-w-[424px] overflow-hidden rounded-full p-1.5 select-none transform-gpu"
         >
           <div
             ref={trackRef}
@@ -480,7 +480,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
                     }}
                     className="flex h-[22px] w-[22px] items-center justify-center will-change-transform"
                     style={{
-                      color: isActive ? '#EBF0EB' : '#B8C5B8',
+                      color: isActive ? '#F5F2EB' : '#B0B5AD',
                     }}
                   >
                     <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
@@ -493,7 +493,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
                     }}
                     className="w-full truncate text-center text-[10px] leading-none tracking-tight"
                     style={{
-                      color: isActive ? '#EBF0EB' : '#B8C5B8',
+                      color: isActive ? '#F5F2EB' : '#B0B5AD',
                       fontWeight: isActive ? 700 : 500,
                     }}
                   >

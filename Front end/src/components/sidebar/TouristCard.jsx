@@ -56,18 +56,10 @@ function TouristCard({ place, onSelect, onHover, saved = false, onToggleFavorite
       }}
     >
       <div
-        className={`relative overflow-hidden rounded-2xl border bg-[#233020] transition-[transform,border-color,box-shadow,background-color] duration-150 ease-out ${
-          isPressed
-            ? 'scale-[0.98] translate-y-0 border-white/25 bg-[#273624] shadow-md'
-            : 'border-[#EBF0EB]/12 shadow-sm hover:-translate-y-1 hover:border-white/25 hover:bg-[#273624] hover:shadow-xl'
+        className={`relative transition-transform duration-150 ease-out ${
+          isPressed ? 'scale-[0.985]' : 'group-hover:-translate-y-0.5'
         }`}
       >
-        {/* Kilau specular glare diagonal */}
-        <span
-          aria-hidden="true"
-          className="card-specular-sheen pointer-events-none absolute -inset-4 z-[2]"
-        />
-
         <button
           type="button"
           id={`card-${place.slug}`}
@@ -80,7 +72,12 @@ function TouristCard({ place, onSelect, onHover, saved = false, onToggleFavorite
           onClick={() => onSelect?.(place)}
           className="relative z-[1] block w-full text-left"
         >
-          <div className="relative overflow-hidden">
+          <div className="apple-retro-bevel relative overflow-hidden rounded-2xl ring-1 ring-[rgba(244,239,230,0.14)] shadow-md transition-shadow duration-200 group-hover:ring-[rgba(244,239,230,0.26)] group-hover:shadow-xl">
+            {/* Kilau specular glare diagonal pada media foto */}
+            <span
+              aria-hidden="true"
+              className="card-specular-sheen pointer-events-none absolute -inset-4 z-[2]"
+            />
             <SafeImage
               src={place.image}
               alt={place.name}
@@ -90,24 +87,29 @@ function TouristCard({ place, onSelect, onHover, saved = false, onToggleFavorite
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent opacity-80 transition-opacity duration-500 ease-out group-hover:opacity-45"
+              className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent opacity-80 transition-opacity duration-500 ease-out group-hover:opacity-45"
             />
           </div>
-          <div className="p-3.5">
-            <h3 className="text-[15px] font-semibold tracking-tight text-[#EBF0EB]">{place.name}</h3>
-            <p className="mt-0.5 text-[12px] text-[#C8D3C8]">{displayLocation}</p>
-            <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#EBF0EB]/90">
-              <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-amber-300" />
-              <span className="font-semibold text-[#EBF0EB] tabular-nums">
+
+          <div className="pt-2.5">
+            <h3 className="text-[15.5px] font-semibold leading-snug tracking-tight text-[#F5F2EB] transition-colors group-hover:text-[#DFAA63]">
+              {place.name}
+            </h3>
+            <p className="mt-0.5 truncate text-[12.5px] text-[#F5F2EB]/60">{displayLocation}</p>
+            <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#F5F2EB]/80">
+              <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
+              <span className="font-mono font-semibold text-[#F5F2EB] tabular-nums tracking-wide">
                 {Number(place.rating || 0).toFixed(1)}
               </span>
-              <span className="text-[#9AA89A]" aria-hidden="true">·</span>
-              <span className="text-[#C8D3C8]">{place.distance || place.category}</span>
+              <span className="text-[#F5F2EB]/35" aria-hidden="true">·</span>
+              <span className="truncate font-mono text-[11.5px] tabular-nums tracking-wide text-[#F5F2EB]/65">
+                {place.distance || place.category}
+              </span>
             </div>
           </div>
         </button>
 
-        {/* Tombol aksi non-bersarang di pojok kanan atas */}
+        {/* Tombol aksi Bagikan & Favorit dengan lingkaran kaca blur tipis */}
         <div
           data-no-sheet-drag
           className="pointer-events-auto absolute top-2.5 right-2.5 z-[3] flex items-center gap-2"
@@ -118,9 +120,9 @@ function TouristCard({ place, onSelect, onHover, saved = false, onToggleFavorite
             onPointerDown={(e) => e.stopPropagation()}
             onClick={handleShare}
             aria-label={copied ? `Tautan ${place.name} tersalin` : `Bagikan ${place.name}`}
-            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-[#EBF0EB]/20 bg-[#1B261B]/92 text-[#EBF0EB] shadow-sm transition-all duration-150 hover:bg-[#253320] active:scale-[0.95] before:absolute before:-inset-1"
+            className="apple-retro-bevel relative flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(244,239,230,0.2)] bg-black/40 text-[#F5F2EB] backdrop-blur-md shadow-sm transition-all duration-150 hover:bg-black/55 active:scale-[0.95] before:absolute before:-inset-1"
           >
-            {copied ? <CheckIcon className="h-4 w-4 text-[#E2D7B5]" /> : <ShareIcon className="h-4 w-4" />}
+            {copied ? <CheckIcon className="h-4 w-4 text-[#DFAA63]" /> : <ShareIcon className="h-4 w-4" />}
           </button>
           <button
             type="button"
@@ -129,10 +131,10 @@ function TouristCard({ place, onSelect, onHover, saved = false, onToggleFavorite
             onClick={() => onToggleFavorite?.(place.slug)}
             aria-pressed={saved}
             aria-label={saved ? `Hapus ${place.name} dari favorit` : `Simpan ${place.name} ke favorit`}
-            className={`relative flex h-9 w-9 items-center justify-center rounded-full border shadow-sm transition-all duration-150 active:scale-[0.95] before:absolute before:-inset-1 ${
+            className={`apple-retro-bevel relative flex h-9 w-9 items-center justify-center rounded-full border backdrop-blur-md shadow-sm transition-all duration-150 active:scale-[0.95] before:absolute before:-inset-1 ${
               saved
-                ? 'border-rose-300/35 bg-[#3B1D24]/92 text-rose-200 hover:bg-[#49242D]'
-                : 'border-[#EBF0EB]/20 bg-[#1B261B]/92 text-[#EBF0EB] hover:bg-[#253320]'
+                ? 'border-rose-300/40 bg-rose-950/65 text-rose-200 hover:bg-rose-900/75'
+                : 'border-[rgba(244,239,230,0.2)] bg-black/40 text-[#F5F2EB] hover:bg-black/55'
             }`}
           >
             <HeartIcon filled={saved} className="h-4 w-4" />

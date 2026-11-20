@@ -37,32 +37,32 @@ function RouteMetrics({
       aria-label="Panel perkiraan rute navigasi"
       className="pointer-events-none fixed top-4 inset-x-4 z-[900] mx-auto max-w-sm animate-tab-enter"
     >
-      <div className="pointer-events-auto flex flex-col gap-1.5 rounded-2xl border border-[#EBF0EB]/15 bg-[#1F2C1C] px-4 py-3 shadow-xl">
+      <div className="pointer-events-auto apple-glass-card flex flex-col gap-1.5 rounded-2xl px-4 py-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-400" aria-hidden="true" />
-            <h2 className="truncate text-[13px] font-bold text-[#EBF0EB]" title={title}>
+            <span className="h-2 w-2 shrink-0 rounded-full bg-[#DFAA63]" aria-hidden="true" />
+            <h2 className="truncate text-[13.5px] font-semibold tracking-tight text-[#F5F2EB]" title={title}>
               {title}
             </h2>
           </div>
-          <span className="shrink-0 rounded-lg border border-emerald-400/30 bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-200">
+          <span className="shrink-0 rounded-full border border-[#DFAA63]/35 bg-[#DFAA63]/12 px-2.5 py-0.5 font-mono text-[10.5px] font-semibold tracking-wide text-[#DFAA63]">
             {badgeLabel}
           </span>
         </div>
 
-        <div className="mt-0.5 flex items-center justify-between border-t border-[#EBF0EB]/12 pt-2 text-[12px]">
-          <div className="flex items-center gap-1.5 text-[#EBF0EB]">
-            <span className="text-[#C8D3C8]">
+        <div className="mt-0.5 flex items-center justify-between border-t border-[rgba(244,239,230,0.14)] pt-2 text-[12px]">
+          <div className="flex items-center gap-1.5 text-[#F5F2EB]">
+            <span className="text-[#F5F2EB]/60">
               {isCustomRoute ? 'Estimasi total:' : 'Estimasi:'}
             </span>
-            <span className="font-bold tabular-nums text-[#EBF0EB]">{estimatedTime}</span>
+            <span className="font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">{estimatedTime}</span>
           </div>
-          <span className="text-[#EBF0EB]/30" aria-hidden="true">|</span>
-          <div className="flex items-center gap-1.5 text-[#EBF0EB]">
-            <span className="text-[#C8D3C8]">
+          <span className="text-[#F5F2EB]/25" aria-hidden="true">|</span>
+          <div className="flex items-center gap-1.5 text-[#F5F2EB]">
+            <span className="text-[#F5F2EB]/60">
               {isCustomRoute ? 'Jarak total:' : 'Jarak:'}
             </span>
-            <span className="font-bold tabular-nums text-[#EBF0EB]">{estimatedDistance}</span>
+            <span className="font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">{estimatedDistance}</span>
           </div>
         </div>
       </div>

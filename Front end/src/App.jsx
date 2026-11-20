@@ -397,30 +397,30 @@ export default function App() {
 
   if (isAdminRoute) {
     return (
-      <div className="flex h-dvh w-full flex-col items-center justify-center bg-forest-900 px-6 text-center text-[#EBF0EB]">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-[#141C14]/70 text-[#E2D7B5] shadow-lg backdrop-blur-xl">
+      <div className="apple-canopy-bg flex h-dvh w-full flex-col items-center justify-center px-6 text-center text-[#F5F2EB]">
+        <div className="apple-glass-card mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-[#DFAA63]">
           <RefreshIcon className="h-6 w-6 animate-spin" />
         </div>
-        <h1 className="mt-4 text-[18px] font-bold tracking-tight text-[#EBF0EB]">
+        <h1 className="mt-4 text-[19px] font-semibold tracking-tight text-[#F5F2EB]">
           Mengarahkan ke Panel Admin...
         </h1>
-        <p className="mt-1.5 max-w-sm text-[13px] leading-relaxed text-[#C8D3C8]">
+        <p className="mt-1.5 max-w-sm text-[13px] leading-relaxed text-[#F5F2EB]/70">
           Anda sedang dialihkan ke sistem manajemen destinasi backend di{' '}
-          <code className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-[12px] text-[#E2D7B5]">
+          <code className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-[12px] tracking-wide text-[#DFAA63]">
             localhost:8000/admin
           </code>
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <a
             href="http://localhost:8000/admin"
-            className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#EBF0EB] px-6 text-[13px] font-semibold text-[#161E16] shadow-sm transition-colors hover:bg-[#DCE4DC] active:scale-[0.98]"
+            className="apple-retro-cta inline-flex min-h-[44px] items-center justify-center rounded-xl px-6 text-[13px] font-semibold active:scale-[0.98]"
           >
             Buka Panel Admin (Port 8000)
           </a>
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-white/20 bg-[#141C14]/60 px-5 text-[13px] font-medium text-[#C8D3C8] transition-colors hover:bg-white/10 hover:text-[#EBF0EB]"
+            className="apple-glass-pill inline-flex min-h-[44px] items-center justify-center rounded-xl px-5 text-[13px] font-medium text-[#F5F2EB]/80 transition-colors hover:text-[#F5F2EB]"
           >
             Kembali ke Peta
           </button>
@@ -432,7 +432,7 @@ export default function App() {
   const showBackendBanner = isBackendError && !isErrorBannerDismissed
 
   return (
-    <main className="relative inset-x-0 left-0 right-0 mx-0 flex flex-col h-dvh w-full overflow-hidden bg-forest-900">
+    <main className="apple-canopy-bg relative inset-x-0 left-0 right-0 mx-0 flex flex-col h-dvh w-full overflow-hidden">
       <h1 className="sr-only">SIG Wisata Bogor</h1>
 
       {/* Banner Peringatan Inline jika Backend Laravel Belum Dijalankan (mendorong konten secara natural tanpa overlap) */}
@@ -513,6 +513,8 @@ export default function App() {
           <TouristDetailPage
             key={selectedPlace.slug}
             place={selectedPlace}
+            allPlaces={enrichedTourists}
+            onSelectPlace={handleOpenDetail}
             onBack={handleBackToExplore}
             onStartNavigation={handleStartNavigation}
             isFavorite={isFavorite}

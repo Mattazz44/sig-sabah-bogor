@@ -52,21 +52,22 @@ function ClusterBadgeMarker({ cluster, map, clusterRefs, onClusterClick }) {
         width: ${size}px;
         height: ${size}px;
         border-radius: 9999px;
-        background: rgba(31, 138, 91, 0.25);
+        background: rgba(235, 240, 235, 0.2);
+        backdrop-filter: blur(10px);
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
         transition: transform 0.2s ease;
       ">
         <div style="
           width: ${size - 8}px;
           height: ${size - 8}px;
           border-radius: 9999px;
-          background: linear-gradient(135deg, #2c3b26 0%, #1f8a5b 100%);
-          border: 2px solid #ffffff;
-          color: #ffffff;
-          font-weight: 800;
+          background: linear-gradient(135deg, rgba(28, 36, 28, 0.94) 0%, rgba(44, 59, 38, 0.94) 100%);
+          border: 1.5px solid rgba(255, 255, 255, 0.85);
+          color: #EBF0EB;
+          font-weight: 700;
           font-size: ${count >= 10 ? '13px' : '14px'};
           display: flex;
           align-items: center;

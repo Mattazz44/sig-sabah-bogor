@@ -8,6 +8,7 @@ import {
   CameraIcon,
   CompassIcon,
   MapPinIcon,
+  PlusIcon,
   RefreshIcon,
   UserIcon,
 } from '../ui/VectorIcons'
@@ -286,13 +287,13 @@ function ActivitiesPage({
   return (
     <div
       style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
-      className="animate-tab-enter relative h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu bg-forest-900 text-[#EBF0EB]"
+      className="apple-canopy-bg animate-tab-enter relative h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#EBF0EB]"
     >
       <div className="mx-auto w-full max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
         {/* Header: Judul & Aksi Notifikasi/Profil + Subjudul Penuh */}
         <header className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between gap-3">
-            <h1 className="text-[24px] font-bold tracking-tight text-[#EBF0EB] sm:text-[26px]">
+            <h1 className="text-[26px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[30px]">
               Aktivitas
             </h1>
 
@@ -303,7 +304,7 @@ function ActivitiesPage({
                 onClick={() => setShowNotificationDrawer(true)}
                 title="Lihat notifikasi"
                 aria-label="Notifikasi aktivitas"
-                className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.14] bg-[#233020] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97] before:absolute before:-inset-0.5"
+                className="apple-glass-pill relative flex h-11 w-11 items-center justify-center rounded-full text-[#EBF0EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
               >
                 <BellIcon className="h-[18px] w-[18px]" />
               </button>
@@ -319,7 +320,7 @@ function ActivitiesPage({
                   }
                 }}
                 aria-label={isLoggedIn ? 'Buka profil pengguna' : 'Masuk ke akun'}
-                className="relative flex h-10 w-10 items-center justify-center rounded-full border border-white/[0.2] bg-[#233020] text-[#EBF0EB] shadow-sm transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97] before:absolute before:-inset-0.5"
+                className="apple-glass-pill relative flex h-11 w-11 items-center justify-center rounded-full text-[#EBF0EB] shadow-sm transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
               >
                 <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
                   {isLoggedIn ? (
@@ -337,22 +338,22 @@ function ActivitiesPage({
             </div>
           </div>
 
-          <p className="text-xs leading-relaxed text-white/60">
+          <p className="text-[13px] leading-relaxed text-white/60">
             Bagikan momen perjalanan wisata dan jelajahi cerita komunitas Bogor
           </p>
         </header>
 
-        {/* Baris Kontrol: Compact Tab Switcher sejajar dengan Tombol + Post */}
+        {/* Baris Kontrol: Compact Tab Switcher sejajar dengan Tombol Post */}
         <div className="mt-4 flex items-center justify-between gap-2.5 sm:gap-3">
           <div
             role="tablist"
             aria-label="Filter aktivitas"
             onKeyDown={handleTabKeyDown}
-            className="relative inline-grid h-9 w-fit max-w-[240px] grid-cols-2 items-center rounded-full border border-white/10 bg-white/[0.06] p-1"
+            className="apple-glass-pill relative inline-grid h-10 w-fit max-w-[240px] grid-cols-2 items-center rounded-full p-1"
           >
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-white/[0.14] shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+              className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full bg-white/[0.16] shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
               style={{
                 transform:
                   subTab === 'Komunitas'
@@ -368,10 +369,10 @@ function ActivitiesPage({
               onClick={() => setSubTab('Kamu')}
               aria-selected={subTab === 'Kamu'}
               aria-controls="feed-list-container"
-              className={`relative z-10 flex h-7 items-center justify-center whitespace-nowrap rounded-full px-3.5 text-xs font-medium transition-colors duration-150 before:absolute before:-inset-y-2 before:inset-x-0 ${
+              className={`relative z-10 flex h-8 items-center justify-center whitespace-nowrap rounded-full px-3.5 text-xs font-medium transition-colors duration-150 before:absolute before:-inset-y-1.5 before:inset-x-0 ${
                 subTab === 'Kamu'
                   ? 'text-[#EBF0EB]'
-                  : 'text-[#C8D3C8] hover:text-[#EBF0EB]'
+                  : 'text-white/65 hover:text-[#EBF0EB]'
               }`}
             >
               Kamu
@@ -400,14 +401,10 @@ function ActivitiesPage({
             onClick={handleCreatePostClick}
             title="Posting foto aktivitas perjalanan"
             aria-label="Posting foto perjalanan"
-            style={{
-              backgroundColor: 'rgba(235, 240, 235, 0.08)',
-              borderColor: 'rgba(235, 240, 235, 0.16)',
-            }}
-            className="relative inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3.5 text-xs font-semibold text-[#EBF0EB] shadow-sm transition-colors duration-150 hover:bg-[rgba(235,240,235,0.14)] active:scale-[0.97] before:absolute before:-inset-y-1 before:inset-x-0"
+            className="apple-glass-pill relative inline-flex h-10 min-w-[44px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-4 text-xs font-semibold text-[#EBF0EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.98]"
           >
-            <CameraIcon className="h-3.5 w-3.5 text-[#E2D7B5]" />
-            <span>+ Post</span>
+            <PlusIcon className="h-3.5 w-3.5 text-[#E2D7B5]" aria-hidden="true" />
+            <span>Post</span>
           </button>
         </div>
 
@@ -420,21 +417,21 @@ function ActivitiesPage({
           {subTab === 'Kamu' && !isLoggedIn ? (
             <div
               key="empty-kamu"
-              className="animate-tab-enter rounded-3xl border border-white/[0.14] bg-[#233020] px-6 py-12 text-center shadow-sm"
+              className="apple-glass-card animate-tab-enter rounded-3xl px-6 py-12 text-center"
             >
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/[0.14] bg-[#1B261B] text-[#E2D7B5] shadow-sm">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/[0.14] bg-white/[0.06] text-[#E2D7B5] shadow-sm">
                 <CameraIcon className="h-8 w-8" />
               </div>
-              <h2 className="text-[18px] font-bold tracking-tight text-[#EBF0EB]">
+              <h2 className="text-[18px] font-semibold tracking-tight text-[#EBF0EB]">
                 Aktivitas Perjalanan Anda
               </h2>
-              <p className="mx-auto mt-1.5 max-w-md text-[13px] leading-relaxed text-[#C8D3C8]">
+              <p className="mx-auto mt-1.5 max-w-md text-[13px] leading-relaxed text-white/65">
                 Masuk untuk melihat dan membagikan dokumentasi perjalanan wisata pribadi Anda di Bogor.
               </p>
               <button
                 type="button"
                 onClick={onRequireLogin}
-                className="mt-6 inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#EBF0EB] px-6 py-2.5 text-[13px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.97]"
+                className="apple-retro-cta mt-6 inline-flex min-h-[44px] items-center justify-center rounded-xl px-6 py-2.5 text-[13px] font-semibold active:scale-[0.98]"
               >
                 Masuk ke akun
               </button>
@@ -447,19 +444,19 @@ function ActivitiesPage({
               {[1, 2, 3].map((skeleton) => (
                 <div
                   key={skeleton}
-                  className="overflow-hidden rounded-2xl border border-white/[0.1] bg-[#233020] p-4"
+                  className="apple-glass-card overflow-hidden rounded-2xl p-4"
                 >
                   <div className="mb-3 flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-full bg-[#2E3E2A]" />
-                    <div className="h-3.5 w-32 rounded bg-[#2E3E2A]" />
+                    <div className="h-9 w-9 rounded-full bg-white/[0.08]" />
+                    <div className="h-3.5 w-32 rounded bg-white/[0.08]" />
                   </div>
-                  <div className="aspect-[16/10] w-full rounded-xl bg-[#1B261B]" />
-                  <div className="mt-3 h-4 w-3/4 rounded bg-[#2E3E2A]" />
+                  <div className="aspect-[16/10] w-full rounded-xl bg-white/[0.04]" />
+                  <div className="mt-3 h-4 w-3/4 rounded bg-white/[0.08]" />
                 </div>
               ))}
             </div>
           ) : hasError && currentFeed.length === 0 ? (
-            <div className="rounded-2xl border border-rose-400/25 bg-[#2a1216] p-6 text-center">
+            <div className="rounded-2xl border border-rose-400/25 bg-[#2a1216]/90 p-6 text-center">
               <p className="text-[15px] font-semibold text-[#EBF0EB]">
                 Aktivitas belum bisa dimuat
               </p>
@@ -477,15 +474,23 @@ function ActivitiesPage({
             </div>
           ) : (
             <div key={subTab} className="animate-tab-enter">
-              <h2 className="mb-4 text-[14px] font-semibold tracking-tight text-[#C8D3C8]">
-                {subTab === 'Kamu'
-                  ? `${myActivities.length} aktivitas Anda bulan ini`
-                  : `${communityActivities.length} cerita perjalanan komunitas`}
+              <h2 className="mb-4 text-[14px] font-semibold tracking-tight text-[#F5F2EB]/65">
+                {subTab === 'Kamu' ? (
+                  <>
+                    <span className="font-mono tabular-nums tracking-wide text-[#F5F2EB]">{myActivities.length}</span>{' '}
+                    aktivitas Anda bulan ini
+                  </>
+                ) : (
+                  <>
+                    <span className="font-mono tabular-nums tracking-wide text-[#F5F2EB]">{communityActivities.length}</span>{' '}
+                    cerita perjalanan komunitas
+                  </>
+                )}
               </h2>
 
               {currentFeed.length === 0 ? (
-                <div className="rounded-3xl border border-white/[0.14] bg-[#233020] px-6 py-10 text-center">
-                  <div className="mx-auto mb-3.5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.14] bg-[#1B261B] text-[#E2D7B5]">
+                <div className="apple-glass-card rounded-3xl px-6 py-10 text-center">
+                  <div className="mx-auto mb-3.5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.14] bg-white/[0.06] text-[#E2D7B5]">
                     {subTab === 'Kamu' ? (
                       <CameraIcon className="h-7 w-7" />
                     ) : (
@@ -525,7 +530,7 @@ function ActivitiesPage({
                     return (
                       <article
                         key={post.id}
-                        className="group flex h-full min-w-0 flex-col rounded-2xl border border-white/[0.14] bg-[#233020] p-3.5 text-left shadow-sm transition-colors duration-150 hover:border-white/[0.26] sm:p-4"
+                        className="apple-glass-card apple-glass-card-hover group flex h-full min-w-0 flex-col rounded-2xl p-3.5 text-left sm:p-4"
                       >
                         {/* Header Post: Author, Date, and Delete Button */}
                         <div className="mb-3 flex items-center justify-between gap-2">
@@ -552,7 +557,7 @@ function ActivitiesPage({
                                   </span>
                                 )}
                               </span>
-                              <span className="mt-0.5 block truncate text-[11.5px] leading-tight text-[#C8D3C8]">
+                              <span className="mt-0.5 block truncate font-mono text-[11px] leading-tight tabular-nums tracking-wide text-[#F5F2EB]/55">
                                 {post.date}
                               </span>
                             </span>
@@ -733,7 +738,7 @@ function ActivitiesPage({
             type="submit"
             id="btn-submit-post-foto"
             disabled={isPosting}
-            className="mt-2 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-[#EBF0EB] py-2.5 text-[13px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.98] disabled:opacity-60"
+            className="apple-retro-cta mt-2 flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl py-2.5 text-[13px] font-semibold active:scale-[0.98] disabled:opacity-60"
           >
             {isPosting ? (
               <>

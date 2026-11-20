@@ -66,13 +66,13 @@ export default function LocateControl({
             e.preventDefault()
             onToggle3D()
           }}
-          className={`group relative flex h-11 w-11 flex-col items-center justify-center rounded-2xl bg-[#2A3B2A] hover:bg-[#354A35] shadow-md transition-all duration-150 ease-out active:scale-[0.97] cursor-pointer border ${
+          className={`apple-glass-pill group relative flex h-11 w-11 flex-col items-center justify-center rounded-2xl transition-all duration-150 ease-out hover:bg-[#1C241C]/90 active:scale-[0.97] cursor-pointer ${
             is3D
-              ? 'text-[#E2D7B5] border-[#EBF0EB]/30'
-              : 'text-[#EBF0EB]/80 border-[#EBF0EB]/[0.16] hover:text-[#EBF0EB]'
+              ? 'text-[#DFAA63] border-[rgba(244,239,230,0.28)]'
+              : 'text-[#F5F2EB]/75 hover:text-[#F5F2EB]'
           }`}
         >
-          <span className="text-[12px] font-extrabold tracking-tight leading-none transition-transform duration-200 group-hover:scale-105">
+          <span className="font-mono text-[12px] font-bold tracking-wide leading-none transition-transform duration-200 group-hover:scale-105">
             {is3D ? '3D' : '2D'}
           </span>
         </button>
@@ -91,10 +91,10 @@ export default function LocateControl({
             e.preventDefault()
             onToggleBoundary()
           }}
-          className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2A3B2A] hover:bg-[#354A35] shadow-md transition-all duration-150 ease-out active:scale-[0.97] cursor-pointer border ${
+          className={`apple-glass-pill group relative flex h-11 w-11 items-center justify-center rounded-2xl transition-all duration-150 ease-out hover:bg-[#1C241C]/90 active:scale-[0.97] cursor-pointer ${
             showBoundary
-              ? 'text-[#E2D7B5] border-[#EBF0EB]/30'
-              : 'text-[#EBF0EB]/80 border-[#EBF0EB]/[0.16] hover:text-[#EBF0EB]'
+              ? 'text-[#DFAA63] border-[rgba(244,239,230,0.28)]'
+              : 'text-[#F5F2EB]/75 hover:text-[#F5F2EB]'
           }`}
         >
           <svg
@@ -128,10 +128,10 @@ export default function LocateControl({
             e.preventDefault()
             onToggleClustering()
           }}
-          className={`group relative flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2A3B2A] hover:bg-[#354A35] shadow-md transition-all duration-150 ease-out active:scale-[0.97] cursor-pointer border ${
+          className={`apple-glass-pill group relative flex h-11 w-11 items-center justify-center rounded-2xl transition-all duration-150 ease-out hover:bg-[#1C241C]/90 active:scale-[0.97] cursor-pointer ${
             clusteringEnabled
-              ? 'text-[#E2D7B5] border-[#EBF0EB]/30'
-              : 'text-[#EBF0EB]/80 border-[#EBF0EB]/[0.16] hover:text-[#EBF0EB]'
+              ? 'text-[#DFAA63] border-[rgba(244,239,230,0.28)]'
+              : 'text-[#F5F2EB]/75 hover:text-[#F5F2EB]'
           }`}
         >
           <svg
@@ -159,12 +159,12 @@ export default function LocateControl({
         aria-label={tooltipText}
         title={tooltipText}
         onClick={handleLocateClick}
-        className={`group relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[#2A3B2A] hover:bg-[#354A35] shadow-md transition-all duration-150 ease-out active:scale-[0.97] cursor-pointer border ${
+        className={`apple-glass-pill group relative flex h-12 w-12 items-center justify-center rounded-2xl transition-all duration-150 ease-out hover:bg-[#1C241C]/90 active:scale-[0.97] cursor-pointer ${
           isGranted
-            ? 'text-[#EBF0EB] border-[#EBF0EB]/30'
+            ? 'text-[#F5F2EB] border-[rgba(244,239,230,0.28)]'
             : isDenied
-            ? 'text-rose-300 border-[#EBF0EB]/[0.16]'
-            : 'text-[#EBF0EB] border-[#EBF0EB]/[0.16]'
+            ? 'text-rose-300'
+            : 'text-[#F5F2EB]'
         }`}
       >
         {isRequesting ? (
@@ -213,7 +213,7 @@ export default function LocateControl({
 
         {isGranted && (
           <span
-            className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full border border-[#1B261B] bg-[#E2D7B5]"
+            className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full border border-[#141A14] bg-[#DFAA63]"
             aria-hidden="true"
           />
         )}

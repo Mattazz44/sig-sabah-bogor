@@ -81,17 +81,17 @@ function DestinationCard({
   const displayLocation = place.address || place.location || 'Bogor, Jawa Barat'
 
   return (
-    <article className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-[#EBF0EB]/12 bg-[#233020] shadow-sm transition-colors duration-150 hover:border-[#EBF0EB]/25">
+    <article className="apple-glass-card apple-glass-card-hover group relative flex min-w-0 flex-col overflow-hidden rounded-2xl">
       {/* Tombol favorit terpisah di luar button detail agar semantic HTML tetap valid */}
       <button
         type="button"
         aria-pressed={favoriteActive}
         aria-label={favoriteActive ? `Hapus ${place.name} dari favorit` : `Simpan ${place.name} ke favorit`}
         onClick={() => onToggleFavorite?.(place.slug)}
-        className={`absolute top-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-[#EBF0EB]/15 bg-[#161E16]/80 transition-colors active:scale-95 ${
+        className={`apple-glass-pill absolute top-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full transition-all duration-150 active:scale-[0.95] ${
           favoriteActive
-            ? 'text-rose-300 hover:bg-[#3B1D24]'
-            : 'text-[#EBF0EB] hover:bg-[#233020]'
+            ? 'border-rose-300/35 bg-[#3B1D24]/85 text-rose-300 hover:bg-[#49242D]'
+            : 'text-[#EBF0EB] hover:bg-white/[0.16]'
         }`}
       >
         <HeartIcon filled={favoriteActive} className="h-5 w-5" />
@@ -101,44 +101,44 @@ function DestinationCard({
       <button
         type="button"
         onClick={() => onOpenDetail(place)}
-        className="flex flex-1 flex-col text-left active:scale-[0.99] transition-transform duration-150"
+        className="flex flex-1 flex-col text-left transition-transform duration-150 active:scale-[0.99]"
       >
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#1B261B]">
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#182117]">
           <SafeImage
             src={place.image}
             alt={place.name}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           />
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#161E16]/75 via-[#161E16]/25 to-transparent"
           />
           {place.category && (
-            <span className="absolute bottom-2.5 left-3 rounded-lg border border-[#EBF0EB]/15 bg-[#161E16]/80 px-2.5 py-1 text-[11px] font-semibold tracking-tight text-[#EBF0EB]">
+            <span className="apple-glass-pill absolute bottom-2.5 left-3 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-tight text-[#EBF0EB]">
               {place.category}
             </span>
           )}
         </div>
 
         <div className="flex flex-1 flex-col p-4 pb-3">
-          <h3 className="line-clamp-1 text-[15px] font-bold tracking-tight text-[#EBF0EB] transition-colors group-hover:text-[#E2D7B5]">
+          <h3 className="line-clamp-1 text-[15px] font-semibold tracking-tight text-[#F5F2EB] transition-colors group-hover:text-[#DFAA63]">
             {place.name}
           </h3>
 
-          <div className="mt-1 flex items-center gap-1.5 text-[12px] text-[#C8D3C8]">
-            <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-[#C8D3C8]" aria-hidden="true" />
+          <div className="mt-1 flex items-center gap-1.5 text-[12px] text-[#F5F2EB]/60">
+            <MapPinIcon className="h-3.5 w-3.5 shrink-0 text-[#F5F2EB]/55" aria-hidden="true" />
             <span className="line-clamp-1 min-w-0">{displayLocation}</span>
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px]">
-            <span className="inline-flex items-center gap-1 font-semibold tabular-nums text-[#EBF0EB]">
-              <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-amber-300" aria-hidden="true" />
+            <span className="inline-flex items-center gap-1 font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+              <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" aria-hidden="true" />
               {displayRating}
             </span>
             {distanceLabel && (
-              <span className="inline-flex items-center gap-1 text-[#E2D7B5]">
-                <span aria-hidden="true" className="text-[#C8D3C8]/50">•</span>
-                <span className="font-medium tabular-nums">{distanceLabel} dari Anda</span>
+              <span className="inline-flex items-center gap-1 text-[#DFAA63]">
+                <span aria-hidden="true" className="text-[#F5F2EB]/35">•</span>
+                <span className="font-mono font-medium tabular-nums tracking-wide">{distanceLabel} dari Anda</span>
               </span>
             )}
           </div>
@@ -146,11 +146,11 @@ function DestinationCard({
       </button>
 
       {/* Baris aksi cepat */}
-      <div className="mt-auto flex items-center gap-2 border-t border-[#EBF0EB]/10 px-4 py-3">
+      <div className="mt-auto flex items-center gap-2 border-t border-[rgba(244,239,230,0.12)] px-4 py-3">
         <button
           type="button"
           onClick={() => onOpenDetail(place)}
-          className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-[#EBF0EB]/18 bg-[#1B261B] px-3 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-[#273626] active:scale-[0.98]"
+          className="apple-glass-pill flex min-h-[44px] flex-1 items-center justify-center rounded-xl px-3 text-[12.5px] font-semibold text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.12] active:scale-[0.98]"
         >
           Lihat detail
         </button>
@@ -159,7 +159,7 @@ function DestinationCard({
             type="button"
             onClick={() => onStartNavigation(place)}
             aria-label={`Mulai rute cepat ke ${place.name}`}
-            className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-[#E2D7B5] px-3.5 text-[12.5px] font-bold text-[#161E16] transition-colors hover:bg-[#D7CAA2] active:scale-[0.98]"
+            className="apple-retro-cta inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl px-3.5 text-[12.5px] font-semibold active:scale-[0.98]"
           >
             <RouteWaypointsIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span>Rute</span>
@@ -328,13 +328,13 @@ function ForYouPage({
       {[1, 2, 3].map((idx) => (
         <div
           key={idx}
-          className="overflow-hidden rounded-2xl border border-[#EBF0EB]/10 bg-[#233020]"
+          className="apple-glass-card overflow-hidden rounded-2xl"
         >
-          <div className="aspect-[16/10] w-full bg-[#1C2719]" />
+          <div className="aspect-[16/10] w-full bg-white/[0.04]" />
           <div className="space-y-2.5 p-4">
-            <div className="h-4 w-3/4 rounded bg-[#2E3E2A]" />
-            <div className="h-3 w-1/2 rounded bg-[#2A3826]" />
-            <div className="mt-3 h-10 w-full rounded-xl bg-[#1C2719]" />
+            <div className="h-4 w-3/4 rounded bg-white/[0.08]" />
+            <div className="h-3 w-1/2 rounded bg-white/[0.05]" />
+            <div className="mt-3 h-10 w-full rounded-xl bg-white/[0.05]" />
           </div>
         </div>
       ))}
@@ -344,16 +344,16 @@ function ForYouPage({
   return (
     <div
       style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
-      className="animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu bg-forest-900 text-[#EBF0EB]"
+      className="apple-canopy-bg animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#EBF0EB]"
     >
       <div className="mx-auto w-full max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
         {/* Top Header */}
-        <header className="flex items-center justify-between gap-4">
+        <header className="flex items-start justify-between gap-4 sm:items-center">
           <div className="min-w-0">
-            <h1 className="text-[24px] font-bold tracking-tight text-[#EBF0EB] sm:text-[28px]">
+            <h1 className="text-[26px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[30px]">
               Untuk Anda
             </h1>
-            <p className="mt-0.5 truncate text-[13px] text-[#C8D3C8]">
+            <p className="mt-1 text-[13px] leading-relaxed text-[#F5F2EB]/60">
               {isLoggedIn
                 ? `Dipersonalisasi untuk ${currentUser?.name || 'perjalanan Anda'}`
                 : 'Kurasi tempat wisata unggulan di sekitar Bogor'}
@@ -370,7 +370,7 @@ function ForYouPage({
               }
             }}
             aria-label={isLoggedIn ? 'Buka profil pengguna' : 'Masuk ke akun'}
-            className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#EBF0EB]/20 bg-[#253320] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#2F4128] active:scale-[0.97]"
+            className="apple-glass-pill flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
           >
             {isLoggedIn ? (
               <SafeImage
@@ -386,29 +386,25 @@ function ForYouPage({
         </header>
 
         {!isLoggedIn ? (
-          <div className="mt-5 space-y-8">
-            {/* Banner Ajakan Login Liquid Glass (1 elemen kaca utama di halaman ini) */}
+          <div className="mt-6 space-y-8">
+            {/* Banner Ajakan Login Liquid Glass */}
             <section
               aria-labelledby="guest-invite-title"
-              className="relative overflow-hidden rounded-3xl border border-[#EBF0EB]/20 bg-[#233020]/70 p-5 shadow-lg backdrop-blur-xl sm:p-6"
+              className="apple-glass-card relative overflow-hidden rounded-3xl p-5 sm:p-6"
             >
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[#EBF0EB]/35"
-              />
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex min-w-0 items-start gap-4">
-                  <div className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl border border-[#EBF0EB]/15 bg-[#1B261B] text-[#E2D7B5] shadow-sm">
+                  <div className="apple-glass-pill flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl text-[#DFAA63]">
                     <CompassIcon className="h-6 w-6" duotone />
                   </div>
                   <div className="min-w-0">
                     <h2
                       id="guest-invite-title"
-                      className="text-[17px] font-bold tracking-tight text-[#EBF0EB] sm:text-[18px]"
+                      className="text-[17px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[18px]"
                     >
                       Simpan rute dan personalisasi rekomendasi Anda
                     </h2>
-                    <p className="mt-1 max-w-2xl text-[13px] leading-relaxed text-[#C8D3C8]">
+                    <p className="mt-1 max-w-2xl text-[13px] leading-relaxed text-[#F5F2EB]/65">
                       Masuk ke akun Sabah Bogor untuk menyelaraskan tempat favorit, melanjutkan tempat terakhir dilihat, dan menyusun urutan rekomendasi sesuai minat Anda.
                     </p>
                   </div>
@@ -417,7 +413,7 @@ function ForYouPage({
                 <button
                   type="button"
                   onClick={onRequireLogin}
-                  className="inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-xl bg-[#EBF0EB] px-5 py-2.5 text-[13px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.97]"
+                  className="apple-retro-cta inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-xl px-5 py-2.5 text-[13px] font-semibold active:scale-[0.98]"
                 >
                   Masuk ke akun
                 </button>
@@ -430,11 +426,11 @@ function ForYouPage({
                 <div>
                   <h2
                     id="curated-bogor-heading"
-                    className="text-[17px] font-bold tracking-tight text-[#EBF0EB] sm:text-[18px]"
+                    className="text-[17px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[18px]"
                   >
                     Rekomendasi Pilihan di Bogor
                   </h2>
-                  <p className="mt-0.5 text-[12.5px] text-[#C8D3C8]">
+                  <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
                     Destinasi terpopuler yang siap dikunjungi atau langsung diarahkan di peta
                   </p>
                 </div>
@@ -473,7 +469,7 @@ function ForYouPage({
                   ))}
                 </div>
               ) : (
-                <p className="mt-4 rounded-2xl border border-[#EBF0EB]/12 bg-[#233020] p-5 text-[13px] text-[#C8D3C8]">
+                <p className="apple-glass-card mt-4 rounded-2xl p-5 text-[13px] text-white/65">
                   Belum ada destinasi yang tersedia untuk ditampilkan.
                 </p>
               )}
@@ -507,19 +503,19 @@ function ForYouPage({
               <section aria-labelledby="continue-heading">
                 <h2
                   id="continue-heading"
-                  className="text-[16px] font-bold tracking-tight text-[#EBF0EB] sm:text-[17px]"
+                  className="text-[16px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[17px]"
                 >
                   Lanjutkan perjalanan
                 </h2>
-                <p className="mt-0.5 text-[12.5px] text-[#C8D3C8]">Destinasi terakhir yang Anda buka</p>
+                <p className="mt-0.5 text-[12.5px] text-[#F5F2EB]/60">Destinasi terakhir yang Anda buka</p>
 
-                <article className="mt-3 overflow-hidden rounded-2xl border border-[#EBF0EB]/15 bg-[#233020] shadow-sm sm:flex sm:items-stretch">
+                <article className="apple-glass-card apple-glass-card-hover mt-3 overflow-hidden rounded-2xl sm:flex sm:items-stretch">
                   <button
                     type="button"
                     onClick={() => handleCardOpen(effectiveContinue)}
-                    className="flex flex-1 flex-col text-left transition-colors hover:bg-[#283725] sm:flex-row sm:items-center"
+                    className="flex flex-1 flex-col text-left transition-transform duration-150 active:scale-[0.99] sm:flex-row sm:items-center"
                   >
-                    <div className="aspect-[16/9] w-full shrink-0 bg-[#1B261B] sm:aspect-auto sm:h-36 sm:w-52">
+                    <div className="aspect-[16/9] w-full shrink-0 overflow-hidden bg-[#141A14] sm:aspect-auto sm:h-36 sm:w-52">
                       <SafeImage
                         src={effectiveContinue.image}
                         alt={effectiveContinue.name}
@@ -527,22 +523,22 @@ function ForYouPage({
                       />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col justify-center p-4">
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-[#E2D7B5]">
+                      <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-[#DFAA63]">
                         Terakhir dilihat
                       </span>
-                      <h3 className="mt-1 line-clamp-1 text-[16px] font-bold tracking-tight text-[#EBF0EB]">
+                      <h3 className="mt-1 line-clamp-1 text-[16px] font-semibold tracking-tight text-[#F5F2EB]">
                         {effectiveContinue.name}
                       </h3>
-                      <p className="mt-1 line-clamp-1 text-[12.5px] text-[#C8D3C8]">
+                      <p className="mt-1 line-clamp-1 text-[12.5px] text-[#F5F2EB]/65">
                         {effectiveContinue.address || effectiveContinue.location || 'Bogor, Jawa Barat'}
                       </p>
                       <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px]">
-                        <span className="inline-flex items-center gap-1 font-semibold tabular-nums text-[#EBF0EB]">
-                          <StarIcon filled className="h-3.5 w-3.5 text-amber-300" aria-hidden="true" />
+                        <span className="inline-flex items-center gap-1 font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+                          <StarIcon filled className="h-3.5 w-3.5 text-[#DFAA63]" aria-hidden="true" />
                           {Number(effectiveContinue.rating || 0).toFixed(1)}
                         </span>
                         {formatDistanceLabel(effectiveContinue) && (
-                          <span className="font-medium tabular-nums text-[#E2D7B5]">
+                          <span className="font-mono font-medium tabular-nums tracking-wide text-[#DFAA63]">
                             {formatDistanceLabel(effectiveContinue)} dari Anda
                           </span>
                         )}
@@ -550,7 +546,7 @@ function ForYouPage({
                     </div>
                   </button>
 
-                  <div className="flex items-center justify-end gap-2 border-t border-[#EBF0EB]/10 p-3 sm:border-t-0 sm:border-l sm:px-4">
+                  <div className="flex items-center justify-end gap-2 border-t border-[rgba(244,239,230,0.12)] p-3 sm:border-t-0 sm:border-l sm:px-4">
                     <button
                       type="button"
                       aria-pressed={checkFavorite(effectiveContinue.slug)}
@@ -560,10 +556,10 @@ function ForYouPage({
                           : `Simpan ${effectiveContinue.name} ke favorit`
                       }
                       onClick={() => toggleFavorite && toggleFavorite(effectiveContinue.slug)}
-                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#EBF0EB]/15 transition-colors ${
+                      className={`apple-retro-bevel flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-all duration-150 active:scale-[0.96] ${
                         checkFavorite(effectiveContinue.slug)
-                          ? 'bg-[#3B1D24]/70 text-rose-300'
-                          : 'bg-[#1B261B] text-[#EBF0EB] hover:bg-[#273626]'
+                          ? 'border-rose-300/35 bg-[#3B1D24]/75 text-rose-300'
+                          : 'border-[rgba(244,239,230,0.16)] bg-white/[0.06] text-[#F5F2EB] hover:bg-white/[0.12]'
                       }`}
                     >
                       <HeartIcon filled={checkFavorite(effectiveContinue.slug)} className="h-5 w-5" />
@@ -572,7 +568,7 @@ function ForYouPage({
                       <button
                         type="button"
                         onClick={() => handleQuickRoute(effectiveContinue)}
-                        className="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl bg-[#E2D7B5] px-4 text-[12.5px] font-bold text-[#161E16] transition-colors hover:bg-[#D7CAA2] active:scale-[0.98]"
+                        className="apple-retro-cta inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-4 text-[12.5px] font-semibold active:scale-[0.98]"
                       >
                         <RouteWaypointsIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
                         <span>Lanjutkan rute</span>
@@ -588,11 +584,11 @@ function ForYouPage({
                 <div>
                   <h2
                     id="rec-heading"
-                    className="text-[17px] font-bold tracking-tight text-[#EBF0EB] sm:text-[18px]"
+                    className="text-[17px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[18px]"
                   >
                     Berdasarkan Minat & Riwayatmu
                   </h2>
-                  <p className="mt-0.5 text-[12.5px] text-[#C8D3C8]">
+                  <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
                     {usingCuratedFallbackForLoggedIn
                       ? 'Menampilkan destinasi unggulan di Bogor selagi riwayat perjalanan Anda terkumpul'
                       : 'Disusun dari tempat favorit, aktivitas, dan riwayat penelusuran Anda'}
@@ -614,7 +610,7 @@ function ForYouPage({
                   ))}
                 </div>
               ) : (
-                <p className="mt-4 rounded-2xl border border-[#EBF0EB]/12 bg-[#233020] p-5 text-[13px] text-[#C8D3C8]">
+                <p className="apple-glass-card mt-4 rounded-2xl p-5 text-[13px] text-white/65">
                   Belum ada rekomendasi tersedia saat ini.
                 </p>
               )}

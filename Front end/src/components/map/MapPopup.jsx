@@ -46,21 +46,21 @@ export default function MapPopup({ place, onOpenDetail, onSelect, isTransit = fa
         )}
       </div>
 
-      <div className="bg-[#1A261A] p-2.5">
-        <p className="truncate text-[13px] font-bold leading-tight text-[#EBF0EB]">
+      <div className="bg-[#171F17] p-2.5">
+        <p className="truncate text-[13.5px] font-semibold tracking-tight leading-tight text-[#F5F2EB]">
           {place.name}
         </p>
-        <p className="mt-1 flex items-center gap-1.5 text-[11px] text-[#C8D3C8]">
-          <StarIcon filled className="h-3 w-3 shrink-0 text-amber-300" />
-          <span className="font-semibold text-white tabular-nums">{ratingText}</span>
+        <p className="mt-1 flex items-center gap-1.5 text-[11px] text-[#F5F2EB]/65">
+          <StarIcon filled className="h-3 w-3 shrink-0 text-[#DFAA63]" />
+          <span className="font-mono font-semibold text-[#F5F2EB] tabular-nums tracking-wide">{ratingText}</span>
           {place.distance && (
             <>
-              <span aria-hidden="true" className="text-white/40">·</span>
-              <span className="truncate">{place.distance}</span>
+              <span aria-hidden="true" className="text-[#F5F2EB]/35">·</span>
+              <span className="truncate font-mono tabular-nums tracking-wide">{place.distance}</span>
             </>
           )}
         </p>
-        <div className="mt-2 flex items-center justify-between rounded-lg bg-[#E2D7B5]/15 px-2.5 py-1.5 text-[11px] font-semibold text-[#E2D7B5] transition-colors group-hover:bg-[#E2D7B5]/25">
+        <div className="apple-retro-bevel mt-2 flex items-center justify-between rounded-lg border border-[rgba(244,239,230,0.16)] bg-[#F2ECE1]/12 px-2.5 py-1.5 text-[11px] font-semibold text-[#F5F2EB] transition-colors group-hover:bg-[#F2ECE1]/20">
           <span>{isTransit ? 'Arah menuju sini' : 'Lihat detail'}</span>
           <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" />
         </div>

@@ -122,7 +122,7 @@ export default function GlassModal({
         aria-modal="true"
         aria-labelledby={titleId}
         onClick={(e) => e.stopPropagation()}
-        className={`liquid-glass-modal relative max-h-[90vh] w-full ${maxWidthClass} overflow-y-auto overscroll-contain rounded-3xl p-6 text-[#EBF0EB] shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.28),0_24px_48px_-12px_rgba(0,0,0,0.48)] transition-[opacity,transform] duration-[240ms] ease-out motion-reduce:transition-none ${
+        className={`liquid-glass-modal relative max-h-[90vh] w-full ${maxWidthClass} overflow-y-auto overscroll-contain rounded-3xl p-6 text-[#F5F2EB] transition-[opacity,transform] duration-[240ms] ease-out motion-reduce:transition-none ${
           isVisible
             ? 'translate-y-0 scale-100 opacity-100'
             : 'translate-y-3 scale-95 opacity-0'
@@ -133,7 +133,7 @@ export default function GlassModal({
           id={closeButtonId}
           onClick={onClose}
           aria-label={closeAriaLabel}
-          className="relative ml-auto flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.2] bg-[rgba(20,28,20,0.45)] text-[#EBF0EB] transition-colors duration-150 hover:bg-[rgba(20,28,20,0.68)] active:scale-[0.97] before:absolute before:-inset-1"
+          className="apple-glass-pill relative ml-auto flex h-9 w-9 items-center justify-center rounded-full text-[#F5F2EB] transition-colors duration-150 hover:bg-white/[0.12] active:scale-[0.97] before:absolute before:-inset-1"
         >
           <XIcon className="h-4 w-4" />
         </button>

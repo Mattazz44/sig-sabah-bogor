@@ -58,6 +58,8 @@ body,
 
 body {
   font-family: var(--font-sans);
+  background-color: #111711;
+  color: #f5f2eb;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
   overscroll-behavior: none;
@@ -74,70 +76,191 @@ img {
   display: none;
 }
 
-/* ---------- iOS 26 Liquid Glass Dock Surface (Accent-capped under R-10) ---------- */
+/* ---------- iOS 26 Liquid Glass & Subtle Apple Retro Hardware Bevels ---------- */
 .liquid-glass-dock {
-  background: rgba(20, 28, 20, 0.55);
+  background: rgba(22, 29, 22, 0.66);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(244, 239, 230, 0.16);
+  box-shadow:
+    inset 0 1px 0 0 rgba(244, 239, 230, 0.22),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.35),
+    0 16px 36px -8px rgba(0, 0, 0, 0.5);
 }
 
 .liquid-glass-pill {
   overflow: hidden;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.24) 0%,
-    rgba(235, 240, 235, 0.11) 58%,
-    rgba(235, 240, 235, 0.16) 100%
+    rgba(244, 239, 230, 0.22) 0%,
+    rgba(242, 236, 225, 0.1) 58%,
+    rgba(242, 236, 225, 0.15) 100%
   );
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(244, 239, 230, 0.28);
   box-shadow:
-    inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.22),
-    0 4px 12px rgba(0, 0, 0, 0.22);
+    inset 0 1px 0 0 rgba(244, 239, 230, 0.48),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.28),
+    0 4px 12px rgba(0, 0, 0, 0.26);
 }
 
 .liquid-glass-pill[data-dragging="true"] {
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.3) 0%,
-    rgba(235, 240, 235, 0.16) 55%,
-    rgba(235, 240, 235, 0.22) 100%
+    rgba(244, 239, 230, 0.28) 0%,
+    rgba(242, 236, 225, 0.15) 55%,
+    rgba(242, 236, 225, 0.21) 100%
   );
-  border-color: rgba(255, 255, 255, 0.42);
+  border-color: rgba(244, 239, 230, 0.4);
   box-shadow:
-    inset 0 1px 2px 0 rgba(255, 255, 255, 0.62),
-    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.24),
-    0 8px 18px rgba(0, 0, 0, 0.28);
+    inset 0 1px 0 0 rgba(244, 239, 230, 0.6),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.28),
+    0 8px 18px rgba(0, 0, 0, 0.32);
 }
 
 .liquid-glass-sheen {
   background: linear-gradient(
     108deg,
     transparent 12%,
-    rgba(255, 255, 255, 0.16) 36%,
-    rgba(255, 255, 255, 0.46) 50%,
-    rgba(255, 255, 255, 0.16) 64%,
+    rgba(244, 239, 230, 0.16) 36%,
+    rgba(244, 239, 230, 0.45) 50%,
+    rgba(244, 239, 230, 0.16) 64%,
     transparent 88%
   );
   will-change: transform, opacity;
 }
 
 .liquid-glass-modal {
-  background: rgba(20, 28, 20, 0.45);
+  background: rgba(24, 31, 24, 0.64);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(244, 239, 230, 0.22);
+  box-shadow:
+    inset 0 1px 0 0 rgba(244, 239, 230, 0.22),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.35),
+    0 24px 52px -12px rgba(0, 0, 0, 0.56);
 }
 
-.liquid-glass-input {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+/* ---------- Apple Modern + Subtle Retro Tactility Cards & Canvas ---------- */
+@layer components {
+  .apple-maps-sidebar {
+    background: rgba(22, 29, 22, 0.72);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    backdrop-filter: blur(28px) saturate(180%);
+    box-shadow:
+      inset 0 1px 0 0 rgba(244, 239, 230, 0.22),
+      inset 0 -1px 0 0 rgba(0, 0, 0, 0.35),
+      0 24px 48px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .apple-canopy-bg {
+    background-color: #111711;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E"),
+      radial-gradient(120% 65% at 50% 0%, rgba(44, 62, 42, 0.3) 0%, transparent 64%),
+      linear-gradient(180deg, #161d15 0%, #111711 55%, #0d120d 100%);
+  }
+
+  .apple-glass-card {
+    background: rgba(28, 36, 28, 0.58);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(244, 239, 230, 0.14);
+    box-shadow:
+      inset 0 1px 0 0 rgba(244, 239, 230, 0.22),
+      inset 0 -1px 0 0 rgba(0, 0, 0, 0.35),
+      0 14px 30px -12px rgba(0, 0, 0, 0.45);
+  }
+
+  .apple-glass-card-hover {
+    transition:
+      transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 180ms ease-out,
+      border-color 180ms ease-out,
+      box-shadow 180ms ease-out;
+  }
+
+  .apple-glass-card-hover:hover {
+    background: rgba(36, 46, 36, 0.68);
+    border-color: rgba(244, 239, 230, 0.26);
+    box-shadow:
+      inset 0 1px 0 0 rgba(244, 239, 230, 0.28),
+      inset 0 -1px 0 0 rgba(0, 0, 0, 0.38),
+      0 18px 36px -12px rgba(0, 0, 0, 0.52);
+  }
+
+  .apple-glass-pill {
+    background: rgba(28, 36, 28, 0.62);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(244, 239, 230, 0.16);
+    box-shadow:
+      inset 0 1px 0 0 rgba(244, 239, 230, 0.22),
+      inset 0 -1px 0 0 rgba(0, 0, 0, 0.35),
+      0 4px 12px rgba(0, 0, 0, 0.28);
+  }
+
+  .apple-retro-bevel {
+    box-shadow:
+      inset 0 1px 0 0 rgba(244, 239, 230, 0.22),
+      inset 0 -1px 0 0 rgba(0, 0, 0, 0.35);
+  }
+
+  .apple-retro-cta {
+    background-color: #f2ece1;
+    color: #141a14;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.72),
+      inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.22),
+      0 4px 12px -2px rgba(0, 0, 0, 0.35);
+    transition:
+      background-color 150ms ease-out,
+      transform 150ms ease-out,
+      box-shadow 150ms ease-out;
+  }
+
+  .apple-retro-cta:hover:not(:disabled) {
+    background-color: #e7dfd1;
+  }
+
+  .apple-retro-cta:active:not(:disabled) {
+    background-color: #ddd4c3;
+    box-shadow:
+      inset 0 1px 2px 0 rgba(0, 0, 0, 0.25),
+      0 1px 4px rgba(0, 0, 0, 0.28);
+  }
+
+  .liquid-glass-input {
+    background: rgba(244, 239, 230, 0.06);
+    border: 1px solid rgba(244, 239, 230, 0.16);
+    box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.22);
+  }
+
+  .liquid-glass-input:focus {
+    background: rgba(244, 239, 230, 0.09);
+    border-color: rgba(244, 239, 230, 0.38);
+    outline: none;
+  }
+
+  .liquid-glass-input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(242, 236, 225, 0.58);
+  }
 }
 
-.liquid-glass-input:focus {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.38);
+@keyframes auth-panel-enter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-auth-panel {
+  animation: auth-panel-enter 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ---------- MapLibre GL overrides ---------- */
@@ -196,9 +319,12 @@ img {
   padding: 0;
   border-radius: 16px;
   overflow: hidden;
-  background: var(--color-forest-900);
-  color: #fff;
-  box-shadow: 0 6px 20px rgb(0 0 0 / 0.25);
+  background: #171f17;
+  border: 1px solid rgba(244, 239, 230, 0.16);
+  color: #f5f2eb;
+  box-shadow:
+    inset 0 1px 0 0 rgba(244, 239, 230, 0.2),
+    0 10px 26px rgb(0 0 0 / 0.38);
 }
 
 .wisata-popup .maplibregl-popup-content p {
@@ -206,19 +332,19 @@ img {
 }
 
 .wisata-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
-  border-top-color: var(--color-forest-900);
+  border-top-color: #171f17;
 }
 
 .wisata-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip {
-  border-bottom-color: var(--color-forest-900);
+  border-bottom-color: #171f17;
 }
 
 .wisata-popup.maplibregl-popup-anchor-left .maplibregl-popup-tip {
-  border-right-color: var(--color-forest-900);
+  border-right-color: #171f17;
 }
 
 .wisata-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
-  border-left-color: var(--color-forest-900);
+  border-left-color: #171f17;
 }
 
 @keyframes user-pulse {
@@ -382,6 +508,7 @@ img {
   .animate-modal-pop,
   .animate-notif-item,
   .animate-tourist-card,
+  .animate-auth-panel,
   .wisata-marker-hovered > svg {
     animation: none !important;
     opacity: 1 !important;

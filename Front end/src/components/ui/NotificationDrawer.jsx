@@ -16,11 +16,11 @@ const ICON_MAP = {
   },
   recent: {
     Icon: MapPinIcon,
-    badgeClass: 'border-[#EBF0EB]/20 bg-[#253320] text-[#E2D7B5]',
+    badgeClass: 'border-[rgba(244,239,230,0.18)] bg-white/[0.06] text-[#DFAA63]',
   },
   compass: {
     Icon: CompassIcon,
-    badgeClass: 'border-[#EBF0EB]/20 bg-[#253320] text-[#EBF0EB]',
+    badgeClass: 'border-[rgba(244,239,230,0.18)] bg-white/[0.06] text-[#F5F2EB]',
   },
 }
 
@@ -205,26 +205,26 @@ function NotificationDrawer({
         aria-modal="true"
         aria-labelledby="notification-drawer-title"
         onClick={(e) => e.stopPropagation()}
-        className={`liquid-glass-modal relative flex max-h-[calc(100dvh-4.5rem)] w-full max-w-sm flex-col overflow-hidden rounded-3xl text-[#EBF0EB] shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.28),0_24px_48px_-12px_rgba(0,0,0,0.48)] transition-[opacity,transform] duration-200 ease-out ${
+        className={`liquid-glass-modal relative flex max-h-[calc(100dvh-4.5rem)] w-full max-w-sm flex-col overflow-hidden rounded-3xl text-[#F5F2EB] transition-[opacity,transform] duration-200 ease-out ${
           isVisible
             ? 'translate-y-0 scale-100 opacity-100'
             : 'translate-y-2.5 scale-[0.96] opacity-0'
         }`}
       >
         {/* Header Drawer */}
-        <div className="flex shrink-0 items-center justify-between border-b border-white/[0.14] px-5 pt-5 pb-3.5">
+        <div className="flex shrink-0 items-center justify-between border-b border-[rgba(244,239,230,0.14)] px-5 pt-5 pb-3.5">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/[0.2] bg-[rgba(20,28,20,0.45)] text-[#EBF0EB]">
+            <span className="apple-glass-pill flex h-8 w-8 items-center justify-center rounded-xl text-[#DFAA63]">
               <BellIcon className="h-4 w-4" />
             </span>
             <h2
               id="notification-drawer-title"
-              className="text-[17px] font-bold tracking-tight text-white"
+              className="text-[17px] font-semibold tracking-tight text-[#F5F2EB]"
             >
               Notifikasi
             </h2>
             {unreadIds.length > 0 && (
-              <span className="rounded-lg border border-[#E2D7B5]/35 bg-[rgba(20,28,20,0.5)] px-2 py-0.5 text-[11px] font-semibold tabular-nums text-[#E2D7B5]">
+              <span className="rounded-full border border-[#DFAA63]/35 bg-[#DFAA63]/12 px-2 py-0.5 font-mono text-[10.5px] font-semibold tabular-nums tracking-wide text-[#DFAA63]">
                 {unreadIds.length} belum dibaca
               </span>
             )}
@@ -235,7 +235,7 @@ function NotificationDrawer({
             id="btn-close-notification"
             onClick={onClose}
             aria-label="Tutup notifikasi"
-            className="relative flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.2] bg-[rgba(20,28,20,0.45)] text-[#EBF0EB] transition-colors duration-150 hover:bg-[rgba(20,28,20,0.68)] active:scale-[0.97] before:absolute before:-inset-1"
+            className="apple-glass-pill relative flex h-9 w-9 items-center justify-center rounded-full text-[#F5F2EB] transition-colors duration-150 hover:bg-white/[0.12] active:scale-[0.97] before:absolute before:-inset-1"
           >
             <XIcon className="h-4 w-4" />
           </button>
@@ -260,10 +260,10 @@ function NotificationDrawer({
                       onSelectPlace(item.slug)
                     }
                   }}
-                  className={`flex w-full items-start gap-3 rounded-2xl border p-3.5 text-left transition-colors duration-150 ${
+                  className={`apple-retro-bevel flex w-full items-start gap-3 rounded-2xl border p-3.5 text-left transition-all duration-150 active:scale-[0.98] ${
                     isUnread
-                      ? 'border-white/[0.2] bg-[rgba(20,28,20,0.45)] hover:bg-[rgba(20,28,20,0.62)]'
-                      : 'border-white/[0.12] bg-[rgba(20,28,20,0.32)] opacity-90 hover:opacity-100'
+                      ? 'border-[rgba(244,239,230,0.2)] bg-white/[0.08] hover:bg-white/[0.12]'
+                      : 'border-[rgba(244,239,230,0.1)] bg-white/[0.04] opacity-85 hover:opacity-100'
                   }`}
                 >
                   <span
@@ -272,19 +272,19 @@ function NotificationDrawer({
                     <IconComponent className="h-4 w-4" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold leading-snug text-[#EBF0EB]">
+                    <p className="text-[13px] font-semibold leading-snug tracking-tight text-[#F5F2EB]">
                       {item.title}
                     </p>
-                    <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-[#D5E0D5]">
+                    <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-[#F5F2EB]/70">
                       {item.desc}
                     </p>
-                    <span className="mt-1.5 block text-[11px] text-[#E2EAE2]">
+                    <span className="mt-1.5 block font-mono text-[10.5px] tabular-nums tracking-wide text-[#F5F2EB]/55">
                       {item.time}
                     </span>
                   </div>
                   {isUnread && (
                     <span
-                      className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#E2D7B5]"
+                      className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#DFAA63]"
                       aria-label="Belum dibaca"
                     />
                   )}
@@ -293,10 +293,10 @@ function NotificationDrawer({
             })
           ) : (
             <div className="py-8 text-center">
-              <p className="text-[14px] font-semibold text-white">
+              <p className="text-[14px] font-semibold text-[#F5F2EB]">
                 Belum ada pembaruan
               </p>
-              <p className="mt-1.5 text-[12.5px] leading-relaxed text-[#E2EAE2]">
+              <p className="mt-1.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/65">
                 Simpan destinasi favorit atau buka detail wisata di peta untuk melihat ringkasan aktivitas Anda.
               </p>
             </div>
@@ -304,12 +304,12 @@ function NotificationDrawer({
         </div>
 
         {/* Footer */}
-        <div className="flex shrink-0 items-center gap-2 border-t border-white/[0.14] px-5 py-3.5">
+        <div className="flex shrink-0 items-center gap-2 border-t border-[rgba(244,239,230,0.14)] px-5 py-3.5">
           {unreadIds.length > 0 && (
             <button
               type="button"
               onClick={markAllAsRead}
-              className="flex min-h-[42px] flex-1 items-center justify-center rounded-xl border border-white/[0.2] bg-[rgba(20,28,20,0.45)] px-3 py-2 text-[12px] font-semibold text-[#E2D7B5] transition-colors duration-150 hover:bg-[rgba(20,28,20,0.68)] active:scale-[0.97]"
+              className="apple-glass-pill flex min-h-[42px] flex-1 items-center justify-center rounded-xl px-3 py-2 text-[12px] font-semibold text-[#DFAA63] transition-all duration-150 hover:bg-white/[0.12] active:scale-[0.98]"
             >
               Tandai dibaca
             </button>
@@ -317,7 +317,7 @@ function NotificationDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="flex min-h-[42px] flex-1 items-center justify-center rounded-xl border border-white/[0.2] bg-[rgba(20,28,20,0.45)] px-3 py-2 text-[12px] font-semibold text-[#EBF0EB] transition-colors duration-150 hover:bg-[rgba(20,28,20,0.68)] active:scale-[0.97]"
+            className="apple-retro-cta flex min-h-[42px] flex-1 items-center justify-center rounded-xl px-3 py-2 text-[12px] font-semibold active:scale-[0.98]"
           >
             Tutup
           </button>

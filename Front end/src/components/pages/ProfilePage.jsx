@@ -378,7 +378,7 @@ function ProfilePage({
   return (
     <div
       style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
-      className="animate-tab-enter relative h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu bg-forest-900 text-[#EBF0EB]"
+      className="apple-canopy-bg animate-tab-enter relative h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#EBF0EB]"
     >
       {/* Toast Notifikasi Sukses / Gagal */}
       {toast && (
@@ -389,8 +389,8 @@ function ProfilePage({
           <div
             className={`flex items-center gap-2.5 rounded-2xl px-4 py-3 text-[12.5px] font-medium shadow-xl border ${
               toast.isError
-                ? 'border-rose-300/35 bg-[#2a1216] text-rose-100'
-                : 'border-white/[0.18] bg-[#1B261B] text-[#EBF0EB]'
+                ? 'border-rose-300/35 bg-[#2a1216]/95 text-rose-100'
+                : 'apple-glass-card text-[#EBF0EB]'
             }`}
           >
             <span className="shrink-0 text-[#E2D7B5]">
@@ -413,12 +413,13 @@ function ProfilePage({
               type="button"
               id="btn-back-profile"
               onClick={onBack}
-              aria-label="Kembali"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.14] bg-[#233020] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97]"
+              aria-label="Kembali ke halaman sebelumnya"
+              className="apple-glass-pill inline-flex h-11 min-w-[44px] shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
             >
-              <ChevronLeftIcon className="h-5 w-5" />
+              <ChevronLeftIcon className="h-4 w-4 shrink-0" />
+              <span>Kembali</span>
             </button>
-            <h1 className="truncate text-[22px] font-bold tracking-tight text-[#EBF0EB] sm:text-[24px]">
+            <h1 className="truncate text-[24px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[28px]">
               {isSelf ? 'Profil Saya' : 'Profil Penjelajah'}
             </h1>
           </div>
@@ -430,15 +431,16 @@ function ProfilePage({
           <aside className="lg:col-span-5 xl:col-span-4">
             <section
               aria-label="Informasi profil pengguna"
-              className="flex flex-col items-center rounded-3xl border border-white/[0.18] bg-[#233020]/70 p-6 text-center shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.18),0_16px_36px_-12px_rgba(0,0,0,0.42)] backdrop-blur-xl"
+              className="apple-glass-card flex flex-col items-center rounded-3xl p-6 text-center"
             >
-              {/* Foto Profil dengan Tombol Ganti Foto Monokrom */}
+              {/* Foto Profil dengan Tombol Ganti Foto Dark Glass */}
               <div className="relative h-24 w-24">
                 <SafeImage
                   src={activeAvatar}
                   fallback={DEFAULT_AVATAR_PLACEHOLDER}
                   alt={profileName || 'Foto profil'}
-                  className="h-24 w-24 rounded-full border-2 border-[#E2D7B5]/55 object-cover shadow-sm"
+                  className="h-24 w-24 rounded-full border-2 border-[#DFAA63]/60 object-cover object-top shadow-sm"
+                  imgClassName="object-cover object-top"
                 />
 
                 {isSelf && (
@@ -457,7 +459,7 @@ function ProfilePage({
                       aria-label="Ganti Foto Profil"
                       disabled={isUploading}
                       onClick={() => fileInputRef.current?.click()}
-                      className="absolute -right-1 -bottom-1 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.24] bg-[#1B261B] text-[#EBF0EB] shadow-md transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.96] disabled:opacity-60 before:absolute before:-inset-1.5"
+                      className="absolute -right-1 -bottom-1 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-[#1C241C]/90 text-[#EBF0EB] shadow-md backdrop-blur-md transition-all duration-150 hover:bg-[#263226]/95 active:scale-[0.96] disabled:opacity-60 before:absolute before:-inset-1.5"
                     >
                       {isUploading ? (
                         <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#EBF0EB] border-t-transparent" />
@@ -470,25 +472,25 @@ function ProfilePage({
               </div>
 
               {/* Nama & Email */}
-              <h2 className="mt-4 text-[20px] font-bold tracking-tight text-[#EBF0EB]">
+              <h2 className="mt-4 text-[20px] font-semibold tracking-tight text-[#EBF0EB]">
                 {profileName || 'Pengguna'}
               </h2>
 
               {isSelf && profileEmail && (
-                <p className="mt-0.5 text-[12.5px] font-medium text-[#C8D3C8]">
+                <p className="mt-0.5 text-[12.5px] font-medium text-white/60">
                   {profileEmail}
                 </p>
               )}
 
               {profileBio && (
-                <p className="mt-2.5 max-w-xs text-[12.5px] leading-relaxed text-[#C8D3C8]">
+                <p className="mt-2.5 max-w-xs text-[12.5px] leading-relaxed text-white/65">
                   {profileBio}
                 </p>
               )}
 
               {/* Badge Status */}
               <div className="mt-3">
-                <span className="inline-block rounded-lg border border-white/[0.14] bg-[#1B261B] px-3 py-1 text-[11px] font-semibold text-[#E2D7B5]">
+                <span className="apple-retro-bevel inline-block rounded-full border border-[rgba(244,239,230,0.18)] bg-white/[0.06] px-3 py-1 text-[11px] font-semibold text-[#DFAA63]">
                   {isSelf ? 'Penjelajah Aktif' : 'Petualang Alam Bogor'}
                 </span>
               </div>
@@ -499,15 +501,15 @@ function ProfilePage({
                   type="button"
                   id="btn-follow-user"
                   onClick={handleToggleFollow}
-                  className={`mt-4 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[13px] font-bold transition-colors duration-150 active:scale-[0.98] ${
+                  className={`mt-4 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] ${
                     isFollowing
-                      ? 'border border-white/[0.2] bg-white/[0.1] text-[#EBF0EB] hover:bg-white/[0.16]'
-                      : 'bg-[#EBF0EB] text-[#161E16] shadow-sm hover:bg-[#DCE4DC]'
+                      ? 'apple-glass-pill text-[#F5F2EB] hover:bg-white/[0.14]'
+                      : 'apple-retro-cta'
                   }`}
                 >
                   {isFollowing ? (
                     <>
-                      <CheckIcon className="h-4 w-4 text-[#E2D7B5]" />
+                      <CheckIcon className="h-4 w-4 text-[#DFAA63]" />
                       <span>Mengikuti</span>
                     </>
                   ) : (
@@ -535,24 +537,24 @@ function ProfilePage({
               )}
 
               {/* Statistik Profil */}
-              <div className="mt-5 grid w-full grid-cols-3 divide-x divide-white/[0.12] rounded-2xl border border-white/[0.14] bg-[#1B261B]/80 py-3">
+              <div className="apple-retro-bevel mt-5 grid w-full grid-cols-3 divide-x divide-[rgba(244,239,230,0.14)] rounded-2xl border border-[rgba(244,239,230,0.16)] bg-black/20 py-3">
                 <div className="flex flex-col items-center px-2">
-                  <span className="text-[16px] font-bold tabular-nums text-[#EBF0EB]">
+                  <span className="font-mono text-[16px] font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
                     {routesCount}
                   </span>
-                  <span className="mt-0.5 text-[11px] text-[#C8D3C8]">Rute Custom</span>
+                  <span className="mt-0.5 text-[11px] text-[#F5F2EB]/60">Rute Custom</span>
                 </div>
                 <div className="flex flex-col items-center px-2">
-                  <span className="text-[16px] font-bold tabular-nums text-[#EBF0EB]">
+                  <span className="font-mono text-[16px] font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
                     {followersCount}
                   </span>
-                  <span className="mt-0.5 text-[11px] text-[#C8D3C8]">Pengikut</span>
+                  <span className="mt-0.5 text-[11px] text-[#F5F2EB]/60">Pengikut</span>
                 </div>
                 <div className="flex flex-col items-center px-2">
-                  <span className="text-[16px] font-bold tabular-nums text-[#EBF0EB]">
+                  <span className="font-mono text-[16px] font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
                     {followingCount}
                   </span>
-                  <span className="mt-0.5 text-[11px] text-[#C8D3C8]">Mengikuti</span>
+                  <span className="mt-0.5 text-[11px] text-[#F5F2EB]/60">Mengikuti</span>
                 </div>
               </div>
 
@@ -595,15 +597,15 @@ function ProfilePage({
                   <div>
                     <h2
                       id="my-routes-heading"
-                      className="text-[18px] font-bold tracking-tight text-[#EBF0EB]"
+                      className="text-[18px] font-semibold tracking-tight text-[#F5F2EB]"
                     >
                       Rute Saya
                     </h2>
-                    <p className="mt-0.5 text-[12.5px] text-[#C8D3C8]">
+                    <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
                       Koleksi rute siap navigasi dari akun Anda
                     </p>
                   </div>
-                  <span className="shrink-0 rounded-lg border border-white/[0.14] bg-[#233020] px-2.5 py-1 text-[11px] font-semibold text-[#C8D3C8]">
+                  <span className="apple-glass-pill shrink-0 rounded-full px-3 py-1 font-mono text-[11px] font-semibold tabular-nums tracking-wide text-[#DFAA63]">
                     {savedMyRoutes.length} Rute Tersimpan
                   </span>
                 </div>
@@ -616,22 +618,22 @@ function ProfilePage({
                       return (
                         <article
                           key={route.id}
-                          className="flex h-full min-w-0 flex-col rounded-2xl border border-white/[0.14] bg-[#233020] p-4 shadow-sm transition-colors duration-150 hover:border-white/[0.26] sm:p-5"
+                          className="apple-glass-card apple-glass-card-hover flex h-full min-w-0 flex-col rounded-3xl p-4 sm:p-5"
                         >
                           <div className="flex items-start justify-between gap-2.5">
-                            <h3 className="text-[15px] font-bold leading-snug text-[#EBF0EB]">
+                            <h3 className="text-[15px] font-semibold tracking-tight leading-snug text-[#F5F2EB]">
                               {route.title}
                             </h3>
-                            <span className="shrink-0 rounded-lg border border-white/[0.14] bg-[#1B261B] px-2.5 py-1 text-[11px] font-semibold tabular-nums text-[#EBF0EB]">
+                            <span className="shrink-0 rounded-full border border-[rgba(244,239,230,0.16)] bg-white/[0.06] px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums tracking-wide text-[#DFAA63]">
                               {route.distance}
                             </span>
                           </div>
 
-                          <p className="mt-2 text-[12.5px] leading-relaxed text-[#C8D3C8]">
+                          <p className="mt-2 text-[12.5px] leading-relaxed text-[#F5F2EB]/65">
                             {route.summary}
                           </p>
 
-                          <div className="mt-3 flex items-center gap-1.5 text-[11.5px] font-medium text-[#E2D7B5]">
+                          <div className="mt-3 flex items-center gap-1.5 text-[11.5px] font-medium text-[#DFAA63]">
                             <RouteWaypointsIcon className="h-4 w-4 shrink-0" />
                             <span>{route.stopsLabel}</span>
                           </div>
@@ -641,7 +643,7 @@ function ProfilePage({
                               type="button"
                               disabled={!canStartRoute}
                               onClick={() => canStartRoute && onStartCustomRoute(route.places)}
-                              className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-[#EBF0EB] px-4 py-2.5 text-[12.5px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.98] disabled:opacity-50"
+                              className="apple-retro-cta flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[12.5px] font-semibold active:scale-[0.98] disabled:opacity-50"
                             >
                               <svg
                                 width="13"
@@ -664,14 +666,14 @@ function ProfilePage({
                     })}
                   </div>
                 ) : (
-                  <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-white/[0.14] bg-[#233020] px-4 py-10 text-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.14] bg-[#1B261B] text-[#E2D7B5]">
+                  <div className="apple-glass-card mt-4 flex flex-col items-center justify-center rounded-3xl px-4 py-10 text-center">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.14] bg-white/[0.06] text-[#E2D7B5]">
                       <RouteWaypointsIcon className="h-6 w-6" />
                     </div>
-                    <p className="text-[14px] font-bold text-[#EBF0EB]">
+                    <p className="text-[14px] font-semibold tracking-tight text-[#EBF0EB]">
                       Belum Ada Rute Tersimpan
                     </p>
-                    <p className="mt-1 max-w-xs text-[12.5px] text-[#C8D3C8]">
+                    <p className="mt-1 max-w-xs text-[12.5px] leading-relaxed text-white/60">
                       Anda belum memiliki rute kustom. Rancang rute perjalanan Anda di tab Rute Tersimpan.
                     </p>
                   </div>
@@ -698,11 +700,11 @@ function ProfilePage({
                     {[1, 2].map((item) => (
                       <div
                         key={item}
-                        className="rounded-2xl border border-white/[0.12] bg-[#233020] p-4"
+                        className="apple-glass-card rounded-2xl p-4"
                       >
-                        <div className="aspect-[16/10] w-full rounded-xl bg-[#1B261B]" />
-                        <div className="mt-3 h-4 w-3/4 rounded bg-[#2E3E2A]" />
-                        <div className="mt-2 h-3 w-1/2 rounded bg-[#2A3826]" />
+                        <div className="aspect-[16/10] w-full rounded-xl bg-white/[0.04]" />
+                        <div className="mt-3 h-4 w-3/4 rounded bg-white/[0.08]" />
+                        <div className="mt-2 h-3 w-1/2 rounded bg-white/[0.05]" />
                       </div>
                     ))}
                   </div>
@@ -711,10 +713,10 @@ function ProfilePage({
                     {userActivities.map((act) => (
                       <article
                         key={act.id}
-                        className="flex flex-col rounded-2xl border border-white/[0.14] bg-[#233020] p-4 shadow-sm"
+                        className="apple-glass-card apple-glass-card-hover flex flex-col rounded-3xl p-4"
                       >
                         {act.image && (
-                          <div className="aspect-[16/10] w-full overflow-hidden rounded-xl bg-[#1B261B]">
+                          <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#182117]">
                             <SafeImage
                               src={act.image}
                               fallback={DEFAULT_IMAGE_PLACEHOLDER}
@@ -724,11 +726,11 @@ function ProfilePage({
                           </div>
                         )}
                         <div className="mt-3 flex flex-1 flex-col">
-                          <div className="mb-1 flex items-center justify-between gap-2 text-[11px] text-[#C8D3C8]">
-                            <span>{act.date || 'Baru saja'}</span>
+                          <div className="mb-1 flex items-center justify-between gap-2 text-[11px] text-[#F5F2EB]/55">
+                            <span className="font-mono tabular-nums tracking-wide">{act.date || 'Baru saja'}</span>
                             <div className="flex items-center gap-2">
                               {act.location && (
-                                <span className="inline-flex max-w-[160px] items-center gap-1 truncate font-medium text-[#E2D7B5]">
+                                <span className="inline-flex max-w-[160px] items-center gap-1 truncate font-medium text-[#DFAA63]">
                                   <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
                                   <span className="truncate">{act.location}</span>
                                 </span>
@@ -742,7 +744,7 @@ function ProfilePage({
                                   }}
                                   title="Hapus aktivitas ini"
                                   aria-label="Hapus aktivitas ini"
-                                  className="rounded-lg p-1 text-[#C8D3C8] transition-colors hover:text-rose-300"
+                                  className="rounded-lg p-1 text-white/60 transition-colors hover:text-rose-300"
                                 >
                                   <svg
                                     width="14"
@@ -762,7 +764,7 @@ function ProfilePage({
                               )}
                             </div>
                           </div>
-                          <h3 className="text-[14px] font-bold leading-snug text-[#EBF0EB]">
+                          <h3 className="text-[14px] font-semibold tracking-tight leading-snug text-[#EBF0EB]">
                             {act.title}
                           </h3>
                         </div>
@@ -770,14 +772,14 @@ function ProfilePage({
                     ))}
                   </div>
                 ) : (
-                  <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-white/[0.14] bg-[#233020] px-4 py-10 text-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.14] bg-[#1B261B] text-[#E2D7B5]">
+                  <div className="apple-glass-card mt-4 flex flex-col items-center justify-center rounded-3xl px-4 py-10 text-center">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.14] bg-white/[0.06] text-[#E2D7B5]">
                       <CompassIcon className="h-6 w-6" duotone />
                     </div>
-                    <p className="text-[14px] font-bold text-[#EBF0EB]">
+                    <p className="text-[14px] font-semibold tracking-tight text-[#EBF0EB]">
                       Belum Ada Aktivitas Terkini
                     </p>
-                    <p className="mt-1 max-w-xs text-[12.5px] text-[#C8D3C8]">
+                    <p className="mt-1 max-w-xs text-[12.5px] leading-relaxed text-white/60">
                       {profileName} belum membagikan momen perjalanan terbarunya.
                     </p>
                   </div>

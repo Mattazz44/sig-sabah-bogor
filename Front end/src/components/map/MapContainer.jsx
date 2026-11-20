@@ -169,7 +169,7 @@ export default function MapView({
           aria-label="Petunjuk navigasi"
           className="pointer-events-none absolute top-4 inset-x-4 z-[900] mx-auto max-w-sm animate-tab-enter"
         >
-          <div className="pointer-events-auto flex items-center gap-3 rounded-2xl border border-[#EBF0EB]/15 bg-[#1F2C1C] px-4 py-3 shadow-xl">
+          <div className="apple-glass-card pointer-events-auto flex items-center gap-3 rounded-2xl px-4 py-3">
             <svg
               width="20"
               height="20"
@@ -179,14 +179,14 @@ export default function MapView({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="shrink-0 text-[#E2D7B5]"
+              className="shrink-0 text-[#DFAA63]"
               aria-hidden="true"
             >
               <circle cx="12" cy="12" r="10" />
               <line x1="12" y1="8" x2="12" y2="12" />
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
-            <p className="text-[12px] font-medium leading-snug text-[#EBF0EB]">
+            <p className="text-[12px] font-medium leading-snug text-[#F5F2EB]">
               Pilih destinasi di menu Explore atau susun Rute Custom untuk mulai navigasi.
             </p>
           </div>
@@ -203,7 +203,7 @@ export default function MapView({
             type="button"
             id="btn-akhiri-perjalanan"
             onClick={onStopNavigation}
-            className="pointer-events-auto flex min-h-[44px] items-center gap-2 rounded-full border border-[#EBF0EB]/20 bg-[#253320] px-6 py-2.5 text-[13px] font-semibold text-[#EBF0EB] shadow-md transition-colors duration-150 hover:bg-[#31442B] active:scale-[0.97]"
+            className="apple-glass-pill pointer-events-auto flex min-h-[44px] items-center gap-2 rounded-full px-6 py-2.5 text-[13px] font-semibold text-[#F5F2EB] transition-all duration-150 hover:bg-[#1C241C]/90 active:scale-[0.97]"
           >
             <svg
               width="14"

@@ -2,7 +2,7 @@ import { memo, useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '../../utils/api'
 import SafeImage from '../ui/SafeImage'
 import GlassModal from '../ui/GlassModal'
-import { DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageHelper'
+import { DEFAULT_AVATAR_PLACEHOLDER, getBogorFallbackPhoto } from '../../utils/imageHelper'
 import {
   CheckIcon,
   ChevronLeftIcon,
@@ -167,7 +167,7 @@ function CustomRoutePage({
   return (
     <div
       style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
-      className="animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu bg-forest-900 text-[#EBF0EB]"
+      className="apple-canopy-bg animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#EBF0EB]"
     >
       <div className="mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
         {/* Top Header */}
@@ -178,15 +178,15 @@ function CustomRoutePage({
               id="btn-back-custom-route"
               onClick={onBack}
               aria-label="Kembali ke aktivitas tersimpan"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/[0.14] bg-[#233020] text-[#EBF0EB] transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97]"
+              className="apple-glass-pill flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#EBF0EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
             >
               <ChevronLeftIcon className="h-5 w-5" />
             </button>
             <div className="min-w-0">
-              <h1 className="truncate text-[22px] font-bold tracking-tight text-[#EBF0EB] sm:text-[24px]">
+              <h1 className="text-[24px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[28px]">
                 Rute Custom
               </h1>
-              <p className="truncate text-[12.5px] text-[#C8D3C8]">
+              <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
                 Rute perjalanan tersimpan akun Anda
               </p>
             </div>
@@ -196,32 +196,33 @@ function CustomRoutePage({
             type="button"
             id="btn-add-custom-route"
             onClick={handleOpenCreateModal}
-            className="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl border border-white/[0.14] bg-[#233020] px-4 py-2 text-[13px] font-semibold text-[#EBF0EB] shadow-sm transition-colors duration-150 hover:bg-[#2E3E2A] active:scale-[0.97]"
+            className="apple-glass-pill inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl px-4 py-2 text-[13px] font-semibold text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.98]"
           >
-            <span aria-hidden="true" className="text-[15px] leading-none font-bold text-[#E2D7B5]">+</span>
+            <span aria-hidden="true" className="text-[15px] leading-none font-bold text-[#DFAA63]">+</span>
             <span>Buat Rute</span>
           </button>
         </header>
 
         {/* Info Status Akun Terhubung */}
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/[0.14] bg-[#233020] px-4 py-3.5 shadow-sm">
+        <div className="apple-glass-card mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3.5">
           <div className="flex min-w-0 items-center gap-3">
             <SafeImage
               src={currentUser?.avatar}
               fallback={DEFAULT_AVATAR_PLACEHOLDER}
               alt={currentUser?.name ? `Foto profil ${currentUser.name}` : 'Foto profil pengguna'}
-              className="h-11 w-11 shrink-0 rounded-full border border-white/[0.2] object-cover"
+              className="h-11 w-11 shrink-0 rounded-full border border-[rgba(244,239,230,0.24)] object-cover object-top"
+              imgClassName="object-cover object-top"
             />
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="truncate text-[14px] font-bold text-[#EBF0EB]">
+                <span className="truncate text-[14px] font-semibold tracking-tight text-[#F5F2EB]">
                   {currentUser?.name || 'Pengguna'}
                 </span>
-                <span className="rounded-lg border border-white/[0.14] bg-[#1B261B] px-2.5 py-0.5 text-[11px] font-semibold text-[#E2D7B5]">
+                <span className="apple-retro-bevel rounded-full border border-[rgba(244,239,230,0.16)] bg-white/[0.06] px-2.5 py-0.5 text-[11px] font-semibold text-[#DFAA63]">
                   Terhubung
                 </span>
               </div>
-              <p className="mt-0.5 text-[12px] text-[#C8D3C8]">
+              <p className="mt-0.5 font-mono text-[11.5px] tabular-nums tracking-wide text-[#F5F2EB]/60">
                 {customRoutesList.length} rute perjalanan aktif tersimpan
               </p>
             </div>
@@ -235,49 +236,49 @@ function CustomRoutePage({
               <article
                 key={route.id}
                 id={`card-${route.id}`}
-                className="group flex min-w-0 flex-col rounded-2xl border border-white/[0.14] bg-[#233020] p-4 shadow-sm transition-colors duration-150 hover:border-white/[0.28] sm:p-5"
+                className="apple-glass-card apple-glass-card-hover group flex min-w-0 flex-col rounded-3xl p-4 sm:p-5"
               >
                 {/* Header Rute */}
                 <div className="flex items-start justify-between gap-2.5">
                   <div className="min-w-0 flex-1">
                     {route.isPrimary && (
-                      <span className="mb-1.5 inline-block rounded-md border border-[#E2D7B5]/30 bg-[#1B261B] px-2 py-0.5 text-[10.5px] font-semibold text-[#E2D7B5]">
+                      <span className="mb-1.5 inline-block rounded-full border border-[#DFAA63]/35 bg-[#DFAA63]/12 px-2.5 py-0.5 font-mono text-[10px] font-semibold tracking-wide text-[#DFAA63]">
                         Rute Utama
                       </span>
                     )}
-                    <h2 className="text-[15px] font-bold leading-snug text-[#EBF0EB] transition-colors group-hover:text-[#E2D7B5]">
+                    <h2 className="text-[15.5px] font-semibold tracking-tight leading-snug text-[#F5F2EB] transition-colors group-hover:text-[#DFAA63]">
                       {route.title}
                     </h2>
                     {route.desc && (
-                      <p className="mt-1 text-[12px] text-[#C8D3C8]">{route.desc}</p>
+                      <p className="mt-1 text-[12px] leading-relaxed text-[#F5F2EB]/60">{route.desc}</p>
                     )}
                   </div>
-                  <span className="shrink-0 rounded-lg border border-white/[0.14] bg-[#1B261B] px-2.5 py-1 text-[11px] font-semibold text-[#E2D7B5]">
+                  <span className="shrink-0 rounded-full border border-[rgba(244,239,230,0.16)] bg-white/[0.06] px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums tracking-wide text-[#DFAA63]">
                     {route.stops.length} Tujuan
                   </span>
                 </div>
 
                 {/* Stepper Titik Lokasi */}
-                <div className="my-4 flex flex-col gap-3 border-y border-white/[0.1] py-3.5">
+                <div className="my-4 flex flex-col gap-3 border-y border-[rgba(244,239,230,0.12)] py-3.5">
                   {route.stops.map((stop, idx) => {
                     const isEdgeStop = idx === 0 || idx === route.stops.length - 1
                     return (
                       <div key={`${route.id}-stop-${idx}`} className="flex items-center gap-3">
                         <span
-                          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${
+                          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-bold ${
                             isEdgeStop
-                              ? 'bg-[#E2D7B5] text-[#161E16]'
-                              : 'border border-white/[0.22] bg-[#1B261B] text-[#EBF0EB]'
+                              ? 'bg-[#F2ECE1] text-[#141A14]'
+                              : 'border border-[rgba(244,239,230,0.22)] bg-white/[0.06] text-[#F5F2EB]'
                           }`}
                         >
                           {idx + 1}
                         </span>
                         <div className="flex min-w-0 flex-1 items-center justify-between gap-2 text-[12.5px]">
                           <div className="min-w-0">
-                            <p className="truncate font-semibold text-[#EBF0EB]">{stop.name}</p>
-                            <span className="block text-[11px] text-[#C8D3C8]">{stop.type}</span>
+                            <p className="truncate font-semibold tracking-tight text-[#F5F2EB]">{stop.name}</p>
+                            <span className="block text-[11px] text-[#F5F2EB]/60">{stop.type}</span>
                           </div>
-                          <span className="shrink-0 text-[11px] tabular-nums text-[#C8D3C8]">
+                          <span className="shrink-0 font-mono text-[11px] tabular-nums tracking-wide text-[#F5F2EB]/65">
                             {stop.distance}
                           </span>
                         </div>
@@ -288,14 +289,14 @@ function CustomRoutePage({
 
                 {/* Footer Rute */}
                 <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-1">
-                  <div className="flex flex-wrap items-center gap-3 text-[12px] text-[#C8D3C8]">
-                    <span className="inline-flex items-center gap-1 font-semibold text-[#E2D7B5]">
+                  <div className="flex flex-wrap items-center gap-3 text-[12px] text-[#F5F2EB]/65">
+                    <span className="inline-flex items-center gap-1 font-mono font-semibold text-[#DFAA63] tabular-nums tracking-wide">
                       <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
-                      <span className="tabular-nums">{route.totalDistance}</span>
+                      <span>{route.totalDistance}</span>
                     </span>
-                    <span className="inline-flex items-center gap-1">
-                      <ClockIcon className="h-3.5 w-3.5 shrink-0 text-[#C8D3C8]" />
-                      <span className="tabular-nums">{route.totalDuration}</span>
+                    <span className="inline-flex items-center gap-1 font-mono tabular-nums tracking-wide">
+                      <ClockIcon className="h-3.5 w-3.5 shrink-0 text-[#F5F2EB]/60" />
+                      <span>{route.totalDuration}</span>
                     </span>
                   </div>
 
@@ -307,7 +308,7 @@ function CustomRoutePage({
                         onStartCustomRoute(route.places.filter(Boolean))
                       }
                     }}
-                    className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-[#EBF0EB] px-4 py-2 text-[12.5px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.98] sm:w-auto"
+                    className="apple-retro-cta inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-[12.5px] font-semibold active:scale-[0.98] sm:w-auto"
                   >
                     <svg
                       width="13"
@@ -329,15 +330,15 @@ function CustomRoutePage({
             ))}
           </div>
         ) : (
-          <div className="mt-8 flex flex-col items-center justify-center rounded-2xl border border-white/[0.14] bg-[#233020] px-4 py-12 text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.14] bg-[#1B261B] text-[#E2D7B5]">
+          <div className="apple-glass-card mt-8 flex flex-col items-center justify-center rounded-3xl px-4 py-12 text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.14] bg-white/[0.06] text-[#E2D7B5]">
               <MapIcon className="h-6 w-6" />
             </div>
-            <h3 className="text-[15px] font-bold text-[#EBF0EB]">
+            <h3 className="text-[15px] font-semibold tracking-tight text-[#EBF0EB]">
               Belum Ada Rute Custom
             </h3>
-            <p className="mt-1 max-w-sm text-[12.5px] text-[#C8D3C8]">
-              Anda belum memiliki rute custom. Klik tombol &quot;+ Buat Rute Baru&quot; di atas untuk merangkai perjalanan dari tempat wisata tersimpan Anda.
+            <p className="mt-1 max-w-sm text-[12.5px] leading-relaxed text-white/60">
+              Anda belum memiliki rute custom. Klik tombol &quot;Buat Rute&quot; di atas untuk merangkai perjalanan dari tempat wisata tersimpan Anda.
             </p>
           </div>
         )}
@@ -411,7 +412,8 @@ function CustomRoutePage({
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <SafeImage
-                        src={place.image}
+                        src={place.image || getBogorFallbackPhoto(place)}
+                        fallback={getBogorFallbackPhoto(place)}
                         alt={place.name}
                         className="h-10 w-10 shrink-0 rounded-lg object-cover"
                       />
@@ -429,8 +431,8 @@ function CustomRoutePage({
                       aria-hidden="true"
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
                         isChecked
-                          ? 'border-[#EBF0EB] bg-[#EBF0EB] text-[#161E16]'
-                          : 'border-white/[0.3] bg-white/[0.04] text-transparent'
+                          ? 'border-[#F2ECE1] bg-[#F2ECE1] text-[#141A14]'
+                          : 'border-[rgba(244,239,230,0.28)] bg-white/[0.04] text-transparent'
                       }`}
                     >
                       <CheckIcon className="h-3.5 w-3.5" />
@@ -453,7 +455,7 @@ function CustomRoutePage({
               type="submit"
               id="btn-save-new-custom-route"
               disabled={selectedDestIds.length === 0}
-              className="min-h-[44px] flex-1 rounded-xl bg-[#EBF0EB] py-2.5 text-[13px] font-bold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.98] disabled:opacity-50"
+              className="apple-retro-cta min-h-[44px] flex-1 rounded-xl py-2.5 text-[13px] font-semibold active:scale-[0.98] disabled:opacity-50"
             >
               Simpan Rute
             </button>

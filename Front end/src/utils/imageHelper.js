@@ -1,9 +1,72 @@
-// Placeholder SVG data URI agar tetap tampil rapi meskipun server/internet offline (anti-broken image loop)
+// Placeholder elegan (tanpa ikon gunung/lingkaran hijau mencolok)
 export const DEFAULT_IMAGE_PLACEHOLDER =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%23384931'/%3E%3Cpath d='M180 290l75-95 60 72 45-52 60 75H180z' fill='%234f5f3b'/%3E%3Ccircle cx='230' cy='155' r='24' fill='%23687d50'/%3E%3Ctext x='50%25' y='84%25' dominant-baseline='middle' text-anchor='middle' fill='%23ffffff80' font-family='Inter, sans-serif' font-size='16'%3EGambar Wisata Bogor%3C/text%3E%3C/svg%3E"
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23232e22'/%3E%3Cstop offset='100%25' stop-color='%23161e16'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='600' height='400' fill='url(%23g)'/%3E%3Ccircle cx='300' cy='200' r='34' fill='none' stroke='%23E2D7B5' stroke-opacity='0.35' stroke-width='2'/%3E%3Cpolygon points='315,185 305,205 285,215 295,195' fill='%23E2D7B5' fill-opacity='0.35'/%3E%3C/svg%3E"
 
 export const DEFAULT_AVATAR_PLACEHOLDER =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='60' fill='%23384931'/%3E%3Ccircle cx='60' cy='45' r='20' fill='%23687d50'/%3E%3Cpath d='M25 105c5-22 22-32 35-32s30 10 35 32' fill='%23687d50'/%3E%3C/svg%3E"
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23253024'/%3E%3Cstop offset='100%25' stop-color='%23161e16'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='120' height='120' rx='60' fill='url(%23a)'/%3E%3Ccircle cx='60' cy='46' r='16' fill='none' stroke='%23EBF0EB' stroke-opacity='0.65' stroke-width='3'/%3E%3Cpath d='M32 98c4-18 16-26 28-26s24 8 28 26' fill='none' stroke='%23EBF0EB' stroke-opacity='0.65' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E"
+
+const BOGOR_FALLBACK_POOLS = {
+  alam: [
+    '/images/spots/kebun-raya-bogor.jpg',
+    '/images/spots/curug-cikuluwung.jpg',
+    '/images/spots/curug-leuwi-hejo.jpg',
+    '/images/spots/curug-nangka.jpg',
+    '/images/spots/taman-peranginan.jpg',
+  ],
+  kuliner: [
+    '/images/spots/kopi-daong.jpg',
+    '/images/spots/jalan-suryakencana.jpg',
+    '/images/spots/lawang-surya-kencana.jpg',
+  ],
+  edukasi: [
+    '/images/spots/jbound-geo-edu-park.jpg',
+    '/images/spots/museum-zoologi.jpg',
+    '/images/spots/museum-peta.jpg',
+    '/images/spots/prasasti-batutulis.jpg',
+    '/images/spots/tugu-kujang.jpg',
+  ],
+}
+
+function getPoolKeyForPlace(placeOrCategory) {
+  const category =
+    typeof placeOrCategory === 'string'
+      ? placeOrCategory
+      : `${placeOrCategory?.category || ''} ${placeOrCategory?.name || ''}`
+  const lower = category.toLowerCase()
+  if (lower.includes('kuliner') || lower.includes('kopi') || lower.includes('kafe') || lower.includes('surya')) {
+    return 'kuliner'
+  }
+  if (lower.includes('edukasi') || lower.includes('budaya') || lower.includes('museum') || lower.includes('sejarah') || lower.includes('tugu') || lower.includes('istana')) {
+    return 'edukasi'
+  }
+  return 'alam'
+}
+
+export function getBogorFallbackPhoto(placeOrCategory) {
+  const poolKey = getPoolKeyForPlace(placeOrCategory)
+  const pool = BOGOR_FALLBACK_POOLS[poolKey] || BOGOR_FALLBACK_POOLS.alam
+  const seedText =
+    typeof placeOrCategory === 'object' && placeOrCategory !== null
+      ? String(placeOrCategory.slug || placeOrCategory.name || placeOrCategory.id || 'bogor')
+      : String(placeOrCategory || 'bogor')
+  let hash = 0
+  for (let i = 0; i < seedText.length; i += 1) {
+    hash = (hash * 31 + seedText.charCodeAt(i)) >>> 0
+  }
+  return pool[hash % pool.length]
+}
+
+export function getBogorFallbackGallery(place, count = 3) {
+  const primary = getBogorFallbackPhoto(place)
+  const pool = [
+    ...(BOGOR_FALLBACK_POOLS[getPoolKeyForPlace(place)] || BOGOR_FALLBACK_POOLS.alam),
+    '/images/spots/kebun-raya-bogor.jpg',
+    '/images/spots/tugu-kujang.jpg',
+    '/images/spots/kopi-daong.jpg',
+  ]
+  const unique = [primary, ...pool.filter((item) => item !== primary)]
+  return unique.slice(0, Math.max(1, count))
+}
 
 // Cache penyimpanan blob URL gambar yang sudah berhasil di-fetch via header ngrok
 const ngrokBlobCache = new Map()

@@ -4,7 +4,7 @@ import CategoryFilter from '../ui/CategoryFilter'
 import TouristCard from './TouristCard'
 import SafeImage from '../ui/SafeImage'
 import { useBottomSheet } from '../ui/bottomSheetContext'
-import { CheckIcon, RefreshIcon, StarIcon } from '../ui/VectorIcons'
+import { CheckIcon, ChevronRightIcon, RefreshIcon, StarIcon } from '../ui/VectorIcons'
 
 const SORT_OPTIONS = ['Paling relevan', 'Rating tertinggi', 'Jarak terdekat', 'Terpopuler']
 
@@ -135,7 +135,7 @@ export default function TouristList({
   const listTransitionKey = `${category}|${sortOption}|${minRating}|${onlyPopular}|${onlyFavorites}|${radiusKm}`
 
   return (
-    <div className="px-5 pt-2">
+    <div className="px-4 pt-1.5">
       {/* 1. Search Bar */}
       <SearchBar
         value={query}
@@ -172,71 +172,79 @@ export default function TouristList({
         onClose={() => setFilterOpen(false)}
       />
 
-      {/* 3. Sorotan Populer */}
+      {/* 3. Sorotan Populer (Apple Maps Favorites Compact Row) */}
       {popularSpot && !query && !isLoading && (
         <section className="mt-5" aria-labelledby="populer-heading">
-          <h2 id="populer-heading" className="text-[13px] font-bold tracking-tight text-[#EBF0EB]">
+          <h2 id="populer-heading" className="text-[13px] font-semibold tracking-tight text-[#F5F2EB]/90">
             Populer dengan pengunjung
           </h2>
-          <button
-            type="button"
-            data-pressed={isPopularPressed ? 'true' : 'false'}
-            onPointerDown={() => setIsPopularPressed(true)}
-            onPointerUp={() => setIsPopularPressed(false)}
-            onPointerCancel={() => setIsPopularPressed(false)}
-            onMouseEnter={() => onHoverPlace?.(popularSpot.id)}
-            onMouseLeave={() => {
-              setIsPopularPressed(false)
-              onHoverPlace?.(null)
-            }}
-            onFocus={() => onHoverPlace?.(popularSpot.id)}
-            onBlur={() => onHoverPlace?.(null)}
-            onClick={() => onSelect?.(popularSpot)}
-            className={`group relative mt-2.5 flex w-full items-center gap-3 overflow-hidden rounded-2xl border bg-[#233020] p-2.5 text-left transition-[transform,border-color,box-shadow,background-color] duration-150 ease-out ${
-              isPopularPressed
-                ? 'scale-[0.98] translate-y-0 border-white/25 bg-[#2A3927] shadow-md'
-                : 'border-[#EBF0EB]/12 shadow-sm hover:-translate-y-1 hover:border-white/25 hover:bg-[#2A3927] hover:shadow-xl'
-            }`}
-          >
-            <span
-              aria-hidden="true"
-              className="card-specular-sheen pointer-events-none absolute -inset-4 z-[2]"
-            />
-            <div className="relative z-[1] h-14 w-14 shrink-0 overflow-hidden rounded-xl">
-              <SafeImage
-                src={popularSpot.image}
-                alt={popularSpot.name}
-                className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-80 transition-opacity duration-500 ease-out group-hover:opacity-40"
-              />
-            </div>
-            <div className="relative z-[1] min-w-0 flex-1">
-              <h3 className="truncate text-[13px] font-semibold text-[#EBF0EB]">
-                {popularSpot.name}
-              </h3>
-              <p className="truncate text-[12px] text-[#C8D3C8]">
-                {formatCompactArea(popularSpot.address)}
-              </p>
-              <div className="mt-0.5 flex items-center gap-1.5 text-[12px] text-[#EBF0EB]/90">
-                <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-amber-300" />
-                <span className="font-semibold text-[#EBF0EB] tabular-nums">
-                  {Number(popularSpot.rating || 0).toFixed(1)}
-                </span>
-                <span className="text-[#9AA89A]" aria-hidden="true">·</span>
-                <span className="text-[#C8D3C8]">{popularSpot.distance || popularSpot.category}</span>
+          <div className="mt-1.5 border-b border-[rgba(244,239,230,0.12)] pb-3">
+            <button
+              type="button"
+              data-pressed={isPopularPressed ? 'true' : 'false'}
+              onPointerDown={() => setIsPopularPressed(true)}
+              onPointerUp={() => setIsPopularPressed(false)}
+              onPointerCancel={() => setIsPopularPressed(false)}
+              onMouseEnter={() => onHoverPlace?.(popularSpot.id)}
+              onMouseLeave={() => {
+                setIsPopularPressed(false)
+                onHoverPlace?.(null)
+              }}
+              onFocus={() => onHoverPlace?.(popularSpot.id)}
+              onBlur={() => onHoverPlace?.(null)}
+              onClick={() => onSelect?.(popularSpot)}
+              className={`group -mx-2 flex w-[calc(100%+1rem)] items-center gap-3 rounded-xl px-2 py-2 text-left transition-all duration-150 ease-out ${
+                isPopularPressed
+                  ? 'scale-[0.985] bg-white/[0.1]'
+                  : 'hover:bg-white/[0.06]'
+              }`}
+            >
+              <div className="apple-retro-bevel relative h-14 w-14 shrink-0 overflow-hidden rounded-xl ring-1 ring-[rgba(244,239,230,0.16)]">
+                <SafeImage
+                  src={popularSpot.image}
+                  alt={popularSpot.name}
+                  className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-35"
+                />
               </div>
-            </div>
-          </button>
+              <div className="min-w-0 flex-1">
+                <h3 className="truncate text-[14px] font-semibold tracking-tight text-[#F5F2EB] transition-colors group-hover:text-[#DFAA63]">
+                  {popularSpot.name}
+                </h3>
+                <p className="mt-0.5 truncate text-[12px] text-[#F5F2EB]/60">
+                  {formatCompactArea(popularSpot.address)}
+                </p>
+                <div className="mt-1 flex items-center gap-1.5 text-[12px] text-[#F5F2EB]/80">
+                  <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
+                  <span className="font-mono font-semibold text-[#F5F2EB] tabular-nums tracking-wide">
+                    {Number(popularSpot.rating || 0).toFixed(1)}
+                  </span>
+                  <span className="text-[#F5F2EB]/35" aria-hidden="true">·</span>
+                  <span className="truncate font-mono text-[11.5px] tabular-nums tracking-wide text-[#F5F2EB]/65">
+                    {popularSpot.distance || popularSpot.category}
+                  </span>
+                </div>
+              </div>
+              <ChevronRightIcon className="h-4 w-4 shrink-0 text-[#F5F2EB]/35 transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-[#F5F2EB]/80" />
+            </button>
+          </div>
         </section>
       )}
 
       {/* 4. Subheader jumlah & Dropdown Pengurutan (Liquid Glass melayang z-[700]) */}
-      <div className="relative z-30 mt-5 flex items-center justify-between gap-2">
-        <h2 id="tourist-count" className="text-[13px] font-bold text-[#EBF0EB] tabular-nums">
-          {isLoading ? 'Memuat destinasi...' : `${sortedPlaces.length} Tujuan wisata`}
+      <div className="relative z-30 mt-4 flex items-center justify-between gap-2">
+        <h2 id="tourist-count" className="text-[13px] font-semibold tracking-tight text-[#F5F2EB]">
+          {isLoading ? (
+            'Memuat destinasi...'
+          ) : (
+            <>
+              <span className="font-mono tabular-nums tracking-wide">{sortedPlaces.length}</span>{' '}
+              Tujuan wisata
+            </>
+          )}
         </h2>
 
         <div ref={sortMenuRef} className="relative" data-no-sheet-drag>
@@ -257,10 +265,10 @@ export default function TouristList({
             aria-expanded={sortMenuOpen}
             aria-controls="sort-dropdown-menu"
             aria-label={`Urutan daftar: ${sortOption}. Klik untuk mengubah`}
-            className={`relative flex min-h-[38px] items-center gap-1.5 rounded-xl border px-3 py-1.5 text-[12px] font-medium text-[#EBF0EB] transition-all duration-150 active:scale-[0.95] before:absolute before:-inset-1 ${
+            className={`apple-retro-bevel relative flex h-8 items-center gap-1.5 rounded-full border px-3 text-[12px] font-medium text-[#F5F2EB] transition-all duration-150 active:scale-[0.95] before:absolute before:-inset-y-1.5 before:inset-x-0 ${
               sortMenuOpen
-                ? 'border-[#E2D7B5]/50 bg-[#EBF0EB]/[0.16]'
-                : 'border-[#EBF0EB]/18 bg-[#EBF0EB]/[0.08] hover:bg-[#EBF0EB]/[0.15]'
+                ? 'border-[#DFAA63]/50 bg-white/[0.15]'
+                : 'border-[rgba(244,239,230,0.16)] bg-white/[0.08] hover:bg-white/[0.14]'
             }`}
           >
             <span>{sortOption}</span>
@@ -289,7 +297,7 @@ export default function TouristList({
             aria-hidden={!sortMenuOpen}
             data-no-sheet-drag
             onPointerDown={(e) => e.stopPropagation()}
-            className={`absolute top-full right-0 z-[700] mt-2 min-w-[196px] origin-top-right rounded-2xl border border-white/15 bg-[#141C14]/85 p-1.5 shadow-xl backdrop-blur-xl transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+            className={`liquid-glass-modal absolute top-full right-0 z-[700] mt-2 min-w-[196px] origin-top-right rounded-2xl p-1.5 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
               sortMenuOpen
                 ? 'pointer-events-auto translate-y-0 scale-100 opacity-100'
                 : 'pointer-events-none -translate-y-1 scale-95 opacity-0'
@@ -308,12 +316,12 @@ export default function TouristList({
                     }}
                     className={`flex min-h-[38px] w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-[12.5px] transition-colors duration-150 active:scale-[0.97] ${
                       isSelected
-                        ? 'bg-white/[0.12] font-semibold text-[#E2D7B5]'
-                        : 'font-medium text-[#EBF0EB] hover:bg-white/[0.08]'
+                        ? 'bg-[#DFAA63]/15 font-semibold text-[#DFAA63]'
+                        : 'font-medium text-[#F5F2EB] hover:bg-white/[0.08]'
                     }`}
                   >
                     <span>{option}</span>
-                    {isSelected && <CheckIcon className="h-3.5 w-3.5 shrink-0 text-[#E2D7B5]" />}
+                    {isSelected && <CheckIcon className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />}
                   </button>
                 </li>
               )
@@ -324,16 +332,16 @@ export default function TouristList({
 
       {/* 5. Daftar destinasi wisata + animasi pergantian + loading/error/empty states */}
       {isLoading && places.length === 0 ? (
-        <div className="mt-4 flex flex-col gap-4" aria-live="polite">
+        <div className="mt-3.5 flex flex-col" aria-live="polite">
           {[1, 2, 3].map((item) => (
             <div
               key={item}
-              className="overflow-hidden rounded-2xl border border-[#EBF0EB]/10 bg-[#233020]"
+              className="border-b border-white/10 py-4 first:pt-1 last:border-b-0 last:pb-0"
             >
-              <div className="aspect-[16/10] w-full bg-[#1C2719]" />
-              <div className="space-y-2 p-3.5">
-                <div className="h-4 w-2/3 rounded-md bg-[#2E3E2A]" />
-                <div className="h-3 w-1/2 rounded-md bg-[#2A3826]" />
+              <div className="aspect-[16/10] w-full rounded-2xl bg-white/[0.07]" />
+              <div className="space-y-2 pt-2.5">
+                <div className="h-4 w-2/3 rounded-md bg-white/[0.08]" />
+                <div className="h-3 w-1/2 rounded-md bg-white/[0.05]" />
               </div>
             </div>
           ))}
@@ -359,11 +367,11 @@ export default function TouristList({
           )}
         </div>
       ) : sortedPlaces.length > 0 ? (
-        <ul key={listTransitionKey} id="tourist-list" className="mt-4 flex flex-col gap-5">
+        <ul key={listTransitionKey} id="tourist-list" className="mt-3.5 flex flex-col">
           {sortedPlaces.map((place, index) => (
             <li
               key={place.id}
-              className="animate-tourist-card"
+              className="animate-tourist-card border-b border-white/10 py-4 first:pt-1 last:border-b-0 last:pb-0"
               style={{ animationDelay: `${Math.min(index, 8) * 30}ms` }}
             >
               <TouristCard
