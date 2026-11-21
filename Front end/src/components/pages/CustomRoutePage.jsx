@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useState } from 'react'
-import { apiFetch } from '../../utils/api'
+import { apiFetch, getAuthToken } from '../../utils/api'
 import SafeImage from '../ui/SafeImage'
 import GlassModal from '../ui/GlassModal'
 import { DEFAULT_AVATAR_PLACEHOLDER, getBogorFallbackPhoto } from '../../utils/imageHelper'
@@ -49,13 +49,16 @@ function CustomRoutePage({
   }, [tourists, favorites, userActivities])
 
   const [customRoutesList, setCustomRoutesList] = useState([])
+  const hasAuth = Boolean(currentUser?.id && getAuthToken())
 
   useEffect(() => {
-    let isMounted = true
-    const uid = currentUser?.id
-    const endpoint = uid ? `/api/saved-activities?user_id=${encodeURIComponent(uid)}` : '/api/saved-activities'
+    if (!hasAuth) {
+      return undefined
+    }
 
-    apiFetch(endpoint)
+    let isMounted = true
+
+    apiFetch('/api/saved-activities')
       .then((res) => {
         if (!res.ok) throw new Error('Network error')
         return res.json()
@@ -90,7 +93,9 @@ function CustomRoutePage({
     return () => {
       isMounted = false
     }
-  }, [currentUser?.id, tourists])
+  }, [hasAuth, tourists])
+
+  const visibleCustomRoutes = hasAuth ? customRoutesList : []
 
   const [showCreateRouteModal, setShowCreateRouteModal] = useState(false)
   const [newRouteTitle, setNewRouteTitle] = useState('')
@@ -114,7 +119,7 @@ function CustomRoutePage({
     )
   }
 
-  const handleCreateRouteSubmit = (e) => {
+  const handleCreateRouteSubmit = async (e) => {
     e.preventDefault()
     if (!newRouteTitle.trim() || selectedDestIds.length === 0) return
 
@@ -129,9 +134,13 @@ function CustomRoutePage({
       place: p,
     }))
 
+    const tempId = `cr-${Date.now()}`
+    const titleText = newRouteTitle.trim()
+    const destIdsSnapshot = [...selectedDestIds]
+
     const newRoute = {
-      id: `cr-${Date.now()}`,
-      title: newRouteTitle.trim(),
+      id: tempId,
+      title: titleText,
       desc: 'Rute baru dibuat oleh Anda',
       isPrimary: false,
       stops: stopsFormatted,
@@ -140,26 +149,53 @@ function CustomRoutePage({
       places: chosenPlaces,
     }
 
+    const prevRoutes = customRoutesList
     setCustomRoutesList((prev) => [newRoute, ...prev])
-
-    apiFetch('/api/custom-routes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        user_id: currentUser?.id,
-        title: newRouteTitle.trim(),
-        place_ids: selectedDestIds,
-      }),
-    }).catch((err) => {
-      console.warn('Gagal menyimpan rute custom ke server:', err)
-    })
-
     setNewRouteTitle('')
     setSelectedDestIds([])
     setShowCreateRouteModal(false)
+
+    try {
+      const res = await apiFetch('/api/custom-routes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          title: titleText,
+          place_ids: destIdsSnapshot,
+        }),
+      })
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`)
+      }
+      const json = await res.json().catch(() => null)
+      if (json?.data) {
+        const cr = json.data
+        const stops = Array.isArray(cr.stops) ? cr.stops : stopsFormatted
+        const places = stops.map((s) => s.place).filter(Boolean)
+        setCustomRoutesList((prev) =>
+          prev.map((item) =>
+            item.id === tempId
+              ? {
+                  id: cr.slug || `cr-${cr.id}`,
+                  title: cr.title,
+                  desc: cr.desc || '',
+                  isPrimary: Boolean(cr.is_primary),
+                  stops,
+                  totalDistance: cr.total_distance || item.totalDistance,
+                  totalDuration: cr.total_duration || item.totalDuration,
+                  places: places.length > 0 ? places : chosenPlaces,
+                }
+              : item,
+          ),
+        )
+      }
+    } catch (err) {
+      console.warn('Gagal menyimpan rute custom ke server:', err)
+      setCustomRoutesList(prevRoutes)
+    }
   }
 
   const modalCandidates = savedTouristSpots.length > 0 ? savedTouristSpots : tourists.slice(0, 10)
@@ -223,16 +259,16 @@ function CustomRoutePage({
                 </span>
               </div>
               <p className="mt-0.5 font-mono text-[11.5px] tabular-nums tracking-wide text-[#F5F2EB]/60">
-                {customRoutesList.length} rute perjalanan aktif tersimpan
+                {visibleCustomRoutes.length} rute perjalanan aktif tersimpan
               </p>
             </div>
           </div>
         </div>
 
         {/* Grid Daftar Rute Custom */}
-        {customRoutesList.length > 0 ? (
+        {visibleCustomRoutes.length > 0 ? (
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {customRoutesList.map((route) => (
+            {visibleCustomRoutes.map((route) => (
               <article
                 key={route.id}
                 id={`card-${route.id}`}

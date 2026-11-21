@@ -134,9 +134,12 @@ export default function MapView({
       setIsStyleLoaded(true)
     }
 
+    const markersMap = markerRefs.current
+
     return () => {
       map.off('style.load', handleStyleLoad)
       map.off('pitchend', handlePitchEnd)
+      markersMap.clear()
       setIsStyleLoaded(false)
       setMapInstance(null)
       map.remove()

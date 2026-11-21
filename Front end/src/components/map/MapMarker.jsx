@@ -29,12 +29,17 @@ function MapMarker({
 }) {
   const { map } = useMapLibre()
   const onSelectRef = useRef(onSelect)
+  const placeRef = useRef(place)
   const markerRef = useRef(null)
   const popupRef = useRef(null)
 
   useEffect(() => {
     onSelectRef.current = onSelect
   }, [onSelect])
+
+  useEffect(() => {
+    placeRef.current = place
+  }, [place])
 
   const popupContainer = useMemo(() => document.createElement('div'), [])
 
@@ -60,12 +65,12 @@ function MapMarker({
     el.style.cursor = 'pointer'
     el.setAttribute('title', placeName)
     el.setAttribute('aria-label', placeName)
-    el.innerHTML = getCategorySvgHtml(placeCategory)
+    el.innerHTML = `<span aria-hidden="true" class="wisata-marker-sonar"></span>${getCategorySvgHtml(placeCategory)}`
 
     const popup = new Popup({
       className: 'wisata-popup',
       closeButton: false,
-      maxWidth: '220px',
+      maxWidth: '248px',
       offset: [0, -38],
     }).setDOMContent(popupContainer)
 
@@ -84,7 +89,7 @@ function MapMarker({
       if (!popup.isOpen()) {
         marker.togglePopup()
       }
-      onSelectRef.current?.(place)
+      onSelectRef.current?.(placeRef.current)
     }
 
     el.addEventListener('click', handleClick)
@@ -114,7 +119,7 @@ function MapMarker({
       markerRef.current = null
       popupRef.current = null
     }
-  }, [map, placeId, placeSlug, placeName, placeCategory, lng, lat, isValidCoord, registerMarker, popupContainer, place])
+  }, [map, placeId, placeSlug, placeName, placeCategory, lng, lat, isValidCoord, registerMarker, popupContainer])
 
   // Otomatis buka popup saat mode navigasi transit multi-titik aktif
   useEffect(() => {

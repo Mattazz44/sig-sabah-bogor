@@ -276,55 +276,107 @@ img {
   color: #1c1c1e;
 }
 
-.wisata-marker > svg {
-  transform-origin: 50% 95%;
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), filter 220ms ease-out;
+.wisata-marker {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: visible;
 }
 
-@keyframes marker-hover-ring {
-  0%,
-  100% {
-    transform: scale(1.14) translateY(-2px);
-    filter: drop-shadow(0 0 8px rgba(226, 215, 181, 0.85))
-      drop-shadow(0 6px 12px rgba(0, 0, 0, 0.35));
+.wisata-marker > svg {
+  position: relative;
+  z-index: 2;
+  transform-origin: 50% 95%;
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.wisata-marker-sonar,
+.wisata-cluster-sonar {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+  opacity: 0;
+  z-index: 1;
+  border: 2px solid #dfaa63;
+  background: radial-gradient(
+    circle,
+    rgba(223, 170, 99, 0.34) 0%,
+    rgba(223, 170, 99, 0.12) 55%,
+    rgba(223, 170, 99, 0) 75%
+  );
+  will-change: transform, opacity;
+}
+
+.wisata-marker-sonar {
+  bottom: -6px;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  margin-left: -17px;
+  transform: scale(0.45);
+}
+
+.wisata-cluster-sonar {
+  inset: -6px;
+  transform: scale(0.72);
+}
+
+@keyframes marker-sonar-pulse {
+  0% {
+    transform: scale(0.48);
+    opacity: 0.92;
   }
-  50% {
-    transform: scale(1.22) translateY(-4px);
-    filter: drop-shadow(0 0 14px rgba(226, 215, 181, 1))
-      drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+  70% {
+    transform: scale(2.05);
+    opacity: 0.18;
+  }
+  100% {
+    transform: scale(2.35);
+    opacity: 0;
   }
 }
 
 .wisata-marker-hovered > svg {
-  animation: marker-hover-ring 1.3s ease-in-out infinite;
+  transform: translate3d(0, -4px, 0) scale(1.16);
+}
+
+.wisata-marker-hovered > .wisata-marker-sonar {
+  animation: marker-sonar-pulse 1.35s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
 .wisata-cluster-marker {
+  position: relative;
   background: transparent;
   border: none;
+  overflow: visible;
+}
+
+.wisata-cluster-marker > div {
+  position: relative;
+  z-index: 2;
 }
 
 .wisata-cluster-marker:hover > div {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .wisata-cluster-hovered > div {
-  transform: scale(1.16);
-  box-shadow:
-    0 0 0 6px rgba(226, 215, 181, 0.35),
-    0 6px 16px rgba(0, 0, 0, 0.35) !important;
+  transform: scale(1.14);
+}
+
+.wisata-cluster-hovered > .wisata-cluster-sonar {
+  animation: marker-sonar-pulse 1.35s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
 .wisata-popup .maplibregl-popup-content {
   padding: 0;
   border-radius: 16px;
-  overflow: hidden;
-  background: #171f17;
-  border: 1px solid rgba(244, 239, 230, 0.16);
-  color: #f5f2eb;
-  box-shadow:
-    inset 0 1px 0 0 rgba(244, 239, 230, 0.2),
-    0 10px 26px rgb(0 0 0 / 0.38);
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .wisata-popup .maplibregl-popup-content p {
@@ -332,19 +384,19 @@ img {
 }
 
 .wisata-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
-  border-top-color: #171f17;
+  border-top-color: rgba(28, 36, 28, 0.85);
 }
 
 .wisata-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip {
-  border-bottom-color: #171f17;
+  border-bottom-color: rgba(28, 36, 28, 0.85);
 }
 
 .wisata-popup.maplibregl-popup-anchor-left .maplibregl-popup-tip {
-  border-right-color: #171f17;
+  border-right-color: rgba(28, 36, 28, 0.85);
 }
 
 .wisata-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
-  border-left-color: #171f17;
+  border-left-color: rgba(28, 36, 28, 0.85);
 }
 
 @keyframes user-pulse {
@@ -366,30 +418,51 @@ img {
   animation: user-pulse 2.2s cubic-bezier(0.2, 0, 0.4, 1) infinite;
 }
 
-/* Shimmer Skeleton Loader animation for SafeImage */
+/* Shimmer Skeleton Loader (GPU transform sweep di atas kaca bg-white/[0.04]) */
 @keyframes shimmer-sweep {
   0% {
-    background-position: -200% 0;
+    transform: translate3d(-100%, 0, 0);
   }
   100% {
-    background-position: 200% 0;
+    transform: translate3d(100%, 0, 0);
   }
 }
 
 .shimmer-skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.shimmer-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   background: linear-gradient(
-    90deg,
-    #2c3b26 0%,
-    #384931 25%,
-    #4f5f3b 50%,
-    #384931 75%,
-    #2c3b26 100%
+    105deg,
+    transparent 20%,
+    rgba(244, 239, 230, 0.08) 46%,
+    rgba(244, 239, 230, 0.14) 50%,
+    rgba(244, 239, 230, 0.05) 55%,
+    transparent 80%
   );
-  background-size: 200% 100%;
-  animation: shimmer-sweep 1.6s ease-in-out infinite;
+  transform: translate3d(-100%, 0, 0);
+  animation: shimmer-sweep 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
 }
 
 /* ---------- 60fps Micro-Interactions (ease-out, zero bounce) ---------- */
+@keyframes detail-page-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes tab-slide-up {
   0% {
     opacity: 0;
@@ -430,6 +503,12 @@ img {
     opacity: 1;
     transform: none;
   }
+}
+
+.animate-detail-enter {
+  animation: detail-page-enter 240ms ease-out both;
+  transform-origin: center top;
+  will-change: opacity, transform;
 }
 
 .animate-tab-enter {
@@ -501,7 +580,8 @@ img {
 
 @media (prefers-reduced-motion: reduce) {
   .user-pulse-ring,
-  .shimmer-skeleton,
+  .shimmer-skeleton::after,
+  .animate-detail-enter,
   .animate-tab-enter,
   .animate-fade-enter,
   .animate-backdrop-fade,
@@ -509,10 +589,17 @@ img {
   .animate-notif-item,
   .animate-tourist-card,
   .animate-auth-panel,
-  .wisata-marker-hovered > svg {
+  .wisata-marker-hovered > .wisata-marker-sonar,
+  .wisata-cluster-hovered > .wisata-cluster-sonar {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .wisata-marker-hovered > .wisata-marker-sonar,
+  .wisata-cluster-hovered > .wisata-cluster-sonar {
+    opacity: 0.7 !important;
+    transform: scale(1.25) !important;
   }
 
   .card-specular-sheen {

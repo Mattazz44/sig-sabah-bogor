@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef, useState } from 'react'
-import { apiFetch } from '../../utils/api'
+import { apiFetch, buildApiUrl, setAuthToken, setStoredUser } from '../../utils/api'
 import {
   AlertTriangleIcon,
   CompassIcon,
@@ -144,9 +144,15 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         setErrorMessage('Konfirmasi kata sandi belum cocok.')
         return
       }
-    } else if (!emailOrUsername.trim()) {
-      setErrorMessage('Masukkan email atau username Anda.')
-      return
+    } else {
+      if (!emailOrUsername.trim()) {
+        setErrorMessage('Masukkan email atau username Anda.')
+        return
+      }
+      if (!password) {
+        setErrorMessage('Masukkan kata sandi Anda.')
+        return
+      }
     }
 
     setIsLoading(true)
@@ -190,8 +196,18 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         )
       }
 
+      const authToken = data?.token || data?.data?.token
+      if (!data?.data || !authToken) {
+        throw new Error('Respons autentikasi server tidak menyertakan token yang valid.')
+      }
+
+      setAuthToken(authToken)
+      setStoredUser(data.data)
+      setPassword('')
+      setConfirmPassword('')
+
       if (onLoginSuccess) {
-        onLoginSuccess(data.data)
+        onLoginSuccess(data.data, authToken)
       }
     } catch (err) {
       setErrorMessage(err.message || 'Gagal terhubung ke server autentikasi.')
@@ -203,8 +219,9 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
   const handleGoogleLogin = () => {
     setIsLoading(true)
     setErrorMessage(null)
-    // Metode B (Laravel Socialite): Arahkan ke rute redirect OAuth Google di backend Laravel
-    window.location.href = '/api/auth/google/redirect'
+    const originParam =
+      typeof window !== 'undefined' ? `?origin=${encodeURIComponent(window.location.origin)}` : ''
+    window.location.href = buildApiUrl(`/api/auth/google/redirect${originParam}`)
   }
 
   return (

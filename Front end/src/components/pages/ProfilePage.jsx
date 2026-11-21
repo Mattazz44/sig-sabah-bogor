@@ -5,7 +5,7 @@ import {
   DEFAULT_AVATAR_PLACEHOLDER,
   DEFAULT_IMAGE_PLACEHOLDER,
 } from '../../utils/imageHelper'
-import { apiFetch } from '../../utils/api'
+import { apiFetch, getAuthToken } from '../../utils/api'
 import { compressImage } from '../../utils/imageCompressor'
 import {
   AlertTriangleIcon,
@@ -83,7 +83,7 @@ function ProfilePage({
   }
 
   const requestKey = `${targetIdentifier}|${currentUser?.email || ''}|${isSelf}`
-  const isLoadingActivities = loadedKey !== requestKey
+  const isLoadingActivities = Boolean(targetIdentifier) && loadedKey !== requestKey
 
   useEffect(() => {
     return () => {
@@ -102,6 +102,7 @@ function ProfilePage({
   const confirmDeleteActivity = async () => {
     if (!postToDelete) return
     const id = postToDelete
+    const prevActivities = userActivities
     setIsDeleting(true)
 
     setUserActivities((prev) => prev.filter((a) => a.id !== id))
@@ -110,19 +111,16 @@ function ProfilePage({
     try {
       const res = await apiFetch(`/api/activities/${id}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: currentUser?.id,
-          user_name: currentUser?.name,
-        }),
       })
       if (res.ok) {
         showToast('Aktivitas berhasil dihapus.')
       } else {
+        setUserActivities(prevActivities)
         showToast('Gagal menghapus aktivitas.', true)
       }
     } catch (err) {
       console.warn('Gagal menghapus aktivitas:', err)
+      setUserActivities(prevActivities)
       showToast('Gagal menghapus aktivitas.', true)
     } finally {
       setIsDeleting(false)
@@ -131,6 +129,10 @@ function ProfilePage({
 
   // Fetch profil lengkap, statistik follower, dan aktivitas nyata dari database
   useEffect(() => {
+    if (!targetIdentifier) {
+      return undefined
+    }
+
     let isMounted = true
     let cachedFollowRaw = null
     try {
@@ -139,10 +141,9 @@ function ProfilePage({
       cachedFollowRaw = null
     }
 
-    const currentEmailParam = encodeURIComponent(currentUser?.email || '')
     const targetParam = encodeURIComponent(targetIdentifier)
 
-    apiFetch(`/api/users/${targetParam}?current_user_email=${currentEmailParam}`)
+    apiFetch(`/api/users/${targetParam}`)
       .then((res) => {
         if (!res.ok) throw new Error('Gagal memuat data profil')
         return res.json()
@@ -204,7 +205,7 @@ function ProfilePage({
   }, [requestKey, targetIdentifier, currentUser?.email, isSelf, initialName])
 
   const handleToggleFollow = async () => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !getAuthToken()) {
       if (onRequireLogin) {
         onRequireLogin()
       } else {
@@ -213,8 +214,10 @@ function ProfilePage({
       return
     }
 
-    const nextState = !isFollowing
-    const nextCount = nextState ? followersCount + 1 : Math.max(0, followersCount - 1)
+    const prevState = isFollowing
+    const prevCount = followersCount
+    const nextState = !prevState
+    const nextCount = nextState ? prevCount + 1 : Math.max(0, prevCount - 1)
 
     setIsFollowing(nextState)
     setFollowersCount(nextCount)
@@ -224,38 +227,44 @@ function ProfilePage({
       // abaikan
     }
 
-    showToast(
-      nextState
-        ? `Berhasil mengikuti ${profileName}!`
-        : `Batal mengikuti ${profileName}.`,
-    )
-
     try {
       const res = await apiFetch(`/api/users/${encodeURIComponent(targetIdentifier)}/follow`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          current_user_id: currentUser?.id,
-          current_user_email: currentUser?.email,
-        }),
       })
 
-      if (res.ok) {
-        const json = await res.json()
-        if (typeof json?.followers_count === 'number') {
-          setFollowersCount(json.followers_count)
-        }
-        if (typeof json?.is_following === 'boolean') {
-          setIsFollowing(json.is_following)
-          try {
-            window.localStorage.setItem(`follow_${targetIdentifier}`, String(json.is_following))
-          } catch {
-            // abaikan
-          }
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`)
+      }
+
+      const json = await res.json()
+      if (typeof json?.followers_count === 'number') {
+        setFollowersCount(json.followers_count)
+      }
+      if (typeof json?.is_following === 'boolean') {
+        setIsFollowing(json.is_following)
+        try {
+          window.localStorage.setItem(`follow_${targetIdentifier}`, String(json.is_following))
+        } catch {
+          // abaikan
         }
       }
+
+      showToast(
+        nextState
+          ? `Berhasil mengikuti ${profileName}!`
+          : `Batal mengikuti ${profileName}.`,
+      )
     } catch (err) {
       console.warn('Gagal sinkronisasi status follow ke server:', err)
+      setIsFollowing(prevState)
+      setFollowersCount(prevCount)
+      try {
+        window.localStorage.setItem(`follow_${targetIdentifier}`, String(prevState))
+      } catch {
+        // abaikan
+      }
+      showToast('Gagal memperbarui status follow.', true)
     }
   }
 
@@ -273,6 +282,7 @@ function ProfilePage({
       return
     }
 
+    const prevAvatar = profileAvatar
     const previewUrl = URL.createObjectURL(file)
     setLocalAvatar(previewUrl)
     setProfileAvatar(previewUrl)
@@ -287,12 +297,6 @@ function ProfilePage({
 
       const formData = new FormData()
       formData.append('avatar', compressedFile)
-      if (user?.id) {
-        formData.append('user_id', user.id)
-      }
-      if (user?.email) {
-        formData.append('email', user.email)
-      }
 
       const res = await apiFetch('/api/auth/update-avatar', {
         method: 'POST',
@@ -318,8 +322,10 @@ function ProfilePage({
     } catch (err) {
       console.error('Gagal mengganti foto profil:', err)
       setLocalAvatar(null)
+      setProfileAvatar(prevAvatar)
       showToast(err.message || 'Gagal mengunggah foto profil. Silakan coba lagi.', true)
     } finally {
+      URL.revokeObjectURL(previewUrl)
       setIsUploading(false)
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
@@ -333,12 +339,12 @@ function ProfilePage({
     if (!isSelf) return
     let isMounted = true
     const uid = currentUser?.id
-    if (!uid) {
+    if (!uid || !getAuthToken()) {
       setUserCustomRoutes([])
       return
     }
 
-    apiFetch(`/api/saved-activities?user_id=${encodeURIComponent(uid)}`)
+    apiFetch('/api/saved-activities')
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
         if (!isMounted || !json?.data) return

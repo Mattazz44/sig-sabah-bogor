@@ -48,6 +48,7 @@ function ClusterBadgeMarker({ cluster, map, clusterRefs, onClusterClick }) {
     el.setAttribute('title', tooltipLabel)
     el.setAttribute('aria-label', tooltipLabel)
     el.innerHTML = `
+      <span aria-hidden="true" class="wisata-cluster-sonar"></span>
       <div style="
         width: ${size}px;
         height: ${size}px;
@@ -58,15 +59,15 @@ function ClusterBadgeMarker({ cluster, map, clusterRefs, onClusterClick }) {
         align-items: center;
         justify-content: center;
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
-        transition: transform 0.2s ease;
+        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
       ">
         <div style="
           width: ${size - 8}px;
           height: ${size - 8}px;
           border-radius: 9999px;
           background: linear-gradient(135deg, rgba(28, 36, 28, 0.94) 0%, rgba(44, 59, 38, 0.94) 100%);
-          border: 1.5px solid rgba(255, 255, 255, 0.85);
-          color: #EBF0EB;
+          border: 1.5px solid rgba(244, 239, 230, 0.78);
+          color: #F5F2EB;
           font-weight: 700;
           font-size: ${count >= 10 ? '13px' : '14px'};
           display: flex;

@@ -12,17 +12,17 @@
         <!-- KOLOM KIRI (7 KOLOM): Informasi Lokasi & Jam Operasional -->
         <div class="space-y-6 lg:col-span-7">
             <!-- 1. Kartu Informasi Lokasi -->
-            <section class="liquid-glass-card rounded-2xl p-5 sm:p-6" aria-labelledby="heading-info-lokasi">
-                <h2 id="heading-info-lokasi" class="text-[15px] font-bold tracking-tight text-[#EBF0EB]">
+            <section class="apple-glass-card rounded-3xl p-5 sm:p-6" aria-labelledby="heading-info-lokasi">
+                <h2 id="heading-info-lokasi" class="text-[15px] font-bold tracking-tight text-[#F5F2EB]">
                     Informasi Lokasi
                 </h2>
-                <p class="mt-0.5 text-[12px] text-[#C8D3C8]">
+                <p class="mt-0.5 text-[12px] text-[#F5F2EB]/65">
                     Identitas tempat wisata, kategori, tarif masuk, dan alamat lengkap di Kota Bogor.
                 </p>
 
                 <div class="mt-5 space-y-4">
                     <div>
-                        <label for="admin-name" class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">
+                        <label for="admin-name" class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">
                             Nama tempat wisata
                         </label>
                         <input
@@ -31,25 +31,25 @@
                             name="name"
                             value="{{ old('name') }}"
                             placeholder="Contoh: Kebun Raya Bogor"
-                            class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13.5px] placeholder:text-[#98A698]"
+                            class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13.5px] placeholder:text-[#F5F2EB]/45"
                             required
                         />
                     </div>
 
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <label for="admin-category" class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">
+                            <label for="admin-category" class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">
                                 Kategori
                             </label>
                             <div class="relative">
                                 <select
                                     id="admin-category"
                                     name="category"
-                                    class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 pr-9 text-[13.5px] appearance-none cursor-pointer"
+                                    class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 pr-9 text-[13.5px] appearance-none"
                                 >
-                                    <option value="Alam & Curug" {{ old('category') == 'Alam & Curug' ? 'selected' : '' }} class="bg-[#1B261B] text-[#EBF0EB]">Alam & Curug</option>
-                                    <option value="Kuliner" {{ old('category') == 'Kuliner' ? 'selected' : '' }} class="bg-[#1B261B] text-[#EBF0EB]">Kuliner</option>
-                                    <option value="Edukasi & Budaya" {{ old('category') == 'Edukasi & Budaya' ? 'selected' : '' }} class="bg-[#1B261B] text-[#EBF0EB]">Edukasi & Budaya</option>
+                                    <option value="Alam & Curug" {{ old('category') == 'Alam & Curug' ? 'selected' : '' }} class="bg-[#161D15] text-[#F5F2EB]">Alam & Curug</option>
+                                    <option value="Kuliner" {{ old('category') == 'Kuliner' ? 'selected' : '' }} class="bg-[#161D15] text-[#F5F2EB]">Kuliner</option>
+                                    <option value="Edukasi & Budaya" {{ old('category') == 'Edukasi & Budaya' ? 'selected' : '' }} class="bg-[#161D15] text-[#F5F2EB]">Edukasi & Budaya</option>
                                 </select>
                                 <svg
                                     width="14"
@@ -61,7 +61,7 @@
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
                                     aria-hidden="true"
-                                    class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#C8D3C8]"
+                                    class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#F5F2EB]/65"
                                 >
                                     <polyline points="6 9 12 15 18 9" />
                                 </svg>
@@ -69,7 +69,7 @@
                         </div>
 
                         <div>
-                            <label for="admin-ticket" class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">
+                            <label for="admin-ticket" class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">
                                 Harga tiket
                             </label>
                             <input
@@ -78,15 +78,15 @@
                                 name="ticket_price"
                                 value="{{ old('ticket_price') }}"
                                 placeholder="Contoh: Rp 15.000 atau Gratis"
-                                class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13.5px] placeholder:text-[#98A698]"
+                                class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 font-mono text-[13.5px] tabular-nums placeholder:font-sans placeholder:text-[#F5F2EB]/45"
                             />
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <label for="admin-rating" class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">
-                                Rating awal (0.0 – 5.0)
+                            <label for="admin-rating" class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">
+                                Rating awal (<span class="font-mono tabular-nums">0.0 – 5.0</span>)
                             </label>
                             <input
                                 id="admin-rating"
@@ -97,14 +97,14 @@
                                 name="rating"
                                 value="{{ old('rating', '4.5') }}"
                                 placeholder="4.5"
-                                class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13.5px] font-mono tabular-nums"
+                                class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 font-mono text-[13.5px] font-semibold tabular-nums text-[#DFAA63]"
                             />
                         </div>
 
                         <div class="flex flex-col justify-end">
-                            <span class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">Visibilitas</span>
-                            <label for="admin-popular" class="flex min-h-[44px] cursor-pointer items-center justify-between gap-3 rounded-xl border border-white/[0.15] bg-white/[0.06] px-3.5 py-2 transition-colors hover:bg-white/[0.09]">
-                                <span class="text-[13px] font-medium text-[#EBF0EB]">
+                            <span class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">Visibilitas</span>
+                            <label for="admin-popular" class="flex min-h-[44px] items-center justify-between gap-3 rounded-xl border border-[rgba(244,239,230,0.14)] bg-white/[0.05] px-3.5 py-2 transition-colors hover:bg-white/[0.08]">
+                                <span class="text-[13px] font-medium text-[#F5F2EB]">
                                     Tandai wisata populer
                                 </span>
                                 <span class="relative inline-flex h-5 w-5 shrink-0 items-center justify-center">
@@ -116,8 +116,8 @@
                                         {{ old('is_popular') ? 'checked' : '' }}
                                         class="peer sr-only"
                                     />
-                                    <span class="h-5 w-5 rounded-md border border-white/25 bg-white/[0.06] transition-colors peer-checked:border-[#EBF0EB] peer-checked:bg-[#EBF0EB]"></span>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="#161E16" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none absolute h-3.5 w-3.5 opacity-0 transition-opacity peer-checked:opacity-100" aria-hidden="true">
+                                    <span class="h-5 w-5 rounded-md border border-[rgba(244,239,230,0.28)] bg-white/[0.06] transition-colors peer-checked:border-[#F2ECE1] peer-checked:bg-[#F2ECE1] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#F2ECE1]"></span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#141A14" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="pointer-events-none absolute h-3.5 w-3.5 opacity-0 transition-opacity peer-checked:opacity-100" aria-hidden="true">
                                         <polyline points="20 6 9 17 4 12" />
                                     </svg>
                                 </span>
@@ -126,7 +126,7 @@
                     </div>
 
                     <div>
-                        <label for="admin-address" class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">
+                        <label for="admin-address" class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">
                             Alamat
                         </label>
                         <input
@@ -135,12 +135,12 @@
                             name="address"
                             value="{{ old('address') }}"
                             placeholder="Jl. Ir. H. Juanda No.13, Paledang, Kota Bogor, Jawa Barat"
-                            class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13.5px] placeholder:text-[#98A698]"
+                            class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13.5px] placeholder:text-[#F5F2EB]/45"
                         />
                     </div>
 
                     <div>
-                        <label for="admin-description" class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">
+                        <label for="admin-description" class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">
                             Deskripsi
                         </label>
                         <textarea
@@ -148,12 +148,12 @@
                             name="description"
                             rows="3"
                             placeholder="Tulis gambaran singkat daya tarik wisata dan suasana lokasi"
-                            class="liquid-glass-input w-full rounded-xl p-3.5 text-[13.5px] placeholder:text-[#98A698] resize-y"
+                            class="liquid-glass-input w-full rounded-xl p-3.5 text-[13.5px] placeholder:text-[#F5F2EB]/45 resize-y"
                         >{{ old('description') }}</textarea>
                     </div>
 
                     <div>
-                        <label for="admin-detailed-description" class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">
+                        <label for="admin-detailed-description" class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">
                             Deskripsi detail
                         </label>
                         <textarea
@@ -161,21 +161,21 @@
                             name="detailed_description"
                             rows="4"
                             placeholder="Tulis ulasan mendalam, sejarah, fasilitas, dan tips berkunjung"
-                            class="liquid-glass-input w-full rounded-xl p-3.5 text-[13.5px] placeholder:text-[#98A698] resize-y"
+                            class="liquid-glass-input w-full rounded-xl p-3.5 text-[13.5px] placeholder:text-[#F5F2EB]/45 resize-y"
                         >{{ old('detailed_description') }}</textarea>
                     </div>
                 </div>
             </section>
 
             <!-- 2. Kartu Jam Operasional -->
-            <section class="liquid-glass-card rounded-2xl p-5 sm:p-6" aria-labelledby="heading-jam-operasional">
+            <section class="apple-glass-card rounded-3xl p-5 sm:p-6" aria-labelledby="heading-jam-operasional">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
-                        <svg class="h-4 w-4 text-[#E2D7B5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <svg class="h-4 w-4 text-[#DFAA63]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
                         </svg>
-                        <h2 id="heading-jam-operasional" class="text-[15px] font-bold tracking-tight text-[#EBF0EB]">
+                        <h2 id="heading-jam-operasional" class="text-[15px] font-bold tracking-tight text-[#F5F2EB]">
                             Jam Operasional
                         </h2>
                     </div>
@@ -183,51 +183,52 @@
                     <button
                         type="button"
                         id="btn-toggle-24h"
-                        class="min-h-[34px] rounded-xl border border-white/15 bg-white/[0.06] px-3 text-[12px] font-medium text-[#C8D3C8] transition-colors hover:text-[#EBF0EB] cursor-pointer"
+                        aria-pressed="false"
+                        class="min-h-[44px] rounded-full border border-white/10 bg-white/[0.06] px-4 text-[12px] font-medium text-white/60 transition-colors hover:border-white/25 hover:text-[#F5F2EB]"
                     >
-                        Buka 24 jam
+                        Buka <span class="font-mono tabular-nums">24</span> jam
                     </button>
                 </div>
 
                 <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                        <label for="admin-open" class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">
+                        <label for="admin-open" class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">
                             Jam buka
                         </label>
                         <input
                             id="admin-open"
                             type="time"
                             value="08:00"
-                            class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13.5px] [color-scheme:dark]"
+                            class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 font-mono text-[13.5px] tabular-nums [color-scheme:dark]"
                         />
                     </div>
 
                     <div>
-                        <label for="admin-close" class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">
+                        <label for="admin-close" class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">
                             Jam tutup
                         </label>
                         <input
                             id="admin-close"
                             type="time"
                             value="17:00"
-                            class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13.5px] [color-scheme:dark]"
+                            class="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 font-mono text-[13.5px] tabular-nums [color-scheme:dark]"
                         />
                     </div>
                 </div>
 
                 <div class="mt-5">
-                    <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
-                        <span class="text-[12px] font-medium text-[#C8D3C8]">
+                    <div class="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-[12px] font-medium text-[#F5F2EB]/75">
                             Hari buka (Senin–Minggu)
                         </span>
-                        <div class="flex items-center gap-2 text-[11px]">
-                            <button type="button" id="btn-quick-all" class="rounded-lg px-2 py-1 font-medium text-[#C8D3C8] transition-colors hover:bg-white/10 hover:text-[#EBF0EB] cursor-pointer">
+                        <div class="flex flex-wrap items-center gap-1.5 text-[11.5px]">
+                            <button type="button" id="btn-quick-all" class="inline-flex min-h-[44px] items-center rounded-full px-3 font-medium text-[#F5F2EB]/70 transition-colors hover:bg-white/[0.08] hover:text-[#F5F2EB]">
                                 Setiap hari
                             </button>
-                            <button type="button" id="btn-quick-weekdays" class="rounded-lg px-2 py-1 font-medium text-[#C8D3C8] transition-colors hover:bg-white/10 hover:text-[#EBF0EB] cursor-pointer">
+                            <button type="button" id="btn-quick-weekdays" class="inline-flex min-h-[44px] items-center rounded-full px-3 font-medium text-[#F5F2EB]/70 transition-colors hover:bg-white/[0.08] hover:text-[#F5F2EB]">
                                 Senin–Jumat
                             </button>
-                            <button type="button" id="btn-quick-weekends" class="rounded-lg px-2 py-1 font-medium text-[#C8D3C8] transition-colors hover:bg-white/10 hover:text-[#EBF0EB] cursor-pointer">
+                            <button type="button" id="btn-quick-weekends" class="inline-flex min-h-[44px] items-center rounded-full px-3 font-medium text-[#F5F2EB]/70 transition-colors hover:bg-white/[0.08] hover:text-[#F5F2EB]">
                                 Akhir pekan
                             </button>
                         </div>
@@ -239,15 +240,15 @@
                                 type="button"
                                 data-day="{{ $dayFull }}"
                                 aria-pressed="true"
-                                class="day-toggle-btn flex min-h-[42px] items-center justify-center rounded-xl border border-[#EBF0EB] bg-[#EBF0EB] px-2 text-[12.5px] font-semibold text-[#161E16] shadow-sm transition-colors cursor-pointer"
+                                class="day-toggle-btn apple-retro-cta flex min-h-[44px] items-center justify-center rounded-full border border-[#F2ECE1] bg-[#F2ECE1] px-2 text-[12.5px] font-semibold text-[#141A14]"
                             >
                                 {{ $dayShort }}
                             </button>
                         @endforeach
                     </div>
 
-                    <p class="mt-2.5 text-[12px] text-[#C8D3C8]">
-                        Format tersimpan: <span id="operational-hours-preview" class="font-medium text-[#EBF0EB]">08:00 - 17:00</span>
+                    <p class="mt-3 text-[12px] text-[#F5F2EB]/65">
+                        Format tersimpan: <span id="operational-hours-preview" class="font-mono font-semibold tabular-nums text-[#F5F2EB]">08:00 - 17:00</span>
                     </p>
                 </div>
             </section>
@@ -256,32 +257,32 @@
         <!-- KOLOM KANAN (5 KOLOM): Titik Koordinat & Foto Lokasi Multi-Upload -->
         <div class="space-y-6 lg:col-span-5">
             <!-- 3. Kartu Titik Koordinat -->
-            <section class="liquid-glass-card rounded-2xl p-5 sm:p-6" aria-labelledby="heading-koordinat">
+            <section class="apple-glass-card rounded-3xl p-5 sm:p-6" aria-labelledby="heading-koordinat">
                 <div class="flex items-center gap-2">
-                    <svg class="h-4 w-4 text-[#E2D7B5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg class="h-4 w-4 text-[#DFAA63]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                         <circle cx="12" cy="10" r="3" />
                     </svg>
-                    <h2 id="heading-koordinat" class="text-[15px] font-bold tracking-tight text-[#EBF0EB]">
+                    <h2 id="heading-koordinat" class="text-[15px] font-bold tracking-tight text-[#F5F2EB]">
                         Titik Koordinat
                     </h2>
                 </div>
-                <p class="mt-0.5 text-[12px] text-[#C8D3C8]">
+                <p class="mt-0.5 text-[12px] text-[#F5F2EB]/65">
                     Klik peta di bawah atau geser pin marker untuk menyetel koordinat akurat.
                 </p>
 
-                <div class="mt-4 relative h-[280px] sm:h-[320px] w-full overflow-hidden rounded-2xl border border-white/15 bg-[#1B261B] shadow-inner">
+                <div class="mt-4 relative h-[280px] sm:h-[320px] w-full overflow-hidden rounded-xl border border-white/15 bg-[#111711] shadow-[inset_0_1px_0_0_rgba(244,239,230,0.14)]">
                     <div id="map-picker" class="h-full w-full z-0 cursor-crosshair"></div>
 
                     <!-- Custom Controls: Zoom & Center -->
-                    <div class="pointer-events-none absolute top-3 right-3 z-[500] flex flex-col gap-1.5">
-                        <div class="pointer-events-auto flex flex-col overflow-hidden rounded-xl border border-white/20 bg-[#141C14]/80 text-[#EBF0EB] shadow-md backdrop-blur-md">
-                            <button type="button" id="btn-zoom-in" aria-label="Perbesar" class="flex h-9 w-9 items-center justify-center text-[16px] font-semibold hover:bg-white/10 active:bg-white/15 cursor-pointer">+</button>
-                            <div class="h-px w-full bg-white/15"></div>
-                            <button type="button" id="btn-zoom-out" aria-label="Perkecil" class="flex h-9 w-9 items-center justify-center text-[16px] font-semibold hover:bg-white/10 active:bg-white/15 cursor-pointer">-</button>
+                    <div class="pointer-events-none absolute top-3 right-3 z-[500] flex flex-col gap-2">
+                        <div class="apple-retro-bevel pointer-events-auto flex flex-col overflow-hidden rounded-xl border border-[rgba(244,239,230,0.18)] bg-[#111711]/85 text-[#F5F2EB] shadow-md backdrop-blur-xl">
+                            <button type="button" id="btn-zoom-in" aria-label="Perbesar peta" class="flex h-11 w-11 items-center justify-center text-[17px] font-semibold hover:bg-white/10 active:bg-white/15">+</button>
+                            <div class="h-px w-full bg-[rgba(244,239,230,0.14)]"></div>
+                            <button type="button" id="btn-zoom-out" aria-label="Perkecil peta" class="flex h-11 w-11 items-center justify-center text-[17px] font-semibold hover:bg-white/10 active:bg-white/15">-</button>
                         </div>
-                        <button type="button" id="btn-center-bogor" title="Pusatkan ke Kota Bogor" class="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-[#141C14]/80 text-[#E2D7B5] shadow-md backdrop-blur-md hover:bg-[#233020] active:scale-95 cursor-pointer">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <button type="button" id="btn-center-bogor" title="Pusatkan ke Kota Bogor" aria-label="Pusatkan ke Kota Bogor" class="apple-retro-bevel pointer-events-auto flex h-11 w-11 items-center justify-center rounded-xl border border-[rgba(244,239,230,0.18)] bg-[#111711]/85 text-[#DFAA63] shadow-md backdrop-blur-xl hover:bg-[#1C241C] active:scale-95">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <circle cx="12" cy="12" r="7" />
                                 <circle cx="12" cy="12" r="2" fill="currentColor" />
                                 <line x1="12" y1="2" x2="12" y2="5" /><line x1="12" y1="19" x2="12" y2="22" /><line x1="2" y1="12" x2="5" y2="12" /><line x1="19" y1="12" x2="22" y2="12" />
@@ -290,10 +291,10 @@
                     </div>
 
                     <div class="pointer-events-none absolute inset-x-3 bottom-3 z-[500] flex flex-wrap items-center justify-between gap-2">
-                        <span class="rounded-xl border border-white/15 bg-[#141C14]/80 px-2.5 py-1 text-[11px] font-medium text-[#C8D3C8] backdrop-blur-md">
+                        <span class="rounded-full border border-[rgba(244,239,230,0.14)] bg-[#111711]/85 px-3 py-1.5 text-[11px] font-medium text-[#F5F2EB]/75 backdrop-blur-xl shadow-md">
                             Klik peta atau geser pin
                         </span>
-                        <span id="coord-display-chip" class="rounded-xl border border-white/15 bg-[#141C14]/85 px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums text-[#EBF0EB] backdrop-blur-md">
+                        <span id="coord-display-chip" class="apple-retro-bevel rounded-full border border-[rgba(244,239,230,0.18)] bg-[#111711]/90 px-3.5 py-1.5 font-mono text-[11.5px] font-semibold tabular-nums text-[#DFAA63] backdrop-blur-xl shadow-md">
                             -6.59710, 106.80600
                         </span>
                     </div>
@@ -301,7 +302,7 @@
 
                 <div class="mt-4 grid grid-cols-2 gap-3">
                     <div>
-                        <label for="input-lat" class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">
+                        <label for="input-lat" class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">
                             Latitude
                         </label>
                         <input
@@ -317,7 +318,7 @@
                     </div>
 
                     <div>
-                        <label for="input-lng" class="mb-1.5 block text-[12px] font-medium text-[#C8D3C8]">
+                        <label for="input-lng" class="mb-1.5 block text-[12px] font-medium text-[#F5F2EB]/75">
                             Longitude
                         </label>
                         <input
@@ -335,22 +336,22 @@
             </section>
 
             <!-- 4. Kartu Foto Lokasi Multi-Upload -->
-            <section class="liquid-glass-card rounded-2xl p-5 sm:p-6" aria-labelledby="heading-foto-lokasi">
+            <section class="apple-glass-card rounded-3xl p-5 sm:p-6" aria-labelledby="heading-foto-lokasi">
                 <div class="flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2">
-                        <svg class="h-4 w-4 text-[#E2D7B5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <svg class="h-4 w-4 text-[#DFAA63]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
                             <circle cx="12" cy="13" r="3" />
                         </svg>
-                        <h2 id="heading-foto-lokasi" class="text-[15px] font-bold tracking-tight text-[#EBF0EB]">
+                        <h2 id="heading-foto-lokasi" class="text-[15px] font-bold tracking-tight text-[#F5F2EB]">
                             Foto Lokasi
                         </h2>
                     </div>
-                    <span class="text-[12px] font-medium tabular-nums text-[#C8D3C8]">
-                        <span id="photo-count">0</span> foto
+                    <span class="text-[12px] font-medium text-[#F5F2EB]/70">
+                        <span id="photo-count" class="font-mono font-semibold tabular-nums text-[#DFAA63]">0</span> foto
                     </span>
                 </div>
-                <p class="mt-0.5 text-[12px] text-[#C8D3C8]">
+                <p class="mt-0.5 text-[12px] text-[#F5F2EB]/65">
                     Unggah beberapa foto. Foto paling awal otomatis menjadi sampul utama tempat wisata.
                 </p>
 
@@ -359,18 +360,18 @@
                 <button
                     type="button"
                     id="dropzone-area"
-                    class="mt-4 flex min-h-[136px] w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-white/20 bg-white/[0.04] px-4 py-5 text-center transition-colors hover:border-white/40 hover:bg-white/[0.08] cursor-pointer"
+                    class="mt-4 flex min-h-[136px] w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[rgba(244,239,230,0.2)] bg-white/[0.04] px-4 py-5 text-center transition-colors hover:border-[rgba(244,239,230,0.38)] hover:bg-white/[0.08]"
                 >
-                    <span class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-[#141C14]/70 text-[#E2D7B5]">
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <span class="apple-retro-bevel flex h-10 w-10 items-center justify-center rounded-xl border border-[rgba(244,239,230,0.16)] bg-[#111711]/75 text-[#DFAA63]">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
                             <circle cx="12" cy="13" r="3" />
                         </svg>
                     </span>
-                    <span class="text-[13px] font-medium text-[#EBF0EB]">
+                    <span class="text-[13px] font-medium text-[#F5F2EB]">
                         Klik atau seret beberapa foto ke sini
                     </span>
-                    <span class="text-[11.5px] text-[#C8D3C8]">
+                    <span class="text-[11.5px] text-[#F5F2EB]/65">
                         JPG, PNG, WebP · Kompresi resolusi otomatis di browser
                     </span>
                 </button>
@@ -382,10 +383,10 @@
     </div>
 
     <!-- Footer Aksi Form -->
-    <div class="flex flex-col-reverse items-stretch justify-end gap-3 border-t border-white/12 pt-6 sm:flex-row sm:items-center">
+    <div class="flex flex-col-reverse items-stretch justify-end gap-3 border-t border-[rgba(244,239,230,0.12)] pt-6 sm:flex-row sm:items-center">
         <a
             href="{{ route('admin.spots.index') }}"
-            class="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-white/18 bg-[#141C14]/65 px-6 py-2.5 text-[13.5px] font-medium text-[#C8D3C8] backdrop-blur-md transition-colors hover:border-white/30 hover:text-[#EBF0EB]"
+            class="apple-retro-bevel inline-flex min-h-[48px] items-center justify-center rounded-xl border border-[rgba(244,239,230,0.16)] bg-[rgba(28,36,28,0.65)] px-6 py-2.5 text-[13.5px] font-medium text-[#F5F2EB]/75 transition-colors hover:border-[rgba(244,239,230,0.3)] hover:text-[#F5F2EB]"
         >
             Batal
         </a>
@@ -393,7 +394,7 @@
         <button
             type="submit"
             id="btn-submit-spot"
-            class="inline-flex min-h-[48px] items-center justify-center rounded-xl bg-[#EBF0EB] px-9 py-3 text-[14px] font-semibold text-[#161E16] shadow-sm transition-colors duration-150 hover:bg-[#DCE4DC] active:scale-[0.98] cursor-pointer"
+            class="apple-retro-cta inline-flex min-h-[48px] items-center justify-center rounded-xl px-9 py-3 text-[14px] font-semibold"
         >
             Simpan Lokasi
         </button>
@@ -414,6 +415,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const toggle24hBtn = document.getElementById('btn-toggle-24h');
     const dayButtons = Array.from(document.querySelectorAll('.day-toggle-btn'));
     let is24Hours = false;
+
+    const DAY_ACTIVE_CLASS = 'day-toggle-btn apple-retro-cta flex min-h-[44px] items-center justify-center rounded-full border border-[#F2ECE1] bg-[#F2ECE1] px-2 text-[12.5px] font-semibold text-[#141A14]';
+    const DAY_INACTIVE_CLASS = 'day-toggle-btn flex min-h-[44px] items-center justify-center rounded-full border border-white/10 bg-white/[0.06] px-2 text-[12.5px] font-medium text-white/60 hover:border-white/25 hover:bg-white/[0.1] hover:text-[#F5F2EB] transition-colors';
+    const TOGGLE24_ACTIVE_CLASS = 'apple-retro-cta min-h-[44px] rounded-full border border-[#F2ECE1] bg-[#F2ECE1] px-4 text-[12px] font-semibold text-[#141A14]';
+    const TOGGLE24_INACTIVE_CLASS = 'min-h-[44px] rounded-full border border-white/10 bg-white/[0.06] px-4 text-[12px] font-medium text-white/60 transition-colors hover:border-white/25 hover:text-[#F5F2EB]';
+
+    function setDayBtnState(btn, active) {
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        btn.className = active ? DAY_ACTIVE_CLASS : DAY_INACTIVE_CLASS;
+    }
+
+    function escapeHtml(str) {
+        return String(str || '').replace(/[&<>"']/g, function (ch) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+        });
+    }
 
     function getSelectedDays() {
         return dayButtons
@@ -450,11 +467,8 @@ document.addEventListener('DOMContentLoaded', function () {
         is24Hours = !is24Hours;
         openInput.disabled = is24Hours;
         closeInput.disabled = is24Hours;
-        if (is24Hours) {
-            this.className = 'min-h-[34px] rounded-xl border border-[#EBF0EB] bg-[#EBF0EB] px-3 text-[12px] font-semibold text-[#161E16] cursor-pointer';
-        } else {
-            this.className = 'min-h-[34px] rounded-xl border border-white/15 bg-white/[0.06] px-3 text-[12px] font-medium text-[#C8D3C8] hover:text-[#EBF0EB] cursor-pointer';
-        }
+        this.setAttribute('aria-pressed', is24Hours ? 'true' : 'false');
+        this.className = is24Hours ? TOGGLE24_ACTIVE_CLASS : TOGGLE24_INACTIVE_CLASS;
         syncOperationalHours();
     });
 
@@ -464,33 +478,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const currentSelected = getSelectedDays();
             if (wasActive && currentSelected.length === 1) return; // minimal 1 hari
 
-            const nextActive = !wasActive;
-            this.setAttribute('aria-pressed', nextActive ? 'true' : 'false');
-            if (nextActive) {
-                this.className = 'day-toggle-btn flex min-h-[42px] items-center justify-center rounded-xl border border-[#EBF0EB] bg-[#EBF0EB] px-2 text-[12.5px] font-semibold text-[#161E16] shadow-sm transition-colors cursor-pointer';
-            } else {
-                this.className = 'day-toggle-btn flex min-h-[42px] items-center justify-center rounded-xl border border-white/15 bg-white/[0.06] px-2 text-[12.5px] font-semibold text-[#C8D3C8] hover:border-white/30 hover:text-[#EBF0EB] transition-colors cursor-pointer';
-            }
+            setDayBtnState(this, !wasActive);
             syncOperationalHours();
         });
     });
 
     document.getElementById('btn-quick-all').addEventListener('click', () => {
-        dayButtons.forEach(b => {
-            b.setAttribute('aria-pressed', 'true');
-            b.className = 'day-toggle-btn flex min-h-[42px] items-center justify-center rounded-xl border border-[#EBF0EB] bg-[#EBF0EB] px-2 text-[12.5px] font-semibold text-[#161E16] shadow-sm transition-colors cursor-pointer';
-        });
+        dayButtons.forEach(b => setDayBtnState(b, true));
         syncOperationalHours();
     });
 
     document.getElementById('btn-quick-weekdays').addEventListener('click', () => {
         dayButtons.forEach(b => {
             const day = b.getAttribute('data-day');
-            const isWeekday = !['Sabtu', 'Minggu'].includes(day);
-            b.setAttribute('aria-pressed', isWeekday ? 'true' : 'false');
-            b.className = isWeekday
-                ? 'day-toggle-btn flex min-h-[42px] items-center justify-center rounded-xl border border-[#EBF0EB] bg-[#EBF0EB] px-2 text-[12.5px] font-semibold text-[#161E16] shadow-sm transition-colors cursor-pointer'
-                : 'day-toggle-btn flex min-h-[42px] items-center justify-center rounded-xl border border-white/15 bg-white/[0.06] px-2 text-[12.5px] font-semibold text-[#C8D3C8] hover:border-white/30 hover:text-[#EBF0EB] transition-colors cursor-pointer';
+            setDayBtnState(b, !['Sabtu', 'Minggu'].includes(day));
         });
         syncOperationalHours();
     });
@@ -498,18 +499,31 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('btn-quick-weekends').addEventListener('click', () => {
         dayButtons.forEach(b => {
             const day = b.getAttribute('data-day');
-            const isWeekend = ['Sabtu', 'Minggu'].includes(day);
-            b.setAttribute('aria-pressed', isWeekend ? 'true' : 'false');
-            b.className = isWeekend
-                ? 'day-toggle-btn flex min-h-[42px] items-center justify-center rounded-xl border border-[#EBF0EB] bg-[#EBF0EB] px-2 text-[12.5px] font-semibold text-[#161E16] shadow-sm transition-colors cursor-pointer'
-                : 'day-toggle-btn flex min-h-[42px] items-center justify-center rounded-xl border border-white/15 bg-white/[0.06] px-2 text-[12.5px] font-semibold text-[#C8D3C8] hover:border-white/30 hover:text-[#EBF0EB] transition-colors cursor-pointer';
+            setDayBtnState(b, ['Sabtu', 'Minggu'].includes(day));
         });
         syncOperationalHours();
     });
 
     openInput.addEventListener('change', syncOperationalHours);
     closeInput.addEventListener('change', syncOperationalHours);
-    document.getElementById('spot-form').addEventListener('submit', syncOperationalHours);
+
+    const spotForm = document.getElementById('spot-form');
+    const submitBtn = document.getElementById('btn-submit-spot');
+    spotForm.addEventListener('submit', function () {
+        syncOperationalHours();
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Menyimpan...';
+            submitBtn.classList.add('opacity-75');
+        }
+    });
+    window.addEventListener('pageshow', function () {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Simpan Lokasi';
+            submitBtn.classList.remove('opacity-75');
+        }
+    });
     syncOperationalHours();
 
     // ----------------------------------------------------
@@ -536,8 +550,8 @@ document.addEventListener('DOMContentLoaded', function () {
         iconSize: [32, 42],
         iconAnchor: [16, 41],
         html: `<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 4px 8px rgb(0 0 0 / .48))">
-            <path d="M16 41S3 26.5 3 16a13 13 0 1 1 26 0c0 10.5-13 25-13 25Z" fill="#1F8A5B" stroke="#EBF0EB" stroke-width="2.2"/>
-            <circle cx="16" cy="15" r="5" fill="#E2D7B5"/>
+            <path d="M16 41S3 26.5 3 16a13 13 0 1 1 26 0c0 10.5-13 25-13 25Z" fill="#1F8A5B" stroke="#F2ECE1" stroke-width="2.2"/>
+            <circle cx="16" cy="15" r="5" fill="#DFAA63"/>
         </svg>`
     });
 
@@ -590,20 +604,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let photoItems = []; // [{ id, kind: 'new'|'existing', file, previewUrl, name }]
     let newFileCounter = 0;
-    const fileStore = new DataTransfer();
 
     dropzone.addEventListener('click', () => fileInput.click());
 
     dropzone.addEventListener('dragover', (e) => {
         e.preventDefault();
-        dropzone.classList.add('border-[#E2D7B5]', 'bg-white/[0.12]');
+        dropzone.classList.add('border-[#DFAA63]', 'bg-white/[0.1]');
     });
     dropzone.addEventListener('dragleave', () => {
-        dropzone.classList.remove('border-[#E2D7B5]', 'bg-white/[0.12]');
+        dropzone.classList.remove('border-[#DFAA63]', 'bg-white/[0.1]');
     });
     dropzone.addEventListener('drop', (e) => {
         e.preventDefault();
-        dropzone.classList.remove('border-[#E2D7B5]', 'bg-white/[0.12]');
+        dropzone.classList.remove('border-[#DFAA63]', 'bg-white/[0.1]');
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             handleNewFiles(e.dataTransfer.files);
         }
@@ -677,18 +690,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
         photoItems.forEach((item, index) => {
             const isPrimary = index === 0;
+            const safeName = escapeHtml(item.name);
+            const safePreview = escapeHtml(item.previewUrl);
             const card = document.createElement('div');
             card.dataset.id = item.id;
-            card.className = 'group relative aspect-[4/3] overflow-hidden rounded-xl border border-white/15 bg-[#1B261B] cursor-grab';
+            card.className = 'group relative aspect-[4/3] overflow-hidden rounded-xl border border-[rgba(244,239,230,0.16)] bg-[#111711] cursor-grab';
 
             card.innerHTML = `
-                <img src="${item.previewUrl}" alt="${item.name}" class="h-full w-full object-cover pointer-events-none" />
-                <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30"></div>
+                <img src="${safePreview}" alt="${safeName}" class="h-full w-full object-cover pointer-events-none" />
+                <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/35"></div>
                 ${isPrimary
-                    ? '<span class="absolute top-2 left-2 rounded-md border border-white/25 bg-[#141C14]/85 px-2 py-0.5 text-[10px] font-semibold text-[#E2D7B5] backdrop-blur-sm">Utama</span>'
-                    : `<button type="button" class="btn-make-primary absolute bottom-2 left-2 rounded-md border border-white/25 bg-[#141C14]/85 px-2 py-0.5 text-[10px] font-medium text-[#EBF0EB] backdrop-blur-sm hover:bg-[#233020] transition-colors cursor-pointer">Jadikan utama</button>`
+                    ? '<span class="absolute top-2 left-2 rounded-md border border-[#DFAA63]/40 bg-[#111711]/90 px-2 py-0.5 text-[10px] font-semibold text-[#DFAA63] backdrop-blur-sm">Utama</span>'
+                    : `<button type="button" class="btn-make-primary absolute bottom-2 left-2 before:content-[\'\'] before:absolute before:-inset-1.5 rounded-md border border-[rgba(244,239,230,0.22)] bg-[#111711]/90 px-2 py-1 text-[10px] font-medium text-[#F5F2EB] backdrop-blur-sm hover:bg-[#1C241C] transition-colors">Jadikan utama</button>`
                 }
-                <button type="button" class="btn-remove-photo absolute top-1.5 right-1.5 flex h-7 w-7 items-center justify-center rounded-full border border-white/25 bg-[#141C14]/85 text-[#EBF0EB] backdrop-blur-sm hover:bg-rose-500/80 transition-colors cursor-pointer">✕</button>
+                <button type="button" aria-label="Hapus foto ${safeName}" class="btn-remove-photo absolute top-1.5 right-1.5 before:content-[\'\'] before:absolute before:-inset-1.5 flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(244,239,230,0.22)] bg-[#111711]/90 text-[#F5F2EB] backdrop-blur-sm hover:bg-[#3A1B22] transition-colors"><span aria-hidden="true">✕</span></button>
             `;
 
             card.querySelector('.btn-remove-photo').addEventListener('click', (e) => {

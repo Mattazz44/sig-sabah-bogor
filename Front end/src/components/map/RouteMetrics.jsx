@@ -1,11 +1,89 @@
-import { memo } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
+
+function parseNumericSuffix(text, unitRegex) {
+  if (typeof text === 'number' && Number.isFinite(text)) return text
+  if (typeof text !== 'string') return null
+  const match = text.match(unitRegex)
+  if (!match) return null
+  const parsed = Number.parseFloat(match[1].replace(',', '.'))
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+/**
+ * Menginterpolasi angka telemetri secara halus pada 60fps tanpa memicu lonjakan layout,
+ * dan langsung berhenti di cleanup bila komponen di-unmount atau rute berganti.
+ */
+function useRollingNumber(targetValue, durationMs = 420) {
+  const [displayValue, setDisplayValue] = useState(targetValue)
+  const currentRef = useRef(targetValue ?? 0)
+
+  useEffect(() => {
+    if (targetValue === null || !Number.isFinite(targetValue)) {
+      currentRef.current = 0
+      const resetRaf = requestAnimationFrame(() => setDisplayValue(null))
+      return () => cancelAnimationFrame(resetRaf)
+    }
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+
+    if (prefersReducedMotion) {
+      currentRef.current = targetValue
+      const instantRaf = requestAnimationFrame(() => setDisplayValue(targetValue))
+      return () => cancelAnimationFrame(instantRaf)
+    }
+
+    const startValue = Number.isFinite(currentRef.current) ? currentRef.current : 0
+    if (Math.abs(targetValue - startValue) < 0.01) {
+      currentRef.current = targetValue
+      const syncRaf = requestAnimationFrame(() => setDisplayValue(targetValue))
+      return () => cancelAnimationFrame(syncRaf)
+    }
+
+    const startTime = performance.now()
+    let rafId = 0
+
+    const tick = (now) => {
+      const t = Math.min(1, (now - startTime) / durationMs)
+      const eased = 1 - Math.pow(1 - t, 3)
+      const next = startValue + (targetValue - startValue) * eased
+      currentRef.current = next
+      setDisplayValue(next)
+
+      if (t < 1) {
+        rafId = requestAnimationFrame(tick)
+      }
+    }
+
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
+  }, [targetValue, durationMs])
+
+  return displayValue
+}
 
 function RouteMetrics({
   activeDestination,
   routeInfo,
   isNavigationMode = false,
 }) {
-  if (!isNavigationMode || !activeDestination) return null
+  const isActive = isNavigationMode && Boolean(activeDestination)
+
+  const targetMinutes = isActive
+    ? routeInfo?.totalMinutes ??
+      parseNumericSuffix(activeDestination?.travelTime, /([\d.,]+)\s*menit/i)
+    : null
+
+  const targetKm = isActive
+    ? parseNumericSuffix(routeInfo?.totalKm ?? routeInfo?.distanceText, /([\d.,]+)/) ??
+      parseNumericSuffix(activeDestination?.distance, /([\d.,]+)\s*km/i)
+    : null
+
+  const animatedMinutes = useRollingNumber(targetMinutes, 420)
+  const animatedKm = useRollingNumber(targetKm, 460)
+
+  if (!isActive) return null
 
   const isCustomRoute =
     Array.isArray(activeDestination) || Boolean(routeInfo?.isCustomRoute)
@@ -26,10 +104,17 @@ function RouteMetrics({
     title = activeDestination?.name || 'Destinasi wisata'
   }
 
-  const estimatedTime =
+  const fallbackTimeText =
     routeInfo?.timeText || activeDestination?.travelTime || 'Menghitung...'
-  const estimatedDistance =
+  const fallbackDistanceText =
     routeInfo?.distanceText || activeDestination?.distance || 'Menghitung...'
+
+  const formattedTime =
+    animatedMinutes !== null
+      ? `${Math.max(1, Math.round(animatedMinutes))} Menit`
+      : fallbackTimeText
+  const formattedDistance =
+    animatedKm !== null ? `${animatedKm.toFixed(1)} KM` : fallbackDistanceText
 
   return (
     <aside
@@ -55,14 +140,18 @@ function RouteMetrics({
             <span className="text-[#F5F2EB]/60">
               {isCustomRoute ? 'Estimasi total:' : 'Estimasi:'}
             </span>
-            <span className="font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">{estimatedTime}</span>
+            <span className="font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+              {formattedTime}
+            </span>
           </div>
           <span className="text-[#F5F2EB]/25" aria-hidden="true">|</span>
           <div className="flex items-center gap-1.5 text-[#F5F2EB]">
             <span className="text-[#F5F2EB]/60">
               {isCustomRoute ? 'Jarak total:' : 'Jarak:'}
             </span>
-            <span className="font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">{estimatedDistance}</span>
+            <span className="font-mono font-semibold tabular-nums tracking-wide text-[#DFAA63]">
+              {formattedDistance}
+            </span>
           </div>
         </div>
       </div>

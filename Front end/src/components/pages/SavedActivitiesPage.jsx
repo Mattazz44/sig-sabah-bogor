@@ -3,7 +3,7 @@ import CustomRoutePage from './CustomRoutePage'
 import NotificationDrawer from '../ui/NotificationDrawer'
 import GlassModal from '../ui/GlassModal'
 import SafeImage from '../ui/SafeImage'
-import { apiFetch } from '../../utils/api'
+import { apiFetch, getAuthToken } from '../../utils/api'
 import { DEFAULT_AVATAR_PLACEHOLDER, getBogorFallbackPhoto } from '../../utils/imageHelper'
 import {
   BellIcon,
@@ -44,14 +44,14 @@ function SavedPlaceCard({ place, secondaryMeta, onSelect }) {
           {place.name}
         </h3>
         <div className="mt-1 flex items-center gap-2 text-[12px] text-[#F5F2EB]/60">
-          <span className="inline-flex items-center gap-1 font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+          <span className="inline-flex items-center gap-1 font-semibold not-italic tabular-nums text-[#F5F2EB]">
             <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
             {Number(place.rating || 0).toFixed(1)}
           </span>
           {secondaryMeta && (
             <>
               <span aria-hidden="true" className="text-[#F5F2EB]/35">·</span>
-              <span className="truncate font-mono tabular-nums tracking-wide">{secondaryMeta}</span>
+              <span className="truncate not-italic tabular-nums">{secondaryMeta}</span>
             </>
           )}
         </div>
@@ -85,17 +85,15 @@ function SavedActivitiesPage({
   const [customRoutesCount, setCustomRoutesCount] = useState(0)
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !getAuthToken()) {
       setUserActivities([])
       setCustomRoutesCount(0)
       return undefined
     }
 
     let isMounted = true
-    const uid = currentUser?.id
-    const endpoint = uid ? `/api/saved-activities?user_id=${encodeURIComponent(uid)}` : '/api/saved-activities'
 
-    apiFetch(endpoint)
+    apiFetch('/api/saved-activities')
       .then((res) => {
         if (!res.ok) throw new Error('Network error')
         return res.json()
@@ -149,40 +147,63 @@ function SavedActivitiesPage({
     }
   }
 
-  const handleActivitySubmit = (e) => {
+  const handleActivitySubmit = async (e) => {
     e.preventDefault()
     if (!newActivityName.trim() || !newActivityLocation.trim()) return
 
     const nameText = newActivityName.trim()
     const locText = newActivityLocation.trim()
+    const tempId = `act-${Date.now()}`
 
     const newAct = {
-      id: `act-${Date.now()}`,
+      id: tempId,
       name: nameText,
       location: locText,
       date: 'Baru saja',
     }
 
+    const prevActivities = userActivities
     setUserActivities((prev) => [newAct, ...prev])
-
-    apiFetch('/api/saved-activities', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        user_id: currentUser?.id,
-        name: nameText,
-        location: locText,
-      }),
-    }).catch((err) => {
-      console.warn('Gagal menyimpan aktivitas ke server:', err)
-    })
-
     setNewActivityName('')
     setNewActivityLocation('')
     setShowActivityModal(false)
+
+    try {
+      const res = await apiFetch('/api/saved-activities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: nameText,
+          location: locText,
+        }),
+      })
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`)
+      }
+      const json = await res.json().catch(() => null)
+      if (json?.data?.id) {
+        setUserActivities((prev) =>
+          prev.map((item) =>
+            item.id === tempId
+              ? {
+                  id: json.data.id,
+                  tourist_spot_id: json.data.tourist_spot_id,
+                  spot_slug: json.data.spot_slug,
+                  name: json.data.name,
+                  location: json.data.location,
+                  date: json.data.date_label || 'Baru saja',
+                }
+              : item,
+          ),
+        )
+      }
+    } catch (err) {
+      console.warn('Gagal menyimpan aktivitas ke server:', err)
+      setUserActivities(prevActivities)
+    }
   }
 
   const favoritePlaces = useMemo(() => {
@@ -288,14 +309,14 @@ function SavedActivitiesPage({
                           {place.name}
                         </h2>
                         <div className="mt-0.5 flex items-center gap-2 text-[12px] text-[#F5F2EB]/60">
-                          <span className="inline-flex items-center gap-1 font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+                          <span className="inline-flex items-center gap-1 font-semibold not-italic tabular-nums text-[#F5F2EB]">
                             <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
                             {Number(place.rating || 0).toFixed(1)}
                           </span>
                           {secondaryMeta && (
                             <>
                               <span aria-hidden="true" className="text-[#F5F2EB]/35">·</span>
-                              <span className="truncate font-mono tabular-nums tracking-wide">
+                              <span className="truncate not-italic tabular-nums">
                                 {secondaryMeta}
                               </span>
                             </>
@@ -336,7 +357,7 @@ function SavedActivitiesPage({
                 Tempat Wisata Favorit
               </h1>
               <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
-                <span className="font-mono tabular-nums tracking-wide">{favoritePlaces.length}</span> tempat wisata favorit tersimpan
+                <span className="not-italic tabular-nums">{favoritePlaces.length}</span> tempat wisata favorit tersimpan
               </p>
             </div>
           </header>
@@ -576,7 +597,7 @@ function SavedActivitiesPage({
                     <h2 className="truncate text-[14.5px] font-semibold tracking-tight text-[#F5F2EB] transition-colors group-hover:text-[#DFAA63]">
                       Terakhir dilihat
                     </h2>
-                    <p className="font-mono text-[11.5px] tabular-nums tracking-wide text-[#F5F2EB]/60">{recentPlaces.length} tempat wisata</p>
+                    <p className="text-[11.5px] not-italic tabular-nums text-[#F5F2EB]/60">{recentPlaces.length} tempat wisata</p>
                   </div>
                   <ChevronRightIcon className="h-4 w-4 shrink-0 text-[#F5F2EB]/45 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[#F5F2EB]" />
                 </div>
@@ -604,7 +625,7 @@ function SavedActivitiesPage({
                   </div>
 
                   <div className="apple-glass-pill absolute inset-x-2.5 bottom-2.5 rounded-xl py-1 text-center">
-                    <span className="font-mono text-[11px] font-semibold tabular-nums tracking-wide text-[#DFAA63]">
+                    <span className="text-[11px] font-semibold not-italic tabular-nums text-[#DFAA63]">
                       {customRoutesCount} Rute Tersedia
                     </span>
                   </div>
@@ -614,7 +635,7 @@ function SavedActivitiesPage({
                     <h2 className="truncate text-[14.5px] font-semibold tracking-tight text-[#F5F2EB] transition-colors group-hover:text-[#DFAA63]">
                       Rute custom
                     </h2>
-                    <p className="font-mono text-[11.5px] tabular-nums tracking-wide text-[#F5F2EB]/60">
+                    <p className="text-[11.5px] not-italic tabular-nums text-[#F5F2EB]/60">
                       {customRoutesCount} rute perjalanan
                     </p>
                   </div>
@@ -656,7 +677,7 @@ function SavedActivitiesPage({
                     <h2 className="truncate text-[14.5px] font-semibold tracking-tight text-[#F5F2EB] transition-colors group-hover:text-[#DFAA63]">
                       Favorit
                     </h2>
-                    <p className="font-mono text-[11.5px] tabular-nums tracking-wide text-[#F5F2EB]/60">
+                    <p className="text-[11.5px] not-italic tabular-nums text-[#F5F2EB]/60">
                       {favoritePlaces.length} tempat wisata
                     </p>
                   </div>

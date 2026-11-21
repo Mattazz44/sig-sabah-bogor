@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityPost;
-use App\Models\User;
 use App\Services\ImageCompressor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -13,22 +12,23 @@ use Illuminate\Support\Str;
 class ActivityPostController extends Controller
 {
     /**
-     * Mengambil daftar postingan aktivitas untuk subtab 'Kamu' dan 'Komunitas'.
+     * Mengambil daftar postingan aktivitas untuk subtab 'Kamu' (terautentikasi) dan 'Komunitas'.
      */
     public function index(Request $request)
     {
         $tab = $request->query('tab', 'all'); // 'kamu' | 'komunitas' | 'all'
-        $userId = $request->query('user_id');
-        $userName = $request->query('user_name');
-
         $query = ActivityPost::query()->orderBy('created_at', 'desc');
 
         if ($tab === 'kamu') {
-            if ($userId) {
-                $query->where('user_id', $userId);
-            } elseif ($userName) {
-                $query->where('user_name', $userName);
+            $authUser = $request->user('sanctum');
+            if (!$authUser) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Tidak terautentikasi.',
+                ], 401);
             }
+
+            $query->where('user_id', $authUser->id);
         }
 
         $posts = $query->get();
@@ -40,72 +40,58 @@ class ActivityPostController extends Controller
     }
 
     /**
-     * Membuat postingan aktivitas baru dengan dukungan upload & kompresi foto nyata.
+     * Membuat postingan aktivitas baru milik user terautentikasi dengan validasi & kompresi foto ketat.
      */
     public function store(Request $request)
     {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak terautentikasi.',
+            ], 401);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'location' => 'required|string|max:255',
-            'image' => 'nullable',
-            'user_id' => 'nullable|integer',
-            'user_email' => 'nullable|email',
-            'user_name' => 'nullable|string',
-            'user_avatar' => 'nullable|string',
-            'date' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'date' => 'nullable|string|max:64',
         ]);
-
-        // Resolusi user_id pemilik akun yang membuat postingan
-        $userId = $request->input('user_id');
-        if (!$userId && $request->user()) {
-            $userId = $request->user()->id;
-        }
-        if (!$userId && $request->filled('user_email')) {
-            $userId = User::where('email', $request->input('user_email'))->value('id');
-        }
-        if (!$userId && !empty($validated['user_name'])) {
-            $userId = User::where('name', $validated['user_name'])
-                ->orWhere('username', Str::slug($validated['user_name']))
-                ->value('id');
-        }
 
         $imagePath = null;
 
-        // 1. Jika dikirim file foto nyata (FormData multipart)
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $ext = $file->getClientOriginalExtension() ?: 'jpg';
+            $guessedExt = strtolower((string) ($file->guessExtension() ?: $file->getClientOriginalExtension() ?: 'jpg'));
+            $ext = in_array($guessedExt, ['jpg', 'jpeg', 'png', 'webp'], true) ? $guessedExt : 'jpg';
             $cleanName = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'activity';
-            $fileName = 'activity_' . time() . '_' . uniqid() . '_' . $cleanName . '.' . $ext;
+            $fileName = 'activity_' . $user->id . '_' . time() . '_' . uniqid() . '_' . $cleanName . '.' . $ext;
             $targetDir = public_path('images/activities');
 
-            // Kompresi foto otomatis (maksimal 1280x1280 px dengan kualitas 82%)
-            ImageCompressor::compressAndSave($file, $targetDir, $fileName, 1280, 1280, 82);
-            $imagePath = '/images/activities/' . $fileName;
-        } elseif ($request->filled('image')) {
-            $rawImage = $request->input('image');
-            // Cegah penyimpanan URL blob memori browser lokal (blob:https://...)
-            if (!str_starts_with($rawImage, 'blob:')) {
-                $imagePath = $rawImage;
+            try {
+                ImageCompressor::compressAndSave($file, $targetDir, $fileName, 1280, 1280, 82);
+                $imagePath = '/images/activities/' . $fileName;
+            } catch (\Throwable) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'File gambar tidak valid atau gagal diproses.',
+                ], 422);
             }
         }
 
-        $userName = !empty($validated['user_name']) ? $validated['user_name'] : 'Pengguna';
-        $userAvatar = !empty($validated['user_avatar']) ? $validated['user_avatar'] : null;
-
-        // Simpan tanggal nyata format lengkap bahasa Indonesia (contoh: '13 November 2026')
         $months = [
             1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
-            7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+            7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
         ];
-        $postDate = $request->filled('date')
-            ? $request->input('date')
-            : now()->format('j') . ' ' . ($months[(int)now()->format('n')] ?? now()->format('F')) . ' ' . now()->format('Y');
+        $postDate = !empty($validated['date'])
+            ? $validated['date']
+            : now()->format('j') . ' ' . ($months[(int) now()->format('n')] ?? now()->format('F')) . ' ' . now()->format('Y');
 
         $post = ActivityPost::create([
-            'user_id' => $userId,
-            'user_name' => $userName,
-            'user_avatar' => $userAvatar,
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_avatar' => $user->avatar,
             'date' => $postDate,
             'image' => $imagePath,
             'title' => $validated['title'],
@@ -120,10 +106,18 @@ class ActivityPostController extends Controller
     }
 
     /**
-     * Menghapus postingan aktivitas milik pengguna sendiri.
+     * Menghapus postingan aktivitas (hanya pemilik postingan atau admin).
      */
     public function destroy(Request $request, $id)
     {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak terautentikasi.',
+            ], 401);
+        }
+
         $post = ActivityPost::find($id);
 
         if (!$post) {
@@ -133,33 +127,28 @@ class ActivityPostController extends Controller
             ], 404);
         }
 
-        // Verifikasi kepemilikan postingan jika identitas dikirim
-        $currentUserName = $request->input('user_name') ?: ($request->user()?->name ?? null);
-        $currentUserId = $request->input('user_id') ?: ($request->user()?->id ?? null);
-
-        if ($currentUserId && $post->user_id && (int)$currentUserId !== (int)$post->user_id) {
+        $isOwner = $post->user_id !== null && (int) $post->user_id === (int) $user->id;
+        if (!$isOwner && !$user->isAdmin()) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Anda tidak memiliki hak akses untuk menghapus postingan ini',
             ], 403);
         }
 
-        if ($currentUserName && $post->user_name && $currentUserName !== $post->user_name && !$currentUserId) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Anda tidak memiliki hak akses untuk menghapus postingan ini',
-            ], 403);
-        }
-
-        // Hapus file foto dari public/images/activities/ jika ada
         if (!empty($post->image)) {
             $rawImagePath = ltrim(parse_url($post->image, PHP_URL_PATH) ?? '', '/');
-            $fullFilePath = public_path($rawImagePath);
-            if (File::exists($fullFilePath) && str_contains($rawImagePath, 'images/activities/')) {
-                // Jangan hapus foto sample bawaan
-                if (!str_contains($rawImagePath, 'curug-cikuluwung.jpg') && !str_contains($rawImagePath, 'curug-leuwi-hejo.jpg')) {
-                    File::delete($fullFilePath);
-                }
+            $safeName = basename(str_replace('\\', '/', $rawImagePath));
+            $activitiesRoot = realpath(public_path('images/activities'));
+            $fullFilePath = $activitiesRoot ? realpath($activitiesRoot . DIRECTORY_SEPARATOR . $safeName) : false;
+
+            if (
+                $fullFilePath &&
+                $activitiesRoot &&
+                str_starts_with($fullFilePath, rtrim($activitiesRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR) &&
+                File::exists($fullFilePath) &&
+                !in_array($safeName, ['curug-cikuluwung.jpg', 'curug-leuwi-hejo.jpg'], true)
+            ) {
+                File::delete($fullFilePath);
             }
         }
 
@@ -171,4 +160,3 @@ class ActivityPostController extends Controller
         ]);
     }
 }
-

@@ -129,6 +129,8 @@ function ActivitiesPage({
   const confirmDeletePost = async () => {
     if (!postToDelete) return
     const id = postToDelete
+    const prevMy = myActivities
+    const prevCommunity = communityActivities
     setIsDeleting(true)
 
     setMyActivities((prev) => prev.filter((p) => p.id !== id))
@@ -136,16 +138,16 @@ function ActivitiesPage({
     setPostToDelete(null)
 
     try {
-      await apiFetch(`/api/activities/${id}`, {
+      const res = await apiFetch(`/api/activities/${id}`, {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: currentUser?.id,
-          user_name: currentUser?.name,
-        }),
       })
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`)
+      }
     } catch (err) {
       console.warn('Gagal menghapus postingan:', err)
+      setMyActivities(prevMy)
+      setCommunityActivities(prevCommunity)
     } finally {
       setIsDeleting(false)
     }
@@ -197,6 +199,8 @@ function ActivitiesPage({
       isOtherUser: false,
     }
 
+    const prevMy = myActivities
+    const prevCommunity = communityActivities
     setMyActivities((prev) => [optimisticPost, ...prev])
     setCommunityActivities((prev) => [optimisticPost, ...prev])
     setShowPostModal(false)
@@ -206,14 +210,6 @@ function ActivitiesPage({
       formData.append('title', titleText)
       formData.append('location', locText)
       formData.append('date', todayFormatted)
-      if (currentUser?.id) {
-        formData.append('user_id', String(currentUser.id))
-      }
-      if (currentUser?.email) {
-        formData.append('user_email', currentUser.email)
-      }
-      formData.append('user_name', currentUser?.name || 'Pengguna')
-      formData.append('user_avatar', currentUser?.avatar || '')
 
       if (selectedImageFile) {
         const compressed = await compressImage(selectedImageFile, {
@@ -229,26 +225,30 @@ function ActivitiesPage({
         body: formData,
       })
 
-      if (res.ok) {
-        const json = await res.json()
-        if (json?.data) {
-          const savedPost = {
-            id: json.data.id || tempId,
-            userId: json.data.user_id || currentUser?.id,
-            userName: json.data.user_name || json.data.userName,
-            userAvatar: json.data.user_avatar || json.data.userAvatar,
-            date: json.data.date || todayFormatted,
-            image: json.data.image,
-            title: json.data.title,
-            location: json.data.location,
-            isOtherUser: false,
-          }
-          setMyActivities((prev) => prev.map((p) => (p.id === tempId ? savedPost : p)))
-          setCommunityActivities((prev) => prev.map((p) => (p.id === tempId ? savedPost : p)))
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`)
+      }
+
+      const json = await res.json()
+      if (json?.data) {
+        const savedPost = {
+          id: json.data.id || tempId,
+          userId: json.data.user_id || currentUser?.id,
+          userName: json.data.user_name || json.data.userName,
+          userAvatar: json.data.user_avatar || json.data.userAvatar,
+          date: json.data.date || todayFormatted,
+          image: json.data.image,
+          title: json.data.title,
+          location: json.data.location,
+          isOtherUser: false,
         }
+        setMyActivities((prev) => prev.map((p) => (p.id === tempId ? savedPost : p)))
+        setCommunityActivities((prev) => prev.map((p) => (p.id === tempId ? savedPost : p)))
       }
     } catch (err) {
       console.warn('Gagal menyimpan postingan aktivitas ke server:', err)
+      setMyActivities(prevMy)
+      setCommunityActivities(prevCommunity)
     } finally {
       setIsPosting(false)
       setPostCaption('')

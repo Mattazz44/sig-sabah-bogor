@@ -18,6 +18,20 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
+     * Default model attributes. Keeping 'role' out of Fillable prevents mass-assignment privilege escalation.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'role' => 'user',
+    ];
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

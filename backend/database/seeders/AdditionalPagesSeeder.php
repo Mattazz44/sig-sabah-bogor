@@ -29,6 +29,7 @@ class AdditionalPagesSeeder extends Seeder
                 'password' => Hash::make('admin123'),
             ]
         );
+        $admin->forceFill(['role' => 'admin'])->save();
 
         // Akun User Ambalingham yang dipakai/terlogin pada frontend
         $ambalingham = User::updateOrCreate(

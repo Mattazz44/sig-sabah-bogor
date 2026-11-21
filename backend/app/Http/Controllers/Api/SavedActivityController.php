@@ -3,29 +3,31 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\SavedActivity;
 use App\Models\CustomRoute;
+use App\Models\SavedActivity;
 use App\Models\TouristSpot;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class SavedActivityController extends Controller
 {
     /**
-     * Mengambil daftar aktivitas perjalanan tersimpan & rute custom.
+     * Mengambil daftar aktivitas perjalanan tersimpan & rute custom milik user terautentikasi.
      */
     public function index(Request $request)
     {
-        $userId = $request->query('user_id');
-        $query = SavedActivity::with('touristSpot')->orderBy('created_at', 'desc');
-        $routeQuery = CustomRoute::orderBy('is_primary', 'desc')->orderBy('created_at', 'desc');
+        $userId = $request->user()->id;
 
-        if ($userId) {
-            $query->where('user_id', $userId);
-            $routeQuery->where('user_id', $userId);
-        }
+        $activities = SavedActivity::with('touristSpot')
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        $activities = $query->get();
-        $customRoutes = $routeQuery->get();
+        $customRoutes = CustomRoute::where('user_id', $userId)
+            ->orderBy('is_primary', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'status' => 'success',
@@ -37,24 +39,21 @@ class SavedActivityController extends Controller
     }
 
     /**
-     * Menyimpan aktivitas / tempat wisata tersimpan baru buatan user.
+     * Menyimpan aktivitas / tempat wisata tersimpan baru milik user terautentikasi.
      */
     public function storeActivity(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'location' => 'required|string|max:255',
-            'tourist_spot_id' => 'nullable|integer',
-            'spot_slug' => 'nullable|string',
-            'user_id' => 'nullable|integer',
+            'tourist_spot_id' => 'nullable|integer|exists:tourist_spots,id',
+            'spot_slug' => 'nullable|string|max:255',
         ]);
 
-        $userId = $request->input('user_id') ?: ($request->user()?->id ?? null);
-
         $activity = SavedActivity::create([
-            'user_id' => $userId,
-            'tourist_spot_id' => $request->input('tourist_spot_id'),
-            'spot_slug' => $request->input('spot_slug'),
+            'user_id' => $request->user()->id,
+            'tourist_spot_id' => $validated['tourist_spot_id'] ?? null,
+            'spot_slug' => $validated['spot_slug'] ?? null,
             'name' => $validated['name'],
             'location' => $validated['location'],
             'date_label' => 'Baru saja',
@@ -68,13 +67,14 @@ class SavedActivityController extends Controller
     }
 
     /**
-     * Menyimpan rute custom baru buatan user.
+     * Menyimpan rute custom baru milik user terautentikasi secara atomik.
      */
     public function storeCustomRoute(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'place_ids' => 'required|array|min:1',
+            'place_ids.*' => 'integer|exists:tourist_spots,id',
         ]);
 
         $spots = TouristSpot::whereIn('id', $validated['place_ids'])->get();
@@ -92,26 +92,28 @@ class SavedActivityController extends Controller
                     'id' => $p->id,
                     'slug' => $p->slug,
                     'name' => $p->name,
-                    'coordinates' => ['lat' => (float)$p->latitude, 'lng' => (float)$p->longitude],
+                    'coordinates' => ['lat' => (float) $p->latitude, 'lng' => (float) $p->longitude],
                     'image' => $p->image,
                 ],
             ];
             $idx++;
         }
 
-        $userId = $request->input('user_id') ?: ($request->user()?->id ?? null);
+        $userId = $request->user()->id;
 
-        $customRoute = CustomRoute::create([
-            'user_id' => $userId,
-            'slug' => 'cr-' . time(),
-            'title' => $validated['title'],
-            'desc' => 'Rute baru dibuat oleh Anda',
-            'is_primary' => false,
-            'stops' => $stops,
-            'total_distance' => number_format($count * 2.8, 1) . ' KM',
-            'total_duration' => ($count * 8) . ' Menit',
-            'place_ids' => $validated['place_ids'],
-        ]);
+        $customRoute = DB::transaction(function () use ($userId, $validated, $stops, $count) {
+            return CustomRoute::create([
+                'user_id' => $userId,
+                'slug' => 'cr-' . time() . '-' . Str::lower(Str::random(4)),
+                'title' => $validated['title'],
+                'desc' => 'Rute baru dibuat oleh Anda',
+                'is_primary' => false,
+                'stops' => $stops,
+                'total_distance' => number_format($count * 2.8, 1) . ' KM',
+                'total_duration' => ($count * 8) . ' Menit',
+                'place_ids' => $validated['place_ids'],
+            ]);
+        });
 
         return response()->json([
             'status' => 'success',
@@ -120,4 +122,3 @@ class SavedActivityController extends Controller
         ], 201);
     }
 }
-

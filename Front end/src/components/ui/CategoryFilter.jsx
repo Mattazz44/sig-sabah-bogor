@@ -121,7 +121,7 @@ export default function CategoryFilter({
         {activeAdvancedCount > 0 && (
           <span
             aria-hidden="true"
-            className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#DFAA63] px-1 font-mono text-[10px] font-bold text-[#141A14]"
+            className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#DFAA63] px-1 text-[10px] font-bold not-italic tabular-nums text-[#141A14]"
           >
             {activeAdvancedCount}
           </span>
@@ -224,7 +224,7 @@ export default function CategoryFilter({
                   type="button"
                   tabIndex={filterOpen ? 0 : -1}
                   onClick={() => onFilterChange?.({ minRating: opt.value })}
-                  className={`flex items-center justify-center gap-1 rounded-xl border py-1.5 font-mono text-[11.5px] tabular-nums tracking-wide font-medium transition-all duration-150 active:scale-[0.95] ${
+                  className={`flex items-center justify-center gap-1 rounded-xl border py-1.5 text-[11.5px] not-italic tabular-nums font-medium transition-all duration-150 active:scale-[0.95] ${
                     selected
                       ? 'border-[#DFAA63]/45 bg-[#DFAA63]/15 font-semibold text-[#DFAA63]'
                       : 'border-[rgba(244,239,230,0.12)] bg-white/[0.05] text-[#F5F2EB] hover:bg-white/[0.1]'
@@ -330,7 +330,7 @@ export default function CategoryFilter({
             onClick={() => setOpenState(false)}
             className="apple-retro-cta min-h-[36px] flex-1 rounded-xl px-3 text-[12px] font-semibold active:scale-[0.97]"
           >
-            Tampilkan (<span className="font-mono tabular-nums">{resultCount}</span>)
+            Tampilkan (<span className="not-italic tabular-nums">{resultCount}</span>)
           </button>
         </div>
       </div>

@@ -131,14 +131,14 @@ function DestinationCard({
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px]">
-            <span className="inline-flex items-center gap-1 font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+            <span className="inline-flex items-center gap-1 font-semibold not-italic tabular-nums text-[#F5F2EB]">
               <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" aria-hidden="true" />
               {displayRating}
             </span>
             {distanceLabel && (
               <span className="inline-flex items-center gap-1 text-[#DFAA63]">
                 <span aria-hidden="true" className="text-[#F5F2EB]/35">•</span>
-                <span className="font-mono font-medium tabular-nums tracking-wide">{distanceLabel} dari Anda</span>
+                <span className="font-medium not-italic tabular-nums">{distanceLabel} dari Anda</span>
               </span>
             )}
           </div>
@@ -533,12 +533,12 @@ function ForYouPage({
                         {effectiveContinue.address || effectiveContinue.location || 'Bogor, Jawa Barat'}
                       </p>
                       <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px]">
-                        <span className="inline-flex items-center gap-1 font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+                        <span className="inline-flex items-center gap-1 font-semibold not-italic tabular-nums text-[#F5F2EB]">
                           <StarIcon filled className="h-3.5 w-3.5 text-[#DFAA63]" aria-hidden="true" />
                           {Number(effectiveContinue.rating || 0).toFixed(1)}
                         </span>
                         {formatDistanceLabel(effectiveContinue) && (
-                          <span className="font-mono font-medium tabular-nums tracking-wide text-[#DFAA63]">
+                          <span className="font-medium not-italic tabular-nums text-[#DFAA63]">
                             {formatDistanceLabel(effectiveContinue)} dari Anda
                           </span>
                         )}

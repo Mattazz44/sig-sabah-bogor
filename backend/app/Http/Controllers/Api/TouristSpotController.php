@@ -160,24 +160,28 @@ class TouristSpotController extends Controller
         $description = trim((string) ($validated['description'] ?? ''));
         $detailedDescription = trim((string) ($validated['detailed_description'] ?? ''));
 
-        $spot = TouristSpot::create([
-            'slug' => $slug,
-            'name' => trim($validated['name']),
-            'category' => trim($validated['category']),
-            'latitude' => (float) $validated['latitude'],
-            'longitude' => (float) $validated['longitude'],
-            'address' => $validated['address'] ?? null,
-            'description' => $description !== '' ? $description : null,
-            'detailed_description' => $detailedDescription !== '' ? $detailedDescription : ($description !== '' ? $description : null),
-            'operational_hours' => $validated['operational_hours'] ?? '08:00 - 17:00',
-            'ticket_price' => $validated['ticket_price'] ?? 'Gratis',
-            'rating' => $validated['rating'] ?? 4.5,
-            'is_popular' => $request->boolean('is_popular'),
-            'image' => $primaryImage,
-            'gallery' => $gallery,
-        ]);
+        $spot = DB::transaction(function () use ($slug, $validated, $description, $detailedDescription, $request, $primaryImage, $gallery) {
+            $created = TouristSpot::create([
+                'slug' => $slug,
+                'name' => trim($validated['name']),
+                'category' => trim($validated['category']),
+                'latitude' => (float) $validated['latitude'],
+                'longitude' => (float) $validated['longitude'],
+                'address' => $validated['address'] ?? null,
+                'description' => $description !== '' ? $description : null,
+                'detailed_description' => $detailedDescription !== '' ? $detailedDescription : ($description !== '' ? $description : null),
+                'operational_hours' => $validated['operational_hours'] ?? '08:00 - 17:00',
+                'ticket_price' => $validated['ticket_price'] ?? 'Gratis',
+                'rating' => $validated['rating'] ?? 4.5,
+                'is_popular' => $request->boolean('is_popular'),
+                'image' => $primaryImage,
+                'gallery' => $gallery,
+            ]);
 
-        $this->updateSpatialPoint($spot->id, (float) $validated['longitude'], (float) $validated['latitude']);
+            $this->updateSpatialPoint($created->id, (float) $validated['longitude'], (float) $validated['latitude']);
+
+            return $created;
+        });
 
         $freshSpot = TouristSpot::withGeoJson()->findOrFail($spot->id);
 
@@ -208,25 +212,27 @@ class TouristSpotController extends Controller
             ? trim((string) ($validated['detailed_description'] ?? ''))
             : ($spot->detailed_description ?: ($description !== '' ? $description : null));
 
-        $spot->update([
-            'name' => trim($validated['name']),
-            'category' => trim($validated['category']),
-            'latitude' => (float) $validated['latitude'],
-            'longitude' => (float) $validated['longitude'],
-            'address' => array_key_exists('address', $validated) ? $validated['address'] : $spot->address,
-            'description' => $description !== '' ? $description : null,
-            'detailed_description' => $detailedDescription !== '' ? $detailedDescription : null,
-            'operational_hours' => $validated['operational_hours'] ?? $spot->operational_hours,
-            'ticket_price' => array_key_exists('ticket_price', $validated)
-                ? ($validated['ticket_price'] ?: 'Gratis')
-                : $spot->ticket_price,
-            'rating' => $validated['rating'] ?? $spot->rating,
-            'is_popular' => $request->has('is_popular') ? $request->boolean('is_popular') : $spot->is_popular,
-            'image' => $primaryImage,
-            'gallery' => $gallery,
-        ]);
+        DB::transaction(function () use ($spot, $validated, $description, $detailedDescription, $request, $primaryImage, $gallery) {
+            $spot->update([
+                'name' => trim($validated['name']),
+                'category' => trim($validated['category']),
+                'latitude' => (float) $validated['latitude'],
+                'longitude' => (float) $validated['longitude'],
+                'address' => array_key_exists('address', $validated) ? $validated['address'] : $spot->address,
+                'description' => $description !== '' ? $description : null,
+                'detailed_description' => $detailedDescription !== '' ? $detailedDescription : null,
+                'operational_hours' => $validated['operational_hours'] ?? $spot->operational_hours,
+                'ticket_price' => array_key_exists('ticket_price', $validated)
+                    ? ($validated['ticket_price'] ?: 'Gratis')
+                    : $spot->ticket_price,
+                'rating' => $validated['rating'] ?? $spot->rating,
+                'is_popular' => $request->has('is_popular') ? $request->boolean('is_popular') : $spot->is_popular,
+                'image' => $primaryImage,
+                'gallery' => $gallery,
+            ]);
 
-        $this->updateSpatialPoint($spot->id, (float) $validated['longitude'], (float) $validated['latitude']);
+            $this->updateSpatialPoint($spot->id, (float) $validated['longitude'], (float) $validated['latitude']);
+        });
 
         $freshSpot = TouristSpot::withGeoJson()->findOrFail($spot->id);
 
@@ -342,10 +348,17 @@ class TouristSpotController extends Controller
             }
 
             foreach ($request->file('photos') as $idx => $photoFile) {
-                $ext = $photoFile->getClientOriginalExtension() ?: 'jpg';
+                $guessedExt = strtolower((string) ($photoFile->guessExtension() ?: $photoFile->getClientOriginalExtension() ?: 'jpg'));
+                $ext = in_array($guessedExt, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true) ? $guessedExt : 'jpg';
                 $cleanName = Str::slug(pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'spot';
                 $fileName = time() . '_' . uniqid() . '_' . $cleanName . '.' . $ext;
-                ImageCompressor::compressAndSave($photoFile, $spotsDir, $fileName, 1280, 1280, 82);
+                try {
+                    ImageCompressor::compressAndSave($photoFile, $spotsDir, $fileName, 1280, 1280, 82);
+                } catch (\Throwable) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'photos' => ['File gambar tidak valid atau gagal diproses.'],
+                    ]);
+                }
                 $uploadedMap['new_' . $idx] = '/images/spots/' . $fileName;
             }
         }
@@ -390,21 +403,17 @@ class TouristSpotController extends Controller
      */
     private function updateSpatialPoint(int $spotId, float $lon, float $lat): void
     {
-        try {
-            $driver = DB::getDriverName();
-            if ($driver === 'pgsql') {
-                DB::statement(
-                    'UPDATE tourist_spots SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326) WHERE id = ?',
-                    [$lon, $lat, $spotId]
-                );
-            } elseif ($driver === 'mysql') {
-                DB::statement(
-                    'UPDATE tourist_spots SET geom = POINT(?, ?) WHERE id = ?',
-                    [$lon, $lat, $spotId]
-                );
-            }
-        } catch (\Throwable $e) {
-            // Abaikan bila driver SQLite tidak memakai kolom geom terpisah
+        $driver = DB::getDriverName();
+        if ($driver === 'pgsql') {
+            DB::statement(
+                'UPDATE tourist_spots SET geom = ST_SetSRID(ST_MakePoint(?, ?), 4326) WHERE id = ?',
+                [$lon, $lat, $spotId]
+            );
+        } elseif ($driver === 'mysql') {
+            DB::statement(
+                'UPDATE tourist_spots SET geom = POINT(?, ?) WHERE id = ?',
+                [$lon, $lat, $spotId]
+            );
         }
     }
 }

@@ -49,12 +49,14 @@ export function useFlyToSelected(selected, markerRefs, getFocusOffset) {
       }
     })
 
+    let fallbackTimerId = 0
+
     const openPopup = () => {
       const handle = markerRefs.current?.get(selected.id)
       if (handle?.openPopup) {
         handle.openPopup()
       } else {
-        setTimeout(() => {
+        fallbackTimerId = window.setTimeout(() => {
           markerRefs.current?.get(selected.id)?.openPopup?.()
         }, 150)
       }
@@ -68,7 +70,9 @@ export function useFlyToSelected(selected, markerRefs, getFocusOffset) {
     const alreadyThere = distKm < 0.005 && Math.abs(map.getZoom() - zoom) < 0.1 && ox === 0 && oy === 0
     if (alreadyThere) {
       openPopup()
-      return undefined
+      return () => {
+        window.clearTimeout(fallbackTimerId)
+      }
     }
 
     map.once('moveend', openPopup)
@@ -80,6 +84,7 @@ export function useFlyToSelected(selected, markerRefs, getFocusOffset) {
     })
 
     return () => {
+      window.clearTimeout(fallbackTimerId)
       map.off('moveend', openPopup)
     }
   }, [map, selected, markerRefs, getFocusOffset])

@@ -15,9 +15,21 @@ import TouristDetailPage from './components/pages/TouristDetailPage'
 import ProfilePage from './components/pages/ProfilePage'
 import LoginModal from './components/ui/LoginModal'
 import { enrichTouristWithUserLocation } from './utils/distance'
-import { apiFetch } from './utils/api'
+import {
+  AUTH_EXPIRED_EVENT,
+  apiFetch,
+  buildApiUrl,
+  clearAuthStorage,
+  getAuthToken,
+  getStoredUser,
+  setAuthToken,
+  setStoredUser,
+} from './utils/api'
 import { getImageUrl } from './utils/imageHelper'
 import { AlertTriangleIcon, RefreshIcon, XIcon } from './components/ui/VectorIcons'
+
+let handledOAuthCode = null
+let inFlightOAuthExchange = null
 
 export default function App() {
   // Data destinasi wisata: murni di-fetch dari API backend Laravel (PostgreSQL / PostGIS)
@@ -135,26 +147,16 @@ export default function App() {
   // State mode navigasi internal peta (destination object atau array rute custom)
   const [navigationTarget, setNavigationTarget] = useState(null)
 
-  // 1 & 4. GLOBAL AUTH & PROFILE STATE
+  // 1 & 4. GLOBAL AUTH & PROFILE STATE (wajib memiliki Sanctum Bearer token valid)
   const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const params = new URLSearchParams(window.location.search)
-      const authData = params.get('auth_data')
-      if (authData) {
-        const decodedJson = atob(decodeURIComponent(authData))
-        const user = JSON.parse(decodedJson)
-        if (user && user.id) {
-          window.localStorage.setItem('sabah_current_user', JSON.stringify(user))
-          return user
-        }
-      }
-      const saved = window.localStorage.getItem('sabah_current_user')
-      return saved ? JSON.parse(saved) : null
-    } catch {
+    const token = getAuthToken()
+    if (!token) {
+      clearAuthStorage()
       return null
     }
+    return getStoredUser()
   })
-  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(currentUser))
+  const [isLoggedIn, setIsLoggedIn] = useState(() => Boolean(currentUser && getAuthToken()))
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [profileUser, setProfileUser] = useState(null) // null | 'self' | { isSelf: false, name: 'Kirk hasibuan', ... }
 
@@ -169,7 +171,9 @@ export default function App() {
 
   const location = useLocation()
   const navigate = useNavigate()
-  const isAdminRoute = Boolean(useMatch('/admin'))
+  const adminExactMatch = useMatch('/admin')
+  const adminSubMatch = useMatch('/admin/*')
+  const isAdminRoute = Boolean(adminExactMatch || adminSubMatch)
   const match = useMatch('/place/:slug')
   const selectedSlug = match?.params.slug ?? null
 
@@ -305,65 +309,138 @@ export default function App() {
     [navigate],
   )
 
-  // Bersihkan parameter callback autentikasi Google dari URL
+  // Listener global auto-logout ketika server merespons 401/403
   useEffect(() => {
+    const handleAuthExpired = () => {
+      clearAuthStorage()
+      setIsLoggedIn(false)
+      setCurrentUser(null)
+      setNavigationTarget(null)
+      setProfileUser(null)
+      setActiveTab('Explore')
+      setShowLoginModal(true)
+      navigate('/')
+    }
+
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired)
+    return () => window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired)
+  }, [navigate])
+
+  // Tangani pertukaran oauth_code Google OAuth & sinkronkan sesi user terautentikasi
+  useEffect(() => {
+    let isMounted = true
     const params = new URLSearchParams(window.location.search)
-    const hasAuthData = params.has('auth_data')
+    const oauthCode = params.get('oauth_code')
     const authError = params.get('auth_error')
 
-    if (hasAuthData) {
-      params.delete('auth_data')
-      params.delete('auth_provider')
-      const newSearch = params.toString()
-      const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '')
-      window.history.replaceState({}, document.title, newUrl)
-    } else if (authError) {
-      console.error('Autentikasi Google gagal:', decodeURIComponent(authError))
+    if (oauthCode || authError || params.has('auth_provider')) {
+      params.delete('oauth_code')
       params.delete('auth_error')
       params.delete('auth_provider')
       const newSearch = params.toString()
       const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : '')
       window.history.replaceState({}, document.title, newUrl)
     }
+
+    if (authError) {
+      console.error('Autentikasi Google gagal:', decodeURIComponent(authError))
+      Promise.resolve().then(() => {
+        if (isMounted) setShowLoginModal(true)
+      })
+    }
+
+    if (oauthCode) {
+      if (handledOAuthCode !== oauthCode) {
+        handledOAuthCode = oauthCode
+        inFlightOAuthExchange = apiFetch('/api/auth/google/exchange', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ code: oauthCode }),
+        }).then(async (res) => {
+          if (!res.ok) {
+            throw new Error(`OAuth exchange failed (HTTP ${res.status})`)
+          }
+          return res.json()
+        })
+      }
+
+      inFlightOAuthExchange
+        .then((json) => {
+          const token = json?.token || json?.data?.token
+          if (json?.data && token) {
+            const cleanUser = { ...json.data }
+            delete cleanUser.token
+            setAuthToken(token)
+            setStoredUser(cleanUser)
+            if (isMounted) {
+              setCurrentUser(cleanUser)
+              setIsLoggedIn(true)
+              setShowLoginModal(false)
+            }
+          }
+        })
+        .catch((err) => {
+          console.error('Gagal menukarkan oauth_code Google:', err)
+          clearAuthStorage()
+          if (isMounted) {
+            setCurrentUser(null)
+            setIsLoggedIn(false)
+            setShowLoginModal(true)
+          }
+        })
+
+      return () => {
+        isMounted = false
+      }
+    }
+
+    const existingToken = getAuthToken()
+    if (existingToken) {
+      apiFetch('/api/auth/current-user')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          if (isMounted && json?.data) {
+            setStoredUser(json.data)
+            setCurrentUser(json.data)
+            setIsLoggedIn(true)
+          }
+        })
+        .catch(() => {})
+    }
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
-  const handleLoginSuccess = useCallback((userData) => {
-    if (userData) {
-      setCurrentUser(userData)
-      setIsLoggedIn(true)
-      window.localStorage.setItem('sabah_current_user', JSON.stringify(userData))
-      setShowLoginModal(false)
+  const handleLoginSuccess = useCallback((userData, authToken) => {
+    const resolvedToken = authToken || userData?.token || getAuthToken()
+    if (!userData || !resolvedToken) {
+      clearAuthStorage()
+      setIsLoggedIn(false)
+      setCurrentUser(null)
       return
     }
 
-    // Fallback jika dipanggil tanpa payload userData
-    apiFetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ email: 'ambalingham@gmail.com' }),
-    })
-      .then((res) => res.json())
-      .then((json) => {
-        if (json?.data) {
-          setCurrentUser(json.data)
-          window.localStorage.setItem('sabah_current_user', JSON.stringify(json.data))
-        }
-      })
-      .catch((err) => {
-        console.warn('Gagal login via API, fallback ke state lokal:', err)
-      })
-      .finally(() => {
-        setIsLoggedIn(true)
-        setShowLoginModal(false)
-      })
+    const cleanUser = { ...userData }
+    delete cleanUser.token
+
+    setAuthToken(resolvedToken)
+    setStoredUser(cleanUser)
+    setCurrentUser(cleanUser)
+    setIsLoggedIn(true)
+    setShowLoginModal(false)
   }, [])
 
   // 4. FUNGSI LOGOUT GLOBAL:
-  // Ubah status global isLoggedIn(false), hapus data rute custom aktif, dan tendang ke Explore
+  // Cabut token Sanctum, bersihkan localStorage, reset state aktif, dan kembali ke Explore
   const handleLogout = useCallback(() => {
+    if (getAuthToken()) {
+      apiFetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
+    }
+    clearAuthStorage()
     setIsLoggedIn(false)
     setCurrentUser(null)
-    window.localStorage.removeItem('sabah_current_user')
     setNavigationTarget(null)
     setProfileUser(null)
     setActiveTab('Explore')
@@ -389,11 +466,13 @@ export default function App() {
     [location.pathname, navigate],
   )
 
+  const adminUrl = buildApiUrl('/admin')
+
   useEffect(() => {
     if (isAdminRoute) {
-      window.location.replace('http://localhost:8000/admin')
+      window.location.replace(adminUrl)
     }
-  }, [isAdminRoute])
+  }, [isAdminRoute, adminUrl])
 
   if (isAdminRoute) {
     return (
@@ -407,15 +486,15 @@ export default function App() {
         <p className="mt-1.5 max-w-sm text-[13px] leading-relaxed text-[#F5F2EB]/70">
           Anda sedang dialihkan ke sistem manajemen destinasi backend di{' '}
           <code className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-[12px] tracking-wide text-[#DFAA63]">
-            localhost:8000/admin
+            {adminUrl}
           </code>
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           <a
-            href="http://localhost:8000/admin"
+            href={adminUrl}
             className="apple-retro-cta inline-flex min-h-[44px] items-center justify-center rounded-xl px-6 text-[13px] font-semibold active:scale-[0.98]"
           >
-            Buka Panel Admin (Port 8000)
+            Buka Panel Admin
           </a>
           <button
             type="button"
@@ -502,6 +581,7 @@ export default function App() {
             onLogout={handleLogout}
             onStartCustomRoute={handleStartCustomRoute}
             onUpdateUser={(updatedUser) => {
+              setStoredUser(updatedUser)
               setCurrentUser(updatedUser)
             }}
             currentUser={currentUser}

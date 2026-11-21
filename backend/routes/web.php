@@ -6,11 +6,11 @@ use App\Http\Controllers\Admin\AdminTouristSpotController;
 
 // 1. Rute Autentikasi Admin (Login & Logout)
 Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
+Route::post('/login', [AdminAuthController::class, 'login'])->middleware('throttle:5,1,admin_login')->name('admin.login.submit');
 Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
-// 2. Rute Admin yang Diproteksi Autentikasi (auth middleware)
-Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+// 2. Rute Admin yang Diproteksi Autentikasi & RBAC Admin
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminTouristSpotController::class, 'index'])->name('index');
     Route::get('/spots', [AdminTouristSpotController::class, 'index'])->name('spots.index');
     Route::get('/spots/create', [AdminTouristSpotController::class, 'create'])->name('spots.create');

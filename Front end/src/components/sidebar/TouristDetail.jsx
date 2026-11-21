@@ -44,12 +44,12 @@ export default function TouristDetail({ place }) {
             </span>
             <div className="flex items-center gap-1 font-medium text-[#F5F2EB]">
               <StarIcon filled className="h-3.5 w-3.5 text-[#DFAA63]" />
-              <span className="font-mono tabular-nums tracking-wide">{Number(place.rating || 0).toFixed(1)}</span>
+              <span className="not-italic tabular-nums">{Number(place.rating || 0).toFixed(1)}</span>
             </div>
             {place.distance && (
               <>
                 <span className="text-[#F5F2EB]/40" aria-hidden="true">·</span>
-                <span className="font-mono tabular-nums tracking-wide text-[#F5F2EB]/65">{place.distance}</span>
+                <span className="not-italic tabular-nums text-[#F5F2EB]/65">{place.distance}</span>
               </>
             )}
           </div>

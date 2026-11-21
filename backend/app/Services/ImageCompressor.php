@@ -3,11 +3,14 @@
 namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
+use InvalidArgumentException;
+use RuntimeException;
 
 class ImageCompressor
 {
     /**
-     * Mengompresi dan mengubah ukuran gambar sebelum disimpan ke storage publik.
+     * Mengompresi dan mengubah ukuran gambar secara aman sebelum disimpan ke storage publik.
+     * Menolak dan melempar exception jika file bukan gambar valid.
      *
      * @param UploadedFile|string $file File yang diunggah
      * @param string $targetDir Direktori tujuan (misal: public_path('images/spots'))
@@ -16,6 +19,8 @@ class ImageCompressor
      * @param int $maxHeight Tinggi maksimal (default 1280px)
      * @param int $quality Kualitas kompresi (1-100, default 82)
      * @return string Path absolut file yang berhasil disimpan
+     *
+     * @throws InvalidArgumentException|RuntimeException
      */
     public static function compressAndSave(
         $file,
@@ -25,61 +30,37 @@ class ImageCompressor
         int $maxHeight = 1280,
         int $quality = 82
     ): string {
-        if (!file_exists($targetDir)) {
-            mkdir($targetDir, 0755, true);
-        }
-
-        $destination = rtrim($targetDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $fileName;
         $sourcePath = $file instanceof UploadedFile ? $file->getRealPath() : $file;
-
-        // Jika ekstensi GD tidak aktif, lakukan fallback move langsung
-        if (!extension_loaded('gd') || !file_exists($sourcePath)) {
-            if ($file instanceof UploadedFile) {
-                $file->move($targetDir, $fileName);
-            } else {
-                copy($sourcePath, $destination);
-            }
-            return $destination;
+        if (!is_string($sourcePath) || $sourcePath === '' || !file_exists($sourcePath)) {
+            throw new InvalidArgumentException('File gambar sumber tidak ditemukan atau tidak valid.');
         }
 
+        // Validasi header & dimensi gambar nyata sebelum pemrosesan apa pun
         $imageInfo = @getimagesize($sourcePath);
-        if (!$imageInfo) {
-            if ($file instanceof UploadedFile) {
-                $file->move($targetDir, $fileName);
-            } else {
-                copy($sourcePath, $destination);
-            }
-            return $destination;
+        if ($imageInfo === false) {
+            throw new InvalidArgumentException('File yang diunggah bukan gambar yang valid.');
         }
 
         [$origWidth, $origHeight, $imageType] = $imageInfo;
-
-        // Buat GD resource berdasarkan tipe gambar
-        $srcImage = null;
-        switch ($imageType) {
-            case IMAGETYPE_JPEG:
-                $srcImage = @imagecreatefromjpeg($sourcePath);
-                break;
-            case IMAGETYPE_PNG:
-                $srcImage = @imagecreatefrompng($sourcePath);
-                break;
-            case IMAGETYPE_WEBP:
-                if (function_exists('imagecreatefromwebp')) {
-                    $srcImage = @imagecreatefromwebp($sourcePath);
-                }
-                break;
-            case IMAGETYPE_GIF:
-                $srcImage = @imagecreatefromgif($sourcePath);
-                break;
+        $allowedTypes = [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_GIF];
+        if (!in_array($imageType, $allowedTypes, true)) {
+            throw new InvalidArgumentException('Format gambar tidak didukung.');
         }
 
+        if (!extension_loaded('gd')) {
+            throw new RuntimeException('Ekstensi GD diperlukan untuk memproses dan memverifikasi gambar.');
+        }
+
+        $srcImage = match ($imageType) {
+            IMAGETYPE_JPEG => @imagecreatefromjpeg($sourcePath),
+            IMAGETYPE_PNG => @imagecreatefrompng($sourcePath),
+            IMAGETYPE_WEBP => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($sourcePath) : null,
+            IMAGETYPE_GIF => @imagecreatefromgif($sourcePath),
+            default => null,
+        };
+
         if (!$srcImage) {
-            if ($file instanceof UploadedFile) {
-                $file->move($targetDir, $fileName);
-            } else {
-                copy($sourcePath, $destination);
-            }
-            return $destination;
+            throw new InvalidArgumentException('File gambar rusak atau tidak dapat didekode.');
         }
 
         // Perbaiki orientasi EXIF untuk foto kamera HP (JPEG)
@@ -101,12 +82,11 @@ class ImageCompressor
                             break;
                     }
                 }
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 // Abaikan jika pembacaan EXIF gagal
             }
         }
 
-        // Hitung dimensi baru dengan mempertahankan aspek rasio (aspect ratio)
         if ($origWidth > $maxWidth || $origHeight > $maxHeight) {
             $ratio = min($maxWidth / $origWidth, $maxHeight / $origHeight);
             $targetWidth = max(1, (int) round($origWidth * $ratio));
@@ -116,10 +96,8 @@ class ImageCompressor
             $targetHeight = $origHeight;
         }
 
-        // Buat canvas gambar baru
         $targetImage = imagecreatetruecolor($targetWidth, $targetHeight);
 
-        // Pertahankan transparansi untuk format PNG dan WEBP
         if ($imageType === IMAGETYPE_PNG || $imageType === IMAGETYPE_WEBP) {
             imagealphablending($targetImage, false);
             imagesavealpha($targetImage, true);
@@ -127,7 +105,6 @@ class ImageCompressor
             imagefilledrectangle($targetImage, 0, 0, $targetWidth, $targetHeight, $transparent);
         }
 
-        // Resampling resolusi dengan kualitas tinggi
         imagecopyresampled(
             $targetImage,
             $srcImage,
@@ -138,13 +115,17 @@ class ImageCompressor
             $origHeight
         );
 
-        // Simpan gambar terkompresi sesuai ekstensi file tujuan
-        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0755, true);
+        }
+
+        $safeFileName = basename($fileName);
+        $destination = rtrim($targetDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $safeFileName;
+        $ext = strtolower(pathinfo($safeFileName, PATHINFO_EXTENSION));
         $saved = false;
 
         switch ($ext) {
             case 'png':
-                // Kompresi PNG skala 0 (tanpa) sampai 9 (maksimal)
                 $pngQuality = (int) max(0, min(9, round((100 - $quality) / 10)));
                 $saved = @imagepng($targetImage, $destination, $pngQuality);
                 break;
@@ -155,25 +136,26 @@ class ImageCompressor
                 break;
             case 'jpg':
             case 'jpeg':
-            default:
                 $saved = @imagejpeg($targetImage, $destination, $quality);
                 break;
+            case 'gif':
+                if (function_exists('imagegif')) {
+                    $saved = @imagegif($targetImage, $destination);
+                }
+                break;
+            default:
+                @imagedestroy($targetImage);
+                @imagedestroy($srcImage);
+                throw new InvalidArgumentException('Ekstensi file gambar tujuan tidak diizinkan.');
         }
 
-        // Bebaskan memori GD
         @imagedestroy($targetImage);
         @imagedestroy($srcImage);
 
-        // Jika fungsi penyimpanan GD gagal, fallback ke move biasa
         if (!$saved || !file_exists($destination)) {
-            if ($file instanceof UploadedFile) {
-                $file->move($targetDir, $fileName);
-            } else {
-                copy($sourcePath, $destination);
-            }
+            throw new RuntimeException('Gagal menyimpan gambar yang telah tervalidasi.');
         }
 
         return $destination;
     }
 }
-

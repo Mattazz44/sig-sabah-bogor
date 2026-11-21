@@ -219,11 +219,11 @@ export default function TouristList({
                 </p>
                 <div className="mt-1 flex items-center gap-1.5 text-[12px] text-[#F5F2EB]/80">
                   <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
-                  <span className="font-mono font-semibold text-[#F5F2EB] tabular-nums tracking-wide">
+                  <span className="font-semibold not-italic tabular-nums text-[#F5F2EB]">
                     {Number(popularSpot.rating || 0).toFixed(1)}
                   </span>
                   <span className="text-[#F5F2EB]/35" aria-hidden="true">·</span>
-                  <span className="truncate font-mono text-[11.5px] tabular-nums tracking-wide text-[#F5F2EB]/65">
+                  <span className="truncate text-[11.5px] not-italic tabular-nums text-[#F5F2EB]/65">
                     {popularSpot.distance || popularSpot.category}
                   </span>
                 </div>
@@ -241,7 +241,7 @@ export default function TouristList({
             'Memuat destinasi...'
           ) : (
             <>
-              <span className="font-mono tabular-nums tracking-wide">{sortedPlaces.length}</span>{' '}
+              <span className="not-italic tabular-nums">{sortedPlaces.length}</span>{' '}
               Tujuan wisata
             </>
           )}
@@ -338,10 +338,10 @@ export default function TouristList({
               key={item}
               className="border-b border-white/10 py-4 first:pt-1 last:border-b-0 last:pb-0"
             >
-              <div className="aspect-[16/10] w-full rounded-2xl bg-white/[0.07]" />
+              <div className="shimmer-skeleton aspect-[16/10] w-full rounded-2xl bg-white/[0.04]" />
               <div className="space-y-2 pt-2.5">
-                <div className="h-4 w-2/3 rounded-md bg-white/[0.08]" />
-                <div className="h-3 w-1/2 rounded-md bg-white/[0.05]" />
+                <div className="shimmer-skeleton h-4 w-2/3 rounded-md bg-white/[0.04]" />
+                <div className="shimmer-skeleton h-3 w-1/2 rounded-md bg-white/[0.04]" />
               </div>
             </div>
           ))}

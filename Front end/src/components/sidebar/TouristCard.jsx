@@ -98,11 +98,11 @@ function TouristCard({ place, onSelect, onHover, saved = false, onToggleFavorite
             <p className="mt-0.5 truncate text-[12.5px] text-[#F5F2EB]/60">{displayLocation}</p>
             <div className="mt-1.5 flex items-center gap-1.5 text-[12px] text-[#F5F2EB]/80">
               <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
-              <span className="font-mono font-semibold text-[#F5F2EB] tabular-nums tracking-wide">
+              <span className="font-semibold not-italic tabular-nums text-[#F5F2EB]">
                 {Number(place.rating || 0).toFixed(1)}
               </span>
               <span className="text-[#F5F2EB]/35" aria-hidden="true">·</span>
-              <span className="truncate font-mono text-[11.5px] tabular-nums tracking-wide text-[#F5F2EB]/65">
+              <span className="truncate text-[11.5px] not-italic tabular-nums text-[#F5F2EB]/65">
                 {place.distance || place.category}
               </span>
             </div>

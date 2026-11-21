@@ -9,82 +9,102 @@ use App\Services\ImageCompressor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    /**
-     * Mendapatkan data user saat ini (default: akun aktif Ambalingham).
-     */
-    public function currentUser(Request $request)
+    private function formatUserPayload(User $user, bool $includePrivate = true): array
     {
-        $user = User::where('email', 'ambalingham@gmail.com')->first();
+        $payload = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'username' => $user->username,
+            'role' => $user->role ?? 'user',
+            'avatar' => $user->avatar,
+            'bio' => $user->bio,
+        ];
 
-        if (!$user) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'User tidak ditemukan',
-            ], 404);
+        if ($includePrivate) {
+            $payload['email'] = $user->email;
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'username' => $user->username,
-                'email' => $user->email,
-                'avatar' => $user->avatar,
-                'bio' => $user->bio,
-            ],
-        ]);
+        return $payload;
     }
 
     /**
-     * Login kredensial email & password (mendukung login Google maupun email biasa).
+     * Mendapatkan data user yang sedang terautentikasi via Sanctum.
      */
-    public function login(Request $request)
+    public function currentUser(Request $request)
     {
-        $loginInput = $request->input('login', $request->input('email', 'ambalingham@gmail.com'));
-        $password = $request->input('password');
-
-        // Cari berdasarkan email ATAU username
-        $user = User::where('email', $loginInput)
-            ->orWhere('username', $loginInput)
-            ->first();
+        $user = $request->user();
 
         if (!$user) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Akun tidak ditemukan. Silakan periksa kembali email atau username Anda.',
-            ], 404);
-        }
-
-        // Jika user mengisi password, verifikasi password-nya
-        if ($password && !Hash::check($password, $user->password) && $password !== 'password123') {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Kata sandi tidak sesuai.',
+                'message' => 'Tidak terautentikasi.',
             ], 401);
         }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Login berhasil',
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'username' => $user->username,
-                'email' => $user->email,
-                'avatar' => $user->avatar,
-                'bio' => $user->bio,
-            ],
+            'data' => $this->formatUserPayload($user, true),
         ]);
     }
 
     /**
-     * Pendaftaran akun pengguna baru.
+     * Login kredensial email/username & password dan menerbitkan token Sanctum terverifikasi.
+     */
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'login' => 'required_without:email|string',
+            'email' => 'required_without:login|string',
+            'password' => 'required|string',
+        ], [
+            'login.required_without' => 'Email atau username wajib diisi.',
+            'email.required_without' => 'Alamat email wajib diisi.',
+            'password.required' => 'Kata sandi wajib diisi.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $loginInput = trim((string) ($request->input('login') ?? $request->input('email')));
+        $password = (string) $request->input('password');
+
+        $user = User::where('email', strtolower($loginInput))
+            ->orWhere('username', $loginInput)
+            ->first();
+
+        if (!$user || empty($user->password) || !Hash::check($password, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Email/username atau kata sandi tidak sesuai.',
+            ], 401);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Login berhasil',
+            'token' => $token,
+            'token_type' => 'Bearer',
+            'data' => array_merge($this->formatUserPayload($user, true), [
+                'token' => $token,
+            ]),
+        ]);
+    }
+
+    /**
+     * Pendaftaran akun pengguna baru dengan role default 'user' dan penerbitan token Sanctum.
      */
     public function register(Request $request)
     {
@@ -131,41 +151,44 @@ class AuthController extends Controller
             'avatar' => null,
         ]);
 
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             'status' => 'success',
             'message' => 'Akun berhasil dibuat',
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'username' => $user->username,
-                'email' => $user->email,
-                'avatar' => $user->avatar,
-                'bio' => $user->bio,
-            ],
+            'token' => $token,
+            'token_type' => 'Bearer',
+            'data' => array_merge($this->formatUserPayload($user, true), [
+                'token' => $token,
+            ]),
         ], 201);
     }
 
     /**
-     * Mendapatkan profil lengkap pengguna (beserta data follower, following, dan aktivitas terkini).
+     * Menghapus token Sanctum saat logout.
+     */
+    public function logout(Request $request)
+    {
+        $request->user()?->currentAccessToken()?->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Berhasil keluar.',
+        ]);
+    }
+
+    /**
+     * Mendapatkan profil lengkap pengguna (email disembunyikan jika dilihat oleh user lain).
      */
     public function userProfile(string $usernameOrId, Request $request)
     {
-        // Cari user berdasarkan username, id numerik, atau nama lengkap
         $user = User::where('username', $usernameOrId)
-            ->orWhere('id', is_numeric($usernameOrId) ? (int)$usernameOrId : -1)
+            ->orWhere('id', is_numeric($usernameOrId) ? (int) $usernameOrId : -1)
             ->orWhere('name', $usernameOrId)
             ->first();
 
-        // Cari user yang sedang login saat ini jika dikirimkan dari frontend
-        $currentUser = null;
-        if ($request->filled('current_user_id')) {
-            $currentUser = User::find($request->current_user_id);
-        }
-        if (!$currentUser && $request->filled('current_user_email')) {
-            $currentUser = User::where('email', $request->current_user_email)->first();
-        }
+        $currentUser = $request->user('sanctum');
 
-        // Jika user tidak ditemukan di database (fallback profil dinamis)
         if (!$user) {
             $activities = ActivityPost::where('user_name', $usernameOrId)
                 ->orderBy('created_at', 'desc')
@@ -189,63 +212,67 @@ class AuthController extends Controller
             ]);
         }
 
-        // Cek status follow
+        $isSelf = $currentUser && (int) $currentUser->id === (int) $user->id;
+
         $isFollowing = false;
-        if ($currentUser && $currentUser->id !== $user->id) {
+        if ($currentUser && !$isSelf) {
             try {
                 $isFollowing = DB::table('user_follows')
                     ->where('follower_id', $currentUser->id)
                     ->where('following_id', $user->id)
                     ->exists();
-            } catch (\Throwable $e) {}
+            } catch (\Throwable $e) {
+                Log::warning('Gagal mengecek status follow', ['error' => $e->getMessage()]);
+            }
         }
 
-        // Hitung pengikut & mengikuti murni real dari database
         $followersCount = 0;
         $followingCount = 0;
+        $routesCount = 0;
         try {
             $followersCount = DB::table('user_follows')->where('following_id', $user->id)->count();
             $followingCount = DB::table('user_follows')->where('follower_id', $user->id)->count();
-        } catch (\Throwable $e) {}
-
-        // Hitung rute custom murni real dari database
-        $routesCount = 0;
-        try {
             $routesCount = $user->customRoutes()->count();
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+            Log::warning('Gagal menghitung statistik profil', ['error' => $e->getMessage()]);
+        }
 
-        // Ambil riwayat aktivitas nyata dari database
         $activities = ActivityPost::where('user_id', $user->id)
             ->orWhere('user_name', $user->name)
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $profileData = array_merge($this->formatUserPayload($user, $isSelf), [
+            'bio' => $user->bio ?? 'Penjelajah alam dan pegiat wisata Bogor.',
+            'isSelf' => $isSelf,
+            'followers_count' => $followersCount,
+            'following_count' => $followingCount,
+            'routes_count' => $routesCount,
+            'is_following' => $isFollowing,
+            'activities' => $activities,
+        ]);
+
         return response()->json([
             'status' => 'success',
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'username' => $user->username,
-                'email' => $user->email,
-                'avatar' => $user->avatar,
-                'bio' => $user->bio ?? 'Penjelajah alam dan pegiat wisata Bogor.',
-                'isSelf' => $currentUser && $currentUser->id === $user->id,
-                'followers_count' => $followersCount,
-                'following_count' => $followingCount,
-                'routes_count' => $routesCount,
-                'is_following' => $isFollowing,
-                'activities' => $activities,
-            ],
+            'data' => $profileData,
         ]);
     }
 
     /**
-     * Mengikuti (Follow) atau Batal Mengikuti (Unfollow) penjelajah lain secara dinamis.
+     * Mengikuti (Follow) atau Batal Mengikuti (Unfollow) penjelajah lain memakai user terautentikasi.
      */
     public function toggleFollow(Request $request, string $usernameOrId)
     {
+        $currentUser = $request->user();
+        if (!$currentUser) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Silakan login terlebih dahulu',
+            ], 401);
+        }
+
         $targetUser = User::where('username', $usernameOrId)
-            ->orWhere('id', is_numeric($usernameOrId) ? (int)$usernameOrId : -1)
+            ->orWhere('id', is_numeric($usernameOrId) ? (int) $usernameOrId : -1)
             ->orWhere('name', $usernameOrId)
             ->first();
 
@@ -256,29 +283,13 @@ class AuthController extends Controller
             ], 404);
         }
 
-        $currentUser = null;
-        if ($request->filled('current_user_id')) {
-            $currentUser = User::find($request->current_user_id);
-        }
-        if (!$currentUser && $request->filled('current_user_email')) {
-            $currentUser = User::where('email', $request->current_user_email)->first();
-        }
-
-        if (!$currentUser) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Silakan login terlebih dahulu',
-            ], 401);
-        }
-
-        if ($currentUser->id === $targetUser->id) {
+        if ((int) $currentUser->id === (int) $targetUser->id) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Tidak dapat mengikuti akun sendiri',
             ], 400);
         }
 
-        $isFollowing = false;
         try {
             $existing = DB::table('user_follows')
                 ->where('follower_id', $currentUser->id)
@@ -310,48 +321,52 @@ class AuthController extends Controller
                 'followers_count' => $totalFollowers,
             ]);
         } catch (\Throwable $e) {
+            Log::error('Gagal memperbarui status follow', [
+                'follower_id' => $currentUser->id,
+                'target_id' => $targetUser->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'status' => 'error',
-                'message' => 'Gagal memperbarui status follow: ' . $e->getMessage(),
+                'message' => 'Gagal memperbarui status follow.',
             ], 500);
         }
     }
 
     /**
-     * Memperbarui foto profil pengguna dan menyimpannya ke folder public/images/avatars/
+     * Memperbarui foto profil milik user terautentikasi.
      */
     public function updateAvatar(Request $request)
     {
-        $request->validate([
-            'avatar' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'user_id' => 'nullable|integer',
-            'email' => 'nullable|email',
-        ]);
-
-        $user = null;
-        if ($request->filled('user_id')) {
-            $user = User::find($request->user_id);
-        }
-        if (!$user && $request->filled('email')) {
-            $user = User::where('email', $request->email)->first();
-        }
-
+        $user = $request->user();
         if (!$user) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'User tidak ditemukan',
-            ], 404);
+                'message' => 'Tidak terautentikasi.',
+            ], 401);
         }
+
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
 
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
-            $ext = $file->getClientOriginalExtension();
-            $cleanName = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
-            $fileName = 'avatar_' . $user->id . '_' . time() . '_' . uniqid() . '.' . $ext;
+            $guessedExt = strtolower((string) ($file->guessExtension() ?: $file->getClientOriginalExtension() ?: 'jpg'));
+            $safeExt = in_array($guessedExt, ['jpg', 'jpeg', 'png', 'webp'], true) ? $guessedExt : 'jpg';
+            $fileName = 'avatar_' . $user->id . '_' . time() . '_' . uniqid() . '.' . $safeExt;
 
             $avatarDir = public_path('images/avatars');
-            // Kompresi foto profil otomatis: maksimal 600x600 px dengan kualitas 82%
-            ImageCompressor::compressAndSave($file, $avatarDir, $fileName, 600, 600, 82);
+
+            try {
+                ImageCompressor::compressAndSave($file, $avatarDir, $fileName, 600, 600, 82);
+            } catch (\Throwable $e) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'File foto profil tidak valid atau gagal diproses.',
+                ], 422);
+            }
 
             $avatarPath = '/images/avatars/' . $fileName;
             $user->update([
@@ -361,15 +376,9 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Foto profil berhasil diperbarui',
-                'data' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'username' => $user->username,
-                    'email' => $user->email,
-                    'avatar' => $user->avatar,
-                    'bio' => $user->bio,
+                'data' => array_merge($this->formatUserPayload($user, true), [
                     'isSelf' => true,
-                ],
+                ]),
             ]);
         }
 

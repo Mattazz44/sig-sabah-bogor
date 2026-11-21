@@ -178,14 +178,18 @@ function SafeImage({
         </div>
       ) : (
         <>
-          {!isLoaded && (
-            <div
-              aria-hidden="true"
-              className={`pointer-events-none shimmer-skeleton bg-[#253123] ${
-                isContain ? 'h-56 w-72 sm:h-72 sm:w-96 rounded-2xl' : 'absolute inset-0 z-[1]'
-              }`}
-            />
-          )}
+          <div
+            aria-hidden="true"
+            className={`pointer-events-none bg-white/[0.04] transition-opacity duration-300 ease-out ${
+              !isLoaded ? 'shimmer-skeleton opacity-100' : 'opacity-0'
+            } ${
+              isContain
+                ? isLoaded
+                  ? 'hidden'
+                  : 'h-56 w-72 sm:h-72 sm:w-96 rounded-2xl'
+                : 'absolute inset-0 z-[1]'
+            }`}
+          />
 
           {displaySrc && (
             <img
@@ -206,7 +210,7 @@ function SafeImage({
                   handleImageError(e, fallback)
                 }
               }}
-              className={`${imageFitClasses} transition-opacity duration-300 ${
+              className={`${imageFitClasses} transition-opacity duration-300 ease-out ${
                 isLoaded ? 'opacity-100' : isContain ? 'opacity-0 absolute pointer-events-none' : 'opacity-0'
               } ${isContain ? wrapperClasses.replace(/\bw-full\b|\bh-full\b/g, '') : innerImageClasses} ${imgClassName}`}
               {...rest}

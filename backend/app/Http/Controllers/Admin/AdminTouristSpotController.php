@@ -8,6 +8,7 @@ use App\Services\ImageCompressor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class AdminTouristSpotController extends Controller
 {
@@ -93,11 +94,18 @@ class AdminTouristSpotController extends Controller
                 mkdir($spotsDir, 0755, true);
             }
             foreach ($request->file('photos') as $idx => $photoFile) {
-                $ext = $photoFile->getClientOriginalExtension();
-                $cleanName = Str::slug(pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME));
+                $guessedExt = strtolower((string) ($photoFile->guessExtension() ?: $photoFile->getClientOriginalExtension() ?: 'jpg'));
+                $ext = in_array($guessedExt, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true) ? $guessedExt : 'jpg';
+                $cleanName = Str::slug(pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'spot';
                 $fileName = time() . '_' . uniqid() . '_' . $cleanName . '.' . $ext;
                 // Kompresi foto tempat wisata: maksimal resolusi 1280x1280 px dengan kualitas 82%
-                ImageCompressor::compressAndSave($photoFile, $spotsDir, $fileName, 1280, 1280, 82);
+                try {
+                    ImageCompressor::compressAndSave($photoFile, $spotsDir, $fileName, 1280, 1280, 82);
+                } catch (\Throwable) {
+                    throw ValidationException::withMessages([
+                        'photos' => ['Salah satu file foto tidak valid atau gagal diproses.'],
+                    ]);
+                }
                 $uploadedMap['new_' . $idx] = '/images/spots/' . $fileName;
             }
         }
@@ -130,25 +138,29 @@ class AdminTouristSpotController extends Controller
         // Foto paling atas (indeks 0) menjadi foto utama!
         $primaryImage = $orderedGallery[0];
 
-        $spot = TouristSpot::create([
-            'slug' => $slug,
-            'name' => $validated['name'],
-            'category' => $validated['category'],
-            'latitude' => $validated['latitude'],
-            'longitude' => $validated['longitude'],
-            'address' => $validated['address'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'detailed_description' => $validated['detailed_description'] ?? null,
-            'operational_hours' => $validated['operational_hours'] ?? '08.00 - 17.00 WIB',
-            'ticket_price' => $validated['ticket_price'] ?? 'Gratis',
-            'rating' => $validated['rating'] ?? 4.5,
-            'is_popular' => $request->has('is_popular'),
-            'image' => $primaryImage,
-            'gallery' => array_values(array_unique($orderedGallery)),
-        ]);
+        $spot = DB::transaction(function () use ($slug, $validated, $request, $primaryImage, $orderedGallery) {
+            $created = TouristSpot::create([
+                'slug' => $slug,
+                'name' => $validated['name'],
+                'category' => $validated['category'],
+                'latitude' => $validated['latitude'],
+                'longitude' => $validated['longitude'],
+                'address' => $validated['address'] ?? null,
+                'description' => $validated['description'] ?? null,
+                'detailed_description' => $validated['detailed_description'] ?? null,
+                'operational_hours' => $validated['operational_hours'] ?? '08.00 - 17.00 WIB',
+                'ticket_price' => $validated['ticket_price'] ?? 'Gratis',
+                'rating' => $validated['rating'] ?? 4.5,
+                'is_popular' => $request->has('is_popular'),
+                'image' => $primaryImage,
+                'gallery' => array_values(array_unique($orderedGallery)),
+            ]);
 
-        // Simpan Geometry spasial (kompatibel PostgreSQL PostGIS & MySQL/MariaDB)
-        $this->updateSpatialPoint($spot->id, (float) $validated['longitude'], (float) $validated['latitude']);
+            // Simpan Geometry spasial (kompatibel PostgreSQL PostGIS & MySQL/MariaDB)
+            $this->updateSpatialPoint($created->id, (float) $validated['longitude'], (float) $validated['latitude']);
+
+            return $created;
+        });
 
         return redirect()->route('admin.spots.index')->with('success', "Tempat wisata '{$spot->name}' berhasil ditambahkan ke database!");
     }
@@ -194,11 +206,18 @@ class AdminTouristSpotController extends Controller
                 mkdir($spotsDir, 0755, true);
             }
             foreach ($request->file('photos') as $idx => $photoFile) {
-                $ext = $photoFile->getClientOriginalExtension();
-                $cleanName = Str::slug(pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME));
+                $guessedExt = strtolower((string) ($photoFile->guessExtension() ?: $photoFile->getClientOriginalExtension() ?: 'jpg'));
+                $ext = in_array($guessedExt, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true) ? $guessedExt : 'jpg';
+                $cleanName = Str::slug(pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'spot';
                 $fileName = time() . '_' . uniqid() . '_' . $cleanName . '.' . $ext;
                 // Kompresi foto tempat wisata: maksimal resolusi 1280x1280 px dengan kualitas 82%
-                ImageCompressor::compressAndSave($photoFile, $spotsDir, $fileName, 1280, 1280, 82);
+                try {
+                    ImageCompressor::compressAndSave($photoFile, $spotsDir, $fileName, 1280, 1280, 82);
+                } catch (\Throwable) {
+                    throw ValidationException::withMessages([
+                        'photos' => ['Salah satu file foto tidak valid atau gagal diproses.'],
+                    ]);
+                }
                 $uploadedMap['new_' . $idx] = '/images/spots/' . $fileName;
             }
         }
@@ -226,24 +245,26 @@ class AdminTouristSpotController extends Controller
         $orderedGallery = array_values(array_unique(array_filter($orderedGallery)));
         $primaryImage = $orderedGallery[0] ?? $spot->image;
 
-        $spot->update([
-            'name' => $validated['name'],
-            'category' => $validated['category'],
-            'latitude' => $validated['latitude'],
-            'longitude' => $validated['longitude'],
-            'address' => $validated['address'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'detailed_description' => $validated['detailed_description'] ?? null,
-            'operational_hours' => $validated['operational_hours'] ?? $spot->operational_hours,
-            'ticket_price' => $validated['ticket_price'] ?? $spot->ticket_price,
-            'rating' => $validated['rating'] ?? $spot->rating,
-            'is_popular' => $request->has('is_popular'),
-            'image' => $primaryImage,
-            'gallery' => $orderedGallery,
-        ]);
+        DB::transaction(function () use ($spot, $validated, $request, $primaryImage, $orderedGallery) {
+            $spot->update([
+                'name' => $validated['name'],
+                'category' => $validated['category'],
+                'latitude' => $validated['latitude'],
+                'longitude' => $validated['longitude'],
+                'address' => $validated['address'] ?? null,
+                'description' => $validated['description'] ?? null,
+                'detailed_description' => $validated['detailed_description'] ?? null,
+                'operational_hours' => $validated['operational_hours'] ?? $spot->operational_hours,
+                'ticket_price' => $validated['ticket_price'] ?? $spot->ticket_price,
+                'rating' => $validated['rating'] ?? $spot->rating,
+                'is_popular' => $request->has('is_popular'),
+                'image' => $primaryImage,
+                'gallery' => $orderedGallery,
+            ]);
 
-        // Update Geometry spasial (kompatibel PostgreSQL PostGIS & MySQL/MariaDB)
-        $this->updateSpatialPoint($spot->id, (float) $validated['longitude'], (float) $validated['latitude']);
+            // Update Geometry spasial (kompatibel PostgreSQL PostGIS & MySQL/MariaDB)
+            $this->updateSpatialPoint($spot->id, (float) $validated['longitude'], (float) $validated['latitude']);
+        });
 
         return redirect()->route('admin.spots.index')->with('success', "Tempat wisata '{$spot->name}' berhasil diperbarui!");
     }

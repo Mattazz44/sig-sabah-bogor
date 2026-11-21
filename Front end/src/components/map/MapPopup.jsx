@@ -1,4 +1,5 @@
 import SafeImage from '../ui/SafeImage'
+import { getBogorFallbackPhoto } from '../../utils/imageHelper'
 import { ChevronRightIcon, StarIcon } from '../ui/VectorIcons'
 
 export default function MapPopup({ place, onOpenDetail, onSelect, isTransit = false }) {
@@ -6,6 +7,7 @@ export default function MapPopup({ place, onOpenDetail, onSelect, isTransit = fa
 
   const ratingText = typeof place.rating === 'number' ? place.rating.toFixed(1) : place.rating
   const triggerOpenDetail = onOpenDetail || onSelect
+  const fallbackPhoto = getBogorFallbackPhoto(place)
 
   const handleOpen = (e) => {
     e.stopPropagation()
@@ -13,58 +15,70 @@ export default function MapPopup({ place, onOpenDetail, onSelect, isTransit = fa
   }
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={handleOpen}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          handleOpen(e)
-        }
-      }}
-      className="group block w-[205px] max-w-[215px] cursor-pointer overflow-hidden rounded-xl text-left transition-transform duration-150 active:scale-[0.98]"
+    <article
+      className="group relative w-[228px] max-w-[238px] overflow-hidden rounded-2xl border border-[#F4EFE6]/15 bg-[#1C241C]/80 text-left text-[#F5F2EB] shadow-2xl backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(244,239,230,0.22)]"
     >
-      <div className="relative overflow-hidden">
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-white/[0.04]">
         <SafeImage
-          src={place.image}
+          src={place.image || fallbackPhoto}
+          fallback={fallbackPhoto}
           alt={place.name}
-          className="h-24 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          width={228}
+          height={142}
+          className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
           loading="lazy"
           decoding="async"
         />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent"
+        />
         {isTransit && (
-          <span className="absolute top-1.5 left-1.5 z-[2] inline-flex items-center gap-1 rounded-md border border-[#E2D7B5]/40 bg-[#1B261B]/95 px-2 py-0.5 text-[9px] font-semibold text-[#E2D7B5] shadow-sm">
-            <span>Lokasi Transit</span>
+          <span className="absolute top-2 left-2 z-[2] inline-flex items-center rounded-full border border-[#DFAA63]/40 bg-[#111711]/85 px-2.5 py-0.5 text-[10px] font-semibold text-[#DFAA63] backdrop-blur-sm">
+            Lokasi transit
           </span>
         )}
         {place.category && (
-          <span className="absolute bottom-1.5 left-2 z-[2] rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white/95 backdrop-blur-sm">
+          <span className="absolute bottom-2 left-2.5 z-[2] rounded-full border border-[rgba(244,239,230,0.16)] bg-[#111711]/75 px-2.5 py-0.5 text-[10px] font-medium text-[#F5F2EB] backdrop-blur-sm">
             {place.category}
           </span>
         )}
       </div>
 
-      <div className="bg-[#171F17] p-2.5">
-        <p className="truncate text-[13.5px] font-semibold tracking-tight leading-tight text-[#F5F2EB]">
+      <div className="p-3">
+        <h3 className="truncate text-[13.5px] font-semibold tracking-tight leading-snug text-[#F5F2EB]">
           {place.name}
-        </p>
-        <p className="mt-1 flex items-center gap-1.5 text-[11px] text-[#F5F2EB]/65">
-          <StarIcon filled className="h-3 w-3 shrink-0 text-[#DFAA63]" />
-          <span className="font-mono font-semibold text-[#F5F2EB] tabular-nums tracking-wide">{ratingText}</span>
-          {place.distance && (
-            <>
-              <span aria-hidden="true" className="text-[#F5F2EB]/35">·</span>
-              <span className="truncate font-mono tabular-nums tracking-wide">{place.distance}</span>
-            </>
-          )}
-        </p>
-        <div className="apple-retro-bevel mt-2 flex items-center justify-between rounded-lg border border-[rgba(244,239,230,0.16)] bg-[#F2ECE1]/12 px-2.5 py-1.5 text-[11px] font-semibold text-[#F5F2EB] transition-colors group-hover:bg-[#F2ECE1]/20">
-          <span>{isTransit ? 'Arah menuju sini' : 'Lihat detail'}</span>
-          <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" />
+        </h3>
+
+        <div className="mt-1.5 flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-1.5 text-[11.5px]">
+            <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
+            <span className="font-semibold not-italic tabular-nums text-[#DFAA63]">
+              {ratingText}
+            </span>
+            {place.distance && (
+              <>
+                <span aria-hidden="true" className="text-[#F5F2EB]/35">
+                  ·
+                </span>
+                <span className="truncate not-italic tabular-nums text-[#F5F2EB]/70">
+                  {place.distance}
+                </span>
+              </>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleOpen}
+            aria-label={`Lihat detail ${place.name}`}
+            className="apple-retro-cta z-[2] inline-flex min-h-[34px] shrink-0 items-center gap-1 rounded-full bg-[#F2ECE1] px-3.5 py-1.5 text-[11.5px] font-semibold text-[#141A14] transition-transform duration-150 active:scale-[0.96] after:absolute after:inset-0 after:z-[1] after:content-['']"
+          >
+            <span>{isTransit ? 'Rute' : 'Detail'}</span>
+            <ChevronRightIcon className="h-3 w-3 shrink-0 transition-transform duration-150 group-hover:translate-x-0.5" />
+          </button>
         </div>
       </div>
-    </div>
+    </article>
   )
 }

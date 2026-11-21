@@ -13,7 +13,7 @@ class AdminAuthController extends Controller
      */
     public function showLoginForm()
     {
-        if (Auth::check()) {
+        if (Auth::guard('web')->check() && Auth::guard('web')->user()?->isAdmin()) {
             return redirect()->route('admin.spots.index');
         }
 
@@ -36,12 +36,25 @@ class AdminAuthController extends Controller
 
         // Dukungan login menggunakan Email atau Username
         $fieldType = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $webGuard = Auth::guard('web');
 
-        if (Auth::attempt([$fieldType => $login, 'password' => $password], $remember)) {
+        if ($webGuard->attempt([$fieldType => $login, 'password' => $password], $remember)) {
+            $user = $webGuard->user();
+
+            if (!$user || !$user->isAdmin()) {
+                $webGuard->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()->withErrors([
+                    'login' => 'Akun Anda tidak memiliki hak akses Administrator.',
+                ])->onlyInput('login');
+            }
+
             $request->session()->regenerate();
 
             return redirect()->intended(route('admin.spots.index'))
-                ->with('success', 'Selamat datang kembali, ' . Auth::user()->name . '!');
+                ->with('success', 'Selamat datang kembali, ' . $user->name . '!');
         }
 
         return back()->withErrors([
@@ -54,7 +67,7 @@ class AdminAuthController extends Controller
      */
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
@@ -62,4 +75,3 @@ class AdminAuthController extends Controller
         return redirect()->route('login')->with('success', 'Anda telah berhasil keluar (logout).');
     }
 }
-

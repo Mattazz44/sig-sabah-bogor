@@ -151,9 +151,9 @@ function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
               <div
                 key={`${imgUrl}-${stackIdx}`}
                 aria-hidden={stackIdx > 0}
-                className={`absolute inset-0 rounded-2xl border border-white/25 bg-[#1B261B] p-1.5 pb-2 shadow-[0_12px_28px_-8px_rgba(0,0,0,0.5)] will-change-transform transition-transform duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transform-none motion-reduce:transition-none ${layer.zIndex} ${activeTransform}`}
+                className={`absolute inset-0 rounded-2xl border border-[rgba(244,239,230,0.18)] bg-[#1C241C] p-1.5 pb-2 shadow-[0_12px_28px_-8px_rgba(0,0,0,0.5)] will-change-transform transition-transform duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transform-none motion-reduce:transition-none ${layer.zIndex} ${activeTransform}`}
               >
-                <div className="relative h-full w-full overflow-hidden rounded-xl bg-[#253320]">
+                <div className="relative h-full w-full overflow-hidden rounded-xl bg-white/[0.04]">
                   <SafeImage
                     src={imgUrl}
                     fallback={fallbackPhoto}
@@ -167,8 +167,8 @@ function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
 
                   {/* Badge penghitung foto di sudut kartu teratas */}
                   {stackIdx === 0 && (
-                    <span className="pointer-events-none absolute top-2.5 right-2.5 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-[#161E16]/85 px-2.5 py-1 text-[11px] font-semibold tabular-nums text-[#EBF0EB] shadow-sm backdrop-blur-md">
-                      <CameraIcon className="h-3.5 w-3.5 text-[#E2D7B5]" />
+                    <span className="pointer-events-none absolute top-2.5 right-2.5 z-10 inline-flex items-center gap-1.5 rounded-full border border-[rgba(244,239,230,0.2)] bg-[#111711]/85 px-2.5 py-1 text-[11px] font-semibold not-italic tabular-nums text-[#F5F2EB] shadow-sm backdrop-blur-md">
+                      <CameraIcon className="h-3.5 w-3.5 text-[#DFAA63]" />
                       <span>{displayImages.length} Foto</span>
                     </span>
                   )}
@@ -751,7 +751,7 @@ function TouristDetailPage({
     <div
       ref={scrollContainerRef}
       id="tourist-detail-page"
-      className="apple-canopy-bg relative h-full w-full overflow-y-auto overflow-x-hidden overscroll-contain text-[#EBF0EB]"
+      className="apple-canopy-bg animate-detail-enter relative h-full w-full overflow-y-auto overflow-x-hidden overscroll-contain text-[#F5F2EB]"
     >
       {/* Wrapper atas: Full-bleed di mobile (< 768px), terbingkai proporsional max-w-5xl di iPad / Nest Hub / Laptop */}
       <div className="relative w-full md:mx-auto md:max-w-5xl md:px-6 md:pt-6">
@@ -763,7 +763,7 @@ function TouristDetailPage({
               id="detail-back-button"
               aria-label="Kembali ke peta"
               onClick={onBack}
-              className="apple-glass-pill pointer-events-auto inline-flex h-11 min-w-[44px] items-center justify-center gap-2 rounded-full text-[13px] font-semibold text-[#EBF0EB] shadow-md transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97] px-3 sm:px-4"
+              className="apple-glass-pill pointer-events-auto inline-flex h-11 min-w-[44px] items-center justify-center gap-2 rounded-full text-[13px] font-semibold text-[#F5F2EB] shadow-md transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97] px-3 sm:px-4"
             >
               <ChevronLeftIcon className="h-5 w-5" />
               <span className="hidden sm:inline">Kembali ke peta</span>
@@ -775,7 +775,7 @@ function TouristDetailPage({
                 id="detail-share-button"
                 aria-label="Bagikan tempat ini"
                 onClick={handleShare}
-                className="apple-glass-pill inline-flex h-11 min-w-[44px] items-center justify-center gap-2 rounded-full text-[13px] font-medium text-[#EBF0EB] shadow-md transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97] sm:px-3.5"
+                className="apple-glass-pill inline-flex h-11 min-w-[44px] items-center justify-center gap-2 rounded-full text-[13px] font-medium text-[#F5F2EB] shadow-md transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97] sm:px-3.5"
               >
                 <ShareIcon className="h-4 w-4" />
                 <span className="hidden sm:inline">Bagikan</span>
@@ -790,7 +790,7 @@ function TouristDetailPage({
                 className={`inline-flex h-11 min-w-[44px] items-center justify-center gap-2 rounded-full border text-[13px] font-medium shadow-md backdrop-blur-md transition-all duration-150 active:scale-[0.97] sm:px-3.5 ${
                   favoriteActive
                     ? 'border-rose-300/35 bg-[#3B1D24]/85 text-rose-200 hover:bg-[#49242D]'
-                    : 'apple-glass-pill text-[#EBF0EB] hover:bg-white/[0.14]'
+                    : 'apple-glass-pill text-[#F5F2EB] hover:bg-white/[0.14]'
                 }`}
               >
                 <HeartIcon filled={favoriteActive} className="h-5 w-5 sm:h-4 sm:w-4" />
@@ -803,7 +803,7 @@ function TouristDetailPage({
                 <div
                   role="status"
                   aria-live="polite"
-                  className="apple-glass-card absolute top-full right-0 z-30 mt-2 whitespace-nowrap rounded-xl px-3 py-1.5 text-[12px] font-medium text-[#EBF0EB] shadow-md"
+                  className="apple-glass-card absolute top-full right-0 z-30 mt-2 whitespace-nowrap rounded-xl px-3 py-1.5 text-[12px] font-medium text-[#F5F2EB] shadow-md"
                 >
                   Tautan tersalin
                 </div>
@@ -813,7 +813,7 @@ function TouristDetailPage({
         </header>
 
         {/* Banner Hero Image */}
-        <section className="apple-retro-bevel relative h-[40svh] min-h-[250px] max-h-[360px] w-full overflow-hidden bg-[#141A14] md:h-[280px] lg:h-[320px] md:max-h-none md:rounded-3xl md:border md:border-[rgba(244,239,230,0.16)] md:shadow-2xl">
+        <section className="apple-retro-bevel relative h-[40svh] min-h-[250px] max-h-[360px] w-full overflow-hidden bg-white/[0.04] md:h-[280px] lg:h-[320px] md:max-h-none md:rounded-3xl md:border md:border-[rgba(244,239,230,0.16)] md:shadow-2xl">
           <SafeImage
             src={heroImage}
             fallback={fallbackPhoto}
@@ -850,7 +850,7 @@ function TouristDetailPage({
             <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[13px] font-medium text-[#F5F2EB]">
               <span className="inline-flex items-center gap-1.5">
                 <StarIcon filled className="h-4 w-4 shrink-0 text-[#DFAA63]" />
-                <span className="font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+                <span className="font-semibold not-italic tabular-nums text-[#F5F2EB]">
                   {Number(place.rating || 0).toFixed(1)}
                 </span>
               </span>
@@ -865,7 +865,7 @@ function TouristDetailPage({
               {place.distance && (
                 <>
                   <span className="text-[#F5F2EB]/45" aria-hidden="true">·</span>
-                  <span className="font-mono tabular-nums tracking-wide text-[#F5F2EB]/85">{place.distance}</span>
+                  <span className="not-italic tabular-nums text-[#F5F2EB]/85">{place.distance}</span>
                 </>
               )}
             </div>
@@ -874,7 +874,7 @@ function TouristDetailPage({
       </div>
 
       {/* Kontainer Utama Place Sheet: Mobile 1 Kolom vs iPad / Nest Hub / Laptop 2 Kolom Split (7 + 5) */}
-      <div className="relative z-10 mx-auto w-full max-w-5xl px-4 pb-32 md:px-6 animate-fade-enter">
+      <div className="relative z-10 mx-auto w-full max-w-5xl px-4 pb-32 md:px-6">
         {/* Judul & Metadata khusus Mobile (< 768px) */}
         <div className="relative -mt-8 mb-5 md:hidden">
           <h1
@@ -887,7 +887,7 @@ function TouristDetailPage({
           <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[13px] font-medium text-[#F5F2EB]">
             <span className="inline-flex items-center gap-1.5">
               <StarIcon filled className="h-4 w-4 shrink-0 text-[#DFAA63]" />
-              <span className="font-mono font-semibold tabular-nums tracking-wide">
+              <span className="font-semibold not-italic tabular-nums">
                 {Number(place.rating || 0).toFixed(1)}
               </span>
             </span>
@@ -902,7 +902,7 @@ function TouristDetailPage({
             {place.distance && (
               <>
                 <span className="text-[#F5F2EB]/40" aria-hidden="true">·</span>
-                <span className="font-mono tabular-nums tracking-wide text-[#F5F2EB]/70">{place.distance}</span>
+                <span className="not-italic tabular-nums text-[#F5F2EB]/70">{place.distance}</span>
               </>
             )}
           </div>
@@ -1028,7 +1028,7 @@ function TouristDetailPage({
                 <h2 className="text-[16px] font-semibold tracking-tight text-[#F5F2EB]">
                   Foto lokasi
                 </h2>
-                <span className="font-mono text-[11.5px] font-medium tabular-nums tracking-wide text-[#F5F2EB]/60">
+                <span className="text-[11.5px] font-medium not-italic tabular-nums text-[#F5F2EB]/60">
                   {galleryImages.length} tersimpan
                 </span>
               </div>
@@ -1054,7 +1054,7 @@ function TouristDetailPage({
                   >
                     Destinasi Serupa di Sekitar
                   </h2>
-                  <span className="font-mono text-[11px] font-medium tracking-wide text-[#F5F2EB]/55">Terdekat</span>
+                  <span className="text-[11px] font-medium text-[#F5F2EB]/55">Terdekat</span>
                 </div>
 
                 <ul className="divide-y divide-[rgba(244,239,230,0.12)]">
@@ -1091,11 +1091,11 @@ function TouristDetailPage({
                             </h3>
                             <div className="mt-0.5 flex items-center gap-1.5 text-[11.5px] text-[#F5F2EB]/60">
                               <StarIcon filled className="h-3 w-3 shrink-0 text-[#DFAA63]" />
-                              <span className="font-mono font-semibold text-[#F5F2EB] tabular-nums tracking-wide">
+                              <span className="font-semibold not-italic tabular-nums text-[#F5F2EB]">
                                 {Number(item.rating || 0).toFixed(1)}
                               </span>
                               <span aria-hidden="true" className="text-[#F5F2EB]/35">·</span>
-                              <span className="truncate font-mono tabular-nums tracking-wide">{itemDistLabel}</span>
+                              <span className="truncate not-italic tabular-nums">{itemDistLabel}</span>
                               {item.category && Number.isFinite(distKm) && (
                                 <>
                                   <span aria-hidden="true" className="text-[#F5F2EB]/35">·</span>

@@ -6,6 +6,7 @@ import { calculateDistanceKm } from '../../utils/distance'
 const ROUTE_SOURCE_ID = 'navigation-route'
 const ROUTE_CASING_LAYER_ID = 'navigation-route-casing'
 const ROUTE_LINE_LAYER_ID = 'navigation-route-line'
+const ROUTE_DRAW_DURATION_MS = 720
 
 function removeRouteLayers(map) {
   if (!map) return
@@ -19,9 +20,56 @@ function removeRouteLayers(map) {
   }
 }
 
+/** Hitung jarak kumulatif tiap titik agar animasi garis meluncur konstan tanpa tersendat. */
+function buildCumulativePath(coords) {
+  if (!Array.isArray(coords) || coords.length === 0) {
+    return { coords: [], cumDist: [], totalDist: 0 }
+  }
+  const cumDist = [0]
+  let running = 0
+  for (let i = 1; i < coords.length; i += 1) {
+    const [lng1, lat1] = coords[i - 1]
+    const [lng2, lat2] = coords[i]
+    const seg = Math.hypot(lng2 - lng1, lat2 - lat1)
+    running += seg
+    cumDist.push(running)
+  }
+  return { coords, cumDist, totalDist: running }
+}
+
+function sliceCoordsAtProgress(pathData, progress) {
+  const { coords, cumDist, totalDist } = pathData
+  if (coords.length <= 2 || totalDist <= 0 || progress >= 1) {
+    return coords
+  }
+  if (progress <= 0) {
+    return [coords[0], coords[0]]
+  }
+
+  const targetDist = totalDist * progress
+  const sliced = [coords[0]]
+
+  for (let i = 1; i < coords.length; i += 1) {
+    if (cumDist[i] <= targetDist) {
+      sliced.push(coords[i])
+    } else {
+      const prevDist = cumDist[i - 1]
+      const segDist = cumDist[i] - prevDist
+      const frac = segDist > 0 ? (targetDist - prevDist) / segDist : 0
+      const [lng1, lat1] = coords[i - 1]
+      const [lng2, lat2] = coords[i]
+      sliced.push([lng1 + (lng2 - lng1) * frac, lat1 + (lat2 - lat1) * frac])
+      break
+    }
+  }
+
+  return sliced.length >= 2 ? sliced : [coords[0], coords[0]]
+}
+
 export default function RoutingMachine({ userPosition, destination, onRouteFound }) {
   const { map, isStyleLoaded } = useMapLibre()
   const hasFittedBoundsRef = useRef(false)
+  const hasAnimatedRouteRef = useRef(false)
   const prevDestRef = useRef(null)
   const onRouteFoundRef = useRef(onRouteFound)
 
@@ -77,6 +125,7 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
   useEffect(() => {
     if (destSignature && prevDestRef.current !== destSignature) {
       hasFittedBoundsRef.current = false
+      hasAnimatedRouteRef.current = false
       prevDestRef.current = destSignature
     }
   }, [destSignature])
@@ -87,6 +136,7 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
     }
 
     let isDisposed = false
+    let animFrameId = 0
     const controller = new AbortController()
     const currentDestPoints = destPointsRef.current
     const waypointsLngLat = [
@@ -94,15 +144,17 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
       ...currentDestPoints.map(([lat, lng]) => [lng, lat]),
     ]
 
-    const drawRouteGeoJson = (geometry, totalMeters, totalSecs) => {
+    const updateSourceCoords = (coords) => {
       if (isDisposed || !map || !map.getStyle()) return
-
       const featureCollection = {
         type: 'FeatureCollection',
         features: [
           {
             type: 'Feature',
-            geometry,
+            geometry: {
+              type: 'LineString',
+              coordinates: coords,
+            },
             properties: {},
           },
         ],
@@ -117,7 +169,10 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
           data: featureCollection,
         })
       }
+    }
 
+    const ensureRouteLayers = () => {
+      if (!map || !map.getStyle()) return
       const beforeId = map.getLayer('building-3d') ? 'building-3d' : undefined
 
       if (!map.getLayer(ROUTE_CASING_LAYER_ID)) {
@@ -159,13 +214,50 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
           beforeId,
         )
       }
+    }
+
+    const drawRouteGeoJson = (geometry, totalMeters, totalSecs) => {
+      if (isDisposed || !map || !map.getStyle()) return
+
+      const rawCoords = Array.isArray(geometry?.coordinates) ? geometry.coordinates : []
+      const prefersReducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+      const shouldAnimateDraw =
+        !hasAnimatedRouteRef.current && !prefersReducedMotion && rawCoords.length >= 2
+
+      cancelAnimationFrame(animFrameId)
+
+      if (shouldAnimateDraw) {
+        hasAnimatedRouteRef.current = true
+        const pathData = buildCumulativePath(rawCoords)
+        updateSourceCoords(sliceCoordsAtProgress(pathData, 0.02))
+        ensureRouteLayers()
+
+        const startTime = performance.now()
+        const step = (now) => {
+          if (isDisposed || !map || !map.getStyle()) return
+          const elapsed = now - startTime
+          const t = Math.min(1, elapsed / ROUTE_DRAW_DURATION_MS)
+          const eased = 1 - Math.pow(1 - t, 3)
+
+          updateSourceCoords(sliceCoordsAtProgress(pathData, eased))
+          if (t < 1) {
+            animFrameId = requestAnimationFrame(step)
+          } else {
+            animFrameId = 0
+          }
+        }
+        animFrameId = requestAnimationFrame(step)
+      } else {
+        updateSourceCoords(rawCoords)
+        ensureRouteLayers()
+      }
 
       if (!hasFittedBoundsRef.current) {
         const bounds = new LngLatBounds()
         waypointsLngLat.forEach((coord) => bounds.extend(coord))
-        if (Array.isArray(geometry?.coordinates)) {
-          geometry.coordinates.forEach((coord) => bounds.extend(coord))
-        }
+        rawCoords.forEach((coord) => bounds.extend(coord))
         map.fitBounds(bounds, {
           padding: { top: 140, bottom: 160, left: 24, right: 24 },
           maxZoom: 15.5,
@@ -222,6 +314,7 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
 
     return () => {
       isDisposed = true
+      cancelAnimationFrame(animFrameId)
       controller.abort()
       removeRouteLayers(map)
     }
