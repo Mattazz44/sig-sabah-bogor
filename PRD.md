@@ -5,9 +5,9 @@
 | :--- | :--- |
 | **Nama Produk** | SIG Wisata Sabah Bogor (Jelajah Wisata Kota & Kabupaten Bogor) |
 | **Tipe Aplikasi** | Progressive Web Application (PWA) & Hybrid Android App (Capacitor) |
-| **Arsitektur** | Single Page Application (React 19 + Vite) terintegrasi REST API Laravel & PostGIS |
-| **Status Dokumen** | Final / Production Ready (v1.0) |
-| **Terakhir Diperbarui** | 12 November 2026 |
+| **Arsitektur** | SPA (`React 19 + Vite 8 + MapLibre GL`) terintegrasi REST API `Laravel 13 + Sanctum + Spatial DB (PostGIS/MySQL/SQLite)` |
+| **Status Dokumen** | Updated / Security Hardened (v1.1) |
+| **Terakhir Diperbarui** | 21 November 2026 |
 
 ---
 
@@ -17,149 +17,153 @@
 Kota dan Kabupaten Bogor memiliki puluhan destinasi wisata unggulan yang tersebar di berbagai kategori (**Alam & Curug**, **Kuliner**, serta **Edukasi & Budaya**). Wisatawan sering mengalami kendala ketika merencanakan perjalanan:
 1. Sulit memvisualisasikan sebaran lokasi wisata secara spasial terhadap posisi GPS mereka saat ini.
 2. Tidak adanya fitur perencanaan rute berantai (*multi-waypoints itinerary*) yang menghitung estimasi jarak dan waktu tempuh antartitik wisata secara otomatis.
-3. Kurangnya wadah komunitas terintegrasi untuk melihat dokumentasi kondisi terkini tempat wisata dari sesama pengunjung.
+3. Kurangnya wadah komunitas terintegrasi yang aman untuk melihat dan berbagi dokumentasi kondisi terkini tempat wisata dari sesama pengunjung.
 
 ### 1.2 Visi & Tujuan Produk
-**SIG Wisata Sabah Bogor** hadir sebagai aplikasi **Sistem Informasi Geografis (SIG)** berbasis *Mobile-First Progressive Web App (PWA)* dan Android (Capacitor) yang menggabungkan eksplorasi peta interaktif, perhitungan jarak *real-time*, navigasi rute *multi-destinasi*, kurasi rekomendasi personal, dan jejaring aktivitas komunitas wisatawan dalam satu antarmuka bertema *Forest Green* (`#2c3b26` & `#4f5f3b`).
+**SIG Wisata Sabah Bogor** hadir sebagai aplikasi **Sistem Informasi Geografis (SIG)** berbasis *Mobile-First Progressive Web App (PWA)* dan Android (Capacitor) yang menggabungkan eksplorasi peta 3D interaktif, perhitungan jarak *real-time*, navigasi rute *multi-destinasi*, kurasi rekomendasi personal, dan jejaring aktivitas komunitas wisatawan dalam estetika **Modern Apple (Liquid Glass & Apple Maps) + Subtle Retro** (*Deep Forest Charcoal* `#111711`, *Classic Macintosh Bone* `#F2ECE1`, dan *Vintage Amber* `#DFAA63`).
 
 **Tujuan Utama:**
-* Menyediakan peta interaktif cepat (60 FPS) dengan pengelompokan titik (*Marker Clustering*) dan batas wilayah administrasi Kota Bogor (*GeoJSON Boundary Layer*).
-* Memudahkan pengguna menemukan destinasi terdekat menggunakan perhitungan jarak *geodesic* (rumus Haversine) dan estimasi waktu tempuh lalu lintas Bogor secara *real-time*.
+* Menyediakan peta interaktif cepat (60 FPS) berbasis MapLibre GL 3D dengan pengelompokan titik (*Marker Clustering*) dan batas wilayah administrasi Kota Bogor (*GeoJSON Boundary Layer*).
+* Memudahkan pengguna menemukan destinasi terdekat menggunakan perhitungan jarak *geodesic* (rumus Haversine) dan estimasi waktu tempuh secara *real-time*.
 * Memungkinkan perencanaan perjalanan satu titik maupun *Rute Custom Multi-Waypoints* langsung di dalam aplikasi menggunakan mesin rute OSRM (*Open Source Routing Machine*).
-* Menyediakan ekosistem penyimpanan riwayat kunjungan, daftar favorit, dan *feed* berbagi foto perjalanan komunitas.
+* Menyediakan sistem autentikasi aman berbasis **Laravel Sanctum Bearer Token** & **Google OAuth One-Time Code Exchange**, pemisahan peran **Role-Based Access Control (RBAC)** (`user` vs `admin`), serta proteksi kepemilikan data pengguna.
 
 ---
 
-## 2. Target Pengguna & User Personas
+## 2. Target Pengguna & Role-Based Access Control (RBAC)
 
-| Persona | Profil & Karakteristik | Kebutuhan Utama (*Goals*) | Solusi pada Sabah Bogor |
+### 2.1 User Personas & Hak Akses
+| Persona / Role | Karakteristik | Kebutuhan Utama (*Goals*) | Hak Akses Sistem (RBAC) |
 | :--- | :--- | :--- | :--- |
-| **1. Wisatawan Akhir Pekan (Luar Daerah / Jabodetabek)** | Usia 18–40 tahun, berkunjung singkat di akhir pekan menggunakan kendaraan pribadi/umum, mengakses via smartphone. | Ingin mengunjungi 2–3 tempat wisata sekaligus yang searah tanpa membuang waktu di jalan. | Fitur **Rute Custom Multi-Waypoints**, **Marker Clustering**, dan panel **RouteMetrics** untuk melihat akumulasi jarak & durasi perjalanan. |
-| **2. Penjelajah Lokal & Pecinta Alam/Kuliner** | Mahasiswa/warga lokal Bogor yang mencari tempat *healing* (curug/alam) atau kuliner legendaris. | Mencari tempat populer berdasarkan kategori, melihat jam operasional & harga tiket, serta menyimpan daftar tempat impian. | Fitur **Filter Kategori**, **Pencarian Instan**, **Halaman Detail Wisata**, **Folder Favorit**, dan rekomendasi **Untuk Kamu**. |
-| **3. Kontributor Komunitas (*Social Explorer*)** | Wisatawan aktif yang gemar mendokumentasikan foto kunjungan dan mengikuti penjelajah lain. | Membagikan foto aktivitas perjalanan, melihat kiriman komunitas terkini, dan memantau profil penjelajah lain. | Fitur **Feed Aktivitas (`Kamu` & `Komunitas`)**, **Modal Upload Foto**, **Halaman Profil Penjelajah**, serta **Drawer Notifikasi**. |
-| **4. Pengelola Data Wisata (Admin)** | Tim pengelola konten/admin GIS. | Menambahkan titik koordinat wisata baru secara presisi lewat peta interaktif dan mengekspor data JSON. | Halaman **Admin Wisata Bogor (`/admin`)** dengan *interactive coordinate picker* dan penyimpanan persisten. |
+| **Tamu (Unauthenticated)** | Wisatawan yang baru membuka aplikasi/PWA. | Menjelajahi peta wisata, mencari lokasi, membaca detail destinasi, melihat rute navigasi & feed komunitas publik. | Akses *read-only* pada `/api/tourists`, `/api/boundary`, `/api/for-you`, `/api/activities` (publik), `/api/users/{id}` (tanpa email), dan `/api/media/{filename}`. |
+| **Penjelajah (`role: 'user'`)** | Wisatawan terdaftar via registrasi email/password atau Google OAuth. | Menyimpan aktivitas perjalanan, merancang *Rute Custom Multi-Waypoints*, mengunggah foto ke feed komunitas, mengedit avatar profil, serta mengikuti penjelajah lain. | Hak penuh atas data milik sendiri yang terikat ke `$request->user()->id` via token Sanctum Bearer. Ditolak (`403`) saat mengakses `/admin` atau API mutasi destinasi wisata. |
+| **Administrator (`role: 'admin'`)** | Tim pengelola konten/admin GIS. | Menambah, mengedit, dan menghapus data destinasi wisata beserta koordinat peta (`Latitude`/`Longitude` + kolom spasial `geom`), serta moderasi postingan aktivitas bila diperlukan. | Akses penuh panel web `/admin*` (guard `web` + middleware `admin`) dan API mutasi `/api/tourists*` (`auth:sanctum` + middleware `admin`), serta hak moderasi `DELETE /api/activities/{id}`. |
+
+### 2.2 Aturan Proteksi Role (`users.role`)
+* Tabel `users` memiliki kolom `role` terindeks dengan nilai default `'user'`.
+* Atribut `role` **dikecualikan** dari daftar mass-assignment (`#[Fillable]`) pada model `User` sehingga pendaftar publik tidak dapat menyisipkan `"role": "admin"` melalui endpoint registrasi maupun OAuth.
+* Penetapan role `'admin'` hanya dapat dilakukan di server (seeder/migrasi atau *privilege update* eksplisit melalui `$user->forceFill(['role' => 'admin'])`).
+* Middleware `EnsureUserIsAdmin` (`admin`) memverifikasi `$request->user()->isAdmin()` di seluruh rute `/admin*` dan rute mutasi `/api/tourists*`. Login form admin (`POST /login`) menolak akun non-admin sebelum sesi dibuat.
 
 ---
 
 ## 3. Spesifikasi Fitur Utama (Functional Requirements)
 
-### 3.1 Modul Explore (Peta Interaktif, Pencarian, & Filter Kategori)
-* **Peta Interaktif Leaflet (`src/components/map/MapContainer.jsx`)**:
-  * Menampilkan peta dasar OpenStreetMap yang berpusat di Kota Bogor (`[-6.598, 106.805]`, zoom awal `13`).
-  * **Layer Batas Wilayah (`BogorBoundaryLayer.jsx`)**: Menampilkan poligon GeoJSON batas administrasi Kota Bogor dari endpoint `/api/boundary` (dengan fallback `src/data/bogor_boundary.json`) yang dapat dinyalakan/dimatikan lewat tombol kontrol peta.
-  * **Marker Clustering Dinamis (`MarkerClusterGroup.jsx`)**: Mengelompokkan marker wisata yang berdekatan secara otomatis pada level zoom `<= 14` menggunakan algoritma *greedy spatial pixel distance* (`62px`), dan menguraikannya menjadi pin kategori individual saat peta di-zoom dekat (`>= 15`) atau saat cluster diklik (`flyToBounds`).
-  * **Pin Marker Berwarna Kategori (`MapMarker.jsx` & `MapPopup.jsx`)**: Pin kustom untuk kategori **Alam & Curug** (`#1f8a5b`), **Kuliner** (`#ef8a22`), dan **Edukasi & Budaya** (`#e2489a`), dilengkapi *popup* ringkas berisi foto, rating, dan tombol menuju detail.
+### 3.1 Modul Explore (Peta Interaktif 3D, Pencarian, & Filter Kategori)
+* **Peta Interaktif MapLibre GL (`src/components/map/MapContainer.jsx`)**:
+  * Menampilkan peta 3D dengan perspektif (`pitch: 55`, pusat Kota Bogor `[106.805, -6.598]`).
+  * **Layer Batas Wilayah (`BogorBoundaryLayer.jsx`)**: Poligon GeoJSON batas administrasi Kota Bogor dari endpoint `/api/boundary` dengan fallback lokal `src/data/bogor_boundary.json`.
+  * **Marker Clustering Dinamis (`MarkerClusterGroup.jsx`)**: Mengelompokkan marker pada zoom `<= 14` (`CLUSTER_RADIUS_PX = 62`) dan menguraikannya menjadi pin kategori saat zoom lebih dekat atau cluster diklik.
+  * **Pin Marker & Liquid Glass Mini-Popup (`MapMarker.jsx` & `MapPopup.jsx`)**: Pin kategori **Alam & Curug**, **Kuliner**, dan **Edukasi & Budaya** dengan *sonar pulse* hover sync serta popup mini-card berisi foto, rating, dan tombol cepat menuju detail.
 * **Kontrol Peta & Pelacakan GPS (`LocateControl.jsx` & `UserLocationMarker.jsx`)**:
-  * Tombol **Lokasi Saya** memicu pelacakan GPS perangkat (melalui `@capacitor/geolocation` di Android atau `navigator.geolocation` di browser) dan menampilkan titik biru berdenyut (*pulse ring*) beserta akurasi GPS.
-  * Tombol *toggle* cepat untuk menyembunyikan/menampilkan **Batas Wilayah** dan **Marker Clustering**.
-* **Bottom Sheet Interaktif (`BottomSheet.jsx` & `TouristList.jsx`)**:
-  * Mendukung mode *Peek* (~44% layar bawah sehingga peta tetap terlihat) dan mode *Expanded Full Screen* (100% layar dengan *gesture drag/flick* dan *momentum scroll*).
-  * **Pencarian & Filter Kategori (`SearchBar.jsx` & `CategoryFilter.jsx`)**: Filter instan berdasarkan nama wisata dan *pill* kategori (`Semua`, `Alam & Curug`, `Kuliner`, `Edukasi & Budaya`), ditambah *highlight* **"Populer dengan turis"** dan pengurutan (`Paling Relevan` / `Paling sering dikunjungi`).
+  * Deteksi GPS melalui `@capacitor/geolocation` di Android atau HTML5 Geolocation API di browser.
+* **Panel Daftar Wisata (`SidebarContainer.jsx`, `BottomSheet.jsx`, `TouristList.jsx`)**:
+  * *Bottom Sheet* mobile responsif (default snap awal ~`38vh`, mendukung drag *peek* hingga layar penuh) dan floating sidebar proporsional untuk iPad/Desktop.
+  * Pencarian instan, filter kategori, filter radius, dan *highlight* destinasi populer.
 
 ### 3.2 Halaman Detail Destinasi Wisata (`TouristDetailPage.jsx`)
-* Menampilkan *Hero Image* layar penuh di bagian atas dengan tombol **Kembali**, **Bagikan** (Web Share API / *clipboard fallback*), dan **Favorit (Hati)**.
-* **Baris Informasi Cepat (3 Kolom)**: Menampilkan **Waktu Operasional**, **Harga Tiket**, dan **Waktu ke Destinasi** (dihitung secara dinamis dari posisi GPS pengguna menggunakan `src/utils/distance.js`).
-* Menampilkan deskripsi lengkap multi-paragraf dan **Galeri Kolase Foto Estetik** (*staggered rounded collage*).
-* **Tombol Melayang "Mulai Perjalanan"**: Memicu transisi otomatis ke tab **Navigasi** dan langsung menggambar rute jalan raya dari posisi pengguna ke tempat wisata tersebut.
+* Tata letak *Apple Place Sheet* responsif (1 kolom di mobile, 2 kolom di tablet/desktop).
+* Menampilkan *Hero Image*, tombol **Kembali**, **Bagikan**, dan **Favorit**, ringkasan **Jam Buka**, **Harga Tiket**, dan **Estimasi Tiba**, deskripsi lengkap, galeri foto interaktif (*Stacked Photo Deck*), rekomendasi destinasi sekitar, serta tombol **"Mulai Perjalanan"**.
 
 ### 3.3 Navigasi Internal Satu Titik & Multi-Waypoints (`RoutingMachine.jsx` & `RouteMetrics.jsx`)
-* **Mesin Rute Jalan Raya OSRM (`RoutingMachine.jsx`)**:
-  * Terintegrasi dengan `leaflet-routing-machine` dan layanan OSRM (`https://router.project-osrm.org/route/v1`, profil `car`).
-  * Mendukung **navigasi destinasi tunggal** (`GPS User ➔ Destinasi`) maupun **navigasi Rute Custom Multi-Waypoints** (`GPS User ➔ Transit 1 ➔ Transit 2 ➔ Destinasi Akhir`).
-  * Menggambar garis rute biru tegas (`#3b82f6`) di atas peta dan melakukan *auto-fitBounds* proporsional agar seluruh titik keberangkatan, transit, dan tujuan akhir terlihat utuh di layar.
-* **Panel Informasi Rute Melayang (`RouteMetrics.jsx`)**:
-  * Menampilkan nama destinasi atau rangkaian rute berantai (contoh: `Museum of zoology ➔ Museum PETA`), status badge (`Navigasi Aktif` / `Rute Custom Aktif`), serta **Estimasi Waktu Total** (menit) dan **Jarak Total** (KM) hasil kalkulasi OSRM.
-* **Kontrol Penghentian Navigasi**: Tombol melayang **"Akhiri Perjalanan"** menghapus garis rute dari peta dan mengembalikan pengguna ke tampilan **Explore**.
+* Mengambil rute jalan raya dari OSRM (`router.project-osrm.org`) dan menggambar garis rute beranimasi (*polyline casing & line*) untuk satu destinasi maupun *Rute Custom Multi-Waypoints*.
+* Panel instrumen **RouteMetrics** menampilkan nama/rute aktif, estimasi durasi, dan total jarak tempuh, dilengkapi kontrol **"Akhiri Perjalanan"**.
 
-### 3.4 Halaman Rekomendasi Personal "Untuk Kamu" (`ForYouPage.jsx`)
-* Terproteksi oleh status autentikasi (*login gate*): menampilkan *empty state* ajakan masuk jika pengguna belum login.
-* Saat pengguna sudah login, mengambil data kurasi dari endpoint `GET /api/for-you?favorites=...&recent=...` (dengan *fallback* cerdas berbasis daftar wisata lokal):
-  1. **Berdasarkan aktivitas terakhir kamu**: Daftar tempat wisata yang direkomendasikan lengkap dengan tombol *toggle* favorit.
-  2. **Lanjutkan Perjalanan? (Terakhir dilihat)**: Kartu akses cepat menuju destinasi terakhir yang baru saja dibuka pengguna.
+### 3.4 Halaman Rekomendasi Personal "Untuk Anda" (`ForYouPage.jsx`)
+* Mengambil kurasi dari `GET /api/for-you?favorites=...&recent=...` dengan *fallback* cerdas berbasis daftar wisata lokal, menampilkan seksi rekomendasi sesuai preferensi kategori serta akses cepat **"Lanjutkan Perjalanan"**.
 
 ### 3.5 Halaman Aktivitas Tersimpan & Perancang Rute Custom (`SavedActivitiesPage.jsx` & `CustomRoutePage.jsx`)
-* **Tampilan Grid 3 Folder Koleksi (`SavedActivitiesPage.jsx`)**:
-  1. **Folder Terakhir Dilihat**: Menyimpan hingga 10 destinasi terakhir yang dikunjungi pengguna (`useRecentlyViewed.js` di `localStorage`) dan menampilkannya dalam daftar khusus.
-  2. **Folder Rute Custom**: Membuka halaman manajemen rute perjalanan multi-destinasi (`CustomRoutePage.jsx`).
-  3. **Folder Favorit**: Menampilkan seluruh destinasi yang ditandai hati oleh pengguna (`useFavorites.js`), dilengkapi fitur pengurutan (**Terbaru**, **Terlama**, **Nama A-Z**).
-* **Pencatatan Aktivitas Perjalanan Saya**:
-  * Tombol **`+`** di kanan atas memungkinkan pengguna mencatat rencana/aktivitas perjalanan baru (Nama Aktivitas & Lokasi Wisata) yang disimpan ke `POST /api/saved-activities`.
-* **Perancang Rute Custom Multi-Titik (`CustomRoutePage.jsx`)**:
-  * Menampilkan daftar rute perjalanan tersimpan lengkap dengan indikator *stepper* urutan titik singgah (`Titik Awal`, `Transit`, `Destinasi Akhir`), akumulasi jarak/waktu, dan tombol **"Mulai Perjalanan"**.
-  * **Modal "+ Buat Rute"**: Pengguna dapat memberi nama rute baru, memilih 2 atau lebih destinasi wisata dari daftar *checkbox* bergambar, menyimpannya ke backend (`POST /api/custom-routes`), dan langsung menjalankan navigasi multi-titik di peta.
+* **Grid 3 Koleksi**: **Terakhir Dilihat** (`useRecentlyViewed.js`), **Rute Custom**, dan **Favorit** (`useFavorites.js`).
+* **Aktivitas Tersimpan & Rute Custom Terautentikasi**:
+  * Pengambilan dan penyimpanan data (`GET /api/saved-activities`, `POST /api/saved-activities`, `POST /api/custom-routes`) wajib membawa Bearer token Sanctum.
+  * Seluruh ID referensi tempat wisata pada `place_ids.*` divalidasi (`integer|exists:tourist_spots,id`) dan disimpan atomik menggunakan `DB::transaction()`.
+  * Pembaruan UI *optimistic update* dilengkapi verifikasi `res.ok` dan *rollback state* otomatis bila server mengembalikan error.
 
 ### 3.6 Feed Aktivitas Komunitas & Upload Foto (`ActivitiesPage.jsx`)
-* Memiliki navigasi *sub-tab* terkunci di bagian atas:
-  * **Tab `Kamu`**: Menampilkan riwayat dokumentasi foto aktivitas milik pengguna yang sedang login.
-  * **Tab `Komunitas`**: Menampilkan *feed* publik berisi dokumentasi perjalanan dari seluruh pengguna aplikasi (`GET /api/activities`).
-* **Fitur Posting Foto (`+ Post`)**:
-  * Membuka modal unggah aktivitas yang dilengkapi area *dropzone* / pemilih file foto dari galeri perangkat (`input type="file" accept="image/*"` dengan pratinjau langsung `URL.createObjectURL`), input lokasi wisata, dan cerita/keterangan perjalanan (`POST /api/activities`).
-* **Interaksi Antar-Profil**: Mengetuk nama atau foto profil pengguna pada kiriman komunitas akan membuka halaman **Profil Penjelajah** pengguna tersebut.
+* **Tab `Kamu` & `Komunitas`**:
+  * `GET /api/activities` menyediakan *feed* publik komunitas; parameter `?tab=kamu` mewajibkan autentikasi Sanctum (`401` bila belum login) dan hanya mengambil kiriman milik `$request->user()->id`.
+* **Posting Foto (`POST /api/activities`) & Hapus Postingan (`DELETE /api/activities/{id}`)**:
+  * Wajib menyertakan Bearer token Sanctum. Identitas penulis (`user_id`, `user_name`, `user_avatar`) ditetapkan sepenuhnya di sisi server dari `$request->user()`.
+  * Penghapusan postingan hanya diizinkan bagi pemilik sah (`(int)$post->user_id === (int)$user->id`) atau akun dengan role `admin`; request dari user lain atau atas postingan legacy tanpa `user_id` oleh non-admin ditolak (`403`).
 
-### 3.7 Halaman Profil Pengguna, Notifikasi, Sistem Autentikasi, & Panel Admin
+### 3.7 Profil Pengguna, Autentikasi Sanctum, Google OAuth & Panel Admin
 * **Halaman Profil (`ProfilePage.jsx`)**:
-  * Mendukung 2 mode tampilan: **Profil Saya** (menampilkan avatar, nama, email, statistik Rute Custom/Pengikut/Mengikuti, daftar *Rute Saya*, serta tombol **Logout**) dan **Profil Penjelajah Lain** (menyembunyikan email pribadi, menampilkan tombol interaktif **Ikuti Perjalanan / Mengikuti**, serta kiriman aktivitas terkini pengguna tersebut).
-* **Drawer Notifikasi (`NotificationDrawer.jsx`)**:
-  * Menampilkan daftar pemberitahuan interaksi komunitas (seperti *like* pada rute custom, unggahan aktivitas baru, dan ulasan destinasi baru) dengan penanda belum dibaca (*unread badge*).
-* **Modal Autentikasi Global (`LoginModal.jsx`)**:
-  * Mendukung login menggunakan Email/Username & Kata Sandi ke endpoint `POST /api/auth/login` maupun opsi cepat **Masuk dengan Google**, dilengkapi informasi akun demo siap pakai (`ambalingham@gmail.com` / `password123`).
-* **Halaman Admin Lokasi Wisata (`AdminPage.jsx` & `AdminLocationPickerMap.jsx`)**:
-  * Diakses melalui rute `/admin`, memiliki tab **Tambah lokasi** (form informasi, jam operasional, peta interaktif penentu koordinat *Latitude/Longitude*, dan area *drag-and-drop* foto) serta tab **Daftar (x)** dengan fitur **Salin data (JSON)** ke *clipboard* (`useAdminLocations.js`).
+  * Mode **Profil Saya** menampilkan data akun terautentikasi (termasuk `email`), statistik follower/following, daftar *Rute Saya*, pengunggah avatar (`POST /api/auth/update-avatar`), dan tombol **Logout** (`POST /api/auth/logout`).
+  * Mode **Profil Penjelajah Lain** (`GET /api/users/{usernameOrId}`) **menyembunyikan alamat `email`** ketika peninjau bukan pemilik akun (`!$isSelf`), serta mendukung aksi follow (`POST /api/users/{usernameOrId}/follow`) menggunakan `$request->user()->id`.
+* **Panel Admin Wisata (`/admin`)**:
+  * Panel manajemen destinasi berbasis Laravel Blade (`AdminTouristSpotController`) yang diproteksi oleh `auth` + `admin` RBAC, mendukung pengelolaan informasi lokasi, jam operasional, *interactive coordinate picker* Peta Bogor, unggah & pengurutan ulang foto (*drag-and-drop*), serta eksekusi atomik (`DB::transaction()`) bersama pembaruan koordinat spasial `geom`.
+  * Rute `/admin` pada frontend SPA mengarahkan secara dinamis menggunakan `buildApiUrl('/admin')` (berbasis `VITE_API_BASE_URL` atau relative path `/admin`).
 
 ---
 
-## 4. Arsitektur Teknis & Tech Stack
+## 4. Spesifikasi Teknis Autentikasi & Keamanan
 
-### 4.1 Tech Stack Utama
-* **Frontend Framework**: React 19 (`^19.3.1`) + Vite 8 (`^8.3.4`)
-* **Routing**: React Router DOM v7 (`^7.18.4`)
-* **Styling & Design System**: Tailwind CSS v4 (`^4.3.3` via `@tailwindcss/vite`) dengan *custom design tokens* (`--color-forest-900: #2c3b26`, `--color-forest-700: #4f5f3b`)
-* **Mesin Peta & GIS**:
-  * `leaflet` (`^1.9.4`) & `react-leaflet` (`^5.0.0`)
-  * `leaflet-routing-machine` (`^3.2.12`) terhubung ke OSRM API (`router.project-osrm.org`)
-* **Hybrid Mobile Runtime**: Capacitor v8 (`@capacitor/core`, `@capacitor/android`, `@capacitor/geolocation`)
-* **State Management & Persistence**: React Hooks (`useState`, `useMemo`, `useCallback`, `useEffect`) + Custom Hooks berbasis `localStorage` (`useFavorites`, `useRecentlyViewed`, `useAdminLocations`, `useUserLocation`, `useMapControls`)
-* **Backend & Database Integration**: REST API Laravel (`/api/tourists`, `/api/boundary`, `/api/for-you`, `/api/activities`, `/api/saved-activities`, `/api/custom-routes`, `/api/auth/login`, `/api/media/{path}`) dengan dukungan penuh *tunneling* Ngrok.
+### 4.1 Alur Autentikasi Laravel Sanctum Bearer Token
+1. **Login Kredensial (`POST /api/auth/login`)**:
+   * Input `login` (atau `email`) dan `password` (`required|string`) wajib diisi; tidak ada login fallback tanpa password maupun *master password* statis.
+   * Server memverifikasi hash kata sandi (`Hash::check`), menerbitkan token melalui `$user->createToken('auth_token')->plainTextToken`, dan mengembalikan `{ status, token, token_type: 'Bearer', data }`.
+2. **Registrasi Akun (`POST /api/auth/register`)**:
+   * Memvalidasi `name`, `email` unik, dan `password` (`min:6|confirmed`), menetapkan role `'user'`, lalu menerbitkan Bearer token Sanctum.
+3. **Verifikasi Sesi & Auto-Logout Global**:
+   * `GET /api/auth/current-user` (`auth:sanctum`) mengembalikan `$request->user()` sebagai sumber kebenaran sesi.
+   * `apiFetch()` di [api.js](file:///d:/project%20sabah%20bogor/Front%20end/src/utils/api.js) menyimpan token pada `localStorage` (`sabah_auth_token`), otomatis menyisipkan header `Authorization: Bearer <token>` ke endpoint backend internal, dan membersihkan penyimpanan lokal + memicu *auto-logout* event (`sabah:auth-expired`) apabila server merespons `401` atau `403` pada endpoint terproteksi.
+4. **Logout (`POST /api/auth/logout`)**:
+   * Mencabut token Sanctum aktif via `currentAccessToken()?->delete()` serta membersihkan `sabah_auth_token` dan `sabah_current_user` di klien.
 
-### 4.2 Diagram Alur Data & Arsitektur Komponen
-```
-[ Pengguna (Browser PWA / Android APK) ]
+### 4.2 Alur Aman Google OAuth Code Exchange
+1. Frontend mengarahkan user ke `GET /api/auth/google/redirect?origin=<window.location.origin>`.
+2. `GoogleAuthController::redirect()` menormalkan dan memvalidasi `origin` terhadap **whitelist `FRONTEND_URL` dan `APP_URL`** (menolak/fallback bila domain eksternal tak dikenal untuk mencegah *Open Redirect*), lalu mengenkripsi `{ origin, nonce }` ke parameter OAuth `state` menggunakan `Crypt::encryptString()`.
+3. Setelah otorisasi Google pada `GET /api/auth/google/callback`, server mendekripsi `state`, memvalidasi ulang origin terhadap whitelist, membuat/menautkan akun (tanpa hak admin otomatis), dan menyimpan *one-time exchange code* 64 karakter (di-hash SHA-256 pada `Cache` dengan TTL 2 menit).
+4. Server me-redirect ke frontend dengan parameter `?auth_provider=google&oauth_code=<kode>` tanpa menyertakan JSON profil maupun token pada URL.
+5. Frontend (`App.jsx`) mengirim kode sekali pakai tersebut via `POST /api/auth/google/exchange` (`{ code }`); server mengonsumsi kode dengan `Cache::pull()` (tidak dapat di-*replay*) dan mengembalikan Bearer token Sanctum beserta data pengguna.
+
+### 4.3 Kontrol Keamanan Sistem Lainnya
+* **Rate Limiting**:
+  * `POST /api/auth/login` -> `throttle:5,1,login` (maks 5 percobaan/menit per tanda tangan request).
+  * `POST /api/auth/register` -> `throttle:5,1,register`.
+  * `POST /login` (Admin Web) -> `throttle:5,1,admin_login`.
+  * `POST /api/auth/google/exchange` -> `throttle:10,1`.
+* **Validasi Upload & Pemrosesan Gambar**:
+  * `ActivityPostController::store()` memvalidasi `'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240'` serta memetakan ekstensi aman hasil `guessExtension()`.
+  * `ImageCompressor::compressAndSave()` memverifikasi keberadaan file, validitas `@getimagesize()`, serta whitelist tipe gambar (`JPEG`, `PNG`, `WEBP`, `GIF`) sebelum melakukan decoding/re-encoding GD. Jika validasi gambar gagal atau ekstensi GD tidak tersedia, fungsi langsung melempar exception (`InvalidArgumentException` / `RuntimeException`) tanpa fallback `$file->move()`/`copy()` mentah.
+* **Proteksi Path Traversal Media**:
+  * `GET /api/media/{filename}` menolak segmen `..` dan null-byte, menormalkan `basename()`, serta memastikan hasil `realpath()` target berada tepat di dalam direktori `public_path('images')`.
+* **CORS & Enkapsulasi Env**:
+  * `backend/config/cors.php` mem-parsing `FRONTEND_URL` (dengan fallback `APP_URL`) dan mengaktifkan `'supports_credentials' => true`.
+  * File `.env` lokal dan konfigurasi/dokumen AI agents lokal dikecualikan melalui `.gitignore`.
+
+---
+
+## 5. Arsitektur Teknis & Tech Stack
+
+### 5.1 Tech Stack Utama
+* **Frontend Framework**: React 19 (`^19.3.1`) + Vite 8 (`^8.3.5`) + Tailwind CSS v4 (`^4.3.3`) + React Router DOM v7 (`^7.18.4`)
+* **Mesin Peta & GIS**: `maplibre-gl` (`^6.18.0`) + OSRM API (`router.project-osrm.org`)
+* **Hybrid Mobile Runtime**: Capacitor v8 (`@capacitor/core`, `@capacitor/android`, `@capacitor/geolocation`) dengan fallback `DEFAULT_REMOTE_BACKEND` terdefinisi di [api.js](file:///d:/project%20sabah%20bogor/Front%20end/src/utils/api.js)
+* **Backend & Autentikasi**: PHP `^8.3` (`config.platform.php: "8.4.0"`), Laravel 13 (`^13.17`), Laravel Sanctum (`^4.0`), Laravel Socialite (`^5.0`), dan PHPUnit 12 (`^12.5`)
+
+### 5.2 Diagram Alur Arsitektur
+```text
+[ Browser PWA / Android Capacitor App ]
+                  │
+                  ▼ (Authorization: Bearer <token> + credentials: 'include')
+     [ Front end/src/utils/api.js ] ──► 401/403 Interceptor ──► Auto-Logout & LoginModal
+                  │
+                  ├──► Google OAuth: /api/auth/google/redirect ─► Callback (?oauth_code=...) ─► POST /api/auth/google/exchange
                   │
                   ▼
-        [ src/App.jsx (Root State & Router) ]
-          ├── Custom Hooks: useUserLocation, useFavorites, useRecentlyViewed, useAdminLocations
-          ├── Utilitas API & Media: apiFetch() (api.js) + getImageUrl() (imageHelper.js) + SafeImage.jsx
-          │
-          ├──► Tab "Explore" & "Navigasi"
-          │      ├── MapContainer.jsx (Leaflet Canvas + TileLayer)
-          │      │     ├── BogorBoundaryLayer.jsx (GeoJSON Kota Bogor)
-          │      │     ├── MarkerClusterGroup.jsx ──► MapMarker.jsx ──► MapPopup.jsx
-          │      │     ├── UserLocationMarker.jsx & LocateControl.jsx
-          │      │     └── RoutingMachine.jsx (OSRM) + RouteMetrics.jsx
-          │      └── SidebarContainer.jsx ──► BottomSheet.jsx ──► TouristList.jsx ──► TouristCard.jsx
-          │
-          ├──► Halaman Detail: TouristDetailPage.jsx
-          ├──► Tab "Untuk Anda": ForYouPage.jsx
-          ├──► Tab "Tersimpan": SavedActivitiesPage.jsx ──► CustomRoutePage.jsx
-          ├──► Tab "Aktivitas": ActivitiesPage.jsx ──► NotificationDrawer.jsx
-          ├──► Profil & Auth: ProfilePage.jsx + LoginModal.jsx
-          └──► Rute "/admin": AdminPage.jsx ──► AdminLocationPickerMap.jsx
+     [ Laravel 13 Backend (routes/api.php & routes/web.php) ]
+       ├── Rate Limiters (throttle:5,1) & CORS Whitelist (FRONTEND_URL)
+       ├── Sanctum Token Auth (auth:sanctum) & Admin RBAC (EnsureUserIsAdmin)
+       ├── Ownership Guards ($request->user()->id) & Upload Verification (ImageCompressor GD)
+       └── DB Transactions (TouristSpot + geom spatial point & CustomRoute)
 ```
 
 ---
 
-## 5. Non-Functional Requirements (NFR)
+## 6. Non-Functional Requirements (NFR)
 
-1. **Desain Mobile-First & Ergonomi Satu Tangan**:
-   * Seluruh halaman dan modal dirancang proporsional pada ukuran layar *smartphone* (`max-w-md mx-auto`, `h-dvh`), dengan *Bottom Navigation Bar* tetap di bagian bawah (`z-[600]`) dan dukungan `env(safe-area-inset-bottom)`.
-2. **Performa Tinggi 60 FPS & Isolasi Komposit GPU**:
-   * *Scroll container* pada *Bottom Sheet*, *Untuk Kamu*, *Tersimpan*, dan *Feed Aktivitas* menggunakan isolasi layer GPU (`overscroll-y-contain will-change-transform transform-gpu`) sehingga aktivitas *scrolling* cepat tidak memicu *re-layout* pada kanvas peta Leaflet di latar belakang.
-   * Peta Leaflet dioptimalkan dengan `preferCanvas={true}`, `updateWhenIdle={true}`, dan `keepBuffer={2}`.
-   * Seluruh kartu wisata dan tombol navigasi menggunakan *tactile feedback* ringan (`active:scale-[0.98] transition-transform duration-150`).
-3. **Optimasi Pemuatan Gambar (`SafeImage.jsx`) & Anti Memory Leak**:
-   * Setiap gambar menampilkan **Shimmer Skeleton Loader** (`animate-pulse shimmer-skeleton`) selama di-fetch dari server, lalu muncul dengan transisi *fade-in* halus (`transition-opacity duration-300 opacity-100`).
-   * Menggunakan atribut HTML `loading="lazy"` dan `decoding="async"`, serta wajib memanggil `URL.revokeObjectURL` saat komponen *unmount* agar memori RAM perangkat seluler tetap hemat.
-4. **Ketahanan Jaringan, Bypass Ngrok, & Fallback Offline**:
-   * Seluruh permintaan API (`apiFetch`) dan pengambilan gambar (`SafeImage` / `imageHelper`) menyertakan header `'ngrok-skip-browser-warning': 'true'` dan normalisasi otomatis domain `localhost:8000` ke `VITE_API_BASE_URL`.
-   * Apabila gambar dari server gagal dimuat (404 atau *offline*), sistem otomatis menampilkan *inline SVG Data URI Placeholder* bertema hijau hutan tanpa memicu *infinite error loop*.
-
+1. **Desain Mobile-First, Responsif Tablet/Desktop & Ergonomi Satu Tangan**: Seluruh halaman mendukung ukuran layar smartphone hingga desktop (`h-dvh`, `env(safe-area-inset-bottom)`), dengan kontrol sentuh minimal `44x44px`.
+2. **Performa Tinggi 60 FPS**: Isolasi *scroll container* dan animasi berbasis properti komposit GPU agar interaksi *Explore*, *Navigasi*, dan *Sidebar* tetap mulus tanpa *re-layout* berat pada kanvas peta.
+3. **Optimasi Pemuatan Gambar (`SafeImage.jsx`) & Anti Memory Leak**: Menggunakan *Shimmer Skeleton Loader*, `loading="lazy"`, `decoding="async"`, *fallback inline SVG Data URI*, serta pembersihan `URL.revokeObjectURL()` setelah pratinjau/upload avatar.
+4. **Keterujian Otomatis**: Seluruh mekanisme autentikasi, RBAC, rate limiting, proteksi IDOR, validasi upload, anti path traversal, dan alur Google OAuth terverifikasi oleh *Feature Test Suite* di [SecurityHardeningTest.php](file:///d:/project%20sabah%20bogor/backend/tests/Feature/SecurityHardeningTest.php).

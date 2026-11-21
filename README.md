@@ -2,50 +2,46 @@
 
 **SIG Wisata Sabah Bogor** adalah aplikasi **Sistem Informasi Geografis (SIG)** berbasis *Mobile-First Progressive Web App (PWA)* dan Android (Capacitor) yang dirancang untuk membantu wisatawan menjelajahi, merencanakan rute perjalanan, dan berbagi pengalaman wisata di wilayah **Kota & Kabupaten Bogor**.
 
-Aplikasi ini memadukan peta interaktif **Leaflet**, pengelompokan lokasi otomatis (**Marker Clustering**), batas administrasi wilayah Kota Bogor (**GeoJSON Boundary**), perhitungan jarak & estimasi waktu tempuh *real-time* dari GPS pengguna, serta fitur **Rute Custom Multi-Waypoints** berbasis mesin rute jalan raya **OSRM**.
+Aplikasi ini dibangun menggunakan **React 19 + Vite + Tailwind CSS + MapLibre GL 3D** di sisi *Frontend*, terintegrasi dengan REST API **Laravel 13 + Laravel Sanctum + Laravel Socialite + Spatial Database (PostGIS/MySQL/SQLite)** di sisi *Backend*.
 
 ---
 
 ## Fitur Unggulan
 
-1. **Eksplorasi Peta Interaktif & Marker Clustering (`Explore`)**
-   * Visualisasi sebaran destinasi wisata Bogor berdasarkan 3 kategori utama: **Alam & Curug**, **Kuliner**, serta **Edukasi & Budaya**.
-   * Dilengkapi **Layer Batas Wilayah Kota Bogor (GeoJSON)** dan **Marker Clustering** otomatis yang dapat dinyalakan/dimatikan langsung dari tombol kontrol peta.
-   * **Bottom Sheet ala Google Maps**: Geser ke atas (*expand*) untuk menjelajahi daftar kartu wisata lengkap dengan pencarian instan, filter kategori, dan pengurutan.
+1. **Eksplorasi Peta 3D Interaktif & Marker Clustering (`Explore`)**
+   * Visualisasi peta MapLibre GL 3D dengan sebaran destinasi wisata Bogor berdasarkan 3 kategori: **Alam & Curug**, **Kuliner**, dan **Edukasi & Budaya**.
+   * Dilengkapi **Layer Batas Wilayah Kota Bogor (GeoJSON)**, **Marker Clustering** dinamis, *sonar pulse* hover sync, serta mini-card popup bergaya *Liquid Glass*.
+   * Panel responsif adaptif: *Bottom Sheet* proporsional di mobile (`38vh` awal) dan *Floating Sidebar* di tablet/desktop.
 
 2. **Pelacakan GPS Real-Time & Kalkulasi Jarak Dinamis**
-   * Mendeteksi koordinat GPS pengguna menggunakan **HTML5 Geolocation API** dan **Capacitor Geolocation** (Android).
-   * Menghitung jarak *geodesic* (Haversine) dan estimasi waktu tempuh berkendara menuju setiap tempat wisata secara otomatis dari posisi pengguna saat ini.
+   * Mendeteksi lokasi pengguna via HTML5 Geolocation atau `@capacitor/geolocation` untuk menghitung jarak Haversine dan estimasi waktu tempuh menuju destinasi.
 
-3. **Navigasi Internal Satu Titik & Rute Custom Multi-Waypoints (`Navigasi`)**
-   * Menggambar garis rute perjalanan langsung di atas peta aplikasi menggunakan **Leaflet Routing Machine (OSRM)**.
-   * Mendukung rute berantai banyak titik sekaligus (contoh: *Lokasi Anda ➔ Museum Zoologi ➔ Museum PETA*) lengkap dengan panel **RouteMetrics** yang menampilkan total jarak (KM) dan akumulasi waktu tempuh (Menit).
+3. **Navigasi Satu Titik & Rute Custom Multi-Waypoints (`Navigasi`)**
+   * Menggambar animasi jalur rute jalan raya langsung di atas peta menggunakan **OSRM** lengkap dengan kartu telemetry **RouteMetrics** (jarak total & estimasi durasi).
 
 4. **Rekomendasi Personal (`Untuk Anda`) & Koleksi Tersimpan (`Tersimpan`)**
-   * Kurasi rekomendasi tempat wisata berdasarkan riwayat kunjungan dan daftar favorit pengguna.
-   * Pengelolaan koleksi dalam 3 folder rapi: **Terakhir Dilihat**, **Rute Custom** (perancang rute multi-destinasi), dan **Favorit**, ditambah fitur pencatatan rencana aktivitas perjalanan.
+   * Kurasi destinasi pribadi, folder **Terakhir Dilihat**, **Favorit**, pencatatan aktivitas perjalanan, serta perancang **Rute Custom** multi-destinasi yang tersinkron ke server.
 
-5. **Feed Aktivitas Komunitas & Upload Foto (`Aktivitas`)**
-   * Berbagi dokumentasi foto perjalanan ke tab **Kamu** dan **Komunitas** lengkap dengan unggah foto dari galeri HP, keterangan cerita, halaman **Profil Penjelajah**, dan **Drawer Notifikasi**.
+5. **Feed Aktivitas Komunitas & Profil Penjelajah (`Aktivitas`)**
+   * Berbagi foto dokumentasi perjalanan ke tab **Kamu** & **Komunitas**, unggah avatar profil, ikuti penjelajah lain (*follow/unfollow*), serta notifikasi interaktif.
 
-6. **Performa 60 FPS & Optimasi Gambar `SafeImage`**
-   * Dilengkapi *Shimmer Skeleton Loader*, *lazy loading*, `decoding="async"`, pembersihan memori `URL.revokeObjectURL`, isolasi komposit GPU (`transform-gpu`), serta dukungan penuh *bypass* halaman intersitial server **Ngrok**.
+6. **Keamanan & Panel Admin RBAC (`/admin`)**
+   * Autentikasi **Laravel Sanctum Bearer Token** & **Google OAuth One-Time Code Exchange**.
+   * Pemisahan role `user` dan `admin` (*RBAC*) yang melindungi panel `/admin` dan endpoint mutasi destinasi wisata, dilengkapi validasi upload gambar berbasis `getimagesize()` + GD dan proteksi kepemilikan data (*anti-IDOR*).
 
 ---
 
 ## Prasyarat Sistem (Prerequisites)
 
-Sebelum menjalankan proyek ini di perangkat lokal Anda, pastikan sudah menginstal:
-* **Node.js** versi `18.x` atau `20.x+` (disarankan LTS terbaru)
-* **npm** (bawaan instalasi Node.js)
+Pastikan lingkungan lokal Anda sudah memiliki:
+* **PHP `8.4.0`+** (dengan ekstensi aktif `gd`, `zip`, `curl`, `openssl`, `mbstring`, `exif`, serta `pdo_sqlite` / `pdo_pgsql` / `pdo_mysql`)
+* **Composer** (v2.x)
+* **Node.js `18.x` / `20.x+`** dan **npm**
 * **Git**
-* *(Opsional)* **PHP 8.2+ & Composer** jika ingin menjalankan server *Backend* Laravel secara lokal di folder `backend/`.
 
 ---
 
-## Cara Instalasi & Menjalankan Proyek (Local Setup)
-
-Ikuti langkah-langkah berikut untuk menjalankan aplikasi **Frontend** di komputer Anda:
+## Cara Instalasi & Setup Lokal (Backend & Frontend)
 
 ### 1. Clone Repository
 ```bash
@@ -53,78 +49,139 @@ git clone https://github.com/Mattazz44/sig-sabah-bogor.git
 cd "sig-sabah-bogor"
 ```
 
-### 2. Masuk ke Direktori Frontend & Instal Dependensi
+### 2. Setup Backend (Laravel 13)
+```bash
+cd backend
+composer install
+```
+
+Salin file template `.env.example` menjadi `.env`:
+```bash
+# Linux / macOS / Git Bash
+cp .env.example .env
+
+# Windows PowerShell
+Copy-Item .env.example .env
+```
+
+Buka `backend/.env` dan sesuaikan konfigurasi lokal (jangan pernah membagikan atau meng-commit file `.env`):
+```env
+APP_NAME="Sabah Bogor"
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:5173
+
+DB_CONNECTION=sqlite
+
+# Isi jika menggunakan Google OAuth Login (diperoleh dari Google Cloud Console)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://127.0.0.1:8000/api/auth/google/callback
+```
+> **Catatan CORS & OAuth:** Nilai `FRONTEND_URL=http://localhost:5173` digunakan oleh `backend/config/cors.php` (dengan `supports_credentials: true`) dan whitelist redirect pada `GoogleAuthController`. Untuk multiple origin, pisahkan dengan koma (misal `http://localhost:5173,http://localhost:8000`). Untuk lingkungan *production*, pastikan `APP_DEBUG=false`, `APP_ENV=production`, dan `FRONTEND_URL` diisi domain produksi resmi.
+
+Buat application key, jalankan migrasi (dan seeder opsional), lalu nyalakan server Laravel:
+```bash
+php artisan key:generate
+php artisan migrate
+# Opsional untuk mengisi data awal destinasi wisata & struktur contoh:
+php artisan db:seed
+
+# Jalankan server backend pada port 8000
+php artisan serve
+```
+
+Untuk menjalankan pengujian backend (termasuk *Security Hardening Tests*):
+```bash
+php artisan test
+```
+
+### 3. Setup Frontend (React 19 + Vite 8)
+Buka terminal baru pada root proyek, lalu masuk ke folder `Front end`:
 ```bash
 cd "Front end"
 npm install
 ```
 
-### 3. Konfigurasi File Environment (`.env`)
-Buat atau perbarui file `.env` di dalam folder `Front end/` (`Front end/.env`) dan atur variabel `VITE_API_BASE_URL` sesuai alamat server Backend (lokal maupun link HTTPS Ngrok):
+Salin `Front end/.env.example` menjadi `Front end/.env`:
+```bash
+# Linux / macOS / Git Bash
+cp .env.example .env
 
-```env
-# Contoh jika menggunakan server Backend Laravel lokal:
-VITE_API_BASE_URL=http://localhost:8000
-
-# Contoh jika terhubung ke server Backend tim melalui Ngrok:
-# VITE_API_BASE_URL=https://nama-subdomain-anda.ngrok-free.dev
+# Windows PowerShell
+Copy-Item .env.example .env
 ```
 
-### 4. Jalankan Server Development Vite
+Konfigurasi `Front end/.env`:
+```env
+# Kosongkan agar memakai Vite dev proxy (/api -> http://127.0.0.1:8000) atau origin sama dengan Laravel
+VITE_API_BASE_URL=
+
+# Untuk build Capacitor Android atau domain API terpisah, isi dengan URL origin backend:
+# VITE_API_BASE_URL=https://api.example.com
+```
+
+Jalankan server development Frontend:
 ```bash
 npm run dev
 ```
-Setelah server berjalan, buka browser dan akses alamat yang tampil di terminal (umumnya **`http://localhost:5173`**).
+Aplikasi Frontend akan tersedia di **`http://localhost:5173`** (sedangkan backend berjalan di **`http://localhost:8000`**).
 
-### 5. Perintah Tambahan (Build & Preview Produksi)
+Perintah linter & build produksi Frontend (ke `backend/public`):
 ```bash
-# Mem-build aplikasi untuk produksi ke folder dist/
+npm run lint
 npm run build
-
-# Menjalankan pratinjau hasil build produksi
-npm run preview
 ```
 
 ---
 
-## Cara Menggunakan Aplikasi (User Guide)
+## Ringkasan Endpoint API Utama
 
-### 1. Mencari & Memfilter Tempat Wisata
-1. Buka aplikasi pada tab **Explore** (ikon kaca pembesar di navigasi bawah).
-2. Tarik panel bawah (*Bottom Sheet*) ke atas untuk membuka daftar wisata layar penuh, atau gunakan langsung dari mode *peek*.
-3. Ketik nama destinasi pada kolom **Cari tempat wisata di Bogor...** atau ketuk salah satu *pill* kategori (**Semua**, **Alam & Curug**, **Kuliner**, **Edukasi & Budaya**).
-4. Ketuk salah satu kartu wisata atau pin marker di peta untuk membuka **Halaman Detail Wisata** (informasi jam operasional, harga tiket, waktu tempuh, dan galeri foto).
+Semua endpoint di bawah berada di bawah prefix `/api`. Wrapper frontend ([Front end/src/utils/api.js](file:///d:/project%20sabah%20bogor/Front%20end/src/utils/api.js)) otomatis menyisipkan header `Authorization: Bearer <token>` setelah login dan memicu *auto-logout* jika server merespons `401` atau `403`.
 
-### 2. Menggunakan Fitur "Lokasi Saya" & Kontrol Layer Peta
-1. Pada tampilan peta **Explore**, perhatikan 3 tombol melayang di sisi kanan bawah peta:
-   * **Tombol Crosshair GPS (Paling Bawah)**: Ketuk untuk mengaktifkan izin lokasi perangkat dan memusatkan kamera peta ke posisi GPS Anda saat ini.
-   * **Tombol Cluster (Tengah)**: Ketuk untuk mengaktifkan/menonaktifkan pengelompokan otomatis marker wisata (*Marker Clustering*).
-   * **Tombol Peta/Poligon (Atas)**: Ketuk untuk menampilkan/menyembunyikan garis batas wilayah administrasi Kota Bogor.
+### Autentikasi, Google OAuth & Profil Pengguna
+| Method | Endpoint | Akses / Keamanan | Keterangan |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/auth/login` | Publik (`throttle:5,1`) | Login email/username + password; menerbitkan Sanctum Bearer token. |
+| `POST` | `/api/auth/register` | Publik (`throttle:5,1`) | Registrasi akun baru (`role: user`); menerbitkan Sanctum Bearer token. |
+| `GET` | `/api/auth/google/redirect` | Publik | Redirect ke Google OAuth dengan parameter `state` terenkripsi whitelist `FRONTEND_URL`. |
+| `GET` | `/api/auth/google/callback` | Publik | Callback Google OAuth; redirect ke frontend membawa `?oauth_code=...` sekali pakai. |
+| `POST` | `/api/auth/google/exchange` | Publik (`throttle:10,1`) | Menukar `oauth_code` sekali pakai menjadi Bearer token Sanctum & data user. |
+| `GET` | `/api/auth/current-user` | **Wajib Bearer Token** | Mengambil data user yang sedang terautentikasi (`$request->user()`). |
+| `POST` | `/api/auth/logout` | **Wajib Bearer Token** | Mencabut token Sanctum aktif milik pengguna saat ini. |
+| `POST` | `/api/auth/update-avatar` | **Wajib Bearer Token** | Mengunggah & mengompresi avatar profil milik user terautentikasi (`jpg/jpeg/png/webp`, maks 5 MB). |
+| `GET` | `/api/users/{usernameOrId}` | Publik *(Opsional Bearer)* | Mengambil profil & statistik user (`email` disembunyikan kecuali pemilik akun sendiri). |
+| `POST` | `/api/users/{usernameOrId}/follow` | **Wajib Bearer Token** | Follow / unfollow penjelajah lain memakai identitas `$request->user()`. |
 
-### 3. Membuat & Menjalankan Navigasi Rute Custom Multi-Titik
-1. Masuk ke akun Anda terlebih dahulu, lalu buka tab **Tersimpan** (ikon hati di navigasi bawah).
-2. Pilih folder **Rute custom**.
-3. Untuk membuat rute baru, ketuk tombol **`+ Buat Rute`** di pojok kanan atas:
-   * Masukkan **Nama Rute** (contoh: *Tur Edukasi & Kuliner Bogor*).
-   * Centang **2 atau lebih destinasi singgah** yang ingin dikunjungi secara berurutan.
-   * Ketuk **Simpan Rute**.
-4. Pada kartu rute yang sudah dibuat, ketuk tombol **"Mulai Perjalanan"**.
-5. Aplikasi akan otomatis beralih ke tab **Navigasi**, menampilkan garis rute biru dari lokasi Anda melewati seluruh titik transit hingga tujuan akhir, serta memunculkan panel estimasi jarak dan waktu total di bagian atas layar.
-6. Ketuk tombol merah **"Akhiri Perjalanan"** di bagian bawah layar jika ingin menghentikan mode navigasi.
+### Destinasi Wisata, Peta & Media
+| Method | Endpoint | Akses / Keamanan | Keterangan |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/tourists` | Publik | Daftar seluruh tempat wisata (mendukung filter `category`, `q`, `popular`, `lat`/`lon`/`radius_km`, dan `format=geojson`). |
+| `GET` | `/api/tourists/{slugOrId}` | Publik | Detail lengkap tempat wisata berdasarkan `slug` atau `id`. |
+| `GET` | `/api/boundary` | Publik | GeoJSON batas wilayah administrasi Kota Bogor. |
+| `POST` | `/api/tourists` | **Wajib Bearer Token + Role `admin`** | Tambah destinasi wisata baru + titik spasial `geom` dalam `DB::transaction()`. |
+| `PUT/PATCH/POST` | `/api/tourists/{id}` | **Wajib Bearer Token + Role `admin`** | Perbarui destinasi wisata + titik spasial `geom` dalam `DB::transaction()`. |
+| `DELETE` | `/api/tourists/{id}` | **Wajib Bearer Token + Role `admin`** | Hapus destinasi wisata dari database. |
+| `GET` | `/api/media/{filename}` | Publik | Menyajikan file gambar dari `public/images/` dengan sanitasi `basename()` & verifikasi `realpath()`. |
 
-### 4. Login Akun & Membagikan Foto Aktivitas Perjalanan
-1. Ketuk ikon profil di kanan atas atau buka tab **Untuk Anda** / **Aktivitas**, lalu klik **Masuk ke Akun**.
-2. Anda dapat masuk menggunakan akun demo yang tersedia:
-   * **Email**: `ambalingham@gmail.com`
-   * **Kata Sandi**: `password123`
-   * *(Atau klik tombol **Masuk dengan Google**).*
-3. Setelah login, buka tab **Aktivitas** (ikon grafik detak di navigasi bawah) lalu ketuk tombol **`+ Post`** di kanan atas.
-4. Pilih foto dokumentasi dari galeri HP/komputer Anda, isi nama **Lokasi Wisata** dan **Cerita / Keterangan**, lalu ketuk **Bagikan ke Komunitas**.
-5. Ketuk foto profil di pojok kanan atas kapan saja untuk membuka **Profil Saya** atau melakukan **Logout**.
+### Fitur Personal, Tersimpan & Komunitas
+| Method | Endpoint | Akses / Keamanan | Keterangan |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/for-you` | Publik | Rekomendasi destinasi wisata berdasarkan parameter `favorites` & `recent`. |
+| `GET` | `/api/saved-activities` | **Wajib Bearer Token** | Mengambil aktivitas tersimpan & daftar rute custom milik `$request->user()->id`. |
+| `POST` | `/api/saved-activities` | **Wajib Bearer Token** | Menyimpan aktivitas/destinasi milik `$request->user()->id`. |
+| `POST` | `/api/custom-routes` | **Wajib Bearer Token** | Membuat rute custom multi-waypoints baru (`place_ids.*` tervalidasi `exists:tourist_spots,id`). |
+| `GET` | `/api/activities` | Publik / **Bearer (`?tab=kamu`)** | Mengambil feed komunitas publik (`komunitas`/`all`) atau kiriman pribadi (`tab=kamu` wajib token). |
+| `POST` | `/api/activities` | **Wajib Bearer Token** | Membuat postingan aktivitas komunitas dengan validasi file gambar ketat (`jpg/jpeg/png/webp`, maks 10 MB). |
+| `DELETE` | `/api/activities/{id}` | **Wajib Bearer Token (Pemilik atau `admin`)** | Menghapus postingan aktivitas (ditolak `403` jika bukan pemilik atau admin). |
 
-### 5. Mengakses Halaman Admin Wisata (`/admin`)
-* Arahkan URL browser ke `http://localhost:5173/admin` untuk membuka panel **Admin Wisata Bogor**.
-* Di halaman ini Anda dapat menambahkan titik lokasi wisata baru dengan mengetuk peta interaktif (koordinat *Latitude* & *Longitude* terisi otomatis), mengunggah foto, dan menyalin seluruh data dalam format JSON melalui tab **Daftar**.
+---
+
+## Panduan Singkat Pengguna & Admin
+
+1. **Akun Pengguna**: Klik ikon profil atau buka tab **Untuk Anda** / **Aktivitas**, lalu daftar akun baru lewat modal **Buat akun baru** atau masuk menggunakan **Email/Username & Kata Sandi** maupun tombol **Masuk dengan Google**.
+2. **Panel Admin (`/admin`)**: Rute web `/login` dan `/admin*` hanya dapat diakses oleh pengguna dengan `role === 'admin'`. Akun admin awal disediakan oleh seeder database (`AdditionalPagesSeeder`) — segera ubah kata sandi bawaan sebelum aplikasi digunakan secara publik/production.
 
 ---
 
@@ -132,66 +189,48 @@ npm run preview
 
 ```text
 project sabah bogor/
-├── PRD.md                                  # Dokumen Spesifikasi Produk (Product Requirements Document)
-├── README.md                               # Dokumentasi Utama Proyek & Panduan Penggunaan
-├── Front end/                              # Aplikasi Utama Frontend (React 19 + Vite + Tailwind CSS)
-│   ├── .env                                # Variabel environment (VITE_API_BASE_URL)
-│   ├── capacitor.config.json               # Konfigurasi aplikasi hybrid Android Capacitor
-│   ├── index.html                          # Entry point HTML
-│   ├── package.json                        # Daftar dependensi dan script npm
-│   ├── vite.config.js                      # Konfigurasi bundler Vite & proxy API
+├── .gitignore
+├── CHANGELOG.md
+├── PRD.md
+├── README.md
+├── Front end/                              # Aplikasi PWA Frontend (React 19 + Vite 8 + Tailwind CSS v4)
+│   ├── .env.example                        # Template environment frontend (VITE_API_BASE_URL)
+│   ├── .gitignore
+│   ├── capacitor.config.json
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
 │   └── src/
-│       ├── main.jsx                        # Bootstrapper React DOM & BrowserRouter
-│       ├── App.jsx                         # Root component, state global, & pengatur tab/routing
-│       ├── index.css                       # Konfigurasi Tailwind CSS, tema warna, & animasi shimmer
+│       ├── App.jsx                         # Root router, OAuth exchange, auth state & auto-logout listener
+│       ├── main.jsx                        # React DOM entry & ErrorBoundary
+│       ├── index.css                       # Tema Apple Liquid Glass + Subtle Retro
 │       ├── components/
-│       │   ├── map/                        # Komponen khusus peta interaktif Leaflet
-│       │   │   ├── AdminLocationPickerMap.jsx
-│       │   │   ├── BogorBoundaryLayer.jsx
-│       │   │   ├── LocateControl.jsx
-│       │   │   ├── MapContainer.jsx
-│       │   │   ├── MapController.jsx
-│       │   │   ├── MapMarker.jsx
-│       │   │   ├── MapPopup.jsx
-│       │   │   ├── MarkerClusterGroup.jsx
-│       │   │   ├── RouteMetrics.jsx
-│       │   │   ├── RoutingMachine.jsx
-│       │   │   └── UserLocationMarker.jsx
-│       │   ├── pages/                      # Halaman-halaman fitur utama aplikasi
-│       │   │   ├── ActivitiesPage.jsx
-│       │   │   ├── AdminPage.jsx
-│       │   │   ├── CustomRoutePage.jsx
-│       │   │   ├── ForYouPage.jsx
-│       │   │   ├── ProfilePage.jsx
-│       │   │   ├── SavedActivitiesPage.jsx
-│       │   │   └── TouristDetailPage.jsx
-│       │   ├── sidebar/                    # Panel daftar kartu tempat wisata
-│       │   │   ├── SidebarContainer.jsx
-│       │   │   ├── TouristCard.jsx
-│       │   │   └── TouristList.jsx
-│       │   └── ui/                         # Komponen antarmuka reusable (BottomSheet, Modal, SafeImage)
-│       │       ├── BottomNav.jsx
-│       │       ├── BottomSheet.jsx
-│       │       ├── CategoryFilter.jsx
-│       │       ├── LoginModal.jsx
-│       │       ├── NotificationDrawer.jsx
-│       │       ├── SafeImage.jsx
-│       │       ├── SearchBar.jsx
-│       │       ├── categories.js
-│       │       └── sheetMetrics.js
-│       ├── data/
-│       │   └── bogor_boundary.json         # Data GeoJSON fallback batas wilayah Kota Bogor
-│       ├── hooks/                          # Custom React Hooks (Geolocation & LocalStorage state)
-│       │   ├── useAdminLocations.js
-│       │   ├── useFavorites.js
-│       │   ├── useMapControls.js
-│       │   ├── useRecentlyViewed.js
-│       │   └── useUserLocation.js
-│       └── utils/                          # Fungsi utilitas API, kalkulasi jarak, & helper gambar
-│           ├── api.js
-│           ├── distance.js
-│           └── imageHelper.js
-└── backend/                                # Server REST API Backend (Laravel & PostGIS)
+│       │   ├── map/                        # Komponen peta MapLibre GL, OSRM routing & GPS markers
+│       │   ├── pages/                      # ActivitiesPage, CustomRoutePage, ForYouPage, ProfilePage, SavedActivitiesPage, TouristDetailPage
+│       │   ├── sidebar/                    # SidebarContainer, TouristCard, TouristDetail, TouristList
+│       │   └── ui/                         # BottomNav, BottomSheet, LoginModal, SafeImage, SearchBar, dll.
+│       ├── data/                           # GeoJSON boundary & data fallback lokal
+│       ├── hooks/                          # useAdminLocations, useFavorites, useMapControls, useRecentlyViewed, useUserLocation
+│       └── utils/                          # api.js (Bearer token + 401/403 interceptor), distance.js, imageCompressor.js, imageHelper.js
+└── backend/                                # Backend REST API & Admin Panel (Laravel 13)
+    ├── .env.example
+    ├── composer.json                       # Lock platform PHP 8.4.0 & dependensi Laravel/Sanctum/Socialite
+    ├── app/
+    │   ├── Http/
+    │   │   ├── Controllers/
+    │   │   │   ├── Admin/                  # AdminAuthController & AdminTouristSpotController
+    │   │   │   └── Api/                    # AuthController, GoogleAuthController, TouristSpotController, SavedActivityController, ActivityPostController, ForYouController
+    │   │   └── Middleware/                 # EnsureUserIsAdmin (RBAC 'admin')
+    │   ├── Models/                         # User, TouristSpot, SavedActivity, CustomRoute, ActivityPost
+    │   └── Services/                       # ImageCompressor (GD verification & compression)
+    ├── config/
+    │   └── cors.php                        # Konfigurasi CORS berbasis FRONTEND_URL + supports_credentials
+    ├── database/
+    │   ├── migrations/                     # Termasuk add_role_to_users_table
+    │   └── seeders/
+    ├── resources/views/admin/              # UI Admin Panel Blade (Apple Glass + Subtle Retro)
+    ├── routes/                             # api.php & web.php
+    └── tests/Feature/                      # SecurityHardeningTest.php & Feature tests
 ```
 
 ---
