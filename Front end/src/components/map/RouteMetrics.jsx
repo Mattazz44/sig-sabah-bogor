@@ -108,6 +108,7 @@ function RouteMetrics({
     routeInfo?.timeText || activeDestination?.travelTime || 'Menghitung...'
   const fallbackDistanceText =
     routeInfo?.distanceText || activeDestination?.distance || 'Menghitung...'
+  const isFallbackOrigin = Boolean(routeInfo?.isFallbackOrigin)
 
   const formattedTime =
     animatedMinutes !== null
@@ -154,6 +155,14 @@ function RouteMetrics({
             </span>
           </div>
         </div>
+
+        {isFallbackOrigin && (
+          <p className="mt-1 text-center text-[10.5px] font-medium text-[#F5F2EB]/65">
+            {isCustomRoute
+              ? 'GPS nonaktif — estimasi dihitung antar titik rute'
+              : 'GPS nonaktif — estimasi dari Pusat Kota Bogor'}
+          </p>
+        )}
       </div>
     </aside>
   )

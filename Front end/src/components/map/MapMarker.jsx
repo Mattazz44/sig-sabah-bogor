@@ -24,6 +24,7 @@ function MapMarker({
   onSelect,
   onOpenDetail,
   registerMarker,
+  isSelected = false,
   autoOpenPopup = false,
   isTransit = false,
 }) {
@@ -72,7 +73,9 @@ function MapMarker({
       closeButton: false,
       maxWidth: '248px',
       offset: [0, -38],
-    }).setDOMContent(popupContainer)
+    })
+      .setLngLat([lng, lat])
+      .setDOMContent(popupContainer)
 
     const marker = new Marker({
       element: el,
@@ -81,14 +84,31 @@ function MapMarker({
       rotationAlignment: 'viewport',
     })
       .setLngLat([lng, lat])
-      .setPopup(popup)
       .addTo(map)
+
+    const openManagedPopup = () => {
+      try {
+        if (!popup.isOpen()) {
+          popup.setLngLat([lng, lat]).addTo(map)
+        }
+      } catch {
+        // ignore if map unmounted
+      }
+    }
+
+    const closeManagedPopup = () => {
+      try {
+        if (popup.isOpen()) {
+          popup.remove()
+        }
+      } catch {
+        // ignore if map unmounted
+      }
+    }
 
     const handleClick = (e) => {
       e.stopPropagation()
-      if (!popup.isOpen()) {
-        marker.togglePopup()
-      }
+      openManagedPopup()
       onSelectRef.current?.(placeRef.current)
     }
 
@@ -96,12 +116,8 @@ function MapMarker({
 
     const markerHandle = {
       getElement: () => el,
-      openPopup: () => {
-        if (!popup.isOpen()) marker.togglePopup()
-      },
-      closePopup: () => {
-        if (popup.isOpen()) marker.togglePopup()
-      },
+      openPopup: openManagedPopup,
+      closePopup: closeManagedPopup,
       setZIndexOffset: (offset) => {
         el.style.zIndex = offset > 0 ? String(offset) : ''
       },
@@ -121,20 +137,21 @@ function MapMarker({
     }
   }, [map, placeId, placeSlug, placeName, placeCategory, lng, lat, isValidCoord, registerMarker, popupContainer])
 
-  // Otomatis buka popup saat mode navigasi transit multi-titik aktif
+  // Otomatis buka popup saat destinasi terpilih dari sidebar Explore maupun saat mode transit aktif
   useEffect(() => {
-    if (!autoOpenPopup) return undefined
+    if (!isSelected && !autoOpenPopup) return undefined
+    const delayMs = autoOpenPopup ? 350 : 20
     const timer = setTimeout(() => {
       try {
-        if (markerRef.current && popupRef.current && !popupRef.current.isOpen()) {
-          markerRef.current.togglePopup()
+        if (map && popupRef.current && !popupRef.current.isOpen()) {
+          popupRef.current.setLngLat([lng, lat]).addTo(map)
         }
       } catch {
         // ignore
       }
-    }, 600)
+    }, delayMs)
     return () => clearTimeout(timer)
-  }, [autoOpenPopup])
+  }, [isSelected, autoOpenPopup, map, lng, lat])
 
   if (!place || !isValidCoord) return null
 

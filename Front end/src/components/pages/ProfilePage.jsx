@@ -17,10 +17,14 @@ import {
   RouteWaypointsIcon,
 } from '../ui/VectorIcons'
 
-function readCachedFollow(identifier) {
-  if (!identifier || typeof window === 'undefined') return false
+function buildFollowStorageKey(viewerId, identifier) {
+  return `follow_${viewerId || 'guest'}_${identifier}`
+}
+
+function readCachedFollow(viewerId, identifier) {
+  if (!identifier || !viewerId || typeof window === 'undefined') return false
   try {
-    return window.localStorage.getItem(`follow_${identifier}`) === 'true'
+    return window.localStorage.getItem(buildFollowStorageKey(viewerId, identifier)) === 'true'
   } catch {
     return false
   }
@@ -40,23 +44,24 @@ function ProfilePage({
   const isSelf = user === 'self' || Boolean(user?.isSelf)
 
   const targetIdentifier = isSelf
-    ? currentUser?.username || currentUser?.name || ''
-    : user?.username || user?.name || ''
+    ? currentUser?.username || currentUser?.id || currentUser?.name || ''
+    : user?.username || user?.id || user?.name || ''
 
+  const viewerId = currentUser?.id || null
   const initialName = isSelf ? (currentUser?.name || '') : (user?.name || '')
   const initialAvatar = isSelf ? currentUser?.avatar : user?.avatar
   const initialEmail = isSelf ? (currentUser?.email || '') : null
   const initialBio = user?.bio || ''
 
-  const [prevProfileKey, setPrevProfileKey] = useState(`${targetIdentifier}|${isSelf}`)
-  const currentProfileKey = `${targetIdentifier}|${isSelf}`
+  const [prevProfileKey, setPrevProfileKey] = useState(`${targetIdentifier}|${isSelf}|${viewerId}`)
+  const currentProfileKey = `${targetIdentifier}|${isSelf}|${viewerId}`
 
   const [profileName, setProfileName] = useState(initialName)
   const [profileAvatar, setProfileAvatar] = useState(initialAvatar)
   const [profileEmail, setProfileEmail] = useState(initialEmail)
   const [profileBio, setProfileBio] = useState(initialBio)
 
-  const [isFollowing, setIsFollowing] = useState(() => readCachedFollow(targetIdentifier))
+  const [isFollowing, setIsFollowing] = useState(() => readCachedFollow(viewerId, targetIdentifier))
   const [followersCount, setFollowersCount] = useState(0)
   const [followingCount, setFollowingCount] = useState(0)
   const [routesCount, setRoutesCount] = useState(0)
@@ -79,7 +84,7 @@ function ProfilePage({
     setProfileEmail(initialEmail)
     setProfileBio(initialBio)
     setLocalAvatar(null)
-    setIsFollowing(readCachedFollow(targetIdentifier))
+    setIsFollowing(readCachedFollow(viewerId, targetIdentifier))
   }
 
   const requestKey = `${targetIdentifier}|${currentUser?.email || ''}|${isSelf}`
@@ -134,13 +139,6 @@ function ProfilePage({
     }
 
     let isMounted = true
-    let cachedFollowRaw = null
-    try {
-      cachedFollowRaw = window.localStorage.getItem(`follow_${targetIdentifier}`)
-    } catch {
-      cachedFollowRaw = null
-    }
-
     const targetParam = encodeURIComponent(targetIdentifier)
 
     apiFetch(`/api/users/${targetParam}`)
@@ -158,16 +156,19 @@ function ProfilePage({
         if (isSelf && d.email) setProfileEmail(d.email)
 
         if (typeof d.followers_count === 'number') {
-          let count = d.followers_count
-          if (cachedFollowRaw !== null) {
-            const isCachedFollow = cachedFollowRaw === 'true'
-            setIsFollowing(isCachedFollow)
-            if (isCachedFollow && !d.is_following) count += 1
-            if (!isCachedFollow && d.is_following) count = Math.max(0, count - 1)
-          } else {
-            setIsFollowing(Boolean(d.is_following))
+          setFollowersCount(d.followers_count)
+        }
+        const serverFollowState = Boolean(d.is_following)
+        setIsFollowing(serverFollowState)
+        if (viewerId) {
+          try {
+            window.localStorage.setItem(
+              buildFollowStorageKey(viewerId, targetIdentifier),
+              String(serverFollowState),
+            )
+          } catch {
+            // abaikan
           }
-          setFollowersCount(count)
         }
 
         if (typeof d.following_count === 'number') {
@@ -202,7 +203,7 @@ function ProfilePage({
     return () => {
       isMounted = false
     }
-  }, [requestKey, targetIdentifier, currentUser?.email, isSelf, initialName])
+  }, [requestKey, targetIdentifier, viewerId, currentUser?.email, isSelf, initialName])
 
   const handleToggleFollow = async () => {
     if (!isLoggedIn || !getAuthToken()) {
@@ -222,7 +223,7 @@ function ProfilePage({
     setIsFollowing(nextState)
     setFollowersCount(nextCount)
     try {
-      window.localStorage.setItem(`follow_${targetIdentifier}`, String(nextState))
+      window.localStorage.setItem(buildFollowStorageKey(viewerId, targetIdentifier), String(nextState))
     } catch {
       // abaikan
     }
@@ -244,7 +245,10 @@ function ProfilePage({
       if (typeof json?.is_following === 'boolean') {
         setIsFollowing(json.is_following)
         try {
-          window.localStorage.setItem(`follow_${targetIdentifier}`, String(json.is_following))
+          window.localStorage.setItem(
+            buildFollowStorageKey(viewerId, targetIdentifier),
+            String(json.is_following),
+          )
         } catch {
           // abaikan
         }
@@ -260,7 +264,7 @@ function ProfilePage({
       setIsFollowing(prevState)
       setFollowersCount(prevCount)
       try {
-        window.localStorage.setItem(`follow_${targetIdentifier}`, String(prevState))
+        window.localStorage.setItem(buildFollowStorageKey(viewerId, targetIdentifier), String(prevState))
       } catch {
         // abaikan
       }
@@ -349,9 +353,33 @@ function ProfilePage({
       .then((json) => {
         if (!isMounted || !json?.data) return
         if (Array.isArray(json.data.custom_routes)) {
+          const byId = new Map()
+          const bySlug = new Map()
+          tourists.forEach((t) => {
+            if (t?.id) byId.set(Number(t.id), t)
+            if (t?.slug) bySlug.set(t.slug, t)
+          })
           const mapped = json.data.custom_routes.map((cr) => {
             const stops = Array.isArray(cr.stops) ? cr.stops : []
-            const places = stops.map((s) => s.place).filter(Boolean)
+            const places = stops
+              .map((s) => {
+                const rawPlace = s.place
+                if (!rawPlace) return null
+                const matched =
+                  (rawPlace.id && byId.get(Number(rawPlace.id))) ||
+                  (rawPlace.slug && bySlug.get(rawPlace.slug)) ||
+                  null
+                return matched
+                  ? {
+                      ...matched,
+                      ...rawPlace,
+                      rating: rawPlace.rating ?? matched.rating,
+                      category: rawPlace.category || matched.category,
+                      image: rawPlace.image || matched.image,
+                    }
+                  : rawPlace
+              })
+              .filter(Boolean)
             return {
               id: cr.slug || `cr-${cr.id}`,
               title: cr.title,
@@ -375,7 +403,7 @@ function ProfilePage({
     return () => {
       isMounted = false
     }
-  }, [isSelf, currentUser?.id])
+  }, [isSelf, currentUser?.id, tourists])
 
   const savedMyRoutes = userCustomRoutes
 

@@ -66,8 +66,9 @@ function ActivitiesPage({
           const mapPost = (item) => {
             const isMine = Boolean(
               currentUser &&
-                ((item.user_id && currentUser.id && Number(item.user_id) === Number(currentUser.id)) ||
-                  (item.user_name && currentUser.name && item.user_name === currentUser.name)),
+                (item.user_id && currentUser.id
+                  ? Number(item.user_id) === Number(currentUser.id)
+                  : item.user_name && currentUser.name && item.user_name === currentUser.name),
             )
             return {
               id: item.id,
@@ -260,11 +261,18 @@ function ActivitiesPage({
 
   const handleOpenAuthorProfile = (post) => {
     if (!onOpenProfile) return
-    if (currentUser && post.userName === currentUser.name) {
+    const isOwnPost = Boolean(
+      currentUser &&
+        (post.userId && currentUser.id
+          ? Number(post.userId) === Number(currentUser.id)
+          : post.userName === currentUser.name),
+    )
+    if (isOwnPost) {
       onOpenProfile('self')
     } else {
       onOpenProfile({
         isSelf: false,
+        id: post.userId,
         name: post.userName,
         avatar: post.userAvatar,
       })

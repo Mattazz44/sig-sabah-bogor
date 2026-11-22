@@ -25,7 +25,7 @@ import {
   setAuthToken,
   setStoredUser,
 } from './utils/api'
-import { getImageUrl } from './utils/imageHelper'
+import { getBogorFallbackPhoto, getImageUrl } from './utils/imageHelper'
 import { AlertTriangleIcon, RefreshIcon, XIcon } from './components/ui/VectorIcons'
 
 let handledOAuthCode = null
@@ -62,12 +62,18 @@ export default function App() {
     const json = await res.json()
 
     if (json?.data && Array.isArray(json.data)) {
-      // Normalisasi path image & gallery agar menggunakan helper getImageUrl
-      return json.data.map((item) => ({
-        ...item,
-        image: getImageUrl(item.image),
-        gallery: Array.isArray(item.gallery) ? item.gallery.map(getImageUrl) : [],
-      }))
+      // Normalisasi path image & gallery agar selalu memiliki foto fallback Bogor yang valid
+      return json.data.map((item) => {
+        const fallbackPhoto = getBogorFallbackPhoto(item)
+        const normalizedGallery = Array.isArray(item.gallery)
+          ? item.gallery.map((g) => getImageUrl(g, fallbackPhoto)).filter(Boolean)
+          : []
+        return {
+          ...item,
+          image: getImageUrl(item.image, fallbackPhoto),
+          gallery: normalizedGallery.length > 0 ? normalizedGallery : [fallbackPhoto],
+        }
+      })
     }
     return null
   }, [])
@@ -514,16 +520,9 @@ export default function App() {
     <main className="apple-canopy-bg relative inset-x-0 left-0 right-0 mx-0 flex flex-col h-dvh w-full overflow-hidden">
       <h1 className="sr-only">SIG Wisata Bogor</h1>
 
-      {/* Banner Peringatan Inline jika Backend Laravel Belum Dijalankan (mendorong konten secara natural tanpa overlap) */}
-      <div
-        className={`relative z-30 shrink-0 grid transition-all duration-300 ease-out ${
-          showBackendBanner
-            ? 'grid-rows-[1fr] opacity-100 translate-y-0'
-            : 'grid-rows-[0fr] opacity-0 -translate-y-2 pointer-events-none'
-        }`}
-        aria-hidden={!showBackendBanner}
-      >
-        <div className="overflow-hidden">
+      {/* Banner Peringatan Inline jika Backend Laravel Belum Dijalankan (hanya di-mount saat aktif agar DOM/a11y bersih) */}
+      {showBackendBanner && (
+        <div className="relative z-30 shrink-0 animate-tab-enter">
           <aside
             role="alert"
             aria-live="polite"
@@ -565,7 +564,7 @@ export default function App() {
             </div>
           </aside>
         </div>
-      </div>
+      )}
 
       {/* Kontainer Utama Fleksibel: menjaga seluruh halaman & peta tetap proporsional di bawah banner */}
       <div className="relative inset-x-0 left-0 right-0 mx-0 flex-1 min-h-0 w-full overflow-hidden">

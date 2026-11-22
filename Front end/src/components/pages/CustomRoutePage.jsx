@@ -1,15 +1,35 @@
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { apiFetch, getAuthToken } from '../../utils/api'
+import { calculateDistanceKm } from '../../utils/distance'
 import SafeImage from '../ui/SafeImage'
 import GlassModal from '../ui/GlassModal'
 import { DEFAULT_AVATAR_PLACEHOLDER, getBogorFallbackPhoto } from '../../utils/imageHelper'
 import {
+  AlertTriangleIcon,
   CheckIcon,
   ChevronLeftIcon,
   ClockIcon,
   MapIcon,
   MapPinIcon,
 } from '../ui/VectorIcons'
+
+function enrichRoutePlace(rawPlace, touristById, touristBySlug) {
+  if (!rawPlace) return null
+  const matched =
+    (rawPlace.id && touristById.get(Number(rawPlace.id))) ||
+    (rawPlace.slug && touristBySlug.get(rawPlace.slug)) ||
+    null
+  if (!matched) return rawPlace
+  return {
+    ...matched,
+    ...rawPlace,
+    rating: rawPlace.rating ?? matched.rating,
+    category: rawPlace.category || matched.category,
+    address: rawPlace.address || matched.address,
+    image: rawPlace.image || matched.image,
+    coordinates: rawPlace.coordinates || matched.coordinates,
+  }
+}
 
 function CustomRoutePage({
   tourists = [],
@@ -49,7 +69,42 @@ function CustomRoutePage({
   }, [tourists, favorites, userActivities])
 
   const [customRoutesList, setCustomRoutesList] = useState([])
+  const [routeToDelete, setRouteToDelete] = useState(null)
+  const [isDeletingRoute, setIsDeletingRoute] = useState(false)
   const hasAuth = Boolean(currentUser?.id && getAuthToken())
+
+  const { touristById, touristBySlug } = useMemo(() => {
+    const byId = new Map()
+    const bySlug = new Map()
+    if (Array.isArray(tourists)) {
+      tourists.forEach((t) => {
+        if (t?.id) byId.set(Number(t.id), t)
+        if (t?.slug) bySlug.set(t.slug, t)
+      })
+    }
+    return { touristById: byId, touristBySlug: bySlug }
+  }, [tourists])
+
+  const hydrateRoute = useCallback(
+    (cr) => {
+      const stops = Array.isArray(cr.stops) ? cr.stops : []
+      const places = stops
+        .map((s) => enrichRoutePlace(s.place, touristById, touristBySlug))
+        .filter(Boolean)
+      return {
+        id: cr.slug || `cr-${cr.id}`,
+        dbId: cr.id,
+        title: cr.title,
+        desc: cr.desc || '',
+        isPrimary: Boolean(cr.is_primary),
+        stops,
+        totalDistance: cr.total_distance || '3.0 KM',
+        totalDuration: cr.total_duration || '10 Menit',
+        places: places.length > 0 ? places : [tourists[0]].filter(Boolean),
+      }
+    },
+    [touristById, touristBySlug, tourists],
+  )
 
   useEffect(() => {
     if (!hasAuth) {
@@ -66,21 +121,7 @@ function CustomRoutePage({
       .then((json) => {
         if (!isMounted) return
         if (Array.isArray(json?.data?.custom_routes)) {
-          const mapped = json.data.custom_routes.map((cr) => {
-            const stops = Array.isArray(cr.stops) ? cr.stops : []
-            const places = stops.map((s) => s.place).filter(Boolean)
-            return {
-              id: cr.slug || `cr-${cr.id}`,
-              title: cr.title,
-              desc: cr.desc || '',
-              isPrimary: Boolean(cr.is_primary),
-              stops,
-              totalDistance: cr.total_distance || '3.0 KM',
-              totalDuration: cr.total_duration || '10 Menit',
-              places: places.length > 0 ? places : [tourists[0]].filter(Boolean),
-            }
-          })
-          setCustomRoutesList(mapped)
+          setCustomRoutesList(json.data.custom_routes.map(hydrateRoute))
         } else {
           setCustomRoutesList([])
         }
@@ -93,7 +134,7 @@ function CustomRoutePage({
     return () => {
       isMounted = false
     }
-  }, [hasAuth, tourists])
+  }, [hasAuth, hydrateRoute])
 
   const visibleCustomRoutes = hasAuth ? customRoutesList : []
 
@@ -124,16 +165,41 @@ function CustomRoutePage({
     if (!newRouteTitle.trim() || selectedDestIds.length === 0) return
 
     const pool = savedTouristSpots.length > 0 ? savedTouristSpots : tourists
-    const chosenPlaces = pool.filter((t) => selectedDestIds.includes(t.id))
+    const poolById = new Map(pool.map((t) => [t.id, t]))
+    const chosenPlaces = selectedDestIds.map((id) => poolById.get(id)).filter(Boolean)
     if (chosenPlaces.length === 0) return
 
-    const stopsFormatted = chosenPlaces.map((p, idx) => ({
-      name: p.name,
-      type: idx === 0 ? 'Titik Awal' : idx === chosenPlaces.length - 1 ? 'Destinasi Akhir' : `Transit ${idx}`,
-      distance: p.distance || '2.5 KM',
-      place: p,
-    }))
+    let totalRoadKm = 0
+    const stopsFormatted = chosenPlaces.map((p, idx) => {
+      const lat = Number(p.coordinates?.lat ?? p.latitude)
+      const lng = Number(p.coordinates?.lng ?? p.longitude)
+      let legLabel = 'Titik awal'
+      if (idx === 0) {
+        if (chosenPlaces.length === 1 && Number.isFinite(lat) && Number.isFinite(lng)) {
+          const km = Math.max(0.2, (calculateDistanceKm(-6.598, 106.805, lat, lng) ?? 1.5) * 1.35)
+          totalRoadKm += km
+          legLabel = `${km.toFixed(1)} KM`
+        }
+      } else {
+        const prev = chosenPlaces[idx - 1]
+        const prevLat = Number(prev.coordinates?.lat ?? prev.latitude)
+        const prevLng = Number(prev.coordinates?.lng ?? prev.longitude)
+        const km = Math.max(
+          0.2,
+          (calculateDistanceKm(prevLat, prevLng, lat, lng) ?? 1.5) * 1.35,
+        )
+        totalRoadKm += km
+        legLabel = `${km.toFixed(1)} KM`
+      }
+      return {
+        name: p.name,
+        type: idx === 0 ? 'Titik Awal' : idx === chosenPlaces.length - 1 ? 'Destinasi Akhir' : `Transit ${idx}`,
+        distance: legLabel,
+        place: p,
+      }
+    })
 
+    const totalMinutes = Math.max(3, Math.round((totalRoadKm / 25) * 60) + 2)
     const tempId = `cr-${Date.now()}`
     const titleText = newRouteTitle.trim()
     const destIdsSnapshot = [...selectedDestIds]
@@ -144,8 +210,8 @@ function CustomRoutePage({
       desc: 'Rute baru dibuat oleh Anda',
       isPrimary: false,
       stops: stopsFormatted,
-      totalDistance: `${(chosenPlaces.length * 2.8).toFixed(1)} KM`,
-      totalDuration: `${chosenPlaces.length * 8} Menit`,
+      totalDistance: `${totalRoadKm.toFixed(1)} KM`,
+      totalDuration: `${totalMinutes} Menit`,
       places: chosenPlaces,
     }
 
@@ -172,29 +238,34 @@ function CustomRoutePage({
       }
       const json = await res.json().catch(() => null)
       if (json?.data) {
-        const cr = json.data
-        const stops = Array.isArray(cr.stops) ? cr.stops : stopsFormatted
-        const places = stops.map((s) => s.place).filter(Boolean)
         setCustomRoutesList((prev) =>
-          prev.map((item) =>
-            item.id === tempId
-              ? {
-                  id: cr.slug || `cr-${cr.id}`,
-                  title: cr.title,
-                  desc: cr.desc || '',
-                  isPrimary: Boolean(cr.is_primary),
-                  stops,
-                  totalDistance: cr.total_distance || item.totalDistance,
-                  totalDuration: cr.total_duration || item.totalDuration,
-                  places: places.length > 0 ? places : chosenPlaces,
-                }
-              : item,
-          ),
+          prev.map((item) => (item.id === tempId ? hydrateRoute(json.data) : item)),
         )
       }
     } catch (err) {
       console.warn('Gagal menyimpan rute custom ke server:', err)
       setCustomRoutesList(prevRoutes)
+    }
+  }
+
+  const confirmDeleteRoute = async () => {
+    if (!routeToDelete) return
+    const target = routeToDelete
+    const prevRoutes = customRoutesList
+    setIsDeletingRoute(true)
+    setCustomRoutesList((prev) => prev.filter((r) => r.id !== target.id))
+    setRouteToDelete(null)
+
+    try {
+      const res = await apiFetch(`/api/custom-routes/${encodeURIComponent(target.id)}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    } catch (err) {
+      console.warn('Gagal menghapus rute custom:', err)
+      setCustomRoutesList(prevRoutes)
+    } finally {
+      setIsDeletingRoute(false)
     }
   }
 
@@ -289,9 +360,34 @@ function CustomRoutePage({
                       <p className="mt-1 text-[12px] leading-relaxed text-[#F5F2EB]/60">{route.desc}</p>
                     )}
                   </div>
-                  <span className="shrink-0 rounded-full border border-[rgba(244,239,230,0.16)] bg-white/[0.06] px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums tracking-wide text-[#DFAA63]">
-                    {route.stops.length} Tujuan
-                  </span>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <span className="rounded-full border border-[rgba(244,239,230,0.16)] bg-white/[0.06] px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums tracking-wide text-[#DFAA63]">
+                      {route.stops.length} Tujuan
+                    </span>
+                    <button
+                      type="button"
+                      id={`btn-delete-${route.id}`}
+                      onClick={() => setRouteToDelete(route)}
+                      aria-label={`Hapus rute ${route.title}`}
+                      title="Hapus rute"
+                      className="flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.05] text-[#C8D3C8] transition-colors hover:bg-[#3B1D24]/70 hover:text-rose-200 active:scale-95"
+                    >
+                      <svg
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
 
                 {/* Stepper Titik Lokasi */}
@@ -497,6 +593,48 @@ function CustomRoutePage({
             </button>
           </div>
         </form>
+      </GlassModal>
+
+      {/* Modal Konfirmasi Hapus Rute Custom */}
+      <GlassModal
+        isOpen={Boolean(routeToDelete)}
+        onClose={() => setRouteToDelete(null)}
+        overlayId="modal-hapus-rute-overlay"
+        modalId="modal-hapus-rute"
+        closeButtonId="btn-close-hapus-rute"
+        titleId="modal-hapus-rute-title"
+        closeAriaLabel="Tutup konfirmasi hapus rute"
+        maxWidthClass="max-w-xs"
+      >
+        <div className="text-center">
+          <div className="-mt-3 mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-rose-300/25 bg-[#3B1D24]/70 text-rose-200">
+            <AlertTriangleIcon className="h-6 w-6" />
+          </div>
+          <h3 id="modal-hapus-rute-title" className="text-[17px] font-bold text-[#EBF0EB]">
+            Hapus Rute Custom?
+          </h3>
+          <p className="mt-1.5 text-[12.5px] text-[#C8D3C8]">
+            Rute &quot;{routeToDelete?.title}&quot; akan dihapus permanen dari daftar rute Anda.
+          </p>
+          <div className="mt-5 flex gap-2.5">
+            <button
+              type="button"
+              onClick={() => setRouteToDelete(null)}
+              className="min-h-[44px] flex-1 rounded-xl border border-white/[0.14] bg-white/[0.06] py-2.5 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-white/[0.12]"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              id="btn-confirm-hapus-rute"
+              onClick={confirmDeleteRoute}
+              disabled={isDeletingRoute}
+              className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-rose-300/25 bg-[#3B1D24] py-2.5 text-[12.5px] font-bold text-rose-100 transition-colors hover:bg-[#4D242E] disabled:opacity-50"
+            >
+              {isDeletingRoute ? 'Menghapus...' : 'Ya, Hapus'}
+            </button>
+          </div>
+        </div>
       </GlassModal>
     </div>
   )

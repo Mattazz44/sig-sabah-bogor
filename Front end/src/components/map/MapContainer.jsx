@@ -11,6 +11,7 @@ import MarkerClusterGroup from './MarkerClusterGroup'
 import { getMapFocusOffset } from '../ui/sheetMetrics'
 
 const BOGOR_CENTER = [106.805, -6.598] // [lng, lat]
+const BOGOR_FALLBACK_POS = [-6.598, 106.805] // [lat, lng] Pusat Kota Bogor jika GPS ditolak/timeout
 const DEFAULT_ZOOM = 15.5
 const DEFAULT_PITCH = 55
 const PLACE_ZOOM = 15.5
@@ -39,6 +40,7 @@ export default function MapView({
   }, [])
 
   const [routeInfo, setRouteInfo] = useState(null)
+  const [gpsWaitExpiredKey, setGpsWaitExpiredKey] = useState(null)
   const [showBoundary, setShowBoundary] = useState(true)
   const [clusteringEnabled, setClusteringEnabled] = useState(true)
   const [is3D, setIs3D] = useState(true)
@@ -72,12 +74,29 @@ export default function MapView({
     ? 'multi-' + activeDestination.map((p) => p.id || p.slug).join('-')
     : activeDestination?.id || 'none'
 
+  useEffect(() => {
+    if (!isNavigationMode || !hasDestination || userPosition) {
+      return undefined
+    }
+    const timer = window.setTimeout(() => setGpsWaitExpiredKey(activeDestinationKey), 1800)
+    return () => window.clearTimeout(timer)
+  }, [isNavigationMode, hasDestination, userPosition, activeDestinationKey])
+
+  const gpsWaitExpired = gpsWaitExpiredKey === activeDestinationKey
+  const isGpsBlocked = locationStatus === 'denied' || locationStatus === 'unavailable'
+  const effectiveRouteOrigin =
+    userPosition || (isNavigationMode && hasDestination && (isGpsBlocked || gpsWaitExpired) ? BOGOR_FALLBACK_POS : null)
+  const isFallbackOrigin = !userPosition && Boolean(effectiveRouteOrigin)
+
   const handleRouteUpdate = useCallback(
     (info) => {
       setRouteInfo({ ...info, targetKey: activeDestinationKey })
     },
     [activeDestinationKey],
   )
+
+  const activeRouteInfo =
+    routeInfo && routeInfo.targetKey === activeDestinationKey ? routeInfo : null
 
   const [initialView] = useState(() => {
     if (selected && !Array.isArray(selected) && selected.coordinates) {
@@ -161,7 +180,7 @@ export default function MapView({
       {isNavigationMode && hasDestination && (
         <RouteMetrics
           activeDestination={activeDestination}
-          routeInfo={routeInfo}
+          routeInfo={activeRouteInfo}
           isNavigationMode={isNavigationMode}
         />
       )}
@@ -249,11 +268,12 @@ export default function MapView({
               clusteringEnabled={clusteringEnabled}
             />
 
-            {hasDestination && userPosition && (
+            {hasDestination && effectiveRouteOrigin && (
               <RoutingMachine
-                key={activeDestinationKey}
-                userPosition={userPosition}
+                key={`${activeDestinationKey}-${isFallbackOrigin ? 'fallback' : 'gps'}`}
+                userPosition={effectiveRouteOrigin}
                 destination={activeDestination}
+                isFallbackOrigin={isFallbackOrigin}
                 onRouteFound={handleRouteUpdate}
               />
             )}

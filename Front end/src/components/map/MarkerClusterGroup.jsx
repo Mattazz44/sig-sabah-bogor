@@ -326,6 +326,8 @@ export default function MarkerClusterGroup({
           isMultiDestination &&
           activeDestination[0]?.id === place.id
 
+        const isSelectedPlace = selectedId !== null && place.id === selectedId
+
         return (
           <MapMarker
             key={place.id}
@@ -333,6 +335,7 @@ export default function MarkerClusterGroup({
             onSelect={onSelect}
             onOpenDetail={onOpenDetail}
             registerMarker={registerMarker}
+            isSelected={isSelectedPlace}
             autoOpenPopup={isTransit}
             isTransit={isTransit}
           />

@@ -73,6 +73,21 @@ const ngrokBlobCache = new Map()
 const ngrokPendingFetches = new Map()
 
 /**
+ * Menentukan apakah fetch eksplisit dengan header bypass ngrok diperlukan.
+ * Pada localhost/same-origin reguler, native <img> jauh lebih cepat tanpa saturasi koneksi.
+ */
+export function shouldUseNgrokFetch(url = '') {
+  if (typeof window !== 'undefined' && /ngrok/i.test(window.location.hostname || '')) {
+    return true
+  }
+  const rawBase = (import.meta.env.VITE_API_BASE_URL ?? '').trim()
+  if (/ngrok/i.test(rawBase)) {
+    return true
+  }
+  return typeof url === 'string' && /ngrok/i.test(url)
+}
+
+/**
  * Mengonversi path gambar dari API Backend menjadi URL lengkap.
  * - Jika imagePath kosong atau null -> kembalikan DEFAULT_IMAGE_PLACEHOLDER.
  * - Jika sudah ada di cache blob -> kembalikan blob URL dari memori.
@@ -177,12 +192,15 @@ export function handleImageError(e, fallback = DEFAULT_IMAGE_PLACEHOLDER) {
     })
       .then((res) => {
         if (!res.ok) throw new Error(`Image fetch failed: ${res.status}`)
+        const contentType = res.headers.get('content-type') || ''
+        if (contentType.includes('text/html')) {
+          throw new Error(`Invalid HTML response for image: ${contentType}`)
+        }
         return res.blob()
       })
       .then((blob) => {
-        // Pastikan yang diterima benar-benar image (bukan text/html dari ngrok)
-        if (blob.type && !blob.type.startsWith('image/')) {
-          throw new Error(`Invalid image MIME: ${blob.type}`)
+        if (!blob || blob.size === 0 || (blob.type && !blob.type.startsWith('image/'))) {
+          throw new Error(`Invalid image MIME/size: ${blob?.type || 'unknown'}`)
         }
         const blobUrl = URL.createObjectURL(blob)
         ngrokBlobCache.set(failedSrc, blobUrl)

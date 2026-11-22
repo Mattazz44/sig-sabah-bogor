@@ -11,7 +11,7 @@ import {
   StarIcon,
   UserIcon,
 } from '../ui/VectorIcons'
-import { DEFAULT_AVATAR_PLACEHOLDER } from '../../utils/imageHelper'
+import { DEFAULT_AVATAR_PLACEHOLDER, getBogorFallbackPhoto } from '../../utils/imageHelper'
 
 function formatDistanceLabel(place) {
   if (typeof place?.distanceKm === 'number' && Number.isFinite(place.distanceKm)) {
@@ -79,6 +79,7 @@ function DestinationCard({
   const distanceLabel = formatDistanceLabel(place)
   const displayRating = Number(place.rating || 0).toFixed(1)
   const displayLocation = place.address || place.location || 'Bogor, Jawa Barat'
+  const fallbackPhoto = getBogorFallbackPhoto(place)
 
   return (
     <article className="apple-glass-card apple-glass-card-hover group relative flex min-w-0 flex-col overflow-hidden rounded-2xl">
@@ -105,8 +106,10 @@ function DestinationCard({
       >
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#182117]">
           <SafeImage
-            src={place.image}
+            src={place.image || fallbackPhoto}
+            fallback={fallbackPhoto}
             alt={place.name}
+            loading="eager"
             className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           />
           <div
@@ -517,8 +520,10 @@ function ForYouPage({
                   >
                     <div className="aspect-[16/9] w-full shrink-0 overflow-hidden bg-[#141A14] sm:aspect-auto sm:h-36 sm:w-52">
                       <SafeImage
-                        src={effectiveContinue.image}
+                        src={effectiveContinue.image || getBogorFallbackPhoto(effectiveContinue)}
+                        fallback={getBogorFallbackPhoto(effectiveContinue)}
                         alt={effectiveContinue.name}
+                        loading="eager"
                         className="h-full w-full object-cover"
                       />
                     </div>

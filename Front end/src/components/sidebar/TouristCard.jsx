@@ -1,5 +1,6 @@
 import { memo, useEffect, useState } from 'react'
 import SafeImage from '../ui/SafeImage'
+import { getBogorFallbackPhoto } from '../../utils/imageHelper'
 import { CheckIcon, HeartIcon, ShareIcon, StarIcon } from '../ui/VectorIcons'
 
 function formatLocationLabel(address) {
@@ -18,6 +19,7 @@ function TouristCard({ place, onSelect, onHover, saved = false, onToggleFavorite
   const [copied, setCopied] = useState(false)
   const [isPressed, setIsPressed] = useState(false)
   const displayLocation = formatLocationLabel(place.address)
+  const fallbackPhoto = getBogorFallbackPhoto(place)
 
   useEffect(() => {
     if (!copied) return undefined
@@ -79,9 +81,10 @@ function TouristCard({ place, onSelect, onHover, saved = false, onToggleFavorite
               className="card-specular-sheen pointer-events-none absolute -inset-4 z-[2]"
             />
             <SafeImage
-              src={place.image}
+              src={place.image || fallbackPhoto}
+              fallback={fallbackPhoto}
               alt={place.name}
-              loading="lazy"
+              loading="eager"
               decoding="async"
               className="aspect-[16/10] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />

@@ -85,9 +85,7 @@ function SavedActivitiesPage({
   const [customRoutesCount, setCustomRoutesCount] = useState(0)
 
   useEffect(() => {
-    if (!isLoggedIn || !getAuthToken()) {
-      setUserActivities([])
-      setCustomRoutesCount(0)
+    if (!isLoggedIn || !getAuthToken() || activeFolderView !== null) {
       return undefined
     }
 
@@ -132,9 +130,24 @@ function SavedActivitiesPage({
     return () => {
       isMounted = false
     }
-  }, [isLoggedIn, currentUser?.id])
+  }, [isLoggedIn, currentUser?.id, activeFolderView])
 
   const effectiveUserActivities = isLoggedIn ? userActivities : []
+  const effectiveCustomRoutesCount = isLoggedIn ? customRoutesCount : 0
+
+  const handleDeleteSavedActivity = async (activityId) => {
+    const prevActivities = userActivities
+    setUserActivities((prev) => prev.filter((a) => a.id !== activityId))
+    try {
+      const res = await apiFetch(`/api/saved-activities/${activityId}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+    } catch (err) {
+      console.warn('Gagal menghapus aktivitas tersimpan:', err)
+      setUserActivities(prevActivities)
+    }
+  }
 
   const [showSortMenu, setShowSortMenu] = useState(false)
   const [sortOption, setSortOption] = useState('Terbaru')
@@ -626,7 +639,7 @@ function SavedActivitiesPage({
 
                   <div className="apple-glass-pill absolute inset-x-2.5 bottom-2.5 rounded-xl py-1 text-center">
                     <span className="text-[11px] font-semibold not-italic tabular-nums text-[#DFAA63]">
-                      {customRoutesCount} Rute Tersedia
+                      {effectiveCustomRoutesCount} Rute Tersedia
                     </span>
                   </div>
                 </div>
@@ -636,7 +649,7 @@ function SavedActivitiesPage({
                       Rute custom
                     </h2>
                     <p className="text-[11.5px] not-italic tabular-nums text-[#F5F2EB]/60">
-                      {customRoutesCount} rute perjalanan
+                      {effectiveCustomRoutesCount} rute perjalanan
                     </p>
                   </div>
                   <ChevronRightIcon className="h-4 w-4 shrink-0 text-[#F5F2EB]/45 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[#F5F2EB]" />
@@ -709,14 +722,40 @@ function SavedActivitiesPage({
                       key={act.id}
                       className="apple-glass-card apple-glass-card-hover flex items-start justify-between gap-3 rounded-2xl p-4"
                     >
-                      <div className="min-w-0">
+                      <div className="min-w-0 flex-1">
                         <h3 className="truncate text-[14px] font-semibold tracking-tight text-[#EBF0EB]">{act.name}</h3>
                         <p className="mt-1 flex items-center gap-1.5 text-[12px] text-[#E2D7B5]">
                           <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
                           <span className="truncate">{act.location}</span>
                         </p>
                       </div>
-                      <span className="shrink-0 font-mono text-[11px] tabular-nums tracking-wide text-[#F5F2EB]/55">{act.date}</span>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="font-mono text-[11px] tabular-nums tracking-wide text-[#F5F2EB]/55">{act.date}</span>
+                        {typeof act.id === 'number' && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteSavedActivity(act.id)}
+                            aria-label={`Hapus aktivitas ${act.name}`}
+                            title="Hapus aktivitas"
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.05] text-[#C8D3C8] transition-colors hover:bg-[#3B1D24]/70 hover:text-rose-200 active:scale-95"
+                          >
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden="true"
+                            >
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

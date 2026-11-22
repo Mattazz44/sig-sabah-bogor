@@ -66,7 +66,12 @@ function sliceCoordsAtProgress(pathData, progress) {
   return sliced.length >= 2 ? sliced : [coords[0], coords[0]]
 }
 
-export default function RoutingMachine({ userPosition, destination, onRouteFound }) {
+export default function RoutingMachine({
+  userPosition,
+  destination,
+  isFallbackOrigin = false,
+  onRouteFound,
+}) {
   const { map, isStyleLoaded } = useMapLibre()
   const hasFittedBoundsRef = useRef(false)
   const hasAnimatedRouteRef = useRef(false)
@@ -136,13 +141,17 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
     }
 
     let isDisposed = false
+    let timedOut = false
     let animFrameId = 0
     const controller = new AbortController()
     const currentDestPoints = destPointsRef.current
-    const waypointsLngLat = [
-      [userLng, userLat],
-      ...currentDestPoints.map(([lat, lng]) => [lng, lat]),
-    ]
+    const useStopToStopOnly = isFallbackOrigin && currentDestPoints.length > 1
+    const waypointsLngLat = useStopToStopOnly
+      ? currentDestPoints.map(([lat, lng]) => [lng, lat])
+      : [
+          [userLng, userLat],
+          ...currentDestPoints.map(([lat, lng]) => [lng, lat]),
+        ]
 
     const updateSourceCoords = (coords) => {
       if (isDisposed || !map || !map.getStyle()) return
@@ -269,19 +278,37 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
 
       if (onRouteFoundRef.current) {
         const minutes = Math.max(1, Math.round(totalSecs / 60))
-        const km = (totalMeters / 1000).toFixed(1)
+        const km = Math.max(0.1, totalMeters / 1000).toFixed(1)
         onRouteFoundRef.current({
           timeText: `${minutes} Menit`,
           distanceText: `${km} KM`,
           totalMinutes: minutes,
           totalKm: km,
           isCustomRoute: currentDestPoints.length > 1,
+          isFallbackOrigin,
         })
       }
     }
 
+    const computeHaversineFallback = () => {
+      let totalKm = 0
+      for (let i = 0; i < waypointsLngLat.length - 1; i++) {
+        const [lng1, lat1] = waypointsLngLat[i]
+        const [lng2, lat2] = waypointsLngLat[i + 1]
+        totalKm += (calculateDistanceKm(lat1, lng1, lat2, lng2) ?? 0) * 1.35
+      }
+      totalKm = Math.max(0.1, totalKm)
+      const totalMeters = totalKm * 1000
+      const totalSecs = Math.max(120, (totalKm / 25) * 3600)
+      return { totalMeters, totalSecs }
+    }
+
     const coordParam = waypointsLngLat.map(([lng, lat]) => `${lng},${lat}`).join(';')
     const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coordParam}?overview=full&geometries=geojson`
+    const fetchTimeoutId = window.setTimeout(() => {
+      timedOut = true
+      controller.abort()
+    }, 2500)
 
     fetch(osrmUrl, { signal: controller.signal })
       .then((res) => {
@@ -289,22 +316,17 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
         return res.json()
       })
       .then((data) => {
+        window.clearTimeout(fetchTimeoutId)
         if (isDisposed) return
         const route = data?.routes?.[0]
         if (!route?.geometry) throw new Error('Rute tidak ditemukan')
         drawRouteGeoJson(route.geometry, route.distance ?? 0, route.duration ?? 0)
       })
       .catch((err) => {
-        if (isDisposed || err?.name === 'AbortError') return
-        console.warn('OSRM routing error, menggunakan garis estimasi:', err)
-        let totalKm = 0
-        for (let i = 0; i < waypointsLngLat.length - 1; i++) {
-          const [lng1, lat1] = waypointsLngLat[i]
-          const [lng2, lat2] = waypointsLngLat[i + 1]
-          totalKm += (calculateDistanceKm(lat1, lng1, lat2, lng2) ?? 0) * 1.35
-        }
-        const totalMeters = totalKm * 1000
-        const totalSecs = (totalKm / 25) * 3600
+        window.clearTimeout(fetchTimeoutId)
+        if (isDisposed || (err?.name === 'AbortError' && !timedOut)) return
+        console.warn('OSRM routing fallback (Haversine):', err?.message || err)
+        const { totalMeters, totalSecs } = computeHaversineFallback()
         drawRouteGeoJson(
           { type: 'LineString', coordinates: waypointsLngLat },
           totalMeters,
@@ -314,11 +336,12 @@ export default function RoutingMachine({ userPosition, destination, onRouteFound
 
     return () => {
       isDisposed = true
+      window.clearTimeout(fetchTimeoutId)
       cancelAnimationFrame(animFrameId)
       controller.abort()
       removeRouteLayers(map)
     }
-  }, [map, isStyleLoaded, userLat, userLng, destSignature])
+  }, [map, isStyleLoaded, userLat, userLng, destSignature, isFallbackOrigin])
 
   return null
 }

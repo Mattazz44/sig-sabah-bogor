@@ -5,7 +5,9 @@ import { ChevronRightIcon, StarIcon } from '../ui/VectorIcons'
 export default function MapPopup({ place, onOpenDetail, onSelect, isTransit = false }) {
   if (!place) return null
 
-  const ratingText = typeof place.rating === 'number' ? place.rating.toFixed(1) : place.rating
+  const numericRating = Number(place.rating)
+  const hasValidRating = Number.isFinite(numericRating) && numericRating > 0
+  const ratingText = hasValidRating ? numericRating.toFixed(1) : null
   const triggerOpenDetail = onOpenDetail || onSelect
   const fallbackPhoto = getBogorFallbackPhoto(place)
 
@@ -52,15 +54,21 @@ export default function MapPopup({ place, onOpenDetail, onSelect, isTransit = fa
 
         <div className="mt-1.5 flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5 text-[11.5px]">
-            <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
-            <span className="font-semibold not-italic tabular-nums text-[#DFAA63]">
-              {ratingText}
-            </span>
+            {hasValidRating && (
+              <>
+                <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
+                <span className="font-semibold not-italic tabular-nums text-[#DFAA63]">
+                  {ratingText}
+                </span>
+              </>
+            )}
             {place.distance && (
               <>
-                <span aria-hidden="true" className="text-[#F5F2EB]/35">
-                  ·
-                </span>
+                {hasValidRating && (
+                  <span aria-hidden="true" className="text-[#F5F2EB]/35">
+                    ·
+                  </span>
+                )}
                 <span className="truncate not-italic tabular-nums text-[#F5F2EB]/70">
                   {place.distance}
                 </span>

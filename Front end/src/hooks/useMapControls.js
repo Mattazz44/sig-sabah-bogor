@@ -50,6 +50,7 @@ export function useFlyToSelected(selected, markerRefs, getFocusOffset) {
     })
 
     let fallbackTimerId = 0
+    let immediateTimerId = 0
 
     const openPopup = () => {
       const handle = markerRefs.current?.get(selected.id)
@@ -58,9 +59,12 @@ export function useFlyToSelected(selected, markerRefs, getFocusOffset) {
       } else {
         fallbackTimerId = window.setTimeout(() => {
           markerRefs.current?.get(selected.id)?.openPopup?.()
-        }, 150)
+        }, 120)
       }
     }
+
+    // Buka popup segera agar klik pertama pada kartu Explore langsung merespons
+    immediateTimerId = window.setTimeout(openPopup, 25)
 
     const zoom = Math.max(map.getZoom(), FLY_ZOOM)
     const [ox, oy] = getFocusOffset?.() ?? [0, 0]
@@ -71,6 +75,7 @@ export function useFlyToSelected(selected, markerRefs, getFocusOffset) {
     if (alreadyThere) {
       openPopup()
       return () => {
+        window.clearTimeout(immediateTimerId)
         window.clearTimeout(fallbackTimerId)
       }
     }
@@ -80,10 +85,11 @@ export function useFlyToSelected(selected, markerRefs, getFocusOffset) {
       center: [lng, lat],
       zoom,
       offset: [-ox, -oy],
-      duration: 1000,
+      duration: 650,
     })
 
     return () => {
+      window.clearTimeout(immediateTimerId)
       window.clearTimeout(fallbackTimerId)
       map.off('moveend', openPopup)
     }

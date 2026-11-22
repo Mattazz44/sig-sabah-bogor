@@ -3,6 +3,7 @@ import SearchBar from '../ui/SearchBar'
 import CategoryFilter from '../ui/CategoryFilter'
 import TouristCard from './TouristCard'
 import SafeImage from '../ui/SafeImage'
+import { getBogorFallbackPhoto } from '../../utils/imageHelper'
 import { useBottomSheet } from '../ui/bottomSheetContext'
 import { CheckIcon, ChevronRightIcon, RefreshIcon, StarIcon } from '../ui/VectorIcons'
 
@@ -201,8 +202,10 @@ export default function TouristList({
             >
               <div className="apple-retro-bevel relative h-14 w-14 shrink-0 overflow-hidden rounded-xl ring-1 ring-[rgba(244,239,230,0.16)]">
                 <SafeImage
-                  src={popularSpot.image}
+                  src={popularSpot.image || getBogorFallbackPhoto(popularSpot)}
+                  fallback={getBogorFallbackPhoto(popularSpot)}
                   alt={popularSpot.name}
+                  loading="eager"
                   className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                 />
                 <div

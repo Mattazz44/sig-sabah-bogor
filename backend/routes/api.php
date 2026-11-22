@@ -24,7 +24,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Halaman 'Tersimpan' & Rute Custom (khusus akun terautentikasi)
     Route::get('/saved-activities', [SavedActivityController::class, 'index']);
     Route::post('/saved-activities', [SavedActivityController::class, 'storeActivity']);
+    Route::delete('/saved-activities/{id}', [SavedActivityController::class, 'destroyActivity']);
     Route::post('/custom-routes', [SavedActivityController::class, 'storeCustomRoute']);
+    Route::delete('/custom-routes/{slugOrId}', [SavedActivityController::class, 'destroyCustomRoute']);
 
     // Mutasi Aktivitas
     Route::post('/activities', [ActivityPostController::class, 'store']);

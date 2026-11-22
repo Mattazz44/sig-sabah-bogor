@@ -3,7 +3,7 @@ import {
   DEFAULT_AVATAR_PLACEHOLDER,
   DEFAULT_IMAGE_PLACEHOLDER,
   getImageUrl,
-  handleImageError,
+  shouldUseNgrokFetch,
 } from '../../utils/imageHelper'
 import { CompassIcon, UserIcon } from './VectorIcons'
 
@@ -71,8 +71,10 @@ function SafeImage({
     activeTargetUrl.startsWith('data:') ||
     activeTargetUrl.startsWith('blob:')
 
+  const useNgrokBlobFetch = !isInstantSource && shouldUseNgrokFetch(activeTargetUrl)
+
   useEffect(() => {
-    if (isInstantSource) return undefined
+    if (!useNgrokBlobFetch) return undefined
 
     let isMounted = true
     let createdObjectUrl = null
@@ -95,8 +97,8 @@ function SafeImage({
       })
       .then((blob) => {
         if (!isMounted) return
-        if (blob.type && !blob.type.startsWith('image/')) {
-          throw new Error(`Invalid image MIME: ${blob.type}`)
+        if (!blob || blob.size === 0 || (blob.type && !blob.type.startsWith('image/'))) {
+          throw new Error(`Invalid image MIME/size: ${blob?.type || 'unknown'}`)
         }
         createdObjectUrl = URL.createObjectURL(blob)
         setFetched({ forUrl: activeTargetUrl, objectUrl: createdObjectUrl, failed: false })
@@ -113,12 +115,12 @@ function SafeImage({
         URL.revokeObjectURL(createdObjectUrl)
       }
     }
-  }, [activeTargetUrl, isInstantSource])
+  }, [activeTargetUrl, useNgrokBlobFetch])
 
   const hasFetchFailed =
-    !isInstantSource && fetched.forUrl === activeTargetUrl && fetched.failed
+    useNgrokBlobFetch && fetched.forUrl === activeTargetUrl && fetched.failed
 
-  const displaySrc = isInstantSource
+  const displaySrc = !useNgrokBlobFetch
     ? activeTargetUrl
     : fetched.forUrl === activeTargetUrl && !fetched.failed
       ? fetched.objectUrl
@@ -133,6 +135,9 @@ function SafeImage({
     showGlassFallback ||
     isInstantSource ||
     (Boolean(displaySrc) && loadedUrl === displaySrc)
+
+  const effectiveLoading =
+    isInstantSource || (displaySrc && displaySrc.startsWith('blob:')) ? 'eager' : loading
 
   const isContain = fit === 'contain'
   const isAvatarMode = fallback === DEFAULT_AVATAR_PLACEHOLDER
@@ -197,18 +202,14 @@ function SafeImage({
               alt={alt}
               width={width}
               height={height}
-              loading={loading}
+              loading={effectiveLoading}
               decoding={decoding}
               fetchPriority={fetchPriority}
               onLoad={() => setLoadedUrl(displaySrc)}
               onError={(e) => {
                 setLoadedUrl(displaySrc)
                 setImgFailedFor(displaySrc)
-                if (onError) {
-                  onError(e)
-                } else {
-                  handleImageError(e, fallback)
-                }
+                onError?.(e)
               }}
               className={`${imageFitClasses} transition-opacity duration-300 ease-out ${
                 isLoaded ? 'opacity-100' : isContain ? 'opacity-0 absolute pointer-events-none' : 'opacity-0'
