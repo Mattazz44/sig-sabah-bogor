@@ -276,20 +276,57 @@ img {
   color: #1c1c1e;
 }
 
+/* Root marker dikelola langsung oleh MapLibre GL (position:absolute; top:0; left:0; transform).
+   Jangan beri position:relative, transform, atau transition:all pada root agar tidak menimpa posisi zoom peta. */
 .wisata-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  transition: opacity 0.2s;
+}
+
+.wisata-marker-active {
+  z-index: 880;
+}
+
+.wisata-marker:hover,
+.wisata-marker:focus-visible,
+.wisata-marker-hovered {
+  z-index: 960 !important;
+}
+
+.wisata-marker-body {
   position: relative;
+  z-index: 2;
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  width: 100%;
+  height: 100%;
   overflow: visible;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
 }
 
-.wisata-marker > svg {
-  position: relative;
-  z-index: 2;
-  transform-origin: 50% 95%;
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
+.wisata-marker-body > svg {
+  display: block;
+  pointer-events: none;
+  transition: filter 200ms ease-out;
+}
+
+.wisata-marker:hover .wisata-marker-body > svg,
+.wisata-marker:focus-visible .wisata-marker-body > svg,
+.wisata-marker-hovered .wisata-marker-body > svg,
+.wisata-marker-active .wisata-marker-body > svg {
+  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.42));
 }
 
 .wisata-marker-sonar,
@@ -299,22 +336,23 @@ img {
   border-radius: 9999px;
   opacity: 0;
   z-index: 1;
-  border: 2px solid #dfaa63;
+  border: 2px solid var(--pin-color, #dfaa63);
   background: radial-gradient(
     circle,
-    rgba(223, 170, 99, 0.34) 0%,
-    rgba(223, 170, 99, 0.12) 55%,
-    rgba(223, 170, 99, 0) 75%
+    rgba(var(--pin-rgb, 223, 170, 99), 0.38) 0%,
+    rgba(var(--pin-rgb, 223, 170, 99), 0.14) 55%,
+    rgba(var(--pin-rgb, 223, 170, 99), 0) 76%
   );
+  box-shadow: 0 0 10px rgba(var(--pin-rgb, 223, 170, 99), 0.42);
   will-change: transform, opacity;
 }
 
 .wisata-marker-sonar {
-  bottom: -6px;
+  bottom: -14px;
   left: 50%;
-  width: 34px;
-  height: 34px;
-  margin-left: -17px;
+  width: 30px;
+  height: 30px;
+  margin-left: -15px;
   transform: scale(0.45);
 }
 
@@ -325,49 +363,112 @@ img {
 
 @keyframes marker-sonar-pulse {
   0% {
-    transform: scale(0.48);
+    transform: scale(0.42);
     opacity: 0.92;
   }
   70% {
     transform: scale(2.05);
-    opacity: 0.18;
+    opacity: 0.2;
   }
   100% {
-    transform: scale(2.35);
+    transform: scale(2.38);
     opacity: 0;
   }
 }
 
-.wisata-marker-hovered > svg {
-  transform: translate3d(0, -4px, 0) scale(1.16);
+@keyframes marker-pop-bounce {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  32% {
+    transform: translateY(-9px) scale(1.24, 1.18);
+  }
+  58% {
+    transform: translateY(1px) scale(1.06, 0.96);
+  }
+  80% {
+    transform: translateY(-4px) scale(1.15);
+  }
+  100% {
+    transform: translateY(-2px) scale(1.12);
+  }
 }
 
-.wisata-marker-hovered > .wisata-marker-sonar {
+.wisata-marker:hover .wisata-marker-body,
+.wisata-marker:focus-visible .wisata-marker-body,
+.wisata-marker-hovered .wisata-marker-body {
+  transform: translateY(-3px) scale(1.15);
+}
+
+.wisata-marker-active .wisata-marker-body {
+  transform: translateY(-2px) scale(1.12);
+}
+
+.wisata-marker-active:hover .wisata-marker-body,
+.wisata-marker-active:focus-visible .wisata-marker-body,
+.wisata-marker-active.wisata-marker-hovered .wisata-marker-body {
+  transform: translateY(-4px) scale(1.18);
+}
+
+.wisata-marker-popping .wisata-marker-body {
+  animation: marker-pop-bounce 440ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.wisata-marker-hovered > .wisata-marker-sonar:not(.wisata-marker-sonar-secondary) {
   animation: marker-sonar-pulse 1.35s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
+.wisata-marker-active > .wisata-marker-sonar {
+  animation: marker-sonar-pulse 1.85s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.wisata-marker-active > .wisata-marker-sonar-secondary {
+  animation-delay: 0.92s;
+}
+
 .wisata-cluster-marker {
-  position: relative;
-  background: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  margin: 0;
+  padding: 0;
   border: none;
+  background: transparent;
   overflow: visible;
+  transition: opacity 0.2s;
+}
+
+.wisata-cluster-marker:hover,
+.wisata-cluster-marker:focus-visible,
+.wisata-cluster-hovered {
+  z-index: 960 !important;
 }
 
 .wisata-cluster-marker > div {
   position: relative;
   z-index: 2;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+  transition: transform 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
 }
 
-.wisata-cluster-marker:hover > div {
-  transform: scale(1.08);
+.wisata-cluster-marker:hover > div,
+.wisata-cluster-marker:focus-visible > div {
+  transform: translateY(-3px) scale(1.12);
 }
 
 .wisata-cluster-hovered > div {
-  transform: scale(1.14);
+  transform: translateY(-3px) scale(1.15);
 }
 
 .wisata-cluster-hovered > .wisata-cluster-sonar {
   animation: marker-sonar-pulse 1.35s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.wisata-popup {
+  z-index: 980;
 }
 
 .wisata-popup .maplibregl-popup-content {
@@ -590,15 +691,16 @@ img {
   .animate-tourist-card,
   .animate-auth-panel,
   .wisata-marker-hovered > .wisata-marker-sonar,
+  .wisata-marker-active > .wisata-marker-sonar,
+  .wisata-marker-popping .wisata-marker-body,
   .wisata-cluster-hovered > .wisata-cluster-sonar {
     animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
   }
 
   .wisata-marker-hovered > .wisata-marker-sonar,
+  .wisata-marker-active > .wisata-marker-sonar:not(.wisata-marker-sonar-secondary),
   .wisata-cluster-hovered > .wisata-cluster-sonar {
-    opacity: 0.7 !important;
+    opacity: 0.72 !important;
     transform: scale(1.25) !important;
   }
 

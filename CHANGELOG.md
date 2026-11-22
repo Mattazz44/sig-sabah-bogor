@@ -6,6 +6,34 @@ Format changelog mengikuti standar [Keep a Changelog](https://keepachangelog.com
 
 ---
 
+## [1.2.0] - 2026-11-22
+
+### Added
+- **Dokumentasi & Bukti Blackbox Testing (`docs/qa-report/`)**: Menambahkan laporan `docs/qa-report/LAPORAN-BLACKBOX-TESTING.md` (`29` skenario `BB-01` s/d `BB-29`, pass rate `100%` dengan `0` console error) beserta `31` tangkapan layar bukti visual di `docs/qa-report/screenshots/`.
+- **Mikro-Animasi Marker Peta & Kartu Sidebar (`MapMarker.jsx`, `MarkerClusterGroup.jsx`, `TouristCard.jsx`, `TouristList.jsx`, `categories.js`, `index.css`)**:
+  - Efek hover pin wisata `scale(1.15)` dengan elevasi `translateY(-3px)`, transisi spring `cubic-bezier(0.34, 1.56, 0.64, 1)`, peningkatan `z-index` saat hover/active, *bounce/pop* saat diklik, gelombang *pulse ring* ganda berwarna kategori pada dasar pin, serta offset popup per-anchor.
+  - Efek hover kartu sidebar (`200ms ease-out`, `-translate-y-0.5`, bayangan & ring aksen tema, thumbnail `scale-105` dalam `overflow-hidden`), *tactile press* `active:scale-[0.98]`, badge status `Aktif di peta`, serta sinkronisasi dua arah (Sidebar <-> Peta termasuk auto-scroll kartu terpilih).
+- **Guard Spasial pada Seeder (`TouristSpotSeeder.php`)**: Menambahkan pengecekan polygon `bogor_boundary.geojson` (`isInsideBogorBoundary()`) saat seeding GeoJSON dan CSV agar tidak memasukkan destinasi di luar Kota Bogor.
+
+### Changed
+- **Kalibrasi Koordinat Destinasi (`database.sqlite`, `tourist_spots.geojson`, `Front end/src/data/tourists.json`)**: Memperbarui koordinat *Lawang Surya Kencana* (`lawang-surya-kencana`) ke `-6.60327, 106.79891` secara serentak pada tabel `tourist_spots`, embedded JSON rute `custom_routes` (`cr-kuliner`), file GeoJSON backend, dan `tourists.json` frontend.
+- **Kalkulasi Jarak Rute Custom & Sinkronisasi Build (`SavedActivityController.php`, `CustomRoutePage.jsx`, `backend/public/`)**: Menyempurnakan perhitungan jarak per segmen rute custom serta membangun ulang aset production Vite ke `backend/public/`.
+
+### Fixed
+- **Bug Marker Drift saat Zoom (`MapMarker.jsx`, `MarkerClusterGroup.jsx`, `UserLocationMarker.jsx`, `AdminLocationPickerMap.jsx`, `index.css`)**: Menghapus properti `transform` dan `transition: all` pada elemen root marker yang dikelola MapLibre, menggunakan `anchor: 'bottom'` / `'center'` dengan `subpixelPositioning: true`, serta mengisolasi animasi pada child container internal.
+- **Estimasi Rute Navigasi & Rating Transit (`RoutingMachine.jsx`, `MapContainer.jsx`, `MapPopup.jsx`, `RouteMetrics.jsx`)**: Menambahkan fallback koordinat Pusat Kota Bogor saat GPS ditolak/timeout agar kalkulasi estimasi waktu dan jarak tidak tertahan di `"Menghitung..."`, serta menormalkan tampilan rating valid pada popup *Lokasi transit*.
+- **Pemuatan Gambar Destinasi (`SafeImage.jsx`, `imageHelper.js`)**: Mengatasi URL blob rusak dan memperbaiki fallback foto destinasi Bogor (termasuk *Istana Kepresidenan Bogor*) agar seluruh gambar termuat normal (`broken: 0`).
+- **Interaksi Klik Kartu & Marker (`App.jsx`, `useMapControls.js`)**: Memastikan klik pertama pada kartu sidebar Explore maupun marker peta langsung memunculkan popup destinasi dengan tombol `Detail >`.
+- **Aksesibilitas Banner Alert (`App.jsx`)**: Mencegah komponen `aside[role="alert"]` ter-render atau fokus-able di DOM ketika tidak dalam kondisi error koneksi.
+- **Stabilitas Halaman Komunitas, Tersimpan, & Profil (`ActivitiesPage.jsx`, `SavedActivitiesPage.jsx`, `ForYouPage.jsx`, `ProfilePage.jsx`)**: Memperbaiki validasi modal kosong, persistensi rute custom & status follow, serta kontrol otorisasi postingan/profil.
+
+### Removed
+- **Pembersihan Data Wisata di Luar Batas Kota Bogor (Point-in-Polygon)**:
+  - **SQLite (`backend/database/database.sqlite`)**: Menghapus `6` destinasi yang terdeteksi berada di luar polygon `bogor_boundary.geojson` (*Jbound Geo Edu Park*, *Curug Leuwi Hejo*, *Curug Nangka*, *Kopi Daong*, *Situ Panjang*, dan *Kebun Raya Residence Sports Club*) beserta pengecekan orphan relasi (`saved_activities`, `custom_routes`), menyisakan **80 destinasi** di dalam Kota Bogor.
+  - **Dataset Seeder & Frontend**: Menghapus `13` baris luar/Kabupaten Bogor pada `backend/database/data/tourist_spots_additional.csv` (tersisa `113` baris data), `2` entri pada `backend/database/data/tourist_spots_additional.sql`, serta `4` destinasi luar Kota Bogor pada `Front end/src/data/tourists.json` (tersisa `8` item).
+
+---
+
 ## [1.1.0] - 2026-11-21
 
 ### Added

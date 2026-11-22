@@ -40,6 +40,7 @@ export default function App() {
   const [isRetryingBackend, setIsRetryingBackend] = useState(false)
   const isMountedRef = useRef(true)
   const mapHoverHandlerRef = useRef(null)
+  const [mapHoveredPlaceId, setMapHoveredPlaceId] = useState(null)
 
   const handleRegisterMapHover = useCallback((fn) => {
     mapHoverHandlerRef.current = fn
@@ -464,6 +465,7 @@ export default function App() {
       setClickedPlace(null)
       setPreviewPlace(null)
       setProfileUser(null)
+      setMapHoveredPlaceId(null)
       setActiveTab(tabName)
       if (location.pathname !== '/') {
         navigate('/')
@@ -609,6 +611,7 @@ export default function App() {
                 selected={selected}
                 onSelect={handleSelectOnMap}
                 onOpenDetail={handleOpenDetail}
+                onMarkerHover={setMapHoveredPlaceId}
                 userPosition={userPosition}
                 locationStatus={locationStatus}
                 onRequestLocation={handleRequestLocation}
@@ -620,6 +623,7 @@ export default function App() {
               <SidebarContainer
                 places={filtered}
                 selected={selected}
+                hoveredPlaceId={mapHoveredPlaceId}
                 category={category}
                 onCategoryChange={setCategory}
                 query={query}

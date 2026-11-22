@@ -41,6 +41,7 @@ function ClusterBadgeMarker({ cluster, map, clusterRefs, onClusterClick }) {
     el.className = 'wisata-cluster-marker'
     el.style.width = `${size}px`
     el.style.height = `${size}px`
+    el.style.margin = '0'
     el.style.padding = '0'
     el.style.border = '0'
     el.style.background = 'transparent'
@@ -59,7 +60,6 @@ function ClusterBadgeMarker({ cluster, map, clusterRefs, onClusterClick }) {
         align-items: center;
         justify-content: center;
         box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
-        transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
       ">
         <div style="
           width: ${size - 8}px;
@@ -84,6 +84,7 @@ function ClusterBadgeMarker({ cluster, map, clusterRefs, onClusterClick }) {
     const marker = new Marker({
       element: el,
       anchor: 'center',
+      subpixelPositioning: true,
       pitchAlignment: 'viewport',
       rotationAlignment: 'viewport',
     })
@@ -123,6 +124,7 @@ export default function MarkerClusterGroup({
   selected,
   onSelect,
   onOpenDetail,
+  onMarkerHover = null,
   registerMarker,
   markerRefs = null,
   onRegisterHoverHandler = null,
@@ -133,6 +135,8 @@ export default function MarkerClusterGroup({
   const { map } = useMapLibre()
   const [zoom, setZoom] = useState(() => (map ? map.getZoom() : 15.5))
   const clusterRefs = useRef(new Map())
+  const hoveredIdRef = useRef(null)
+  const applyHoverRef = useRef(null)
 
   useEffect(() => {
     if (!map) return undefined
@@ -172,6 +176,7 @@ export default function MarkerClusterGroup({
     }
 
     const highlightPlace = (placeId) => {
+      hoveredIdRef.current = placeId ?? null
       clearActive()
       if (placeId === null || placeId === undefined) return
 
@@ -180,7 +185,7 @@ export default function MarkerClusterGroup({
         const el = directMarker.getElement?.()
         if (el) {
           el.classList.add('wisata-marker-hovered')
-          directMarker.setZIndexOffset?.(900)
+          directMarker.setZIndexOffset?.(960)
           activeEl = el
           activeMarker = directMarker
           activeClass = 'wisata-marker-hovered'
@@ -193,7 +198,7 @@ export default function MarkerClusterGroup({
           const el = entry.marker?.getElement?.()
           if (el) {
             el.classList.add('wisata-cluster-hovered')
-            entry.marker.setZIndexOffset?.(900)
+            entry.marker.setZIndexOffset?.(960)
             activeEl = el
             activeMarker = entry.marker
             activeClass = 'wisata-cluster-hovered'
@@ -203,15 +208,18 @@ export default function MarkerClusterGroup({
       }
     }
 
+    applyHoverRef.current = highlightPlace
     onRegisterHoverHandler(highlightPlace)
     return () => {
       clearActive()
+      applyHoverRef.current = null
       onRegisterHoverHandler(null)
     }
   }, [onRegisterHoverHandler, markerRefs])
 
   const isMultiDestination = Array.isArray(activeDestination)
   const selectedId = selected && !Array.isArray(selected) ? selected.id : null
+  const selectionStamp = selected && !Array.isArray(selected) ? (selected._selectedAt ?? selected.id ?? 0) : 0
 
   const { clusters, singles } = useMemo(() => {
     if (!clusteringEnabled || zoom > CLUSTER_MAX_ZOOM) {
@@ -308,6 +316,12 @@ export default function MarkerClusterGroup({
     })
   }
 
+  useEffect(() => {
+    if (hoveredIdRef.current !== null && applyHoverRef.current) {
+      applyHoverRef.current(hoveredIdRef.current)
+    }
+  }, [clusters, singles])
+
   return (
     <>
       {clusters.map((cluster) => (
@@ -334,8 +348,10 @@ export default function MarkerClusterGroup({
             place={place}
             onSelect={onSelect}
             onOpenDetail={onOpenDetail}
+            onMarkerHover={onMarkerHover}
             registerMarker={registerMarker}
             isSelected={isSelectedPlace}
+            selectionStamp={isSelectedPlace ? selectionStamp : 0}
             autoOpenPopup={isTransit}
             isTransit={isTransit}
           />

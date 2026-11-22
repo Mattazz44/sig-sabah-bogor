@@ -40,6 +40,7 @@ function UserLocationMarker({ position = USER_POSITION }) {
     markerRef.current = new Marker({
       element: el,
       anchor: 'center',
+      subpixelPositioning: true,
       pitchAlignment: 'map',
       rotationAlignment: 'viewport',
     })

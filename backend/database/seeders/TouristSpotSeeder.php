@@ -15,12 +15,15 @@ class TouristSpotSeeder extends Seeder
      */
     public function run(): void
     {
+        $boundaryPolygons = $this->loadBoundaryPolygons();
+
         // 1. Seed Base Spots dari file GeoJSON jika ada
         $jsonPath = database_path('data/tourist_spots.geojson');
 
         if (File::exists($jsonPath)) {
             $geoJson = json_decode(File::get($jsonPath), true);
             $features = $geoJson['features'] ?? [];
+            $seededGeo = 0;
 
             foreach ($features as $feature) {
                 $props = $feature['properties'] ?? [];
@@ -28,6 +31,10 @@ class TouristSpotSeeder extends Seeder
 
                 $lon = $coords ? $coords[0] : ($props['longitude'] ?? null);
                 $lat = $coords ? $coords[1] : ($props['latitude'] ?? null);
+
+                if ($lon === null || $lat === null || !$this->isInsideBogorBoundary((float) $lon, (float) $lat, $boundaryPolygons)) {
+                    continue;
+                }
 
                 $spot = TouristSpot::updateOrCreate(
                     ['slug' => $props['slug']],
@@ -49,9 +56,10 @@ class TouristSpotSeeder extends Seeder
                 );
 
                 $this->updateGeometry($spot->id, $lon, $lat);
+                $seededGeo++;
             }
 
-            $this->command->info(count($features) . " tourist spots seeded from GeoJSON.");
+            $this->command->info("{$seededGeo} tourist spots inside Kota Bogor seeded from GeoJSON.");
         }
 
         // 2. Seed Data Tambahan dari file CSV (tourist_spots_additional.csv)
@@ -78,7 +86,7 @@ class TouristSpotSeeder extends Seeder
                 $lat = $this->parseCoordinate($rawLat, true);
                 $lon = $this->parseCoordinate($rawLon, false);
 
-                if ($lat === null || $lon === null) {
+                if ($lat === null || $lon === null || !$this->isInsideBogorBoundary($lon, $lat, $boundaryPolygons)) {
                     $skippedCount++;
                     continue;
                 }
@@ -262,5 +270,85 @@ class TouristSpotSeeder extends Seeder
         }
 
         return null;
+    }
+
+    /**
+     * Muat polygon batas administratif Kota Bogor untuk memfilter destinasi agar tidak keluar wilayah.
+     */
+    private function loadBoundaryPolygons(): array
+    {
+        $boundaryPath = database_path('data/bogor_boundary.geojson');
+        if (!File::exists($boundaryPath)) {
+            return [];
+        }
+
+        $fc = json_decode(File::get($boundaryPath), true);
+        $polygons = [];
+
+        foreach (($fc['features'] ?? []) as $feat) {
+            $geom = $feat['geometry'] ?? null;
+            if (!$geom) {
+                continue;
+            }
+            if (($geom['type'] ?? '') === 'Polygon') {
+                $polygons[] = $geom['coordinates'];
+            } elseif (($geom['type'] ?? '') === 'MultiPolygon') {
+                foreach (($geom['coordinates'] ?? []) as $poly) {
+                    $polygons[] = $poly;
+                }
+            }
+        }
+
+        return $polygons;
+    }
+
+    private function isInsideBogorBoundary(float $lon, float $lat, array $polygons): bool
+    {
+        if (empty($polygons)) {
+            return true;
+        }
+
+        foreach ($polygons as $rings) {
+            if (empty($rings) || !$this->pointInRing($lon, $lat, $rings[0])) {
+                continue;
+            }
+            $inHole = false;
+            $ringCount = count($rings);
+            for ($i = 1; $i < $ringCount; $i++) {
+                if ($this->pointInRing($lon, $lat, $rings[$i])) {
+                    $inHole = true;
+                    break;
+                }
+            }
+            if (!$inHole) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function pointInRing(float $lon, float $lat, array $ring): bool
+    {
+        $inside = false;
+        $count = count($ring);
+        if ($count < 3) {
+            return false;
+        }
+
+        for ($i = 0, $j = $count - 1; $i < $count; $j = $i++) {
+            $xi = (float) $ring[$i][0];
+            $yi = (float) $ring[$i][1];
+            $xj = (float) $ring[$j][0];
+            $yj = (float) $ring[$j][1];
+
+            $intersect = (($yi > $lat) !== ($yj > $lat))
+                && ($lon < ($xj - $xi) * ($lat - $yi) / (($yj - $yi) ?: 1e-18) + $xi);
+            if ($intersect) {
+                $inside = !$inside;
+            }
+        }
+
+        return $inside;
     }
 }

@@ -2043,6 +2043,37 @@
           -6.5773404
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 71,
+        "slug": "lawang-surya-kencana",
+        "name": "Lawang Surya Kencana",
+        "category": "Kuliner",
+        "description": "Gerbang megah bernuansa Tionghoa penanda kawasan pecinan legendaris Bogor yang menjadi surga aneka kuliner otentik Nusantara.",
+        "detailed_description": "Lawang Surya Kencana adalah gerbang megah berarsitektur khas Tionghoa yang berdiri kokoh sebagai gerbang masuk kawasan pecinan legendaris di Kota Bogor. Kawasan ini terkenal sebagai sentra wisata kuliner legendaris yang menawarkan perpaduan cita rasa Sunda dan Tionghoa sejak puluhan tahun lalu.\n\nDi sepanjang jalan ini, Anda dapat menjumpai aneka kuliner otentik mulai dari Soto Kuning Pak Salam, Asinan Gedung Dalam, Lumpia Basah, hingga Combro hangat yang menggugah selera.",
+        "address": "Jl. Suryakencana No.1, Babakan Pasar, Bogor Tengah, Kota Bogor",
+        "rating": 4.6,
+        "operational_hours": "07.00-22.00",
+        "ticket_price": "Gratis",
+        "image": "/images/spots/lawang-surya-kencana.jpg",
+        "gallery": [
+          "/images/spots/lawang-surya-kencana.jpg",
+          "/images/spots/jalan-suryakencana.jpg",
+          "/images/spots/tugu-kujang.jpg"
+        ],
+        "latitude": -6.60327,
+        "longitude": 106.79891,
+        "is_popular": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.79891,
+          -6.60327
+        ]
+      }
     }
   ]
 }

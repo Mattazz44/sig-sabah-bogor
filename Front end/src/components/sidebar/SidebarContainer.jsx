@@ -6,6 +6,7 @@ import BottomSheet from '../ui/BottomSheet'
 export default function SidebarContainer({
   places,
   selected,
+  hoveredPlaceId = null,
   category,
   onCategoryChange,
   query,
@@ -25,6 +26,9 @@ export default function SidebarContainer({
   isFavorite,
   toggleFavorite,
 }) {
+  const selectedId = selected && !Array.isArray(selected) ? selected.id : null
+  const selectedStamp = selected && !Array.isArray(selected) ? (selected._selectedAt ?? selected.id ?? 0) : 0
+
   return (
     <BottomSheet
       id="sidebar"
@@ -38,6 +42,9 @@ export default function SidebarContainer({
           element={
             <TouristList
               places={places}
+              selectedId={selectedId}
+              selectedStamp={selectedStamp}
+              hoveredPlaceId={hoveredPlaceId}
               category={category}
               onCategoryChange={onCategoryChange}
               query={query}

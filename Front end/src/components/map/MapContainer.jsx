@@ -21,6 +21,7 @@ export default function MapView({
   selected,
   onSelect,
   onOpenDetail,
+  onMarkerHover = null,
   userPosition,
   locationStatus,
   onRequestLocation,
@@ -260,6 +261,7 @@ export default function MapView({
               selected={selected}
               onSelect={onSelect}
               onOpenDetail={onOpenDetail}
+              onMarkerHover={onMarkerHover}
               registerMarker={registerMarker}
               markerRefs={markerRefs}
               onRegisterHoverHandler={onRegisterHoverHandler}

@@ -2,7 +2,7 @@ import { memo, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Marker, Popup } from 'maplibre-gl'
 import MapPopup from './MapPopup'
-import { CATEGORY_COLORS, CATEGORY_GLYPHS } from '../ui/categories'
+import { CATEGORY_COLORS, CATEGORY_GLYPHS, CATEGORY_RGB } from '../ui/categories'
 import { useMapLibre } from './mapContext'
 
 const svgHtmlCache = new Map()
@@ -23,24 +23,48 @@ function MapMarker({
   place,
   onSelect,
   onOpenDetail,
+  onMarkerHover,
   registerMarker,
   isSelected = false,
+  selectionStamp = 0,
   autoOpenPopup = false,
   isTransit = false,
 }) {
   const { map } = useMapLibre()
   const onSelectRef = useRef(onSelect)
+  const onMarkerHoverRef = useRef(onMarkerHover)
   const placeRef = useRef(place)
   const markerRef = useRef(null)
+  const markerElRef = useRef(null)
   const popupRef = useRef(null)
+  const popTimerRef = useRef(0)
+  const lastClickedStampRef = useRef(0)
+  const prevSelectionKeyRef = useRef(null)
 
   useEffect(() => {
     onSelectRef.current = onSelect
   }, [onSelect])
 
   useEffect(() => {
+    onMarkerHoverRef.current = onMarkerHover
+  }, [onMarkerHover])
+
+  useEffect(() => {
     placeRef.current = place
   }, [place])
+
+  const triggerPop = () => {
+    const el = markerElRef.current
+    if (!el) return
+    window.clearTimeout(popTimerRef.current)
+    el.classList.remove('wisata-marker-popping')
+    // Force reflow agar animasi pop-bounce dapat diputar ulang saat klik berturut-turut
+    void el.offsetWidth
+    el.classList.add('wisata-marker-popping')
+    popTimerRef.current = window.setTimeout(() => {
+      el.classList.remove('wisata-marker-popping')
+    }, 460)
+  }
 
   const popupContainer = useMemo(() => document.createElement('div'), [])
 
@@ -60,19 +84,32 @@ function MapMarker({
     el.className = 'wisata-marker'
     el.style.width = '32px'
     el.style.height = '42px'
+    el.style.margin = '0'
     el.style.padding = '0'
     el.style.border = '0'
     el.style.background = 'transparent'
     el.style.cursor = 'pointer'
+    el.style.setProperty('--pin-color', CATEGORY_COLORS[placeCategory] ?? '#dfaa63')
+    el.style.setProperty('--pin-rgb', CATEGORY_RGB[placeCategory] ?? '223, 170, 99')
     el.setAttribute('title', placeName)
     el.setAttribute('aria-label', placeName)
-    el.innerHTML = `<span aria-hidden="true" class="wisata-marker-sonar"></span>${getCategorySvgHtml(placeCategory)}`
+    el.setAttribute('aria-pressed', 'false')
+    el.innerHTML = `<span aria-hidden="true" class="wisata-marker-sonar"></span><span aria-hidden="true" class="wisata-marker-sonar wisata-marker-sonar-secondary"></span><span class="wisata-marker-body">${getCategorySvgHtml(placeCategory)}</span>`
 
     const popup = new Popup({
       className: 'wisata-popup',
       closeButton: false,
       maxWidth: '248px',
-      offset: [0, -38],
+      offset: {
+        top: [0, 10],
+        'top-left': [0, 10],
+        'top-right': [0, 10],
+        bottom: [0, -44],
+        'bottom-left': [0, -44],
+        'bottom-right': [0, -44],
+        left: [18, -22],
+        right: [-18, -22],
+      },
     })
       .setLngLat([lng, lat])
       .setDOMContent(popupContainer)
@@ -80,6 +117,7 @@ function MapMarker({
     const marker = new Marker({
       element: el,
       anchor: 'bottom',
+      subpixelPositioning: true,
       pitchAlignment: 'viewport',
       rotationAlignment: 'viewport',
     })
@@ -108,11 +146,24 @@ function MapMarker({
 
     const handleClick = (e) => {
       e.stopPropagation()
+      lastClickedStampRef.current = performance.now()
+      markerElRef.current = el
+      triggerPop()
       openManagedPopup()
       onSelectRef.current?.(placeRef.current)
     }
 
+    const handleMouseEnter = () => {
+      onMarkerHoverRef.current?.(placeId)
+    }
+
+    const handleMouseLeave = () => {
+      onMarkerHoverRef.current?.(null)
+    }
+
     el.addEventListener('click', handleClick)
+    el.addEventListener('mouseenter', handleMouseEnter)
+    el.addEventListener('mouseleave', handleMouseLeave)
 
     const markerHandle = {
       getElement: () => el,
@@ -123,22 +174,44 @@ function MapMarker({
       },
     }
 
+    markerElRef.current = el
     markerRef.current = marker
     popupRef.current = popup
     registerMarker?.(placeId, markerHandle)
 
     return () => {
+      window.clearTimeout(popTimerRef.current)
       el.removeEventListener('click', handleClick)
+      el.removeEventListener('mouseenter', handleMouseEnter)
+      el.removeEventListener('mouseleave', handleMouseLeave)
       registerMarker?.(placeId, null)
       popup.remove()
       marker.remove()
+      markerElRef.current = null
       markerRef.current = null
       popupRef.current = null
     }
   }, [map, placeId, placeSlug, placeName, placeCategory, lng, lat, isValidCoord, registerMarker, popupContainer])
 
-  // Otomatis buka popup saat destinasi terpilih dari sidebar Explore maupun saat mode transit aktif
+  // Sinkronkan status active marker, gelombang pulse kategori, pop singkat, dan popup
   useEffect(() => {
+    const el = markerElRef.current
+    if (el) {
+      el.classList.toggle('wisata-marker-active', Boolean(isSelected))
+      el.setAttribute('aria-pressed', isSelected ? 'true' : 'false')
+    }
+
+    if (isSelected) {
+      const nextKey = `${placeId}:${selectionStamp}`
+      const recentlyClickedDirectly = performance.now() - lastClickedStampRef.current < 150
+      if (prevSelectionKeyRef.current !== nextKey && !recentlyClickedDirectly) {
+        triggerPop()
+      }
+      prevSelectionKeyRef.current = nextKey
+    } else {
+      prevSelectionKeyRef.current = null
+    }
+
     if (!isSelected && !autoOpenPopup) return undefined
     const delayMs = autoOpenPopup ? 350 : 20
     const timer = setTimeout(() => {
@@ -151,7 +224,7 @@ function MapMarker({
       }
     }, delayMs)
     return () => clearTimeout(timer)
-  }, [isSelected, autoOpenPopup, map, lng, lat])
+  }, [isSelected, selectionStamp, autoOpenPopup, map, placeId, lng, lat])
 
   if (!place || !isValidCoord) return null
 

@@ -23,6 +23,9 @@ function formatCompactArea(address) {
 
 export default function TouristList({
   places,
+  selectedId = null,
+  selectedStamp = 0,
+  hoveredPlaceId = null,
   category,
   onCategoryChange,
   query,
@@ -50,6 +53,30 @@ export default function TouristList({
   const [isPopularPressed, setIsPopularPressed] = useState(false)
 
   const sortMenuRef = useRef(null)
+  const listContainerRef = useRef(null)
+
+  useEffect(() => {
+    if (selectedId === null || selectedId === undefined) return undefined
+    const scrollParent = document.getElementById('sidebar-content')
+    if (!scrollParent) return undefined
+    const isScrollable = window.getComputedStyle(scrollParent).overflowY === 'auto'
+    if (!isScrollable) return undefined
+
+    const targetCard = listContainerRef.current?.querySelector(`[data-place-id="${selectedId}"]`)
+    if (!targetCard) return undefined
+
+    const prefersReduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+
+    const rafId = window.requestAnimationFrame(() => {
+      targetCard.scrollIntoView({
+        behavior: prefersReduced ? 'auto' : 'smooth',
+        block: 'nearest',
+      })
+    })
+    return () => window.cancelAnimationFrame(rafId)
+  }, [selectedId, selectedStamp])
 
   useEffect(() => {
     if (!sortMenuOpen) return undefined
@@ -180,59 +207,91 @@ export default function TouristList({
             Populer dengan pengunjung
           </h2>
           <div className="mt-1.5 border-b border-[rgba(244,239,230,0.12)] pb-3">
-            <button
-              type="button"
-              data-pressed={isPopularPressed ? 'true' : 'false'}
-              onPointerDown={() => setIsPopularPressed(true)}
-              onPointerUp={() => setIsPopularPressed(false)}
-              onPointerCancel={() => setIsPopularPressed(false)}
-              onMouseEnter={() => onHoverPlace?.(popularSpot.id)}
-              onMouseLeave={() => {
-                setIsPopularPressed(false)
-                onHoverPlace?.(null)
-              }}
-              onFocus={() => onHoverPlace?.(popularSpot.id)}
-              onBlur={() => onHoverPlace?.(null)}
-              onClick={() => onSelect?.(popularSpot)}
-              className={`group -mx-2 flex w-[calc(100%+1rem)] items-center gap-3 rounded-xl px-2 py-2 text-left transition-all duration-150 ease-out ${
-                isPopularPressed
-                  ? 'scale-[0.985] bg-white/[0.1]'
-                  : 'hover:bg-white/[0.06]'
-              }`}
-            >
-              <div className="apple-retro-bevel relative h-14 w-14 shrink-0 overflow-hidden rounded-xl ring-1 ring-[rgba(244,239,230,0.16)]">
-                <SafeImage
-                  src={popularSpot.image || getBogorFallbackPhoto(popularSpot)}
-                  fallback={getBogorFallbackPhoto(popularSpot)}
-                  alt={popularSpot.name}
-                  loading="eager"
-                  className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                />
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-35"
-                />
-              </div>
-              <div className="min-w-0 flex-1">
-                <h3 className="truncate text-[14px] font-semibold tracking-tight text-[#F5F2EB] transition-colors group-hover:text-[#DFAA63]">
-                  {popularSpot.name}
-                </h3>
-                <p className="mt-0.5 truncate text-[12px] text-[#F5F2EB]/60">
-                  {formatCompactArea(popularSpot.address)}
-                </p>
-                <div className="mt-1 flex items-center gap-1.5 text-[12px] text-[#F5F2EB]/80">
-                  <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
-                  <span className="font-semibold not-italic tabular-nums text-[#F5F2EB]">
-                    {Number(popularSpot.rating || 0).toFixed(1)}
-                  </span>
-                  <span className="text-[#F5F2EB]/35" aria-hidden="true">·</span>
-                  <span className="truncate text-[11.5px] not-italic tabular-nums text-[#F5F2EB]/65">
-                    {popularSpot.distance || popularSpot.category}
-                  </span>
-                </div>
-              </div>
-              <ChevronRightIcon className="h-4 w-4 shrink-0 text-[#F5F2EB]/35 transition-all duration-150 group-hover:translate-x-0.5 group-hover:text-[#F5F2EB]/80" />
-            </button>
+            {(() => {
+              const isPopularSelected = selectedId !== null && popularSpot.id === selectedId
+              const isPopularMapHovered = hoveredPlaceId !== null && popularSpot.id === hoveredPlaceId
+              return (
+                <button
+                  type="button"
+                  data-selected={isPopularSelected ? 'true' : 'false'}
+                  data-pressed={isPopularPressed ? 'true' : 'false'}
+                  aria-current={isPopularSelected ? 'location' : undefined}
+                  onPointerDown={() => setIsPopularPressed(true)}
+                  onPointerUp={() => setIsPopularPressed(false)}
+                  onPointerCancel={() => setIsPopularPressed(false)}
+                  onMouseEnter={() => onHoverPlace?.(popularSpot.id)}
+                  onMouseLeave={() => {
+                    setIsPopularPressed(false)
+                    onHoverPlace?.(null)
+                  }}
+                  onFocus={() => onHoverPlace?.(popularSpot.id)}
+                  onBlur={() => onHoverPlace?.(null)}
+                  onClick={() => onSelect?.(popularSpot)}
+                  className={`group flex w-full items-center gap-3 rounded-2xl border p-2 text-left transition-all duration-200 ease-out active:scale-[0.98] ${
+                    isPopularPressed ? 'scale-[0.98]' : ''
+                  } ${
+                    isPopularSelected
+                      ? 'border-[#DFAA63]/65 bg-[#DFAA63]/[0.11] ring-1 ring-[#DFAA63]/45 shadow-[0_10px_24px_-8px_rgba(223,170,99,0.22)]'
+                      : isPopularMapHovered
+                        ? '-translate-y-0.5 border-[#DFAA63]/45 bg-white/[0.08] ring-1 ring-[#DFAA63]/30 shadow-lg'
+                        : 'border-transparent bg-transparent hover:-translate-y-0.5 hover:border-[#DFAA63]/30 hover:bg-white/[0.05] hover:ring-1 hover:ring-[#DFAA63]/20 hover:shadow-lg'
+                  }`}
+                >
+                  <div
+                    className={`apple-retro-bevel relative h-14 w-14 shrink-0 overflow-hidden rounded-xl ring-1 transition-all duration-200 ease-out ${
+                      isPopularSelected
+                        ? 'ring-[#DFAA63]/55'
+                        : 'ring-[rgba(244,239,230,0.16)] group-hover:ring-[#DFAA63]/35'
+                    }`}
+                  >
+                    <SafeImage
+                      src={popularSpot.image || getBogorFallbackPhoto(popularSpot)}
+                      fallback={getBogorFallbackPhoto(popularSpot)}
+                      alt={popularSpot.name}
+                      loading="eager"
+                      className={`h-full w-full object-cover transition-transform duration-200 ease-out ${
+                        isPopularMapHovered ? 'scale-105' : 'group-hover:scale-105'
+                      }`}
+                    />
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-70 transition-opacity duration-200 group-hover:opacity-35"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3
+                      className={`truncate text-[14px] font-semibold tracking-tight transition-colors duration-200 ${
+                        isPopularSelected || isPopularMapHovered
+                          ? 'text-[#DFAA63]'
+                          : 'text-[#F5F2EB] group-hover:text-[#DFAA63]'
+                      }`}
+                    >
+                      {popularSpot.name}
+                    </h3>
+                    <p className="mt-0.5 truncate text-[12px] text-[#F5F2EB]/60">
+                      {formatCompactArea(popularSpot.address)}
+                    </p>
+                    <div className="mt-1 flex items-center gap-1.5 text-[12px] text-[#F5F2EB]/80">
+                      <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
+                      <span className="font-semibold not-italic tabular-nums text-[#F5F2EB]">
+                        {Number(popularSpot.rating || 0).toFixed(1)}
+                      </span>
+                      <span className="text-[#F5F2EB]/35" aria-hidden="true">·</span>
+                      <span className="truncate text-[11.5px] not-italic tabular-nums text-[#F5F2EB]/65">
+                        {popularSpot.distance || popularSpot.category}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRightIcon
+                    className={`h-4 w-4 shrink-0 transition-all duration-200 ${
+                      isPopularSelected
+                        ? 'translate-x-0.5 text-[#DFAA63]'
+                        : 'text-[#F5F2EB]/35 group-hover:translate-x-0.5 group-hover:text-[#F5F2EB]/80'
+                    }`}
+                  />
+                </button>
+              )
+            })()}
           </div>
         </section>
       )}
@@ -370,17 +429,19 @@ export default function TouristList({
           )}
         </div>
       ) : sortedPlaces.length > 0 ? (
-        <ul key={listTransitionKey} id="tourist-list" className="mt-3.5 flex flex-col">
+        <ul key={listTransitionKey} ref={listContainerRef} id="tourist-list" className="mt-3.5 flex flex-col">
           {sortedPlaces.map((place, index) => (
             <li
               key={place.id}
-              className="animate-tourist-card border-b border-white/10 py-4 first:pt-1 last:border-b-0 last:pb-0"
+              className="animate-tourist-card border-b border-white/10 py-3.5 first:pt-1 last:border-b-0 last:pb-0"
               style={{ animationDelay: `${Math.min(index, 8) * 30}ms` }}
             >
               <TouristCard
                 place={place}
                 onSelect={onSelect}
                 onHover={onHoverPlace}
+                isSelected={selectedId !== null && place.id === selectedId}
+                isMapHovered={hoveredPlaceId !== null && place.id === hoveredPlaceId}
                 saved={Boolean(isFavorite?.(place.slug))}
                 onToggleFavorite={toggleFavorite}
               />

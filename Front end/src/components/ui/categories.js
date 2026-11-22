@@ -19,6 +19,21 @@ export const CATEGORY_COLORS = {
   'Kampung Wisata': 'var(--color-pin-edukasi)',
 }
 
+export const CATEGORY_RGB = {
+  'Alam & Curug': '31, 138, 91',
+  'Wisata Alam': '31, 138, 91',
+  'Ruang Publik': '31, 138, 91',
+  'Rekreasi Keluarga': '31, 138, 91',
+  Agrowisata: '31, 138, 91',
+  Kuliner: '239, 138, 34',
+  Belanja: '239, 138, 34',
+  'Edukasi & Budaya': '226, 72, 154',
+  'Sejarah & Budaya': '226, 72, 154',
+  Edukasi: '226, 72, 154',
+  Landmark: '226, 72, 154',
+  'Kampung Wisata': '226, 72, 154',
+}
+
 // White glyphs drawn in a 24x24 viewBox, used inside map pins.
 const GLYPH_ALAM = '<path fill="#fff" d="M12 2 5 12h4l-3.5 5h13L15 12h4L12 2Z"/><rect fill="#fff" x="10.75" y="17" width="2.5" height="5" rx="1"/>'
 const GLYPH_KULINER = '<g fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v7a3 3 0 0 0 6 0V2M9 2v20"/><path d="M18 22V2c-2.2 1.6-3 5-3 9h3"/></g>'

@@ -8,11 +8,13 @@ function createAdminPinElement() {
   el.className = 'wisata-marker'
   el.style.width = '32px'
   el.style.height = '42px'
+  el.style.margin = '0'
+  el.style.padding = '0'
   el.style.cursor = 'grab'
-  el.innerHTML = `<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 4px 8px rgb(0 0 0 / .48))">
+  el.innerHTML = `<span class="wisata-marker-body"><svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 4px 8px rgb(0 0 0 / .48))">
     <path d="M16 41S3 26.5 3 16a13 13 0 1 1 26 0c0 10.5-13 25-13 25Z" fill="#1F8A5B" stroke="#EBF0EB" stroke-width="2.2"/>
     <circle cx="16" cy="15" r="5" fill="#E2D7B5"/>
-  </svg>`
+  </svg></span>`
   return el
 }
 
@@ -111,6 +113,7 @@ function AdminLocationPickerMap({ lat, lng, onPickCoordinate }) {
       const marker = new Marker({
         element: createAdminPinElement(),
         anchor: 'bottom',
+        subpixelPositioning: true,
         draggable: true,
       })
         .setLngLat([mLng, mLat])
