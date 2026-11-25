@@ -10,15 +10,22 @@ import { CheckIcon, ChevronRightIcon, RefreshIcon, StarIcon } from '../ui/Vector
 const SORT_OPTIONS = ['Paling relevan', 'Rating tertinggi', 'Jarak terdekat', 'Terpopuler']
 
 function formatCompactArea(address) {
-  if (!address || typeof address !== 'string') return 'Bogor, Jawa Barat'
+  if (!address || typeof address !== 'string') return 'Kota Bogor, Jawa Barat'
   const parts = address
     .split(',')
     .map((part) => part.trim())
-    .filter(Boolean)
-  if (parts.length >= 2) {
-    return `${parts[parts.length - 2]}, ${parts[parts.length - 1]}`
+    .filter((part) => Boolean(part) && !/^rt\.?\d+/i.test(part))
+  if (parts.length >= 3) {
+    const kec = parts.find((p) =>
+      /kecamatan|bogor\s+(tengah|utara|selatan|timur|barat)|tanah\s+sareal/i.test(p),
+    )
+    const shortKec = kec ? kec.replace(/^Kecamatan\s+/i, 'Kec. ') : parts[2]
+    return `${parts[0]}, ${parts[1]}, ${shortKec}`
   }
-  return parts[0] || 'Bogor, Jawa Barat'
+  if (parts.length === 2) {
+    return `${parts[0]}, ${parts[1]}`
+  }
+  return parts[0] || 'Kota Bogor, Jawa Barat'
 }
 
 export default function TouristList({
@@ -238,7 +245,7 @@ export default function TouristList({
                   }`}
                 >
                   <div
-                    className={`apple-retro-bevel relative h-14 w-14 shrink-0 overflow-hidden rounded-xl ring-1 transition-all duration-200 ease-out ${
+                    className={`apple-retro-bevel relative aspect-[16/10] w-20 shrink-0 overflow-hidden rounded-xl ring-1 transition-all duration-200 ease-out ${
                       isPopularSelected
                         ? 'ring-[#DFAA63]/55'
                         : 'ring-[rgba(244,239,230,0.16)] group-hover:ring-[#DFAA63]/35'
@@ -248,8 +255,10 @@ export default function TouristList({
                       src={popularSpot.image || getBogorFallbackPhoto(popularSpot)}
                       fallback={getBogorFallbackPhoto(popularSpot)}
                       alt={popularSpot.name}
+                      width={160}
+                      height={100}
                       loading="eager"
-                      className={`h-full w-full object-cover transition-transform duration-200 ease-out ${
+                      className={`h-full w-full object-cover object-center transition-transform duration-200 ease-out ${
                         isPopularMapHovered ? 'scale-105' : 'group-hover:scale-105'
                       }`}
                     />

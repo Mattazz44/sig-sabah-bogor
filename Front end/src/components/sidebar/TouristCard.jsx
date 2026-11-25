@@ -4,15 +4,22 @@ import { getBogorFallbackPhoto } from '../../utils/imageHelper'
 import { CheckIcon, HeartIcon, ShareIcon, StarIcon } from '../ui/VectorIcons'
 
 function formatLocationLabel(address) {
-  if (!address || typeof address !== 'string') return 'Bogor, Jawa Barat'
+  if (!address || typeof address !== 'string') return 'Kota Bogor, Jawa Barat'
   const parts = address
     .split(',')
     .map((part) => part.trim())
-    .filter(Boolean)
-  if (parts.length >= 2) {
-    return `${parts[parts.length - 2]}, ${parts[parts.length - 1]}`
+    .filter((part) => Boolean(part) && !/^rt\.?\d+/i.test(part))
+  if (parts.length >= 3) {
+    const kec = parts.find((p) =>
+      /kecamatan|bogor\s+(tengah|utara|selatan|timur|barat)|tanah\s+sareal/i.test(p),
+    )
+    const shortKec = kec ? kec.replace(/^Kecamatan\s+/i, 'Kec. ') : parts[2]
+    return `${parts[0]}, ${parts[1]}, ${shortKec}`
   }
-  return parts[0] || 'Bogor, Jawa Barat'
+  if (parts.length === 2) {
+    return `${parts[0]}, ${parts[1]}`
+  }
+  return parts[0] || 'Kota Bogor, Jawa Barat'
 }
 
 function TouristCard({
@@ -94,7 +101,7 @@ function TouristCard({
           className="relative z-[1] block w-full text-left active:scale-[0.98] transition-transform duration-150 ease-out"
         >
           <div
-            className={`apple-retro-bevel relative overflow-hidden rounded-xl ring-1 shadow-md transition-all duration-200 ease-out ${
+            className={`apple-retro-bevel relative aspect-[16/10] w-full overflow-hidden rounded-xl ring-1 shadow-md transition-all duration-200 ease-out ${
               isSelected
                 ? 'ring-[#DFAA63]/55 shadow-lg'
                 : isMapHovered
@@ -111,9 +118,11 @@ function TouristCard({
               src={place.image || fallbackPhoto}
               fallback={fallbackPhoto}
               alt={place.name}
+              width={640}
+              height={400}
               loading="eager"
               decoding="async"
-              className={`aspect-[16/10] w-full object-cover transition-transform duration-200 ease-out ${
+              className={`h-full w-full object-cover object-center transition-transform duration-200 ease-out ${
                 isMapHovered ? 'scale-105' : 'group-hover:scale-105'
               }`}
             />

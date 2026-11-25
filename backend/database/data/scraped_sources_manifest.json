@@ -1,0 +1,2407 @@
+{
+  "generatedAt": "2026-11-25T04:43:06.425Z",
+  "totalSpots": 80,
+  "totalUniqueDownloadedImages": 132,
+  "spots": [
+    {
+      "id": 1,
+      "slug": "taman-peranginan",
+      "name": "Taman Peranginan",
+      "address": "Jl. Jend. Sudirman No.31, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/taman-peranginan.jpg",
+          "width": 1376,
+          "height": 768,
+          "aspectRatio": 1.79,
+          "sourceUrl": "local-verified-asset"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-a6f452c9de.jpg",
+          "width": 1280,
+          "height": 851,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg/1280px-Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-fa0bbc5744.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Coughton_Court_bog_garden.jpg/1280px-Coughton_Court_bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "slug": "lawang-surya-kencana",
+      "name": "Lawang Surya Kencana",
+      "address": "Jl. Suryakencana No.1, Babakan Pasar, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16126",
+      "wikiMatched": "Kota Bogor",
+      "images": [
+        {
+          "path": "/images/spots/lawang-surya-kencana.jpg",
+          "width": 1376,
+          "height": 768,
+          "aspectRatio": 1.79,
+          "sourceUrl": "local-verified-asset"
+        },
+        {
+          "path": "/images/spots/jalan-suryakencana.jpg",
+          "width": 1376,
+          "height": 768,
+          "aspectRatio": 1.79,
+          "sourceUrl": "local-verified-asset"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-d965f3df02.jpg",
+          "width": 1920,
+          "height": 1280,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1c/20220521180441_IMG_9233.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "slug": "museum-peta",
+      "name": "Museum PETA - Bogor Kota",
+      "address": "Jl. Jend. Sudirman No.35, Pabaton, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16121",
+      "wikiMatched": "Museum Pembela Tanah Air",
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-heritage-df4792c81e.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Bogor_Botanical_Gardens_Java23.jpg/1280px-Bogor_Botanical_Gardens_Java23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-44a17f1b63.png",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Paguma_larvata_museum_zoologicum_bogoriense.png/1280px-Paguma_larvata_museum_zoologicum_bogoriense.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-508abe1fef.jpg",
+          "width": 1393,
+          "height": 1007,
+          "aspectRatio": 1.38,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/0/04/BOG_La_Candelaria_alta.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "slug": "kebun-raya-bogor",
+      "name": "Kebun Raya Bogor",
+      "address": "Jl. Otto Iskandardinata No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": "Kebun Raya Bogor",
+      "images": [
+        {
+          "path": "/images/spots/kebun-raya-bogor.jpg",
+          "width": 1376,
+          "height": 768,
+          "aspectRatio": 1.79,
+          "sourceUrl": "local-verified-asset"
+        },
+        {
+          "path": "/images/spots/wm-kebun-raya-bogor-e74267d326.jpg",
+          "width": 1280,
+          "height": 854,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ae/Kebun_Raya_Bogor_02.jpg/1280px-Kebun_Raya_Bogor_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-kebun-raya-bogor-3057f9b9e6.jpg",
+          "width": 1280,
+          "height": 854,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Kebun_Raya_Bogor_01.jpg/1280px-Kebun_Raya_Bogor_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "slug": "jalan-suryakencana",
+      "name": "Kuliner Jalan Suryakencana",
+      "address": "Jl. Suryakencana, Babakan Pasar, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16126",
+      "wikiMatched": "Kota Bogor",
+      "images": [
+        {
+          "path": "/images/spots/jalan-suryakencana.jpg",
+          "width": 1376,
+          "height": 768,
+          "aspectRatio": 1.79,
+          "sourceUrl": "local-verified-asset"
+        },
+        {
+          "path": "/images/spots/lawang-surya-kencana.jpg",
+          "width": 1376,
+          "height": 768,
+          "aspectRatio": 1.79,
+          "sourceUrl": "local-verified-asset"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-d965f3df02.jpg",
+          "width": 1920,
+          "height": 1280,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1c/20220521180441_IMG_9233.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "slug": "museum-zoologi-bogor",
+      "name": "Museum Zoologi Bogor",
+      "address": "Jl. Ir. H. Juanda No.9, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": "Museum Zoologi Bogor",
+      "images": [
+        {
+          "path": "/images/spots/museum-zoologi.jpg",
+          "width": 1376,
+          "height": 768,
+          "aspectRatio": 1.79,
+          "sourceUrl": "local-verified-asset"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-aa3166ab22.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Bogor_Zoology_Museum_back_getting_closer.jpg/1280px-Bogor_Zoology_Museum_back_getting_closer.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-93b05dc748.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Bogor_Zoology_Museum_back_entrance.jpg/1280px-Bogor_Zoology_Museum_back_entrance.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "slug": "prasasti-batutulis",
+      "name": "Prasasti Batutulis",
+      "address": "Jl. Batutulis No.54, Batutulis, Kecamatan Bogor Selatan, Kota Bogor, Jawa Barat 16133",
+      "wikiMatched": "Prasasti Batutulis",
+      "images": [
+        {
+          "path": "/images/spots/prasasti-batutulis.jpg",
+          "width": 1376,
+          "height": 768,
+          "aspectRatio": 1.79,
+          "sourceUrl": "local-verified-asset"
+        },
+        {
+          "path": "/images/spots/wm-prasasti-batutulis-0adcdfc3c0.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Makam_Pahlawan_Bogor.jpg/1280px-Makam_Pahlawan_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-prasasti-batutulis-43ba605f90.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Makam_Mbah_Dalem_Bogor.jpg/1280px-Makam_Mbah_Dalem_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "slug": "tugu-kujang",
+      "name": "Tugu Kujang - Bogor Kota",
+      "address": "Jl. Raya Pajajaran, Tegallega, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+      "wikiMatched": "Tugu Kujang",
+      "images": [
+        {
+          "path": "/images/spots/wm-tugu-kujang-f8a00bf21d.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/Tugu_Kujang%2C_the_landmark_of_the_rain_city%3B_Bogor.jpg/1280px-Tugu_Kujang%2C_the_landmark_of_the_rain_city%3B_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-b242f45e43.png",
+          "width": 1587,
+          "height": 1255,
+          "aspectRatio": 1.26,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9b/PSM_V67_D586_View_across_the_pond_to_the_palace_of_the_buitenzorg_bogor_governor_general.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-5d5605e96d.jpg",
+          "width": 1280,
+          "height": 863,
+          "aspectRatio": 1.48,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/124a_Bogor_Botanical_Gardens_and_President%27s_Palace%2C_Indonesia_1971_%2851250225224%29.jpg/1280px-124a_Bogor_Botanical_Gardens_and_President%27s_Palace%2C_Indonesia_1971_%2851250225224%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "slug": "situ-gede",
+      "name": "Situ Gede",
+      "address": "Jl. Cilubang Malang No.37, Situ Gede, Kecamatan Bogor Barat, Kota Bogor, Jawa Barat 16115",
+      "wikiMatched": "Situ Gede, Bogor",
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-lake-d9b037a314.jpg",
+          "width": 1286,
+          "height": 854,
+          "aspectRatio": 1.51,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/9/93/Hawaii_Reservists_strengthen_US%2C_Indonesian_partnership_through_humanitarian_mission_DVIDS414910.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-c0a3518964.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Tablet_Arca_Situs_Gede_Ing_Suro.jpg/1280px-Tablet_Arca_Situs_Gede_Ing_Suro.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-f85901cf16.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1e/Bendung_Katulampa_Agustus_2015.jpg/1280px-Bendung_Katulampa_Agustus_2015.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "slug": "hutan-kota-cifor",
+      "name": "Hutan Kota Cifor",
+      "address": "Jl. Raya CIFOR No.5, Situ Gede, Kecamatan Bogor Barat, Kota Bogor, Jawa Barat 16115",
+      "wikiMatched": "Situ Gede, Bogor",
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-2cdc4e8249.jpg",
+          "width": 1024,
+          "height": 768,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Bog_garden_and_dipping_pond%2C_Parkinson%27s_Park%2C_Guiseley_-_geograph.org.uk_-_6610022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-d4aabcd0d3.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Takur_ungkut-ungkut_%28Psilopogon_haemachepalus_roseus%29.jpg/1280px-Takur_ungkut-ungkut_%28Psilopogon_haemachepalus_roseus%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-534b9a52d9.jpg",
+          "width": 900,
+          "height": 596,
+          "aspectRatio": 1.51,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Forde_Abbey%2C_Bridges_over_the_Bog_Garden_-_geograph.org.uk_-_2874648.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "slug": "danau-bogor-raya",
+      "name": "Danau Bogor Raya",
+      "address": "Jl. Danau Bogor Raya, Katulampa, Kecamatan Bogor Timur, Kota Bogor, Jawa Barat 16144",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-lake-a98f6e48da.jpg",
+          "width": 800,
+          "height": 532,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/3/36/Ciliwung_090419-7685.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-dae061c5f2.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Botanischer_Garten_in_Bogor.jpg/1280px-Botanischer_Garten_in_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-c0a3518964.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Tablet_Arca_Situs_Gede_Ing_Suro.jpg/1280px-Tablet_Arca_Situs_Gede_Ing_Suro.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "slug": "leuweung-kota",
+      "name": "Leuweung Kota",
+      "address": "Jl. Bogor Nirwana Boulevard, Ranggamekar, Kecamatan Bogor Selatan, Kota Bogor, Jawa Barat 16136",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-fa0bbc5744.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Coughton_Court_bog_garden.jpg/1280px-Coughton_Court_bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-9ab12e2e5a.jpg",
+          "width": 1280,
+          "height": 856,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Isabella_Plantation%2C_The_Bog_garden_01.jpg/1280px-Isabella_Plantation%2C_The_Bog_garden_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-1b79b0fb8f.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/SS_Sunda_Blue_Robin_West_Java.jpg/1280px-SS_Sunda_Blue_Robin_West_Java.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "slug": "taman-meksiko",
+      "name": "Taman Meksiko",
+      "address": "Jl. Otto Iskandardinata No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-a6f452c9de.jpg",
+          "width": 1280,
+          "height": 851,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg/1280px-Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-fa0bbc5744.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Coughton_Court_bog_garden.jpg/1280px-Coughton_Court_bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-9ab12e2e5a.jpg",
+          "width": 1280,
+          "height": 856,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Isabella_Plantation%2C_The_Bog_garden_01.jpg/1280px-Isabella_Plantation%2C_The_Bog_garden_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "slug": "taman-akuatik-kebun-raya-bogor",
+      "name": "Taman Akuatik Kebun Raya Bogor",
+      "address": "Jl. Ir. H. Juanda No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-lake-dae061c5f2.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Botanischer_Garten_in_Bogor.jpg/1280px-Botanischer_Garten_in_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-6c7351236b.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Bogor_Botanical_Garden.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-b242f45e43.png",
+          "width": 1587,
+          "height": 1255,
+          "aspectRatio": 1.26,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9b/PSM_V67_D586_View_across_the_pond_to_the_palace_of_the_buitenzorg_bogor_governor_general.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "slug": "taman-teijsmann",
+      "name": "Taman Teijsmann",
+      "address": "Jl. Ir. H. Juanda No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": "Tugu Teijsmann",
+      "images": [
+        {
+          "path": "/images/spots/wm-taman-teijsmann-b2ab59a3fb.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Tugu_untuk_Menghormati_Johannes_Elias_Teysmann_di_Kebun_Raya_Bogor.jpg/1280px-Tugu_untuk_Menghormati_Johannes_Elias_Teysmann_di_Kebun_Raya_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-taman-teijsmann-86b6965704.jpg",
+          "width": 1280,
+          "height": 748,
+          "aspectRatio": 1.71,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Teijsmann_Garden_at_Bogor_Botanical_Garden%2C_Indonesia.jpg/1280px-Teijsmann_Garden_at_Bogor_Botanical_Garden%2C_Indonesia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-taman-teijsmann-2870b1d246.jpg",
+          "width": 1280,
+          "height": 558,
+          "aspectRatio": 2.29,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/55/Taman_Teijsmann_001.jpg/1280px-Taman_Teijsmann_001.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "slug": "taman-bambu",
+      "name": "Taman Bambu",
+      "address": "Jl. Ir. H. Juanda No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-taman-bambu-de7f233bad.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/78/Bogor_Botanical_Gardens_Java26.jpg/1280px-Bogor_Botanical_Gardens_Java26.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-c0e741d92f.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Kebun_Raya_Bogor.jpg/1280px-Kebun_Raya_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-2cdc4e8249.jpg",
+          "width": 1024,
+          "height": 768,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Bog_garden_and_dipping_pond%2C_Parkinson%27s_Park%2C_Guiseley_-_geograph.org.uk_-_6610022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "slug": "danau-gunting-kebun-raya-bogor",
+      "name": "Danau Gunting Kebun Raya Bogor",
+      "address": "Jl. Ir. H. Juanda No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-lake-b40a635436.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/06/Bogor_Botanical_Gardens_Java37.jpg/1280px-Bogor_Botanical_Gardens_Java37.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-0b41cbba1f.jpg",
+          "width": 1600,
+          "height": 1200,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Bendung_Katulampa_Januari_2014.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-b242f45e43.png",
+          "width": 1587,
+          "height": 1255,
+          "aspectRatio": 1.26,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9b/PSM_V67_D586_View_across_the_pond_to_the_palace_of_the_buitenzorg_bogor_governor_general.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "slug": "griya-anggrek-kebun-raya-bogor",
+      "name": "Griya Anggrek Kebun Raya Bogor",
+      "address": "Jl. Otto Iskandardinata No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-griya-anggrek-kebun-raya-bog-7dab631e25.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Orchid_house_Bogor_Botanical_Garden.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-534b9a52d9.jpg",
+          "width": 900,
+          "height": 596,
+          "aspectRatio": 1.51,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Forde_Abbey%2C_Bridges_over_the_Bog_Garden_-_geograph.org.uk_-_2874648.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-a6f452c9de.jpg",
+          "width": 1280,
+          "height": 851,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg/1280px-Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "slug": "akuatik-park",
+      "name": "Akuatik Park",
+      "address": "Jl. Ir. H. Juanda No.13, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-lake-e380e4a65b.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Fall_scene.Highlands_Botanical_Garden.jpg/1280px-Fall_scene.Highlands_Botanical_Garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-f979a00f0e.jpg",
+          "width": 1600,
+          "height": 1200,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Ciliwung_di_dekat_Bendung_Katulampa_Januari_2014.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-d37ebd391b.jpg",
+          "width": 1280,
+          "height": 847,
+          "aspectRatio": 1.51,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/RIBogorSeerose.jpg/1280px-RIBogorSeerose.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "slug": "taman-sempur",
+      "name": "Taman Sempur",
+      "address": "Jl. Sempur, Jl. Sempur No.1, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+      "wikiMatched": "Lapangan Sempur",
+      "images": [
+        {
+          "path": "/images/spots/wm-taman-sempur-b192cd7c30.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Sempur_Hujan_Rimba.jpg/1280px-Sempur_Hujan_Rimba.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-taman-sempur-0e57e547bc.jpg",
+          "width": 1280,
+          "height": 720,
+          "aspectRatio": 1.78,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Lapangan_Sempur_Bogor.jpg/1280px-Lapangan_Sempur_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-taman-sempur-ffd7ec246e.jpg",
+          "width": 1280,
+          "height": 720,
+          "aspectRatio": 1.78,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Running_track_sempur_bogor.jpg/1280px-Running_track_sempur_bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "slug": "taman-heulang",
+      "name": "Taman Heulang",
+      "address": "Jl. Kasintu, Jl. Heulang, Tanah Sareal, Kecamatan Tanah Sareal, Kota Bogor, Jawa Barat 16161",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-8ef849f9cf.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/PALM_OIL_MONUMENT_IN_BOGOR_BOTANICAL_GARDENS.jpg/1280px-PALM_OIL_MONUMENT_IN_BOGOR_BOTANICAL_GARDENS.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-a38cb15f91.jpg",
+          "width": 1280,
+          "height": 854,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Isabella_Plantation%2C_Gunnera_in_the_bog_garden.jpg/1280px-Isabella_Plantation%2C_Gunnera_in_the_bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-c81067e2d6.jpg",
+          "width": 1280,
+          "height": 714,
+          "aspectRatio": 1.79,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/COLLECTIE_TROPENMUSEUM_Olieverfschilderij_voorstellende_het_kerkhof_in_het_park_te_Batavia_met_graven_TMnr_0-432.jpg/1280px-COLLECTIE_TROPENMUSEUM_Olieverfschilderij_voorstellende_het_kerkhof_in_het_park_te_Batavia_met_graven_TMnr_0-432.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "slug": "taman-palupuh",
+      "name": "Taman Palupuh",
+      "address": "Jl. Palupuh Raya, Tegal Gundil, Kecamatan Bogor Utara, Kota Bogor, Jawa Barat 16152",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-eb78eed65c.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/The_Bog_Garden_at_Upton_House_-_geograph.org.uk_-_8195136.jpg/1280px-The_Bog_Garden_at_Upton_House_-_geograph.org.uk_-_8195136.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-647e49d8a4.jpg",
+          "width": 1616,
+          "height": 1080,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ed/Pepohonan_Tajuk%2C_Taman_Nasional_Gunung_Halimun_Salak%2C_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-459b9bc877.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Riverbanks_Zoo_and_Garden_Bog_Garden_July_2024.jpg/1280px-Riverbanks_Zoo_and_Garden_Bog_Garden_July_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "slug": "taman-kresna",
+      "name": "Taman Kresna",
+      "address": "Jl. Arjuna Raya, Jl. Kresna I, Bantarjati, Kecamatan Bogor Utara, Kota Bogor, Jawa Barat 16153",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-8ef849f9cf.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/PALM_OIL_MONUMENT_IN_BOGOR_BOTANICAL_GARDENS.jpg/1280px-PALM_OIL_MONUMENT_IN_BOGOR_BOTANICAL_GARDENS.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-a38cb15f91.jpg",
+          "width": 1280,
+          "height": 854,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Isabella_Plantation%2C_Gunnera_in_the_bog_garden.jpg/1280px-Isabella_Plantation%2C_Gunnera_in_the_bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-c81067e2d6.jpg",
+          "width": 1280,
+          "height": 714,
+          "aspectRatio": 1.79,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/COLLECTIE_TROPENMUSEUM_Olieverfschilderij_voorstellende_het_kerkhof_in_het_park_te_Batavia_met_graven_TMnr_0-432.jpg/1280px-COLLECTIE_TROPENMUSEUM_Olieverfschilderij_voorstellende_het_kerkhof_in_het_park_te_Batavia_met_graven_TMnr_0-432.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "slug": "taman-kencana",
+      "name": "Taman Kencana",
+      "address": "Jl. Salak, Jl. Taman Kencana No.3, Babakan, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16128",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-9ab12e2e5a.jpg",
+          "width": 1280,
+          "height": 856,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Isabella_Plantation%2C_The_Bog_garden_01.jpg/1280px-Isabella_Plantation%2C_The_Bog_garden_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-1b79b0fb8f.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ed/SS_Sunda_Blue_Robin_West_Java.jpg/1280px-SS_Sunda_Blue_Robin_West_Java.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-eb78eed65c.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/The_Bog_Garden_at_Upton_House_-_geograph.org.uk_-_8195136.jpg/1280px-The_Bog_Garden_at_Upton_House_-_geograph.org.uk_-_8195136.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "slug": "taman-malabar",
+      "name": "Taman Malabar",
+      "address": "Jl. Taman Malabar, Babakan, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16128",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-c6898ce967.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Isabella_Plantation%2C_Bog_garden.jpg/1280px-Isabella_Plantation%2C_Bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-c0e741d92f.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Kebun_Raya_Bogor.jpg/1280px-Kebun_Raya_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-2cdc4e8249.jpg",
+          "width": 1024,
+          "height": 768,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Bog_garden_and_dipping_pond%2C_Parkinson%27s_Park%2C_Guiseley_-_geograph.org.uk_-_6610022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "slug": "taman-ekspresi",
+      "name": "Taman Ekspresi",
+      "address": "Jl. Sempur Kaler No.1, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-taman-ekspresi-2da6cb5784.jpg",
+          "width": 1280,
+          "height": 854,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/94/Muhammadiyah%27s_Eid_al-Fitr_Prayer_at_Sempur_Park_Bogor.jpg/1280px-Muhammadiyah%27s_Eid_al-Fitr_Prayer_at_Sempur_Park_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-taman-ekspresi-1ad1adfc6c.jpg",
+          "width": 1280,
+          "height": 854,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/Muhammadiyah%27s_Eid_al-Fitr_Prayer_at_Sempur_Park%2C_Bogor.jpg/1280px-Muhammadiyah%27s_Eid_al-Fitr_Prayer_at_Sempur_Park%2C_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-647e49d8a4.jpg",
+          "width": 1616,
+          "height": 1080,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ed/Pepohonan_Tajuk%2C_Taman_Nasional_Gunung_Halimun_Salak%2C_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "slug": "taman-cipaku",
+      "name": "Taman Cipaku",
+      "address": "Blok Kampung Suka Damai, Jl. Raya Cipaku, Cipaku, Kec. Kecamatan Bogor Selatan, Kota Bogor, Jawa Barat 16133",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-459b9bc877.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Riverbanks_Zoo_and_Garden_Bog_Garden_July_2024.jpg/1280px-Riverbanks_Zoo_and_Garden_Bog_Garden_July_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-8ef849f9cf.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/PALM_OIL_MONUMENT_IN_BOGOR_BOTANICAL_GARDENS.jpg/1280px-PALM_OIL_MONUMENT_IN_BOGOR_BOTANICAL_GARDENS.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-a38cb15f91.jpg",
+          "width": 1280,
+          "height": 854,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Isabella_Plantation%2C_Gunnera_in_the_bog_garden.jpg/1280px-Isabella_Plantation%2C_Gunnera_in_the_bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "slug": "taman-corat-coret",
+      "name": "Taman Corat-Coret",
+      "address": "Jl. Pandu Raya, Tegal Gundil, Kecamatan Bogor Utara, Kota Bogor, Jawa Barat 16152",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-a6f452c9de.jpg",
+          "width": 1280,
+          "height": 851,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg/1280px-Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-fa0bbc5744.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Coughton_Court_bog_garden.jpg/1280px-Coughton_Court_bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-9ab12e2e5a.jpg",
+          "width": 1280,
+          "height": 856,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Isabella_Plantation%2C_The_Bog_garden_01.jpg/1280px-Isabella_Plantation%2C_The_Bog_garden_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "slug": "taman-air-mancur",
+      "name": "Taman Air Mancur",
+      "address": "Jl. Pemuda, Jl. Jend. Sudirman No.56, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-eb78eed65c.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c3/The_Bog_Garden_at_Upton_House_-_geograph.org.uk_-_8195136.jpg/1280px-The_Bog_Garden_at_Upton_House_-_geograph.org.uk_-_8195136.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-647e49d8a4.jpg",
+          "width": 1616,
+          "height": 1080,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ed/Pepohonan_Tajuk%2C_Taman_Nasional_Gunung_Halimun_Salak%2C_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-459b9bc877.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Riverbanks_Zoo_and_Garden_Bog_Garden_July_2024.jpg/1280px-Riverbanks_Zoo_and_Garden_Bog_Garden_July_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "slug": "taman-pangrango",
+      "name": "Taman Pangrango",
+      "address": "Jl. Pangrango, Jl. Pangrango No.1A, Babakan, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16128",
+      "wikiMatched": "Kereta api Pangrango",
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-459b9bc877.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Riverbanks_Zoo_and_Garden_Bog_Garden_July_2024.jpg/1280px-Riverbanks_Zoo_and_Garden_Bog_Garden_July_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-8ef849f9cf.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/PALM_OIL_MONUMENT_IN_BOGOR_BOTANICAL_GARDENS.jpg/1280px-PALM_OIL_MONUMENT_IN_BOGOR_BOTANICAL_GARDENS.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-a38cb15f91.jpg",
+          "width": 1280,
+          "height": 854,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Isabella_Plantation%2C_Gunnera_in_the_bog_garden.jpg/1280px-Isabella_Plantation%2C_Gunnera_in_the_bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "slug": "sempur-skate-park",
+      "name": "Sempur Skate Park",
+      "address": "Jl. Jalak Harupat, Jl. Sempur, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-sempur-skate-park-d17ec97162.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/Dresden-Johannstadt_Skatepark_Trinitatisplatz.jpg/1280px-Dresden-Johannstadt_Skatepark_Trinitatisplatz.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-sempur-skate-park-066dfaf948.jpg",
+          "width": 1280,
+          "height": 850,
+          "aspectRatio": 1.51,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Skatepark_des_Ursulines_with_snow_at_sunset%2C_looking_towards_Gare_de_Bruxelles-Chapelle.jpg/1280px-Skatepark_des_Ursulines_with_snow_at_sunset%2C_looking_towards_Gare_de_Bruxelles-Chapelle.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-sempur-skate-park-a11857f3f8.jpg",
+          "width": 1280,
+          "height": 924,
+          "aspectRatio": 1.39,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7c/Skatepark_des_Ursulines_on_a_snowy_evening%2C_looking_towards_Boulevard_de_l%27Empereur_%28far_right%29%2C_Rue_d%27Accolay_%28center%29%2C_and_Rue_des_Ursulines_%28left%29%2C_Brussels%2C_Belgium.jpg/1280px-thumbnail.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "slug": "alun-alun-kota-bogor",
+      "name": "Alun-Alun Kota Bogor",
+      "address": "Jl. Dewi Sartika, Jl. Kapten Muslihat No.17 A, Pabaton, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16121",
+      "wikiMatched": "Stasiun Bogor",
+      "images": [
+        {
+          "path": "/images/spots/wm-alun-alun-kota-bogor-a98bfe7e69.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b1/Alun-Alun_Bogor_00.jpg/1280px-Alun-Alun_Bogor_00.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-alun-alun-kota-bogor-229b0b4987.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Alun-Alun_Bogor_02.jpg/1280px-Alun-Alun_Bogor_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-alun-alun-kota-bogor-765a5ffb66.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Alun-Alun_Bogor_01.jpg/1280px-Alun-Alun_Bogor_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "slug": "taman-kaulinan",
+      "name": "Taman Kaulinan",
+      "address": "Jl. Jalak Harupat, Jl. Sempur No.1, Sempur, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-a6f452c9de.jpg",
+          "width": 1280,
+          "height": 851,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg/1280px-Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-fa0bbc5744.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Coughton_Court_bog_garden.jpg/1280px-Coughton_Court_bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-9ab12e2e5a.jpg",
+          "width": 1280,
+          "height": 856,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Isabella_Plantation%2C_The_Bog_garden_01.jpg/1280px-Isabella_Plantation%2C_The_Bog_garden_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "slug": "istana-kepresidenan-bogor",
+      "name": "Istana Kepresidenan Bogor",
+      "address": "Jl. Insinyur Haji Djuanda, Jl. Ir. H. Juanda, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": "Istana Bogor",
+      "images": [
+        {
+          "path": "/images/spots/wm-istana-kepresidenan-bogor-dd752bb112.jpg",
+          "width": 1280,
+          "height": 958,
+          "aspectRatio": 1.34,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Istana_Bogor_side.jpg/1280px-Istana_Bogor_side.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-istana-kepresidenan-bogor-c8696f7b19.jpg",
+          "width": 1000,
+          "height": 561,
+          "aspectRatio": 1.78,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Istana_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-istana-kepresidenan-bogor-2146de4056.jpg",
+          "width": 1280,
+          "height": 780,
+          "aspectRatio": 1.64,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/Presidential_Palace%2C_Bogor%2C_300rp_%281998%29.jpg/1280px-Presidential_Palace%2C_Bogor%2C_300rp_%281998%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "slug": "prasasti-batu-tulis",
+      "name": "Prasasti Batu Tulis",
+      "address": "Jl. Gang SD Batutulis, Jl. Batu Tulis No.54, Batutulis, Kec. Kecamatan Bogor Selatan, Kota Bogor, Jawa Barat 16133",
+      "wikiMatched": "Prasasti Batutulis",
+      "images": [
+        {
+          "path": "/images/spots/prasasti-batutulis.jpg",
+          "width": 1376,
+          "height": 768,
+          "aspectRatio": 1.79,
+          "sourceUrl": "local-verified-asset"
+        },
+        {
+          "path": "/images/spots/wm-prasasti-batutulis-0adcdfc3c0.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Makam_Pahlawan_Bogor.jpg/1280px-Makam_Pahlawan_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-prasasti-batutulis-43ba605f90.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Makam_Mbah_Dalem_Bogor.jpg/1280px-Makam_Mbah_Dalem_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "slug": "museum-perjuangan-bogor",
+      "name": "Museum Perjuangan Bogor",
+      "address": "Jl. Merdeka, Jl. Merdeka No.56, Ciwaringin, Kecamatan Bogor Tengah, Kota Bogor 16124, Jawa Barat 16124",
+      "wikiMatched": "Museum Perjuangan Bogor",
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-heritage-44a17f1b63.png",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Paguma_larvata_museum_zoologicum_bogoriense.png/1280px-Paguma_larvata_museum_zoologicum_bogoriense.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-508abe1fef.jpg",
+          "width": 1393,
+          "height": 1007,
+          "aspectRatio": 1.38,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/0/04/BOG_La_Candelaria_alta.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-6a5550585d.jpg",
+          "width": 1548,
+          "height": 1124,
+          "aspectRatio": 1.38,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Palace%2C_Buitenzorg%2C_Java.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "slug": "museum-monumen-peta",
+      "name": "Museum & Monumen PETA",
+      "address": "Jl. Jenderal Sudirman, Jl. Jend. Sudirman No.35, Pabaton, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16121",
+      "wikiMatched": "Museum Pembela Tanah Air",
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-heritage-cf1a726634.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Bogor_Zoology_Museum_sign.jpg/1280px-Bogor_Zoology_Museum_sign.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-23212324be.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Bogor_Botanical_Gardens_Java39.jpg/1280px-Bogor_Botanical_Gardens_Java39.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-98ec66cc8a.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Closed_front_door_of_Bogor_Zoology_Museum_from_inside.jpg/1280px-Closed_front_door_of_Bogor_Zoology_Museum_from_inside.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "slug": "museum-nasional-sejarah-alam-indonesia-munasain",
+      "name": "Museum Nasional Sejarah Alam Indonesia (Munasain)",
+      "address": "Jl. Insinyur Haji Djuanda, Jl. Ir. H. Juanda No.22 - 24, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": "Museum Nasional Sejarah Alam Indonesia",
+      "images": [
+        {
+          "path": "/images/spots/wm-museum-nasional-sejarah-alam-71679ada46.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Museum_Nasional_Sejarah_Alam_Indonesia.jpg/1280px-Museum_Nasional_Sejarah_Alam_Indonesia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-museum-nasional-sejarah-alam-fc703c1255.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Museum_Nasional_Sejarah_Alam_Indonesia_%282026%29.jpg/1280px-Museum_Nasional_Sejarah_Alam_Indonesia_%282026%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-508abe1fef.jpg",
+          "width": 1393,
+          "height": 1007,
+          "aspectRatio": 1.38,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/0/04/BOG_La_Candelaria_alta.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "slug": "museum-tanah-dan-pertanian",
+      "name": "Museum Tanah dan Pertanian",
+      "address": "Jl. Otto Iskandardinata, Jl. Ir. H. Juanda No.98, Gudang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16123",
+      "wikiMatched": "Institut Pertanian Bogor",
+      "images": [
+        {
+          "path": "/images/spots/wm-museum-tanah-dan-pertanian-2c70c2d7b5.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/Koleksi_Museum_Tanah_dan_Pertanian_Bogor_%282026%29.jpg/1280px-Koleksi_Museum_Tanah_dan_Pertanian_Bogor_%282026%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-museum-tanah-dan-pertanian-bfecfbdafd.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Koleksi_Tanah_Gambut_di_Museum_Tanah_dan_Pertanian_Bogor_%282026%29.jpg/1280px-Koleksi_Tanah_Gambut_di_Museum_Tanah_dan_Pertanian_Bogor_%282026%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-69a37e212f.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Bogor_Botanical_Gardens_Java28.jpg/1280px-Bogor_Botanical_Gardens_Java28.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "slug": "museum-etnobotani-indonesia",
+      "name": "Museum Etnobotani Indonesia",
+      "address": "Jl. Insinyur Haji Djuanda, Jl. Ir. H. Juanda No.22 - 24, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": "Museum Nasional Sejarah Alam Indonesia",
+      "images": [
+        {
+          "path": "/images/spots/wm-museum-nasional-sejarah-alam-71679ada46.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/86/Museum_Nasional_Sejarah_Alam_Indonesia.jpg/1280px-Museum_Nasional_Sejarah_Alam_Indonesia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-museum-nasional-sejarah-alam-fc703c1255.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Museum_Nasional_Sejarah_Alam_Indonesia_%282026%29.jpg/1280px-Museum_Nasional_Sejarah_Alam_Indonesia_%282026%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-df4792c81e.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Bogor_Botanical_Gardens_Java23.jpg/1280px-Bogor_Botanical_Gardens_Java23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "slug": "makam-raden-saleh",
+      "name": "Makam Raden Saleh",
+      "address": "Jl. Pahlawan Gg. Raden Saleh No.57, Empang, Kecamatan Bogor Selatan, Kota Bogor, Jawa Barat 16132",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-makam-raden-saleh-b73e54d47f.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Cultural_heritage_status_signs_at_the_Tomb_of_Raden_Saleh.jpg/1280px-Cultural_heritage_status_signs_at_the_Tomb_of_Raden_Saleh.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-makam-raden-saleh-9508611fe2.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/Tomb_of_Raden_Saleh_another_cultural_heritage_status_sign.jpg/1280px-Tomb_of_Raden_Saleh_another_cultural_heritage_status_sign.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-makam-raden-saleh-a29d6cbb07.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Inauguration_panel_of_the_housing_of_the_Tomb_of_Raden_Saleh.jpg/1280px-Inauguration_panel_of_the_housing_of_the_Tomb_of_Raden_Saleh.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "slug": "gereja-katedral-bogor",
+      "name": "Gereja Katedral Bogor",
+      "address": "Jl. Kapten Muslihat No.22, Jl. Kapten Muslihat No.22, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": "Kota Bogor",
+      "images": [
+        {
+          "path": "/images/spots/wm-gereja-katedral-bogor-1da50aeb52.jpg",
+          "width": 1280,
+          "height": 720,
+          "aspectRatio": 1.78,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Ruang_Adorasi_di_Katedral_Bogor_%282026%29.jpg/1280px-Ruang_Adorasi_di_Katedral_Bogor_%282026%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-gereja-katedral-bogor-3ba36beda3.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/31/Tampak_Luar_Katedral_Bogor_%282026%29_01.jpg/1280px-Tampak_Luar_Katedral_Bogor_%282026%29_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-gereja-katedral-bogor-6b5b842a8f.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Tampak_Luar_Katedral_Bogor_%282026%29_02.jpg/1280px-Tampak_Luar_Katedral_Bogor_%282026%29_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "slug": "masjid-agung-bogor",
+      "name": "Masjid Agung Bogor",
+      "address": "Jl. Pengadilan, Jl. Nyi Raja Permas No.1, Cibogor, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16124",
+      "wikiMatched": "Kota Bogor",
+      "images": [
+        {
+          "path": "/images/spots/wm-masjid-agung-bogor-f4e9bc9b8a.jpg",
+          "width": 1600,
+          "height": 1200,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9b/Masjid_Raya_Bogor.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-masjid-agung-bogor-dd9d2fa854.jpg",
+          "width": 1280,
+          "height": 855,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Masjid_Jami.JPG/1280px-Masjid_Jami.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-masjid-agung-bogor-2d13ad9544.jpg",
+          "width": 1920,
+          "height": 1080,
+          "aspectRatio": 1.78,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Masjid_Jami_Syuhada%2C_Cikaret%2C_Harapan_Jaya%2C_Cibinong%2C_Bogor%2C_Jawa_Barat_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "slug": "stasiun-bogor",
+      "name": "Stasiun Bogor",
+      "address": "Jl. Nyi Raja Permas No.1, Cibogor, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16124",
+      "wikiMatched": "Stasiun Bogor",
+      "images": [
+        {
+          "path": "/images/spots/wm-stasiun-bogor-f62866d6bd.jpg",
+          "width": 1772,
+          "height": 1240,
+          "aspectRatio": 1.43,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Bogor_Paledang_station.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-stasiun-bogor-c8bc457330.jpg",
+          "width": 1280,
+          "height": 857,
+          "aspectRatio": 1.49,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/06/Sepur_badug_di_Stasiun_Bogor_Paledang..jpg/1280px-Sepur_badug_di_Stasiun_Bogor_Paledang..jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-stasiun-bogor-936188d6b5.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Bogor_Paledang_Station_Kapten_Muslihat_2022.jpg/1280px-Bogor_Paledang_Station_Kapten_Muslihat_2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "slug": "gedung-smpsma-negeri-1-bogor",
+      "name": "Gedung SMP/SMA Negeri 1 Bogor",
+      "address": "Jl. Ir. H. Juanda No.16, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-heritage-df4792c81e.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Bogor_Botanical_Gardens_Java23.jpg/1280px-Bogor_Botanical_Gardens_Java23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-44a17f1b63.png",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Paguma_larvata_museum_zoologicum_bogoriense.png/1280px-Paguma_larvata_museum_zoologicum_bogoriense.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-508abe1fef.jpg",
+          "width": 1393,
+          "height": 1007,
+          "aspectRatio": 1.38,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/0/04/BOG_La_Candelaria_alta.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "slug": "kantor-pos-bogor",
+      "name": "Kantor Pos Bogor",
+      "address": "Jl. Paledang, Jl. Ir. H. Juanda No.5, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-kantor-pos-bogor-13f3025465.jpg",
+          "width": 800,
+          "height": 563,
+          "aspectRatio": 1.42,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/4/48/COLLECTIE_TROPENMUSEUM_Een_kerk_TMnr_3728-798.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-kantor-pos-bogor-649be203b6.jpg",
+          "width": 1080,
+          "height": 758,
+          "aspectRatio": 1.42,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/7/71/Raden_Sarief_Bustaman_Saleh_-_Kantor_Pos_Jawa_%281879%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-kantor-pos-bogor-d6f4a15747.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Bogor_Post_Office_front.jpg/1280px-Bogor_Post_Office_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "slug": "gedung-pusat-penelitian-biologi",
+      "name": "Gedung Pusat Penelitian Biologi",
+      "address": "Jl. Ir. H. Juanda No.18, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": "Museum Zoologi Bogor",
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-heritage-93b05dc748.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Bogor_Zoology_Museum_back_entrance.jpg/1280px-Bogor_Zoology_Museum_back_entrance.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-df4792c81e.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Bogor_Botanical_Gardens_Java23.jpg/1280px-Bogor_Botanical_Gardens_Java23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-44a17f1b63.png",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Paguma_larvata_museum_zoologicum_bogoriense.png/1280px-Paguma_larvata_museum_zoologicum_bogoriense.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "slug": "istana-batu-tulis",
+      "name": "Istana Batu Tulis",
+      "address": "Jl. Batutulis No.52, Batutulis, Kecamatan Bogor Selatan, Kota Bogor, Jawa Barat 16133",
+      "wikiMatched": "Pakuan Pajajaran",
+      "images": [
+        {
+          "path": "/images/spots/wm-prasasti-batutulis-0adcdfc3c0.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/Makam_Pahlawan_Bogor.jpg/1280px-Makam_Pahlawan_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-prasasti-batutulis-43ba605f90.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Makam_Mbah_Dalem_Bogor.jpg/1280px-Makam_Mbah_Dalem_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-istana-batu-tulis-ff3edeed9b.jpg",
+          "width": 1280,
+          "height": 949,
+          "aspectRatio": 1.35,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Pemotretan_Prasasti_Batu_Tulis_Muruy_-_WikiPrasasti.jpg/1280px-Pemotretan_Prasasti_Batu_Tulis_Muruy_-_WikiPrasasti.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "slug": "kampung-pulo-geulis",
+      "name": "Kampung Pulo Geulis",
+      "address": "Jl. Roda Pulo Geulis, Babakan Pasar, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16126",
+      "wikiMatched": "Pulo Geulis",
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-lake-22eceddb02.jpg",
+          "width": 800,
+          "height": 534,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/1/16/Ciliwung_090419-0298_pg.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-a98f6e48da.jpg",
+          "width": 800,
+          "height": 532,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/3/36/Ciliwung_090419-7685.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-33132117de.jpg",
+          "width": 1600,
+          "height": 1200,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/6/67/Ciliwung_di_dekat_Pintu_Air_Katulampa.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "slug": "kampung-labirin",
+      "name": "Kampung Labirin",
+      "address": "Jl. Riau, Jl. Kebun Jukut, Babakan Pasar, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16126",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-heritage-508abe1fef.jpg",
+          "width": 1393,
+          "height": 1007,
+          "aspectRatio": 1.38,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/0/04/BOG_La_Candelaria_alta.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-6a5550585d.jpg",
+          "width": 1548,
+          "height": 1124,
+          "aspectRatio": 1.38,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Palace%2C_Buitenzorg%2C_Java.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-cf1a726634.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Bogor_Zoology_Museum_sign.jpg/1280px-Bogor_Zoology_Museum_sign.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "slug": "kampung-batik-cibuluh",
+      "name": "Kampung Batik Cibuluh",
+      "address": "Jl. Neglasari 2, Jl. Neglasari I, Cibuluh, Kecamatan Bogor Utara, Kota Bogor, Jawa Barat 16151",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-heritage-69a37e212f.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Bogor_Botanical_Gardens_Java28.jpg/1280px-Bogor_Botanical_Gardens_Java28.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-aa3166ab22.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Bogor_Zoology_Museum_back_getting_closer.jpg/1280px-Bogor_Zoology_Museum_back_getting_closer.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-b242f45e43.png",
+          "width": 1587,
+          "height": 1255,
+          "aspectRatio": 1.26,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9b/PSM_V67_D586_View_across_the_pond_to_the_palace_of_the_buitenzorg_bogor_governor_general.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "slug": "the-jungle-waterpark-bogor",
+      "name": "The Jungle Waterpark Bogor",
+      "address": "Jl. Bogor Nirwana Boulevard, Perumahan Bogor Nirwana Residence, Mulyaharja, Kecamatan Bogor Selatan, Kota Bogor, Jawa Barat 16132",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-waterpark-b96ac7b477.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Giri_Tirta_Kahuripan.JPG/1280px-Giri_Tirta_Kahuripan.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-waterpark-9f28fdad89.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Ciputra_waterpark_Surabaya_chimera_pool.jpg/1280px-Ciputra_waterpark_Surabaya_chimera_pool.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-waterpark-f5180fd72c.jpg",
+          "width": 1280,
+          "height": 819,
+          "aspectRatio": 1.56,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/D%C3%BClmen%2C_Freizeitbad_d%C3%BCb_--_2012_--_4102.jpg/1280px-D%C3%BClmen%2C_Freizeitbad_d%C3%BCb_--_2012_--_4102.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "slug": "jbound",
+      "name": "JBound",
+      "address": "Jl. Bogor Nirwana Residence, Jl. Bogor Nirwana Residence, Ranggamekar, Kecamatan Bogor Selatan., Kota Bogor, Jawa Barat 16135",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/jbound-geo-edu-park.jpg",
+          "width": 1376,
+          "height": 768,
+          "aspectRatio": 1.79,
+          "sourceUrl": "local-verified-asset"
+        },
+        {
+          "path": "/images/spots/jbound-gallery-1.jpg",
+          "width": 1200,
+          "height": 896,
+          "aspectRatio": 1.34,
+          "sourceUrl": "local-verified-asset"
+        },
+        {
+          "path": "/images/spots/jbound-gallery-2.jpg",
+          "width": 1200,
+          "height": 896,
+          "aspectRatio": 1.34,
+          "sourceUrl": "local-verified-asset"
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "slug": "kampoeng-air-katulampa",
+      "name": "Kampoeng Air Katulampa",
+      "address": "Jl. Bendung, Jl. Katulampa Raya No.45, Katulampa, Kecamatan Bogor Timur., Kota Bogor, Jawa Barat 16144",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-kampoeng-air-katulampa-ec01c44f22.jpg",
+          "width": 1600,
+          "height": 1200,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Bendung_Katulampa_-_Pintu_Barat.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-0b41cbba1f.jpg",
+          "width": 1600,
+          "height": 1200,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3a/Bendung_Katulampa_Januari_2014.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-lake-f979a00f0e.jpg",
+          "width": 1600,
+          "height": 1200,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Ciliwung_di_dekat_Bendung_Katulampa_Januari_2014.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "slug": "sport-club-danau-bogor-raya",
+      "name": "Sport Club Danau Bogor Raya",
+      "address": "Jl. Danau Bogor Raya Blok AI, Katulampa, Kecamatan Bogor Timur, Kota Bogor, Jawa Barat 16144",
+      "wikiMatched": "Malvino Fajaro",
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-waterpark-f5180fd72c.jpg",
+          "width": 1280,
+          "height": 819,
+          "aspectRatio": 1.56,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/D%C3%BClmen%2C_Freizeitbad_d%C3%BCb_--_2012_--_4102.jpg/1280px-D%C3%BClmen%2C_Freizeitbad_d%C3%BCb_--_2012_--_4102.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-waterpark-4b1d45e19f.jpg",
+          "width": 1280,
+          "height": 678,
+          "aspectRatio": 1.89,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Serenan_ulkoallas_panorama.jpg/1280px-Serenan_ulkoallas_panorama.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-waterpark-b96ac7b477.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Giri_Tirta_Kahuripan.JPG/1280px-Giri_Tirta_Kahuripan.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "slug": "kolam-renang-monte-carlo",
+      "name": "Kolam Renang Monte Carlo",
+      "address": "Jl. Tarumanegara I, Cipaku, Kecamatan Bogor Selatan, Kota Bogor, Jawa Barat 16133",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-waterpark-9f28fdad89.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Ciputra_waterpark_Surabaya_chimera_pool.jpg/1280px-Ciputra_waterpark_Surabaya_chimera_pool.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-waterpark-f5180fd72c.jpg",
+          "width": 1280,
+          "height": 819,
+          "aspectRatio": 1.56,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/D%C3%BClmen%2C_Freizeitbad_d%C3%BCb_--_2012_--_4102.jpg/1280px-D%C3%BClmen%2C_Freizeitbad_d%C3%BCb_--_2012_--_4102.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-waterpark-4b1d45e19f.jpg",
+          "width": 1280,
+          "height": 678,
+          "aspectRatio": 1.89,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Serenan_ulkoallas_panorama.jpg/1280px-Serenan_ulkoallas_panorama.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "slug": "sagara-swimming-pool",
+      "name": "Sagara Swimming Pool",
+      "address": "Jl. Pamoyanan No.232, Ranggamekar, Kecamatan Bogor Selatan, Kota Bogor, Jawa Barat 16136",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-waterpark-9f28fdad89.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Ciputra_waterpark_Surabaya_chimera_pool.jpg/1280px-Ciputra_waterpark_Surabaya_chimera_pool.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-waterpark-f5180fd72c.jpg",
+          "width": 1280,
+          "height": 819,
+          "aspectRatio": 1.56,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/D%C3%BClmen%2C_Freizeitbad_d%C3%BCb_--_2012_--_4102.jpg/1280px-D%C3%BClmen%2C_Freizeitbad_d%C3%BCb_--_2012_--_4102.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-waterpark-4b1d45e19f.jpg",
+          "width": 1280,
+          "height": 678,
+          "aspectRatio": 1.89,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Serenan_ulkoallas_panorama.jpg/1280px-Serenan_ulkoallas_panorama.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "slug": "bogor-green-forest",
+      "name": "Bogor Green Forest",
+      "address": "Jl. Raya Gunung Gadung, Jl. RE. Soemantadiredja No.99, Pamoyanan, Kecamatan Bogor Selatan., Kota Bogor, Jawa Barat 16136",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-518a4328a2.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3d/SSS_Sunda_Blue_Robin_West_Java.jpg/1280px-SSS_Sunda_Blue_Robin_West_Java.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-c6898ce967.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/52/Isabella_Plantation%2C_Bog_garden.jpg/1280px-Isabella_Plantation%2C_Bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-c0e741d92f.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Kebun_Raya_Bogor.jpg/1280px-Kebun_Raya_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "slug": "kidzoona-lippo-plaza-ekalokasari",
+      "name": "Kidzoona Lippo Plaza Ekalokasari",
+      "address": "Jl. Raya Bogor - Sukabumi, Jl. Siliwangi No.123, Sukasari, Kecamatan Bogor Timur., Kota Bogor, Jawa Barat 16142",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-culinarymall-3159684d2a.jpg",
+          "width": 1600,
+          "height": 1200,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/a/af/Cikarang_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-d965f3df02.jpg",
+          "width": 1920,
+          "height": 1280,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1c/20220521180441_IMG_9233.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-98d134b104.jpg",
+          "width": 1187,
+          "height": 890,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/d/da/Paskal_23_Bandung.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "slug": "bogor-golf-club",
+      "name": "Bogor Golf Club",
+      "address": "Jl. Dr. Sumeru, Menteng, Kecamatan Bogor Barat, Kota Bogor, Jawa Barat 16111",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-park-a6f452c9de.jpg",
+          "width": 1280,
+          "height": 851,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg/1280px-Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-fa0bbc5744.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Coughton_Court_bog_garden.jpg/1280px-Coughton_Court_bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-9ab12e2e5a.jpg",
+          "width": 1280,
+          "height": 856,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/Isabella_Plantation%2C_The_Bog_garden_01.jpg/1280px-Isabella_Plantation%2C_The_Bog_garden_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "slug": "rancamaya-country-club",
+      "name": "Rancamaya Country Club",
+      "address": "Jl. Rancamaya Utama, Rancamaya, Kecamatan Bogor Selatan, Kota Bogor, Jawa Barat 16139",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-rancamaya-country-club-ec6820866b.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Rancamaya.jpg/1280px-Rancamaya.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-a6f452c9de.jpg",
+          "width": 1280,
+          "height": 851,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cd/Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg/1280px-Alsomitra_macrocarpa_seed_%28syn._Zanonia_macrocarpa%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-park-fa0bbc5744.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Coughton_Court_bog_garden.jpg/1280px-Coughton_Court_bog_garden.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 68,
+      "slug": "balai-penelitian-taman-rempah-dan-obat",
+      "name": "Balai Penelitian Taman Rempah dan Obat",
+      "address": "Jl. Tentara Pelajar, Jl. Tentara Pelajar No.3, Menteng, Kecamatan Bogor Barat, Kota Bogor, Jawa Barat 16111",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-lake-dae061c5f2.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Botanischer_Garten_in_Bogor.jpg/1280px-Botanischer_Garten_in_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-balai-penelitian-taman-rempa-30670b8f25.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/Bogor_Botanical_Gardens_Java20.jpg/1280px-Bogor_Botanical_Gardens_Java20.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-balai-penelitian-taman-rempa-31d25b4eed.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d1/Bogor_Botanical_Gardens_Java24.jpg/1280px-Bogor_Botanical_Gardens_Java24.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 69,
+      "slug": "kebun-percobaan-cimanggu",
+      "name": "Kebun Percobaan Cimanggu",
+      "address": "Jl. Tentara Pelajar No.3, Menteng, Kecamatan Bogor Barat, Kota Bogor, Jawa Barat 16111",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-heritage-d760b7d2f8.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Bogor_Botanical_Gardens_Java35.jpg/1280px-Bogor_Botanical_Gardens_Java35.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-93b05dc748.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Bogor_Zoology_Museum_back_entrance.jpg/1280px-Bogor_Zoology_Museum_back_entrance.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-df4792c81e.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Bogor_Botanical_Gardens_Java23.jpg/1280px-Bogor_Botanical_Gardens_Java23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 70,
+      "slug": "inti-agro-wisata-edukatif-bogor",
+      "name": "Inti Agro Wisata Edukatif Bogor",
+      "address": "Jl. Kyai Haji Raden Abdullah Bin Nuh, Jl. KH. R. Abdullah Bin Nuh No.199, Bubulak, Kecamatan Bogor Barat, Kota Bogor, Jawa Barat 16117",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-heritage-837bcecb8a.jpg",
+          "width": 1280,
+          "height": 886,
+          "aspectRatio": 1.44,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Bog_La_Candelaria.JPG/1280px-Bog_La_Candelaria.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-a34b1841b1.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Bogor_Botanical_Gardens_Java40.jpg/1280px-Bogor_Botanical_Gardens_Java40.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-cdd29d443a.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Bogor_Zoology_Museum_doors_and_windows.jpg/1280px-Bogor_Zoology_Museum_doors_and_windows.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 71,
+      "slug": "botani-square",
+      "name": "Botani Square",
+      "address": "Jl. Raya Pajajaran No.40, Tegallega, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+      "wikiMatched": "Botani Square",
+      "images": [
+        {
+          "path": "/images/spots/wm-botani-square-09f8f91301.jpg",
+          "width": 1280,
+          "height": 720,
+          "aspectRatio": 1.78,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Kawan_Wiki_Madura%2C_Dayak_dan_Banjarmasin.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-botani-square-8f4aa39a25.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/New_DAMRI_%28BDL-23141%29_Zeus_Piala_Mas.jpg/1280px-New_DAMRI_%28BDL-23141%29_Zeus_Piala_Mas.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-8ef50b5723.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Interior_of_Living_World_Kota_Wisata_%2801%29.jpg/1280px-Interior_of_Living_World_Kota_Wisata_%2801%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 72,
+      "slug": "bogor-trade-mall-btm",
+      "name": "Bogor Trade Mall (BTM)",
+      "address": "Jl. Ir. H. Juanda No.68, Jl. Ir. H. Juanda No.68, Paledang, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16122",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-bogor-trade-mall-btm-c161430947.jpg",
+          "width": 1280,
+          "height": 721,
+          "aspectRatio": 1.78,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Superstore_di_Bogor_-_panoramio.jpg/1280px-Superstore_di_Bogor_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-bogor-trade-mall-btm-217dd82de5.jpg",
+          "width": 1280,
+          "height": 1001,
+          "aspectRatio": 1.28,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Mall_Alam_Sutera_-_panoramio.jpg/1280px-Mall_Alam_Sutera_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-bogor-trade-mall-btm-d86121c1e8.jpg",
+          "width": 1280,
+          "height": 857,
+          "aspectRatio": 1.49,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/76/Serpong_Town_Square_-_panoramio.jpg/1280px-Serpong_Town_Square_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 73,
+      "slug": "bogor-junction",
+      "name": "Bogor Junction",
+      "address": "Jl. Sawo Jajar, Jl. Jend. Sudirman No.11, Pabaton, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16121",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-bogor-junction-16418207ff.jpg",
+          "width": 800,
+          "height": 600,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/Bogor_street-1.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-bogor-junction-69e51a1dbd.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Bogor%2C_Bogor_City%2C_West_Java%2C_Indonesia_-_panoramio.jpg/1280px-Bogor%2C_Bogor_City%2C_West_Java%2C_Indonesia_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-bogor-junction-2dcdfa4073.jpg",
+          "width": 1600,
+          "height": 1200,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Bogor%2C_Bogor_City%2C_West_Java%2C_Indonesia_-_panoramio_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 74,
+      "slug": "plaza-indah-bogor",
+      "name": "Plaza Indah Bogor",
+      "address": "Jl. KH. Sholeh Iskandar, Kedungbadak, Kecamatan Tanah Sareal, Kota Bogor, Jawa Barat 16164",
+      "wikiMatched": "Lippo Plaza Ekalokasari Bogor",
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-culinarymall-d79cba041b.jpg",
+          "width": 1280,
+          "height": 591,
+          "aspectRatio": 2.17,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Bangunan_kantor_Stasiun_Bandung_Gudang_260425_2.jpg/1280px-Bangunan_kantor_Stasiun_Bandung_Gudang_260425_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-4ddb671ea1.jpg",
+          "width": 1280,
+          "height": 999,
+          "aspectRatio": 1.28,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/Fried_fish_Assam_India.jpg/1280px-Fried_fish_Assam_India.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-7ec910eb55.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Margo_City_exterior.jpg/1280px-Margo_City_exterior.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 75,
+      "slug": "lippo-plaza-ekalokasari",
+      "name": "Lippo Plaza Ekalokasari",
+      "address": "Jl. Raya Bogor - Sukabumi, Jl. Siliwangi No.123, Sukasari, Kecamatan Bogor Timur., Kota Bogor, Jawa Barat 16142",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-lippo-plaza-ekalokasari-0a57230923.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Bog_-_Centro_comercial_Galer%C3%ADas.JPG/1280px-Bog_-_Centro_comercial_Galer%C3%ADas.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-bogor-trade-mall-btm-c161430947.jpg",
+          "width": 1280,
+          "height": 721,
+          "aspectRatio": 1.78,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Superstore_di_Bogor_-_panoramio.jpg/1280px-Superstore_di_Bogor_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-bogor-trade-mall-btm-217dd82de5.jpg",
+          "width": 1280,
+          "height": 1001,
+          "aspectRatio": 1.28,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Mall_Alam_Sutera_-_panoramio.jpg/1280px-Mall_Alam_Sutera_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "slug": "pangrango-plaza",
+      "name": "Pangrango Plaza",
+      "address": "Jl. Raya Pajajaran No.25, Babakan, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16128",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-culinarymall-7f39e081f7.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Riding_Through_Tradition_%E2%80%93_The_Pasembur_Vendor_of_Penang.jpg/1280px-Riding_Through_Tradition_%E2%80%93_The_Pasembur_Vendor_of_Penang.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-3159684d2a.jpg",
+          "width": 1600,
+          "height": 1200,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/a/af/Cikarang_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-d965f3df02.jpg",
+          "width": 1920,
+          "height": 1280,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1c/20220521180441_IMG_9233.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 77,
+      "slug": "pusat-grosir-bogor",
+      "name": "Pusat Grosir Bogor",
+      "address": "Jl. Merdeka No.110, Ciwaringin, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16124",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-culinarymall-4ddb671ea1.jpg",
+          "width": 1280,
+          "height": 999,
+          "aspectRatio": 1.28,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/Fried_fish_Assam_India.jpg/1280px-Fried_fish_Assam_India.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-7ec910eb55.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Margo_City_exterior.jpg/1280px-Margo_City_exterior.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-dcd235d0cc.jpg",
+          "width": 1280,
+          "height": 719,
+          "aspectRatio": 1.78,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Serving_Iftar_Traditions.jpg/1280px-Serving_Iftar_Traditions.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 78,
+      "slug": "pasar-kebon-kembang",
+      "name": "Pasar Kebon Kembang",
+      "address": "Jl. Pengadilan, Jl. Dewi Sartika No.92, Cibogor, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16124",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pasar-kebon-kembang-5e4dc7088b.jpg",
+          "width": 1600,
+          "height": 964,
+          "aspectRatio": 1.66,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Decapt_macar_121019-29161_tdp.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pasar-kebon-kembang-edda5e0e81.jpg",
+          "width": 1600,
+          "height": 1000,
+          "aspectRatio": 1.6,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Decapt_macar_121019-29172_tdp.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pasar-kebon-kembang-e86358ad08.jpg",
+          "width": 1600,
+          "height": 1000,
+          "aspectRatio": 1.6,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/6/60/Decapt_macar_121019-29181_tdp.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 79,
+      "slug": "pasar-anyar",
+      "name": "Pasar Anyar",
+      "address": "Jl. Dewi Sartika, Jl. Dewi Sartika, Cibogor, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16121",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-culinarymall-d79cba041b.jpg",
+          "width": 1280,
+          "height": 591,
+          "aspectRatio": 2.17,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Bangunan_kantor_Stasiun_Bandung_Gudang_260425_2.jpg/1280px-Bangunan_kantor_Stasiun_Bandung_Gudang_260425_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-4ddb671ea1.jpg",
+          "width": 1280,
+          "height": 999,
+          "aspectRatio": 1.28,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6f/Fried_fish_Assam_India.jpg/1280px-Fried_fish_Assam_India.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-7ec910eb55.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Margo_City_exterior.jpg/1280px-Margo_City_exterior.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 80,
+      "slug": "pasar-bogor",
+      "name": "Pasar Bogor",
+      "address": "Jl. Suryakencana No.3, Babakan Pasar, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16126",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-culinarymall-7ec910eb55.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f9/Margo_City_exterior.jpg/1280px-Margo_City_exterior.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-dcd235d0cc.jpg",
+          "width": 1280,
+          "height": 719,
+          "aspectRatio": 1.78,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Serving_Iftar_Traditions.jpg/1280px-Serving_Iftar_Traditions.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-culinarymall-8ef50b5723.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Interior_of_Living_World_Kota_Wisata_%2801%29.jpg/1280px-Interior_of_Living_World_Kota_Wisata_%2801%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 81,
+      "slug": "pasar-sukasari",
+      "name": "Pasar Sukasari",
+      "address": "Jl. Siliwangi, Jl. Siliwangi No.35, Sukasari, Kecamatan Bogor Timur., Kota Bogor, Jawa Barat 16133",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pasar-sukasari-e361ff9745.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f3/PKL_Pasar_Purbalingga.jpg/1280px-PKL_Pasar_Purbalingga.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pasar-sukasari-bc467a1baf.jpg",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Jukung_Pasar_Terapung.jpg/1280px-Jukung_Pasar_Terapung.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pasar-sukasari-70971ae444.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Pasar_Maunori.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 82,
+      "slug": "tugu-kujang-bogor",
+      "name": "Tugu Kujang Bogor",
+      "address": "Jl. Raya Pajajaran, Tegallega, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+      "wikiMatched": "Tugu Kujang",
+      "images": [
+        {
+          "path": "/images/spots/wm-tugu-kujang-f8a00bf21d.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/Tugu_Kujang%2C_the_landmark_of_the_rain_city%3B_Bogor.jpg/1280px-Tugu_Kujang%2C_the_landmark_of_the_rain_city%3B_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-6a5550585d.jpg",
+          "width": 1548,
+          "height": 1124,
+          "aspectRatio": 1.38,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/4/4d/Palace%2C_Buitenzorg%2C_Java.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-cf1a726634.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Bogor_Zoology_Museum_sign.jpg/1280px-Bogor_Zoology_Museum_sign.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 83,
+      "slug": "tugu-narkoba",
+      "name": "Tugu Narkoba",
+      "address": "Jl. Sholeh Iskandar, Jl. KS Tubun No.3208, Kedunghalang, Kecamatan Bogor Utara, Kota Bogor, Jawa Barat 16151",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-heritage-837bcecb8a.jpg",
+          "width": 1280,
+          "height": 886,
+          "aspectRatio": 1.44,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7f/Bog_La_Candelaria.JPG/1280px-Bog_La_Candelaria.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-a34b1841b1.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Bogor_Botanical_Gardens_Java40.jpg/1280px-Bogor_Botanical_Gardens_Java40.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-cdd29d443a.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/Bogor_Zoology_Museum_doors_and_windows.jpg/1280px-Bogor_Zoology_Museum_doors_and_windows.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 84,
+      "slug": "jembatan-otista",
+      "name": "Jembatan Otista",
+      "address": "Jl. Otto Iskandardinata, Baranangsiang, Kecamatan Bogor Timur, Kota Bogor, Jawa Barat 16143",
+      "wikiMatched": null,
+      "images": [
+        {
+          "path": "/images/spots/wm-pool-heritage-df4792c81e.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Bogor_Botanical_Gardens_Java23.jpg/1280px-Bogor_Botanical_Gardens_Java23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-44a17f1b63.png",
+          "width": 1280,
+          "height": 853,
+          "aspectRatio": 1.5,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Paguma_larvata_museum_zoologicum_bogoriense.png/1280px-Paguma_larvata_museum_zoologicum_bogoriense.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-508abe1fef.jpg",
+          "width": 1393,
+          "height": 1007,
+          "aspectRatio": 1.38,
+          "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/0/04/BOG_La_Candelaria_alta.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+        }
+      ]
+    },
+    {
+      "id": 85,
+      "slug": "lawang-salapan",
+      "name": "Lawang Salapan",
+      "address": "Jl. Otto Iskandardinata, Tegallega, Kecamatan Bogor Tengah, Kota Bogor, Jawa Barat 16129",
+      "wikiMatched": "Tepas Lawang Salapan Dasakreta",
+      "images": [
+        {
+          "path": "/images/spots/wm-tugu-kujang-f8a00bf21d.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/18/Tugu_Kujang%2C_the_landmark_of_the_rain_city%3B_Bogor.jpg/1280px-Tugu_Kujang%2C_the_landmark_of_the_rain_city%3B_Bogor.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-lawang-salapan-3484363c47.jpg",
+          "width": 1280,
+          "height": 722,
+          "aspectRatio": 1.77,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/Tepas_Salapan_Mlawang_Dasakreta.jpg/1280px-Tepas_Salapan_Mlawang_Dasakreta.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-a34b1841b1.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Bogor_Botanical_Gardens_Java40.jpg/1280px-Bogor_Botanical_Gardens_Java40.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    },
+    {
+      "id": 86,
+      "slug": "lapangan-gor-pajajaran",
+      "name": "Lapangan GOR Pajajaran",
+      "address": "Jl. Kesehatan No.6, Jl. A. Yani, Tanah Sareal, Kecamatan Tanah Sareal, Kota Bogor, Jawa Barat 16161",
+      "wikiMatched": "Stadion Pajajaran",
+      "images": [
+        {
+          "path": "/images/spots/wm-lapangan-gor-pajajaran-fe9ae514e8.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Stadion_Utama_GOR_Pajajaran.jpg/1280px-Stadion_Utama_GOR_Pajajaran.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-93b05dc748.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Bogor_Zoology_Museum_back_entrance.jpg/1280px-Bogor_Zoology_Museum_back_entrance.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        },
+        {
+          "path": "/images/spots/wm-pool-heritage-df4792c81e.jpg",
+          "width": 1280,
+          "height": 960,
+          "aspectRatio": 1.33,
+          "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/Bogor_Botanical_Gardens_Java23.jpg/1280px-Bogor_Botanical_Gardens_Java23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+        }
+      ]
+    }
+  ]
+}

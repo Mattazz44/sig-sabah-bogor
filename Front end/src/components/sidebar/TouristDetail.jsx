@@ -24,13 +24,15 @@ export default function TouristDetail({ place }) {
 
       {place ? (
         <div className="mt-4">
-          <div className="relative overflow-hidden rounded-2xl">
+          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl">
             <SafeImage
               src={place.image}
               alt={place.name}
+              width={640}
+              height={400}
               loading="eager"
               fetchPriority="high"
-              className="aspect-[16/10] w-full object-cover"
+              className="h-full w-full object-cover object-center"
             />
           </div>
 

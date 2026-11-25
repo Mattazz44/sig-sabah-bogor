@@ -140,8 +140,8 @@ function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
         aria-label={`Buka galeri foto ${placeName}, ${displayImages.length} foto`}
         className="group relative block w-full rounded-2xl py-2.5 text-left transition-opacity duration-150 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EBF0EB]"
       >
-        {/* Wadah tumpukan berdimensi eksplisit agar aman terhadap CLS & overflow horizontal mobile/tablet */}
-        <div className="relative mx-auto h-[184px] min-[375px]:h-[208px] sm:h-[228px] w-full max-w-[200px] min-[375px]:max-w-[236px] sm:max-w-[290px]">
+        {/* Wadah tumpukan berasio 16:10 seragam agar foto landscape tidak gepeng atau terpotong sempit */}
+        <div className="relative mx-auto aspect-[16/10] w-full max-w-[260px] min-[375px]:max-w-[296px] sm:max-w-[336px]">
           {[...visibleStack].reverse().map((imgUrl, revIdx) => {
             const stackIdx = visibleStack.length - 1 - revIdx
             const layer = STACK_TRANSFORM_BY_INDEX[stackIdx] || STACK_TRANSFORM_BY_INDEX[2]
@@ -151,18 +151,18 @@ function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
               <div
                 key={`${imgUrl}-${stackIdx}`}
                 aria-hidden={stackIdx > 0}
-                className={`absolute inset-0 rounded-2xl border border-[rgba(244,239,230,0.18)] bg-[#1C241C] p-1.5 pb-2 shadow-[0_12px_28px_-8px_rgba(0,0,0,0.5)] will-change-transform transition-transform duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transform-none motion-reduce:transition-none ${layer.zIndex} ${activeTransform}`}
+                className={`absolute inset-0 rounded-2xl border border-[rgba(244,239,230,0.18)] bg-[#1C241C] p-1.5 shadow-[0_12px_28px_-8px_rgba(0,0,0,0.5)] will-change-transform transition-transform duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transform-none motion-reduce:transition-none ${layer.zIndex} ${activeTransform}`}
               >
-                <div className="relative h-full w-full overflow-hidden rounded-xl bg-white/[0.04]">
+                <div className="relative aspect-[16/10] h-full w-full overflow-hidden rounded-xl bg-white/[0.04]">
                   <SafeImage
                     src={imgUrl}
                     fallback={fallbackPhoto}
                     alt={stackIdx === 0 ? `${placeName} foto galeri` : ''}
-                    width={480}
-                    height={360}
+                    width={640}
+                    height={400}
                     loading={stackIdx === 0 ? 'eager' : 'lazy'}
                     decoding="async"
-                    className="h-full w-full"
+                    className="h-full w-full object-cover object-center"
                   />
 
                   {/* Badge penghitung foto di sudut kartu teratas */}
@@ -179,9 +179,35 @@ function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
         </div>
 
         <p className="mt-2.5 text-center text-[12px] font-medium text-white/60 transition-colors duration-150 group-hover:text-[#EBF0EB]">
-          Ketuk kartu untuk melihat seluruh galeri
+          Ketuk foto untuk memperbesar di galeri penuh
         </p>
       </button>
+
+      {/* Grid Preview Galeri 3 Foto Proporsional (aspect-[16/10] object-cover) */}
+      {visibleStack.length > 1 && (
+        <div className="mt-2.5 grid grid-cols-3 gap-2" role="group" aria-label={`Preview galeri ${placeName}`}>
+          {visibleStack.map((imgUrl, idx) => (
+            <button
+              key={`${imgUrl}-preview-${idx}`}
+              type="button"
+              onClick={() => onOpenLightbox(idx)}
+              aria-label={`Perbesar foto ${idx + 1} dari ${displayImages.length}`}
+              className="group/thumb relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-[rgba(244,239,230,0.16)] bg-white/[0.04] shadow-sm transition-all duration-150 hover:border-[#DFAA63]/55 active:scale-[0.97]"
+            >
+              <SafeImage
+                src={imgUrl}
+                fallback={fallbackPhoto}
+                alt={`${placeName} preview ${idx + 1}`}
+                width={320}
+                height={200}
+                loading="lazy"
+                decoding="async"
+                className="h-full w-full object-cover object-center transition-transform duration-300 group-hover/thumb:scale-105"
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -484,8 +510,8 @@ function PhotoLightboxModal({
                 fit="contain"
                 loading="eager"
                 decoding="async"
-                className="max-h-[70dvh] sm:max-h-[74dvh] max-w-full"
-                imgClassName="rounded-2xl border border-white/20 shadow-2xl"
+                className="max-h-[80vh] max-w-[90vw]"
+                imgClassName="max-h-[80vh] max-w-[90vw] object-contain rounded-2xl border border-white/20 shadow-2xl"
               />
             </div>
           ))}
@@ -553,7 +579,7 @@ function PhotoLightboxModal({
                     onClick={() => onChangeIndex(idx)}
                     aria-label={`Pilih foto ${idx + 1} dari ${totalPhotos}`}
                     aria-current={isCurrent ? 'true' : undefined}
-                    className={`relative h-12 w-16 overflow-hidden rounded-xl border-2 transition-all duration-150 ${
+                    className={`relative aspect-[16/10] w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-150 ${
                       isCurrent
                         ? 'scale-105 border-[#EBF0EB] opacity-100'
                         : 'border-white/20 opacity-60 hover:opacity-95'
@@ -563,10 +589,10 @@ function PhotoLightboxModal({
                       src={imgUrl}
                       fallback={fallbackPhoto}
                       alt=""
-                      width={96}
-                      height={72}
+                      width={160}
+                      height={100}
                       loading="lazy"
-                      className="h-full w-full"
+                      className="h-full w-full object-cover object-center"
                     />
                   </button>
                 )
@@ -813,17 +839,17 @@ function TouristDetailPage({
         </header>
 
         {/* Banner Hero Image */}
-        <section className="apple-retro-bevel relative h-[40svh] min-h-[250px] max-h-[360px] w-full overflow-hidden bg-white/[0.04] md:h-[280px] lg:h-[320px] md:max-h-none md:rounded-3xl md:border md:border-[rgba(244,239,230,0.16)] md:shadow-2xl">
+        <section className="apple-retro-bevel relative h-64 md:h-80 w-full overflow-hidden bg-white/[0.04] md:rounded-3xl md:border md:border-[rgba(244,239,230,0.16)] md:shadow-2xl">
           <SafeImage
             src={heroImage}
             fallback={fallbackPhoto}
             alt={place.name}
-            width={1200}
+            width={1280}
             height={720}
             loading="eager"
             fetchPriority="high"
             decoding="async"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-center"
           />
 
           {/* Top scrim mobile untuk visibilitas bar kontrol */}
@@ -1075,14 +1101,16 @@ function TouristDetailPage({
                           }}
                           className="group -mx-2 flex min-h-[56px] w-[calc(100%+1rem)] items-center gap-3 rounded-xl px-2 py-2.5 text-left transition-all duration-150 hover:bg-white/[0.08] active:scale-[0.98]"
                         >
-                          <div className="apple-retro-bevel h-12 w-12 shrink-0 overflow-hidden rounded-xl ring-1 ring-[rgba(244,239,230,0.16)]">
+                          <div className="apple-retro-bevel aspect-[16/10] w-20 shrink-0 overflow-hidden rounded-xl ring-1 ring-[rgba(244,239,230,0.16)]">
                             <SafeImage
                               src={cleanDetailText(item.image) || getBogorFallbackPhoto(item)}
                               fallback={getBogorFallbackPhoto(item)}
                               alt={item.name}
+                              width={160}
+                              height={100}
                               loading="lazy"
                               decoding="async"
-                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
                             />
                           </div>
                           <div className="min-w-0 flex-1">

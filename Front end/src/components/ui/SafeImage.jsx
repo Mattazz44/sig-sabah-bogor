@@ -150,11 +150,16 @@ function SafeImage({
 
   const innerImageClasses = className
     .replace(/\bborder(?:-[^\s]+)?/g, '')
+    .replace(/\baspect-[^\s]+/g, '')
     .trim()
 
+  const combinedContainClasses = `${wrapperClasses} ${imgClassName}`
+  const defaultMaxH = /\bmax-h-/.test(combinedContainClasses) ? '' : 'max-h-full'
+  const defaultMaxW = /\bmax-w-/.test(combinedContainClasses) ? '' : 'max-w-full'
+
   const imageFitClasses = isContain
-    ? 'max-h-full max-w-full w-auto h-auto object-contain'
-    : 'h-full w-full object-cover'
+    ? `${defaultMaxH} ${defaultMaxW} w-auto h-auto object-contain object-center`.trim()
+    : 'h-full w-full object-cover object-center'
 
   return (
     <div

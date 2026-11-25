@@ -8,22 +8,18 @@ export const DEFAULT_AVATAR_PLACEHOLDER =
 const BOGOR_FALLBACK_POOLS = {
   alam: [
     '/images/spots/kebun-raya-bogor.jpg',
-    '/images/spots/curug-cikuluwung.jpg',
-    '/images/spots/curug-leuwi-hejo.jpg',
-    '/images/spots/curug-nangka.jpg',
     '/images/spots/taman-peranginan.jpg',
+    '/images/spots/jbound-geo-edu-park.jpg',
   ],
   kuliner: [
-    '/images/spots/kopi-daong.jpg',
-    '/images/spots/jalan-suryakencana.jpg',
     '/images/spots/lawang-surya-kencana.jpg',
+    '/images/spots/jalan-suryakencana.jpg',
+    '/images/spots/taman-peranginan.jpg',
   ],
   edukasi: [
-    '/images/spots/jbound-geo-edu-park.jpg',
     '/images/spots/museum-zoologi.jpg',
-    '/images/spots/museum-peta.jpg',
     '/images/spots/prasasti-batutulis.jpg',
-    '/images/spots/tugu-kujang.jpg',
+    '/images/spots/jbound-geo-edu-park.jpg',
   ],
 }
 
@@ -77,6 +73,9 @@ const ngrokPendingFetches = new Map()
  * Pada localhost/same-origin reguler, native <img> jauh lebih cepat tanpa saturasi koneksi.
  */
 export function shouldUseNgrokFetch(url = '') {
+  if (typeof url === 'string' && /^https?:\/\//i.test(url)) {
+    return /ngrok/i.test(url)
+  }
   if (typeof window !== 'undefined' && /ngrok/i.test(window.location.hostname || '')) {
     return true
   }
@@ -84,7 +83,7 @@ export function shouldUseNgrokFetch(url = '') {
   if (/ngrok/i.test(rawBase)) {
     return true
   }
-  return typeof url === 'string' && /ngrok/i.test(url)
+  return false
 }
 
 /**
