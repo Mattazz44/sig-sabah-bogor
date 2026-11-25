@@ -25,7 +25,7 @@ class GoogleAuthController extends Controller
             is_array($configuredOrigins) ? $configuredOrigins : [],
             [
                 (string) env('FRONTEND_URL', ''),
-                (string) config('app.url', 'http://localhost:8000'),
+                (string) config('app.url', 'http://127.0.0.1:8001'),
             ]
         );
 
@@ -41,7 +41,7 @@ class GoogleAuthController extends Controller
 
         $origins = array_values(array_unique($origins));
         if (empty($origins)) {
-            return ['http://localhost:8000'];
+            return ['http://127.0.0.1:8001'];
         }
 
         return $origins;

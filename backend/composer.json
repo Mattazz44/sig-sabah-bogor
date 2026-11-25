@@ -42,9 +42,13 @@
             "npm install --ignore-scripts",
             "npm run build"
         ],
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan serve --port=8001"
+        ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "@php artisan dev"
+            "@php artisan serve --port=8001"
         ],
         "test": [
             "@php artisan config:clear --ansi @no_additional_args",

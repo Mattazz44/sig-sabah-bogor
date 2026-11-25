@@ -19,10 +19,17 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => array_values(array_filter(array_map(
+    'allowed_origins' => array_values(array_unique(array_filter(array_map(
         static fn (string $origin): string => rtrim(trim($origin), '/'),
-        explode(',', (string) (env('FRONTEND_URL') ?: env('APP_URL', 'http://localhost:8000')))
-    ))),
+        explode(',', (string) env(
+            'CORS_ALLOWED_ORIGINS',
+            implode(',', array_filter([
+                env('FRONTEND_URL', 'http://localhost:5173'),
+                'http://127.0.0.1:5173',
+                env('APP_URL', 'http://127.0.0.1:8001'),
+            ]))
+        ))
+    )))),
 
     'allowed_origins_patterns' => [],
 

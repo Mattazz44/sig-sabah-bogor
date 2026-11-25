@@ -6,8 +6,8 @@
 | **Nama Produk** | SIG Wisata Sabah Bogor (Jelajah Wisata Kota & Kabupaten Bogor) |
 | **Tipe Aplikasi** | Progressive Web Application (PWA) & Hybrid Android App (Capacitor) |
 | **Arsitektur** | SPA (`React 19 + Vite 8 + MapLibre GL`) terintegrasi REST API `Laravel 13 + Sanctum + Spatial DB (PostGIS/MySQL/SQLite)` |
-| **Status Dokumen** | Updated / Security Hardened (v1.1) |
-| **Terakhir Diperbarui** | 21 November 2026 |
+| **Status Dokumen** | Updated / Standardized Local Dev & Security Hardened (v1.2) |
+| **Terakhir Diperbarui** | 25 November 2026 |
 
 ---
 
@@ -166,4 +166,37 @@ Kota dan Kabupaten Bogor memiliki puluhan destinasi wisata unggulan yang terseba
 1. **Desain Mobile-First, Responsif Tablet/Desktop & Ergonomi Satu Tangan**: Seluruh halaman mendukung ukuran layar smartphone hingga desktop (`h-dvh`, `env(safe-area-inset-bottom)`), dengan kontrol sentuh minimal `44x44px`.
 2. **Performa Tinggi 60 FPS**: Isolasi *scroll container* dan animasi berbasis properti komposit GPU agar interaksi *Explore*, *Navigasi*, dan *Sidebar* tetap mulus tanpa *re-layout* berat pada kanvas peta.
 3. **Optimasi Pemuatan Gambar (`SafeImage.jsx`) & Anti Memory Leak**: Menggunakan *Shimmer Skeleton Loader*, `loading="lazy"`, `decoding="async"`, *fallback inline SVG Data URI*, serta pembersihan `URL.revokeObjectURL()` setelah pratinjau/upload avatar.
-4. **Keterujian Otomatis**: Seluruh mekanisme autentikasi, RBAC, rate limiting, proteksi IDOR, validasi upload, anti path traversal, dan alur Google OAuth terverifikasi oleh *Feature Test Suite* di [SecurityHardeningTest.php](file:///d:/project%20sabah%20bogor/backend/tests/Feature/SecurityHardeningTest.php).
+4. **Keterujian Otomatis**: Seluruh mekanisme autentikasi, RBAC, rate limiting, proteksi IDOR, validasi upload, anti path traversal, validasi spasial Kota Bogor, dan alur Google OAuth terverifikasi oleh *Feature Test Suite* di [SecurityHardeningTest.php](file:///d:/project%20sabah%20bogor/backend/tests/Feature/SecurityHardeningTest.php) dan [SilentSpatialValidationTest.php](file:///d:/project%20sabah%20bogor/backend/tests/Feature/SilentSpatialValidationTest.php).
+
+---
+
+## 7. Standar Lingkungan Pengembangan & Troubleshooting Server (Windows)
+
+Untuk memastikan seluruh anggota tim pengembang dapat menjalankan aplikasi tanpa kendala bentrok port maupun perbedaan versi PHP di Windows, proyek ini menerapkan standar operasional berikut:
+
+### 7.1 Standarisasi Port Backend (`8001`) & Frontend (`5173`)
+* **Backend Laravel (`http://127.0.0.1:8001`)**: Port utama backend distandarkan ke **`8001`** (bukan `8000`) pada `backend/.env.example` (`APP_URL=http://127.0.0.1:8001`), `backend/config/cors.php`, `backend/config/sanctum.php`, `Front end/.env.example` (`VITE_API_BASE_URL=http://127.0.0.1:8001`), dan proxy `Front end/vite.config.js`. Hal ini mencegah bentrok dengan reservasi port `8000` oleh layanan **Hyper-V / WSL2 / WinNAT** di Windows.
+* **Shortcut Menjalankan Backend**: File `backend/composer.json` menyediakan script `composer serve` (dan `composer dev`) yang otomatis mengeksekusi `php artisan serve --port=8001` tanpa batas waktu proses Composer.
+
+### 7.2 Troubleshooting & Panduan Menjalankan Server (Windows)
+
+1. **Menjalankan Backend di Port `8001`:**
+   ```powershell
+   cd backend
+   composer serve
+   # atau secara eksplisit:
+   php artisan serve --port=8001
+   ```
+
+2. **Menjalankan Backend dengan Herd Lite (Mengatasi Konflik PHP Versi Lama di `PATH`):**
+   * Proyek ini mensyaratkan **PHP `8.4.0+`**. Apabila perintah `php` di terminal masih memanggil PHP versi lama (misalnya bawaan XAMPP), jalankan binary PHP **Herd Lite** secara langsung di PowerShell:
+     ```powershell
+     cd backend
+     & "$env:USERPROFILE\.config\herd-lite\bin\php.exe" artisan serve --port=8001
+     ```
+   * Untuk perbaikan permanen: buka **Environment Variables** Windows, edit variabel **`Path`** pada *User variables*, lalu pindahkan `%USERPROFILE%\.config\herd-lite\bin` ke **urutan paling atas** menggunakan tombol **Move Up**, simpan, dan buka ulang terminal.
+
+3. **Verifikasi Layanan Database (MySQL) & Konfigurasi `.env` Frontend:**
+   * Pastikan layanan **MySQL** (jika memakai `DB_CONNECTION=mysql` di `backend/.env`) sudah berstatus aktif/berjalan (*Running*), atau file `backend/database/database.sqlite` tersedia jika memakai `DB_CONNECTION=sqlite`.
+   * Pastikan `backend/.env` menggunakan `APP_URL=http://127.0.0.1:8001` dan `FRONTEND_URL=http://localhost:5173` (jalankan `php artisan config:clear` setelah mengedit `.env`).
+   * Pastikan `Front end/.env` mengatur `VITE_API_BASE_URL=http://127.0.0.1:8001`, lalu restart `npm run dev` pada folder `Front end/` agar Vite memuat konfigurasi port `8001`.

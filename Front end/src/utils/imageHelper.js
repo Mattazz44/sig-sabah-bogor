@@ -90,7 +90,7 @@ export function shouldUseNgrokFetch(url = '') {
  * Mengonversi path gambar dari API Backend menjadi URL lengkap.
  * - Jika imagePath kosong atau null -> kembalikan DEFAULT_IMAGE_PLACEHOLDER.
  * - Jika sudah ada di cache blob -> kembalikan blob URL dari memori.
- * - Jika imagePath masih mengandung http://localhost:8000 atau http://127.0.0.1:8000 ->
+ * - Jika imagePath masih mengandung http://localhost:8001 atau http://127.0.0.1:8001 ->
  *   ganti domain tersebut dengan import.meta.env.VITE_API_BASE_URL.
  * - Jika imagePath berupa path relatif (misal: /images/taman.jpg) ->
  *   gabungkan dengan baseUrl yang bersih dari spasi dan trailing slash.

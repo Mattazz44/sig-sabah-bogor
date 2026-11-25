@@ -39,7 +39,7 @@ Sebelum menjalankan proyek ini di perangkat lokal Anda, pastikan sudah menginsta
 * **Node.js** versi `18.x` atau `20.x+` (disarankan LTS terbaru)
 * **npm** (bawaan instalasi Node.js)
 * **Git**
-* *(Opsional)* **PHP 8.2+ & Composer** jika ingin menjalankan server *Backend* Laravel secara lokal di folder `backend/`.
+* *(Opsional)* **PHP 8.4+ & Composer** jika ingin menjalankan server *Backend* Laravel secara lokal di folder `backend/` (gunakan `composer serve` atau `php artisan serve --port=8001`).
 
 ---
 
@@ -64,7 +64,7 @@ Buat atau perbarui file `.env` di dalam folder `Front end/` (`Front end/.env`) d
 
 ```env
 # Contoh jika menggunakan server Backend Laravel lokal:
-VITE_API_BASE_URL=http://localhost:8000
+VITE_API_BASE_URL=http://127.0.0.1:8001
 
 # Contoh jika terhubung ke server Backend tim melalui Ngrok:
 # VITE_API_BASE_URL=https://nama-subdomain-anda.ngrok-free.dev
@@ -78,12 +78,22 @@ Setelah server berjalan, buka browser dan akses alamat yang tampil di terminal (
 
 ### 5. Perintah Tambahan (Build & Preview Produksi)
 ```bash
-# Mem-build aplikasi untuk produksi ke folder dist/
+# Mem-build aplikasi untuk produksi ke folder backend/public/
 npm run build
 
 # Menjalankan pratinjau hasil build produksi
 npm run preview
 ```
+
+### 6. Troubleshooting Koneksi Backend di Windows (Port `8001` & Herd Lite)
+* **Gunakan Port `8001` (Hindari Port `8000`):** Port `8000` sering dikunci oleh Hyper-V/WSL di Windows. Jalankan backend dari folder `backend/` menggunakan `composer serve` atau `php artisan serve --port=8001`.
+* **Pengguna Herd Lite dengan Konflik PHP Lama di `PATH`:** Jalankan backend langsung memakai binary Herd Lite di PowerShell:
+  ```powershell
+  cd ..\backend
+  & "$env:USERPROFILE\.config\herd-lite\bin\php.exe" artisan serve --port=8001
+  ```
+  atau naikkan `%USERPROFILE%\.config\herd-lite\bin` ke urutan paling atas pada **Environment Variables (`Path`)** Windows, lalu buka ulang terminal.
+* **Database & Sinkronisasi `.env`:** Pastikan layanan database (**MySQL** / SQLite) sudah aktif dan `Front end/.env` telah berisi `VITE_API_BASE_URL=http://127.0.0.1:8001` (restart `npm run dev` setiap kali selesai mengubah `.env`).
 
 ---
 

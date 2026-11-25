@@ -7,7 +7,7 @@ import {
 } from './imageHelper'
 
 // Fallback backend untuk build Capacitor native ketika VITE_API_BASE_URL tidak diisi
-const DEFAULT_REMOTE_BACKEND = 'http://10.0.2.2:8000'
+const DEFAULT_REMOTE_BACKEND = 'http://10.0.2.2:8001'
 const configuredApiBase = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/+$/, '')
 
 // Gunakan VITE_API_BASE_URL jika ada di .env; jika di Android Capacitor gunakan backend default native; jika di browser dev/PWA gunakan proxy/same-origin ''

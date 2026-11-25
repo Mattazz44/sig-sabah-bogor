@@ -69,27 +69,37 @@ Buka `backend/.env` dan sesuaikan konfigurasi lokal (jangan pernah membagikan at
 APP_NAME="Sabah Bogor"
 APP_ENV=local
 APP_DEBUG=true
-APP_URL=http://localhost:8000
+APP_URL=http://127.0.0.1:8001
 FRONTEND_URL=http://localhost:5173
 
 DB_CONNECTION=sqlite
+# Jika menggunakan MySQL / MariaDB, pastikan service MySQL sudah aktif lalu sesuaikan:
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=sabah_bogor
+# DB_USERNAME=root
+# DB_PASSWORD=
 
 # Isi jika menggunakan Google OAuth Login (diperoleh dari Google Cloud Console)
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
-GOOGLE_REDIRECT_URI=http://127.0.0.1:8000/api/auth/google/callback
+GOOGLE_REDIRECT_URI=http://127.0.0.1:8001/api/auth/google/callback
 ```
-> **Catatan CORS & OAuth:** Nilai `FRONTEND_URL=http://localhost:5173` digunakan oleh `backend/config/cors.php` (dengan `supports_credentials: true`) dan whitelist redirect pada `GoogleAuthController`. Untuk multiple origin, pisahkan dengan koma (misal `http://localhost:5173,http://localhost:8000`). Untuk lingkungan *production*, pastikan `APP_DEBUG=false`, `APP_ENV=production`, dan `FRONTEND_URL` diisi domain produksi resmi.
+> **Catatan CORS & OAuth:** Nilai `FRONTEND_URL=http://localhost:5173` digunakan oleh `backend/config/cors.php` (dengan `supports_credentials: true`) dan whitelist redirect pada `GoogleAuthController`. Untuk multiple origin, pisahkan dengan koma (misal `http://localhost:5173,http://127.0.0.1:8001`). Untuk lingkungan *production*, pastikan `APP_DEBUG=false`, `APP_ENV=production`, dan `FRONTEND_URL` diisi domain produksi resmi.
 
-Buat application key, jalankan migrasi (dan seeder opsional), lalu nyalakan server Laravel:
+Buat application key, jalankan migrasi (dan seeder opsional), lalu nyalakan server Laravel di **port `8001`**:
 ```bash
 php artisan key:generate
 php artisan migrate
 # Opsional untuk mengisi data awal destinasi wisata & struktur contoh:
 php artisan db:seed
 
-# Jalankan server backend pada port 8000
-php artisan serve
+# Jalankan server backend pada port 8001 (menggunakan shortcut Composer)
+composer serve
+
+# Atau menggunakan perintah Artisan secara eksplisit:
+php artisan serve --port=8001
 ```
 
 Untuk menjalankan pengujian backend (termasuk *Security Hardening Tests*):
@@ -115,24 +125,76 @@ Copy-Item .env.example .env
 
 Konfigurasi `Front end/.env`:
 ```env
-# Kosongkan agar memakai Vite dev proxy (/api -> http://127.0.0.1:8000) atau origin sama dengan Laravel
-VITE_API_BASE_URL=
+# Arahkan ke server Backend Laravel lokal pada port 8001:
+VITE_API_BASE_URL=http://127.0.0.1:8001
 
 # Untuk build Capacitor Android atau domain API terpisah, isi dengan URL origin backend:
 # VITE_API_BASE_URL=https://api.example.com
 ```
+*(Catatan: Proxy dev server di `Front end/vite.config.js` untuk `/api`, `/images`, dan `/sanctum` juga telah distandarkan ke `http://127.0.0.1:8001`.)*
 
 Jalankan server development Frontend:
 ```bash
 npm run dev
 ```
-Aplikasi Frontend akan tersedia di **`http://localhost:5173`** (sedangkan backend berjalan di **`http://localhost:8000`**).
+Aplikasi Frontend akan tersedia di **`http://localhost:5173`** dan terhubung otomatis ke backend di **`http://127.0.0.1:8001`**.
 
 Perintah linter & build produksi Frontend (ke `backend/public`):
 ```bash
 npm run lint
 npm run build
 ```
+
+---
+
+## Troubleshooting & Panduan Menjalankan Server (Windows)
+
+Bagian ini membantu mengatasi kendala umum saat menjalankan proyek di lingkungan **Windows** (bentrok port `8000`, konflik versi PHP lama di `PATH`, serta koneksi database & `.env`).
+
+### 1. Menghindari Bentrok / Blokir Port `8000` di Windows
+Pada Windows 10/11, port `8000` sering dikunci atau direservasi secara otomatis oleh layanan sistem seperti **Hyper-V**, **WSL2**, atau **Windows NAT (`WinNAT`)**, sehingga `php artisan serve` bawaan gagal dijalankan atau tidak dapat diakses oleh frontend.
+
+Oleh karena itu, seluruh konfigurasi proyek ini telah distandarkan menggunakan **port `8001` (`http://127.0.0.1:8001`)**. Selalu jalankan backend dengan salah satu perintah berikut di dalam folder `backend/`:
+```powershell
+# Opsi 1: Menggunakan script shortcut Composer (disarankan)
+composer serve
+
+# Opsi 2: Menentukan port 8001 secara eksplisit pada Artisan
+php artisan serve --port=8001
+```
+
+### 2. Mengatasi Error Versi PHP Lama bagi Pengguna Herd Lite (Windows)
+Backend Laravel pada proyek ini membutuhkan **PHP `8.4.0` ke atas**. Jika di komputer Anda terpasang lebih dari satu versi PHP (misalnya XAMPP/Laragon lama dengan PHP `8.1`/`8.2` masih berada di urutan atas `PATH` sistem), perintah `php` atau `composer` biasa dapat memunculkan error `Your Composer dependencies require a PHP version ">= 8.4.0"`.
+
+Jika Anda menggunakan **Laravel Herd Lite** di Windows, gunakan salah satu solusi berikut:
+
+* **Cara Cepat (Panggil Binary PHP Herd Lite Langsung di PowerShell):**
+  ```powershell
+  cd backend
+  & "$env:USERPROFILE\.config\herd-lite\bin\php.exe" artisan serve --port=8001
+  ```
+  *(Anda juga dapat menjalankan perintah lain dengan pola yang sama, misalnya `& "$env:USERPROFILE\.config\herd-lite\bin\php.exe" artisan migrate`.)*
+
+* **Cara Permanen (Naikkan Urutan `PATH` Herd Lite ke Paling Atas):**
+  1. Tekan `Win + S`, ketik **Environment Variables**, lalu pilih **Edit environment variables for your account** (atau *Edit the system environment variables* -> tombol **Environment Variables**).
+  2. Pada daftar **User variables** (serta cek juga **System variables**), pilih variabel **`Path`** lalu klik **Edit**.
+  3. Pastikan path Herd Lite (`%USERPROFILE%\.config\herd-lite\bin` atau `C:\Users\<NamaUser>\.config\herd-lite\bin`) sudah terdaftar, lalu klik tombol **Move Up** hingga berada di **urutan paling atas** (di atas `C:\xampp\php` atau folder PHP versi lama lainnya).
+  4. Klik **OK** untuk menyimpan, **tutup seluruh jendela PowerShell / terminal VS Code**, lalu buka terminal baru dan jalankan `php -v` untuk memastikan versi aktif sudah **PHP 8.4+**.
+
+### 3. Memastikan Layanan Database (MySQL) Aktif & Konfigurasi `.env` Sinkron ke Port `8001`
+Sebelum menguji aplikasi di browser, pastikan daftar periksa berikut sudah terpenuhi:
+1. **Layanan Database Aktif:**
+   * Jika `backend/.env` menggunakan **MySQL / MariaDB** (`DB_CONNECTION=mysql`), pastikan service **MySQL** sudah menyala (*Running*) melalui panel Laragon, XAMPP, atau Windows Services (`services.msc`), serta database sudah dibuat sebelum menjalankan `php artisan migrate --seed`.
+   * Jika menggunakan **SQLite** (`DB_CONNECTION=sqlite`), pastikan file `backend/database/database.sqlite` tersedia.
+2. **Konfigurasi `backend/.env`:**
+   * Pastikan tertulis `APP_URL=http://127.0.0.1:8001` dan `FRONTEND_URL=http://localhost:5173`.
+   * Setiap kali mengubah isi `backend/.env`, bersihkan cache konfigurasi dengan perintah:
+     ```powershell
+     php artisan config:clear
+     ```
+3. **Konfigurasi `Front end/.env`:**
+   * Pastikan file `Front end/.env` memiliki nilai `VITE_API_BASE_URL=http://127.0.0.1:8001` (bukan `8000`).
+   * Jika server Vite (`npm run dev`) sudah terlanjur berjalan saat `.env` diubah, tekan `Ctrl + C` lalu jalankan ulang `npm run dev` agar Vite membaca URL port `8001` terbaru.
 
 ---
 
