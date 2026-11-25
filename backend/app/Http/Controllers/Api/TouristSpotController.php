@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\TouristSpot;
 use App\Services\ImageCompressor;
+use App\Services\SpatialBoundaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -143,9 +144,21 @@ class TouristSpotController extends Controller
     /**
      * Store a newly created tourist spot via admin API.
      */
-    public function store(Request $request)
+    public function store(Request $request, SpatialBoundaryService $spatialBoundary)
     {
         $validated = $this->validateSpotPayload($request);
+
+        // Silent Spatial Validation (Auto-Kill / Quarantine jika di luar batas administrasi Kota Bogor)
+        if (!$spatialBoundary->isWithinKotaBogor((float) $validated['latitude'], (float) $validated['longitude'])) {
+            $spatialBoundary->quarantine($request, $validated, 'create', 'api');
+            $synthetic = $spatialBoundary->buildSyntheticSpotPayload($validated, $request);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Tempat wisata '{$synthetic['name']}' berhasil ditambahkan.",
+                'data' => $synthetic,
+            ], 201);
+        }
 
         $baseSlug = Str::slug($validated['name']) ?: 'lokasi-wisata';
         $slug = $baseSlug;
@@ -195,7 +208,7 @@ class TouristSpotController extends Controller
     /**
      * Update an existing tourist spot via admin API.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id, SpatialBoundaryService $spatialBoundary)
     {
         $spot = TouristSpot::query()
             ->where('id', is_numeric($id) ? (int) $id : -1)
@@ -203,6 +216,18 @@ class TouristSpotController extends Controller
             ->firstOrFail();
 
         $validated = $this->validateSpotPayload($request);
+
+        // Silent Spatial Validation (Auto-Kill / Quarantine jika koordinat baru keluar batas Kota Bogor)
+        if (!$spatialBoundary->isWithinKotaBogor((float) $validated['latitude'], (float) $validated['longitude'])) {
+            $spatialBoundary->quarantine($request, $validated, 'update', 'api', $spot);
+            $synthetic = $spatialBoundary->buildSyntheticSpotPayload($validated, $request, $spot);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Tempat wisata '{$synthetic['name']}' berhasil diperbarui.",
+                'data' => $synthetic,
+            ]);
+        }
 
         [$primaryImage, $gallery] = $this->resolvePhotoGallery($request, $spot);
 
@@ -265,14 +290,19 @@ class TouristSpotController extends Controller
     /**
      * Return Kota Bogor administrative boundary GeoJSON (WBS 1.2.7).
      */
-    public function boundary()
+    public function boundary(SpatialBoundaryService $spatialBoundary)
     {
-        $path = database_path('data/bogor_boundary.geojson');
-        if (!file_exists($path)) {
+        $path = $spatialBoundary->resolveBoundaryFilePath();
+        if ($path === null) {
             return response()->json(['status' => 'error', 'message' => 'Boundary file not found'], 404);
         }
 
-        $geojson = json_decode(file_get_contents($path), true);
+        $raw = @file_get_contents($path);
+        if ($raw === false) {
+            return response()->json(['status' => 'error', 'message' => 'Boundary file not found'], 404);
+        }
+
+        $geojson = json_decode($raw, true);
         return response()->json($geojson);
     }
 

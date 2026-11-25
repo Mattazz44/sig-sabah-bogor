@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\TouristSpot;
 use App\Services\ImageCompressor;
+use App\Services\SpatialBoundaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -59,7 +60,7 @@ class AdminTouristSpotController extends Controller
     /**
      * Simpan tempat wisata baru ke database PostgreSQL / PostGIS
      */
-    public function store(Request $request)
+    public function store(Request $request, SpatialBoundaryService $spatialBoundary)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -76,6 +77,15 @@ class AdminTouristSpotController extends Controller
             'photos.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'photo_order' => 'nullable|string', // JSON array of identifiers
         ]);
+
+        // Silent Spatial Validation (Auto-Kill / Quarantine jika di luar batas administrasi Kota Bogor)
+        if (!$spatialBoundary->isWithinKotaBogor((float) $validated['latitude'], (float) $validated['longitude'])) {
+            $spatialBoundary->quarantine($request, $validated, 'create', 'web_admin');
+            $cleanName = trim((string) $validated['name']);
+
+            return redirect()->route('admin.spots.index')
+                ->with('success', "Tempat wisata '{$cleanName}' berhasil ditambahkan ke database!");
+        }
 
         // Buat slug unik
         $baseSlug = Str::slug($validated['name']);
@@ -178,7 +188,7 @@ class AdminTouristSpotController extends Controller
     /**
      * Update data tempat wisata
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, SpatialBoundaryService $spatialBoundary)
     {
         $spot = TouristSpot::findOrFail($id);
 
@@ -197,6 +207,15 @@ class AdminTouristSpotController extends Controller
             'photos.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'photo_order' => 'nullable|string',
         ]);
+
+        // Silent Spatial Validation (Auto-Kill / Quarantine jika koordinat baru keluar batas Kota Bogor)
+        if (!$spatialBoundary->isWithinKotaBogor((float) $validated['latitude'], (float) $validated['longitude'])) {
+            $spatialBoundary->quarantine($request, $validated, 'update', 'web_admin', $spot);
+            $cleanName = trim((string) $validated['name']);
+
+            return redirect()->route('admin.spots.index')
+                ->with('success', "Tempat wisata '{$cleanName}' berhasil diperbarui!");
+        }
 
         // Upload file foto baru yang diunggah ke public/images/spots/
         $uploadedMap = [];
