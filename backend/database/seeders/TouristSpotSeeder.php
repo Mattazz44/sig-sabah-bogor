@@ -142,11 +142,11 @@ class TouristSpotSeeder extends Seeder
                     [
                         'name' => $name,
                         'category' => $category,
-                        'description' => $shortDesc,
+                        'description' => ($existingSpot && !empty($existingSpot->description)) ? $existingSpot->description : $shortDesc,
                         'detailed_description' => $detailedDesc,
                         'address' => $address,
                         'rating' => $existingSpot?->rating ?: 4.5,
-                        'operational_hours' => $operationalHours,
+                        'operational_hours' => ($existingSpot && !empty($existingSpot->operational_hours)) ? $existingSpot->operational_hours : $operationalHours,
                         'ticket_price' => $ticketPrice,
                         'image' => $image,
                         'gallery' => $existingSpot?->gallery ?: [],
