@@ -6,6 +6,42 @@ Format changelog mengikuti standar [Keep a Changelog](https://keepachangelog.com
 
 ---
 
+## [1.3.0] - 2026-11-26
+
+### Added
+- **Identitas Visual & Ikon Aplikasi `SABAH.png` (`index.html`, `manifest.json`, `vite.config.js`, `android/app/src/main/res/mipmap-*`, `admin.blade.php`, `login.blade.php`)**:
+  - Mengganti favicon browser (`icon`, `shortcut icon`) dan `apple-touch-icon` dengan `/SABAH.png` pada aplikasi utama maupun panel Admin.
+  - Memperbarui ikon PWA (`pwa-192x192.png`, `pwa-512x512.png`, dan `/SABAH.png`) serta seluruh 15 aset launcher icon Android Capacitor (`ic_launcher`, `ic_launcher_round`, `ic_launcher_foreground` pada `mipmap-mdpi` s/d `mipmap-xxxhdpi`) di atas warna latar hijau hutan gelap `#161D15`.
+- **Animasi Intro Logo SABAH pada Modal Login (`LoginModal.jsx`)**:
+  - Mengganti ikon kompas dengan emblem `/SABAH.png` (`w-20 h-20 rounded-2xl`) disertai animasi intro berdurasi `~2.4 detik` (`cubic-bezier(0.22, 1, 0.36, 1)`): trace jalur lengkung `S` peta, kemunculan pin lokasi & cincin radar, *glow pulse* hijau-emas, pembentukan penuh logo dengan sapuan kilau diagonal (*specular sheen*), serta *fade-in stagger* bertahap untuk judul dan input form di bawahnya (mulai detik ke `1.55–2.02`).
+- **Dukungan PWA Standalone & Komponen `ResponsiveSidebar` 2-State (`manifest.json`, `index.html`, `ResponsiveSidebar.jsx`)**:
+  - Menambahkan konfigurasi PWA `display: "standalone"` dan meta viewport `viewport-fit=cover` untuk tampilan layar penuh di perangkat mobile.
+  - Menambahkan komponen `ResponsiveSidebar.jsx` berbasis `framer-motion` dengan floating sidebar dark glassmorphism di desktop dan draggable bottom sheet 2 posisi (`expanded` & `minimized`) di mobile, lengkap dengan auto-minimize saat pengguna berinteraksi dengan peta atau mengklik marker wisata.
+- **Penyimpanan Notifikasi Terfilter (`Front end/src/utils/notifications.js`)**:
+  - Menambahkan pengelola notifikasi terpusat dengan *allowlist* ketat untuk 4 kategori aktivitas penting: status keberhasilan aksi (`success`), penambahan rute kustom baru (`route`), aktivitas sosial (`social`), dan penyimpanan tempat wisata ke daftar Tersimpan (`favorite`).
+- **Validasi Spasial Senyap & Karantina Koordinat (`SpatialBoundaryService.php`, `SpatialQuarantine.php`, `config/gis.php`, `SilentSpatialValidationTest.php`)**:
+  - Menambahkan mekanisme *silent spatial validation* (Point-in-Polygon ray-casting terhadap batas wilayah Bogor) yang otomatis mengarahkan input koordinat di luar batas ke tabel `spatial_quarantines` tanpa memunculkan error mentah ke klien.
+
+### Changed
+- **Penyaringan Pemicu Notifikasi (`NotificationDrawer.jsx`, `App.jsx`, `ActivitiesPage.jsx`, `SavedActivitiesPage.jsx`, `CustomRoutePage.jsx`, `ProfilePage.jsx`)**:
+  - Menghapus pembuatan notifikasi otomatis `"Baru dilihat / Riwayat jelajah"` (`recentSlugs`) saat pengguna sekadar membuka detail tempat wisata.
+  - Menghubungkan pemicu notifikasi hanya pada aksi nyata: menyimpan destinasi favorit, membuat/menghapus rute kustom, mengikuti pengguna atau membagikan cerita komunitas, serta menyimpan aktivitas dan memperbarui foto profil.
+- **Pengayaan Foto & Proporsi Gambar Wisata (`scrape_wisata.js`, `TouristCard.jsx`, `TouristList.jsx`, `TouristDetailPage.jsx`, `SafeImage.jsx`, `imageHelper.js`)**:
+  - Memperbarui foto nyata dan galeri untuk 80 destinasi wisata Kota Bogor serta menyeragamkan rasio thumbnail (`aspect-[16/10]`), hero detail (`h-64 md:h-80 object-cover`), dan lightbox (`max-h-[80vh] max-w-[90vw] object-contain`).
+- **Standardisasi Port Backend `8001` (`Front end/.env`, `vite.config.js`, `api.js`, `backend/.env`, `config/*.php`, `composer.json`, `README.md`, `PRD.md`)**:
+  - Menyeragamkan URL pengembangan backend Laravel ke `http://127.0.0.1:8001` beserta konfigurasi proxy Vite dan CORS `http://localhost:5173`.
+
+### Fixed
+- **Tampilan Full-Screen (`100dvh`) & Lebar Penuh Edge-to-Edge Bottom Sheet Mobile (`ResponsiveSidebar.jsx`, `TouristList.jsx`, `SearchBar.jsx`, `MapContainer.jsx`, `LocateControl.jsx`, `index.css`)**:
+  - Mengunci wrapper `html`, `body`, `#root`, `<main>`, dan peta OpenFreeMap ke `w-full h-[100dvh]` dengan `ResizeObserver` tanpa ruang kosong di tepi layar HP.
+  - Menghapus celah horizontal dan celah atas pada bottom sheet mobile sehingga panel melebar penuh (`left-0 right-0 w-full`), kotak pencarian melebar penuh dengan padding dalam `px-4`, dan posisi `expanded` naik penuh ke `top: 0` (`100dvh`, `rounded-none`) menutupi atribusi peta dengan rapi.
+  - Memisahkan area *drag handle* (`shrink-0`) dari daftar wisata (`overflow-y-auto flex-1`) di dalam kontainer `overflow-hidden` agar kartu dan gambar tidak bocor melewati batas atas panel saat di-scroll.
+- **Tata Letak Modal Notifikasi di Atas Bottom Navbar (`NotificationDrawer.jsx`)**:
+  - Merender modal notifikasi melalui `createPortal(..., document.body)` dengan batas bawah `pb-24` dan tinggi maksimum `max-h-[calc(100dvh-120px)]` agar berhenti tepat di atas floating bottom navigation bar.
+  - Mengubah struktur modal menjadi `flex flex-col overflow-hidden` dengan header `"Notifikasi"` dan footer tetap diam (`shrink-0`), serta membungkus daftar kartu di dalam kontainer `flex-1 min-h-0 overflow-y-auto overscroll-contain pb-4` agar item paling bawah tetap dapat di-scroll dan terbaca utuh.
+
+---
+
 ## [1.2.0] - 2026-11-22
 
 ### Added
