@@ -27,8 +27,10 @@ class ErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <div style={{
-          minHeight: '100vh',
-          backgroundColor: '#2c3b26',
+          minHeight: '100dvh',
+          width: '100%',
+          margin: 0,
+          backgroundColor: '#111711',
           color: '#ffffff',
           display: 'flex',
           flexDirection: 'column',

@@ -30,6 +30,6 @@ export function getMapFocusOffset() {
   if (w >= DESKTOP_BREAKPOINT) {
     return [-(SHEET_DESKTOP_LEFT + getDesktopSidebarWidth(w)) / 2, 0]
   }
-  // Shift map focus up so markers land cleanly in the top 62% visible area above default 38vh sheet
-  return [0, getHalfHeight(h) / 2 - NAV_HEIGHT / 2]
+  // Shift map focus slightly up above the minimized mobile sheet + floating dock
+  return [0, getPeekHeight(h) / 2 - NAV_HEIGHT / 2]
 }

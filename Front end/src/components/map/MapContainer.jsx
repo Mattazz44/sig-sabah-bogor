@@ -22,6 +22,7 @@ export default function MapView({
   onSelect,
   onOpenDetail,
   onMarkerHover = null,
+  onMapInteract = null,
   userPosition,
   locationStatus,
   onRequestLocation,
@@ -31,6 +32,10 @@ export default function MapView({
   onRegisterHoverHandler = null,
 }) {
   const mapContainerRef = useRef(null)
+  const onMapInteractRef = useRef(onMapInteract)
+  useEffect(() => {
+    onMapInteractRef.current = onMapInteract
+  }, [onMapInteract])
   const [mapInstance, setMapInstance] = useState(null)
   const [isStyleLoaded, setIsStyleLoaded] = useState(false)
   const markerRefs = useRef(new Map())
@@ -146,8 +151,33 @@ export default function MapView({
       setIs3D(map.getPitch() >= 20)
     }
 
+    const handleUserMapClick = () => {
+      onMapInteractRef.current?.()
+    }
+
+    const handleUserMapGesture = (e) => {
+      if (e?.originalEvent) {
+        onMapInteractRef.current?.()
+      }
+    }
+
     map.on('style.load', handleStyleLoad)
     map.on('pitchend', handlePitchEnd)
+    map.on('click', handleUserMapClick)
+    map.on('dragstart', handleUserMapGesture)
+    map.on('touchstart', handleUserMapClick)
+
+    // Otomatis resize kanvas OpenFreeMap/MapLibre saat address bar mobile berubah atau orientasi berputar
+    const handleViewportResize = () => {
+      map.resize()
+    }
+    let resizeObserver = null
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(handleViewportResize)
+      resizeObserver.observe(container)
+    }
+    window.addEventListener('resize', handleViewportResize)
+    window.visualViewport?.addEventListener('resize', handleViewportResize)
 
     setMapInstance(map)
     if (map.isStyleLoaded()) {
@@ -157,14 +187,28 @@ export default function MapView({
     const markersMap = markerRefs.current
 
     return () => {
+      resizeObserver?.disconnect()
+      window.removeEventListener('resize', handleViewportResize)
+      window.visualViewport?.removeEventListener('resize', handleViewportResize)
       map.off('style.load', handleStyleLoad)
       map.off('pitchend', handlePitchEnd)
+      map.off('click', handleUserMapClick)
+      map.off('dragstart', handleUserMapGesture)
+      map.off('touchstart', handleUserMapClick)
       markersMap.clear()
       setIsStyleLoaded(false)
       setMapInstance(null)
       map.remove()
     }
   }, [initialView])
+
+  const handleSelectMarker = useCallback(
+    (place) => {
+      onMapInteractRef.current?.()
+      onSelect?.(place)
+    },
+    [onSelect],
+  )
 
   const contextValue = useMemo(
     () => ({ map: mapInstance, isStyleLoaded }),
@@ -175,7 +219,7 @@ export default function MapView({
     <section
       id="map-section"
       aria-label="Peta wisata Bogor"
-      className="relative z-0 h-full w-full bg-[#F5F5F7]"
+      className="relative z-0 m-0 h-[100dvh] w-full overflow-hidden bg-[#F5F5F7] p-0"
     >
       {/* 3. PANEL METRICS MELAYANG (RouteMetrics.jsx) */}
       {isNavigationMode && hasDestination && (
@@ -247,7 +291,7 @@ export default function MapView({
         </div>
       )}
 
-      <div ref={mapContainerRef} className="h-full w-full" />
+      <div ref={mapContainerRef} className="m-0 h-full w-full p-0" />
 
       <MapLibreContext.Provider value={contextValue}>
         {mapInstance && (
@@ -259,7 +303,7 @@ export default function MapView({
             <MarkerClusterGroup
               places={places}
               selected={selected}
-              onSelect={onSelect}
+              onSelect={handleSelectMarker}
               onOpenDetail={onOpenDetail}
               onMarkerHover={onMarkerHover}
               registerMarker={registerMarker}

@@ -172,6 +172,11 @@ export default function App() {
   const [radiusKm, setRadiusKm] = useState(0)
   const [sheetExpanded, setSheetExpanded] = useState(false)
 
+  // Turunkan bottom sheet ke mode minimized saat pengguna berinteraksi dengan peta/marker di mobile
+  const minimizeSheet = useCallback(() => {
+    setSheetExpanded(false)
+  }, [])
+
   const userFavoriteKey = currentUser?.id ? `user_${currentUser.id}` : (currentUser?.email ? `email_${currentUser.email}` : 'guest')
   const { favorites, toggleFavorite, isFavorite } = useFavorites(userFavoriteKey)
   const { recentSlugs, addRecentlyViewed } = useRecentlyViewed()
@@ -484,7 +489,7 @@ export default function App() {
 
   if (isAdminRoute) {
     return (
-      <div className="apple-canopy-bg flex h-dvh w-full flex-col items-center justify-center px-6 text-center text-[#F5F2EB]">
+      <div className="apple-canopy-bg fixed inset-0 m-0 flex h-[100dvh] w-full flex-col items-center justify-center overflow-hidden px-6 text-center text-[#F5F2EB]">
         <div className="apple-glass-card mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-[#DFAA63]">
           <RefreshIcon className="h-6 w-6 animate-spin" />
         </div>
@@ -519,16 +524,19 @@ export default function App() {
   const showBackendBanner = isBackendError && !isErrorBannerDismissed
 
   return (
-    <main className="apple-canopy-bg relative inset-x-0 left-0 right-0 mx-0 flex flex-col h-dvh w-full overflow-hidden">
+    <main className="apple-canopy-bg fixed inset-0 m-0 flex h-[100dvh] w-full flex-col overflow-hidden p-0">
       <h1 className="sr-only">SIG Wisata Bogor</h1>
 
-      {/* Banner Peringatan Inline jika Backend Laravel Belum Dijalankan (hanya di-mount saat aktif agar DOM/a11y bersih) */}
+      {/* Banner Peringatan Melayang jika Backend Laravel Belum Dijalankan agar tinggi peta tetap 100dvh penuh */}
       {showBackendBanner && (
-        <div className="relative z-30 shrink-0 animate-tab-enter">
+        <div
+          className="fixed inset-x-0 top-0 z-[1100] animate-tab-enter"
+          style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+        >
           <aside
             role="alert"
             aria-live="polite"
-            className="w-full border-b border-rose-400/35 bg-[#2a1216] px-4 py-2.5 text-rose-100 shadow-sm"
+            className="w-full border-b border-rose-400/35 bg-[#2a1216]/95 px-4 py-2.5 text-rose-100 shadow-lg backdrop-blur-md"
           >
             <div className="mx-auto flex max-w-md items-center justify-between gap-2.5">
               <div className="flex min-w-0 items-start gap-2.5">
@@ -538,7 +546,7 @@ export default function App() {
                 <div className="min-w-0 text-left text-[12px] leading-snug">
                   <p className="font-semibold text-[#EBF0EB]">Koneksi ke server terputus</p>
                   <p className="mt-0.5 text-rose-100/85">
-                    Jalankan server Laravel (<code className="rounded bg-black/35 px-1 font-mono text-[11px]">php artisan serve</code>) untuk memuat destinasi.
+                    Jalankan server Laravel (<code className="rounded bg-black/35 px-1 font-mono text-[11px]">php artisan serve --port=8001</code>) untuk memuat destinasi.
                   </p>
                 </div>
               </div>
@@ -568,8 +576,8 @@ export default function App() {
         </div>
       )}
 
-      {/* Kontainer Utama Fleksibel: menjaga seluruh halaman & peta tetap proporsional di bawah banner */}
-      <div className="relative inset-x-0 left-0 right-0 mx-0 flex-1 min-h-0 w-full overflow-hidden">
+      {/* Kontainer Utama Full-Screen Edge-to-Edge */}
+      <div className="relative m-0 h-[100dvh] min-h-0 w-full flex-1 overflow-hidden p-0">
         {/* 3. TAMPILAN HALAMAN PROFIL (Akun Sendiri vs Orang Lain) */}
         {profileUser ? (
           <ProfilePage
@@ -605,13 +613,14 @@ export default function App() {
           <>
             {/* Menu Explore: Tampilkan Peta MapLibre 3D + Sidebar wisata */}
             {activeTab === 'Explore' && (
-              <div className="relative inset-x-0 left-0 right-0 mx-0 h-full w-full overflow-hidden animate-fade-enter">
+              <div className="relative m-0 h-[100dvh] w-full overflow-hidden p-0 animate-fade-enter">
               <MapView
                 places={mapPlaces}
                 selected={selected}
                 onSelect={handleSelectOnMap}
                 onOpenDetail={handleOpenDetail}
                 onMarkerHover={setMapHoveredPlaceId}
+                onMapInteract={minimizeSheet}
                 userPosition={userPosition}
                 locationStatus={locationStatus}
                 onRequestLocation={handleRequestLocation}
@@ -648,7 +657,7 @@ export default function App() {
 
           {/* Menu Navigasi: CLEAN UI (Peta Rute Navigasi dengan Single Titik atau Multi-Waypoints) */}
           {activeTab === 'Navigasi' && (
-            <div className="relative h-full w-full animate-fade-enter">
+            <div className="relative m-0 h-[100dvh] w-full overflow-hidden p-0 animate-fade-enter">
               <MapView
                 places={
                   navigationTarget

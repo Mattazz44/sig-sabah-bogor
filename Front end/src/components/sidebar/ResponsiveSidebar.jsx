@@ -7,22 +7,20 @@ import {
 } from '../ui/sheetMetrics'
 import { BottomSheetContext } from '../ui/bottomSheetContext'
 
-// Mobile snap heights:
-// - collapsed: hanya handle drag + search bar yang tampil rapi di atas floating BottomNav (~82px)
-// - half: 50% tinggi viewport
-// - full: 90% tinggi viewport
-const MOBILE_COLLAPSED_HEIGHT = 170
-const MOBILE_HALF_RATIO = 0.5
-const MOBILE_FULL_RATIO = 0.9
-const FLICK_VELOCITY_PX_S = 380
-const PULL_DOWN_STEP_THRESHOLD = 36
+// Mobile 2-state metrics:
+// - expanded: menyisakan 6% ruang di bagian paling atas layar (tinggi 94% viewport)
+// - minimized: hanya menyisakan drag handle + search bar di atas floating BottomNav (~82px)
+const MOBILE_TOP_GAP_RATIO = 0.06
+const MOBILE_MINIMIZED_HEIGHT = 168
+const SWIPE_OFFSET_THRESHOLD_PX = 40
+const SWIPE_VELOCITY_THRESHOLD_PX_S = 300
+const PULL_DOWN_STEP_THRESHOLD = 40
 const TAP_DRAG_TOLERANCE_PX = 8
 
 const SPRING_CONFIG = {
   type: 'spring',
-  stiffness: 360,
-  damping: 34,
-  mass: 0.9,
+  stiffness: 300,
+  damping: 30,
 }
 
 function getViewportSize() {
@@ -30,31 +28,31 @@ function getViewportSize() {
     return { width: 1280, height: 844 }
   }
   return {
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: Math.round(window.visualViewport?.width || window.innerWidth),
+    height: Math.round(window.visualViewport?.height || window.innerHeight),
   }
 }
 
 function computeMobileMetrics(viewportHeight) {
   const safeHeight = Math.max(420, viewportHeight)
-  const fullHeight = Math.round(safeHeight * MOBILE_FULL_RATIO)
-  const halfHeight = Math.round(safeHeight * MOBILE_HALF_RATIO)
-  const collapsedHeight = Math.min(halfHeight - 48, MOBILE_COLLAPSED_HEIGHT)
+  const topOffset = Math.round(safeHeight * MOBILE_TOP_GAP_RATIO) // top: 6%
+  const expandedHeight = Math.max(320, safeHeight - topOffset)
+  const minimizedHeight = Math.min(expandedHeight - 80, MOBILE_MINIMIZED_HEIGHT)
 
-  // Offset Y terhadap posisi penuh (y = 0 -> tinggi 90% layar terlihat dari bawah)
-  const fullY = 0
-  const halfY = Math.max(0, fullHeight - halfHeight)
-  const collapsedY = Math.max(halfY + 48, fullHeight - collapsedHeight)
+  // Offset Y terhadap posisi expanded (y = 0 -> top: 6%, tinggi 94% layar)
+  const expandedY = 0
+  const minimizedY = Math.max(0, expandedHeight - minimizedHeight)
 
-  return { fullHeight, halfHeight, collapsedHeight, fullY, halfY, collapsedY }
+  return { topOffset, expandedHeight, minimizedHeight, expandedY, minimizedY }
 }
 
 /**
  * Wrapper responsif untuk panel daftar destinasi wisata peta:
  * 1. Desktop (>= 768px): Floating left sidebar dark glassmorphism (`backdrop-blur-md`)
  *    dengan tombol toggle panah kecil di sisi kanan luar untuk slide buka/tutup (spring).
- * 2. Mobile (< 768px): Draggable bottom sheet 3 snap points (collapsed, half 50%, full 90%)
- *    non-modal agar drag/zoom peta di belakang & floating BottomNav (z-[600]) tetap bebas.
+ * 2. Mobile (< 768px): Draggable bottom sheet 2 state (`expanded` top 6% & `minimized`)
+ *    dengan `overflow-hidden` anti-bocor, drag handle terpisah dari scroll list,
+ *    serta auto-minimize saat interaksi peta/marker.
  */
 export default function ResponsiveSidebar({
   id = 'sidebar',
@@ -66,16 +64,13 @@ export default function ResponsiveSidebar({
   const prefersReducedMotion = useReducedMotion()
   const [viewport, setViewport] = useState(getViewportSize)
   const [desktopOpen, setDesktopOpen] = useState(true)
-  const [mobileSnap, setMobileSnap] = useState(() => (expanded ? 'full' : 'half'))
+  const [mobileState, setMobileState] = useState(() => (expanded ? 'expanded' : 'minimized'))
   const [prevExpandedProp, setPrevExpandedProp] = useState(expanded)
 
-  // Sinkronisasi bila parent mengubah prop `expanded` (mis. memilih marker peta saat sheet penuh)
+  // Sinkronisasi langsung ketika parent mengubah prop `expanded` (termasuk `minimizeSheet()`)
   if (expanded !== prevExpandedProp) {
     setPrevExpandedProp(expanded)
-    setMobileSnap((current) => {
-      if (expanded) return 'full'
-      return current === 'collapsed' ? 'collapsed' : 'half'
-    })
+    setMobileState(expanded ? 'expanded' : 'minimized')
   }
 
   const isDesktop = viewport.width >= DESKTOP_BREAKPOINT
@@ -87,18 +82,15 @@ export default function ResponsiveSidebar({
     [viewport.height],
   )
 
-  const getYForMobileSnap = useCallback(
-    (snapName) => {
-      if (snapName === 'full') return mobileMetrics.fullY
-      if (snapName === 'half') return mobileMetrics.halfY
-      return mobileMetrics.collapsedY
-    },
-    [mobileMetrics.fullY, mobileMetrics.halfY, mobileMetrics.collapsedY],
+  const getYForMobileState = useCallback(
+    (stateName) => (stateName === 'expanded' ? mobileMetrics.expandedY : mobileMetrics.minimizedY),
+    [mobileMetrics.expandedY, mobileMetrics.minimizedY],
   )
 
-  const sheetY = useMotionValue(getYForMobileSnap(mobileSnap))
+  const sheetY = useMotionValue(getYForMobileState(mobileState))
   const dragControls = useDragControls()
   const contentRef = useRef(null)
+  const prevIsDesktopRef = useRef(isDesktop)
   const handlePointerStartRef = useRef(null)
   const touchPullRef = useRef(null)
   const isDraggingRef = useRef(false)
@@ -113,43 +105,46 @@ export default function ResponsiveSidebar({
   useEffect(() => {
     const handleResize = () => setViewport(getViewportSize())
     window.addEventListener('resize', handleResize)
+    window.addEventListener('orientationchange', handleResize)
+    window.visualViewport?.addEventListener('resize', handleResize)
     return () => {
       window.removeEventListener('resize', handleResize)
+      window.removeEventListener('orientationchange', handleResize)
+      window.visualViewport?.removeEventListener('resize', handleResize)
       if (suppressTimerRef.current) clearTimeout(suppressTimerRef.current)
     }
   }, [])
 
-  const prevIsDesktopRef = useRef(isDesktop)
-
-  // Animasikan sheetY ke snap point mobile aktif setiap kali snap atau tinggi layar berubah
+  // Animasikan sheetY ke posisi target mobile setiap kali state atau ukuran viewport berubah
   useEffect(() => {
     const switchedToMobile = prevIsDesktopRef.current && !isDesktop
     prevIsDesktopRef.current = isDesktop
     if (isDesktop || isDraggingRef.current) return undefined
-    const targetY = getYForMobileSnap(mobileSnap)
+
+    const targetY = getYForMobileState(mobileState)
     if (switchedToMobile) {
       sheetY.set(targetY)
       return undefined
     }
     const controls = animate(sheetY, targetY, activeTransition)
     return () => controls.stop()
-  }, [isDesktop, mobileSnap, getYForMobileSnap, sheetY, activeTransition])
+  }, [isDesktop, mobileState, getYForMobileState, sheetY, activeTransition])
 
-  // Reset scroll internal ke puncak saat mobile sheet dalam mode collapsed agar search bar selalu terlihat
+  // Reset scroll internal ke puncak saat sheet turun ke mode minimized agar search bar selalu terlihat
   useEffect(() => {
-    if (!isDesktop && mobileSnap === 'collapsed' && contentRef.current) {
+    if (!isDesktop && mobileState === 'minimized' && contentRef.current) {
       contentRef.current.scrollTop = 0
     }
-  }, [isDesktop, mobileSnap])
+  }, [isDesktop, mobileState])
 
-  const commitMobileSnap = useCallback(
-    (nextSnap, velocity = 0) => {
-      const nextExpanded = nextSnap === 'full'
+  const commitMobileState = useCallback(
+    (nextState, velocity = 0) => {
+      const nextExpanded = nextState === 'expanded'
       setPrevExpandedProp(nextExpanded)
-      setMobileSnap(nextSnap)
+      setMobileState(nextState)
       onExpandedChange?.(nextExpanded)
 
-      const targetY = getYForMobileSnap(nextSnap)
+      const targetY = getYForMobileState(nextState)
       animate(
         sheetY,
         targetY,
@@ -161,61 +156,30 @@ export default function ResponsiveSidebar({
             },
       )
     },
-    [getYForMobileSnap, onExpandedChange, prefersReducedMotion, sheetY],
+    [getYForMobileState, onExpandedChange, prefersReducedMotion, sheetY],
   )
 
+  const minimizeSheet = useCallback(() => {
+    if (!isDesktop && mobileState !== 'minimized') {
+      commitMobileState('minimized')
+    }
+  }, [isDesktop, mobileState, commitMobileState])
+
   const toggleDesktopOpen = useCallback(() => {
-    setDesktopOpen((prev) => {
-      const next = !prev
-      onExpandedChange?.(next)
-      return next
-    })
-  }, [onExpandedChange])
+    setDesktopOpen((prev) => !prev)
+  }, [])
 
   const ensurePeekCleared = useCallback(() => {
     if (isDesktop) {
       setDesktopOpen(true)
-      onExpandedChange?.(true)
-    } else if (mobileSnap === 'collapsed') {
-      commitMobileSnap('half')
+    } else if (mobileState === 'minimized') {
+      commitMobileState('expanded')
     }
-  }, [isDesktop, mobileSnap, commitMobileSnap, onExpandedChange])
+  }, [isDesktop, mobileState, commitMobileState])
 
   const sheetContextValue = useMemo(
-    () => ({ ensurePeekCleared }),
-    [ensurePeekCleared],
-  )
-
-  const pickNextSnap = useCallback(
-    (currentY, velocityY) => {
-      const { fullY, halfY, collapsedY } = mobileMetrics
-
-      // Flick cepat ke atas / bawah langsung berpindah satu tingkat snap point
-      if (Math.abs(velocityY) >= FLICK_VELOCITY_PX_S) {
-        if (velocityY < 0) {
-          return currentY > halfY + 24 ? 'half' : 'full'
-        }
-        return currentY < halfY - 24 ? 'half' : 'collapsed'
-      }
-
-      const candidates = [
-        { name: 'full', y: fullY },
-        { name: 'half', y: halfY },
-        { name: 'collapsed', y: collapsedY },
-      ]
-
-      let closest = candidates[0]
-      let minDistance = Math.abs(currentY - closest.y)
-      for (let i = 1; i < candidates.length; i += 1) {
-        const dist = Math.abs(currentY - candidates[i].y)
-        if (dist < minDistance) {
-          minDistance = dist
-          closest = candidates[i]
-        }
-      }
-      return closest.name
-    },
-    [mobileMetrics],
+    () => ({ ensurePeekCleared, minimizeSheet }),
+    [ensurePeekCleared, minimizeSheet],
   )
 
   const handleDragStart = () => {
@@ -239,8 +203,20 @@ export default function ResponsiveSidebar({
       }, 150)
     }
 
-    const nextSnap = pickNextSnap(sheetY.get(), info.velocity.y)
-    commitMobileSnap(nextSnap, info.velocity.y)
+    // Aturan swipe up / swipe down tegas (2 state saja)
+    if (info.offset.y < -SWIPE_OFFSET_THRESHOLD_PX || info.velocity.y < -SWIPE_VELOCITY_THRESHOLD_PX_S) {
+      commitMobileState('expanded', info.velocity.y)
+      return
+    }
+    if (info.offset.y > SWIPE_OFFSET_THRESHOLD_PX || info.velocity.y > SWIPE_VELOCITY_THRESHOLD_PX_S) {
+      commitMobileState('minimized', info.velocity.y)
+      return
+    }
+
+    // Jika geseran kecil tanpa velocity tinggi, snap ke posisi terdekat
+    const currentY = sheetY.get()
+    const midpoint = mobileMetrics.minimizedY / 2
+    commitMobileState(currentY < midpoint ? 'expanded' : 'minimized', info.velocity.y)
   }
 
   const handleHandlePointerDown = (e) => {
@@ -254,18 +230,12 @@ export default function ResponsiveSidebar({
       suppressHandleClickRef.current = false
       return
     }
-    if (mobileSnap === 'collapsed') {
-      commitMobileSnap('half')
-    } else if (mobileSnap === 'half') {
-      commitMobileSnap('full')
-    } else {
-      commitMobileSnap('collapsed')
-    }
+    commitMobileState(mobileState === 'expanded' ? 'minimized' : 'expanded')
   }
 
-  // Izinkan tarik sheet dari area non-interaktif saat mode collapsed agar mudah dibuka
+  // Saat mode minimized, tarik dari area non-input di header search bar juga bisa mengangkat sheet
   const handleContentPointerDown = (e) => {
-    if (mobileSnap !== 'collapsed') return
+    if (mobileState !== 'minimized') return
     if (e.button !== undefined && e.button !== 0) return
     if (e.target.closest('input, textarea, select, button, a, [data-no-sheet-drag]')) {
       return
@@ -274,10 +244,9 @@ export default function ResponsiveSidebar({
     dragControls.start(e)
   }
 
-  // Handoff tarik-turun halus hanya saat scroll daftar sudah di puncak (scrollTop <= 0)
-  // sehingga scroll daftar wisata di mode half/full tidak pernah bentrok dengan drag sheet
+  // Handoff pull-down saat daftar sudah berada di puncak (scrollTop <= 0) tanpa mengganggu scroll list
   const handleContentTouchStart = (e) => {
-    if (!contentRef.current || !e.touches?.[0]) return
+    if (mobileState !== 'expanded' || !contentRef.current || !e.touches?.[0]) return
     if (e.target.closest('input, textarea, select, [data-no-sheet-drag]')) {
       touchPullRef.current = null
       return
@@ -295,7 +264,6 @@ export default function ResponsiveSidebar({
     const dy = e.touches[0].clientY - info.y
     const dx = e.touches[0].clientX - info.x
 
-    // Jika pengguna menggeser horizontal (mis. filter kategori) atau sedang scroll ke bawah, batalkan
     if (Math.abs(dx) > Math.abs(dy) || dy < 0) {
       touchPullRef.current = null
       return
@@ -308,11 +276,7 @@ export default function ResponsiveSidebar({
       Math.abs(dy) > Math.abs(dx) * 1.4
     ) {
       touchPullRef.current = null
-      if (mobileSnap === 'full') {
-        commitMobileSnap('half', 420)
-      } else if (mobileSnap === 'half') {
-        commitMobileSnap('collapsed', 420)
-      }
+      commitMobileState('minimized', 350)
     }
   }
 
@@ -324,9 +288,8 @@ export default function ResponsiveSidebar({
     if (!e.target.closest('input, textarea')) return
     if (isDesktop && !desktopOpen) {
       setDesktopOpen(true)
-      onExpandedChange?.(true)
-    } else if (!isDesktop && mobileSnap === 'collapsed') {
-      commitMobileSnap('half')
+    } else if (!isDesktop && mobileState === 'minimized') {
+      commitMobileState('expanded')
     }
   }
 
@@ -394,15 +357,12 @@ export default function ResponsiveSidebar({
   }
 
   // =========================================================================
-  // 2. MOBILE (< 768px): Draggable Bottom Sheet 3 Snap Points (Collapsed / 50% / 90%)
+  // 2. MOBILE (< 768px): Draggable Bottom Sheet 2 State (expanded top 6% / minimized)
   // =========================================================================
-  const canScrollList = mobileSnap !== 'collapsed'
-  const mobileBottomPaddingPx =
-    mobileSnap === 'half' ? mobileMetrics.halfY + 112 : 112
-  const handleAriaLabel =
-    mobileSnap === 'full'
-      ? 'Tarik ke bawah atau ketuk untuk melipat daftar wisata'
-      : 'Tarik ke atas atau ketuk untuk memperluas daftar wisata'
+  const isExpandedMobile = mobileState === 'expanded'
+  const handleAriaLabel = isExpandedMobile
+    ? 'Geser ke bawah atau ketuk untuk menurunkan daftar wisata'
+    : 'Geser ke atas atau ketuk untuk membuka daftar wisata'
 
   return (
     <BottomSheetContext.Provider value={sheetContextValue}>
@@ -410,51 +370,47 @@ export default function ResponsiveSidebar({
         id={id}
         aria-label={label}
         data-mode="mobile"
-        data-snap={mobileSnap}
+        data-snap={mobileState}
         drag="y"
         dragListener={false}
         dragControls={dragControls}
-        dragConstraints={{ top: mobileMetrics.fullY, bottom: mobileMetrics.collapsedY }}
-        dragElastic={{ top: 0.08, bottom: 0.14 }}
+        dragConstraints={{ top: mobileMetrics.expandedY, bottom: mobileMetrics.minimizedY }}
+        dragElastic={{ top: 0.06, bottom: 0.12 }}
         dragMomentum={false}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         style={{
           y: sheetY,
-          height: mobileMetrics.fullHeight,
+          height: mobileMetrics.expandedHeight,
         }}
-        className="apple-maps-sidebar pointer-events-auto fixed inset-x-0 bottom-0 z-[500] flex w-full flex-col rounded-t-[28px] border-t border-white/[0.18] bg-[#161D16]/82 text-white shadow-[0_-16px_44px_-8px_rgba(0,0,0,0.62)] backdrop-blur-md will-change-transform"
+        className="apple-maps-sidebar pointer-events-auto fixed bottom-0 left-0 right-0 z-[500] m-0 flex w-full max-w-full flex-col overflow-hidden rounded-t-[28px] border-t border-white/[0.18] bg-[#161D16]/85 p-0 text-white shadow-[0_-16px_44px_-8px_rgba(0,0,0,0.62)] backdrop-blur-md will-change-transform"
       >
-        {/* Area pegangan drag khusus (terpisah dari scroll list agar gestur tidak bentrok) */}
+        {/* Area drag handle khusus di bagian atas (terpisah penuh dari scrollable list agar card/gambar tidak bocor) */}
         <div
           id={`${id}-handle-container`}
           onPointerDown={handleHandlePointerDown}
           style={{ touchAction: 'none' }}
-          className="flex w-full shrink-0 cursor-grab items-center justify-center pt-3 pb-2 select-none active:cursor-grabbing"
+          className="relative z-10 flex w-full shrink-0 cursor-grab items-center justify-center bg-[#161D16]/70 pt-3 pb-2 select-none active:cursor-grabbing"
         >
           <button
             type="button"
             id={`${id}-handle-button`}
             onClick={handleHandleClick}
             aria-label={handleAriaLabel}
-            aria-expanded={mobileSnap !== 'collapsed'}
+            aria-expanded={isExpandedMobile}
             className="flex h-6 w-28 cursor-grab items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#DFAA63] active:cursor-grabbing"
           >
             <span
               id={`${id}-handle`}
               aria-hidden="true"
               className={`h-1.5 rounded-full bg-white/85 transition-[width,opacity] duration-200 ${
-                mobileSnap === 'full'
-                  ? 'w-14 opacity-75'
-                  : mobileSnap === 'half'
-                    ? 'w-16 opacity-90'
-                    : 'w-20 opacity-100'
+                isExpandedMobile ? 'w-14 opacity-80' : 'w-20 opacity-100'
               }`}
             />
           </button>
         </div>
 
-        {/* Konten daftar wisata dengan isolasi scroll internal (tidak bentrok dengan drag sheet & aman di atas BottomNav) */}
+        {/* Kontainer scrollable list terisolasi di bawah handle (overflow-y-auto flex-1 min-h-0) */}
         <div
           ref={contentRef}
           id={`${id}-content`}
@@ -464,13 +420,14 @@ export default function ResponsiveSidebar({
           onTouchEnd={handleContentTouchEnd}
           onTouchCancel={handleContentTouchEnd}
           onFocusCapture={handleContentFocusCapture}
-          className={`no-scrollbar min-h-0 w-full flex-1 overscroll-contain ${
-            canScrollList ? 'overflow-x-hidden overflow-y-auto' : 'overflow-hidden'
+          className={`no-scrollbar relative z-0 min-h-0 w-full overscroll-contain ${
+            isExpandedMobile
+              ? 'flex-1 overflow-x-hidden overflow-y-auto pb-[calc(env(safe-area-inset-bottom,0px)+112px)]'
+              : 'max-h-[54px] shrink-0 overflow-hidden pb-0'
           }`}
           style={{
             WebkitOverflowScrolling: 'touch',
-            touchAction: canScrollList ? 'pan-y' : 'none',
-            paddingBottom: `calc(env(safe-area-inset-bottom, 0px) + ${mobileBottomPaddingPx}px)`,
+            touchAction: isExpandedMobile ? 'pan-y' : 'none',
           }}
         >
           {children}

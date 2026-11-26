@@ -50,8 +50,7 @@ export default function LocateControl({
 
   return (
     <div
-      style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 96px)' }}
-      className="fixed right-4 !pointer-events-auto z-[450] flex flex-col items-end gap-2.5"
+      className="fixed right-4 bottom-[calc(env(safe-area-inset-bottom,0px)+180px)] md:bottom-[calc(env(safe-area-inset-bottom,0px)+96px)] !pointer-events-auto z-[450] flex flex-col items-end gap-2.5"
     >
       {/* Toggle Tampilan Peta 2D (pitch: 0) / 3D (pitch: 55) */}
       {onToggle3D && (
