@@ -8,9 +8,9 @@ import {
 import { BottomSheetContext } from '../ui/bottomSheetContext'
 
 // Mobile 2-state metrics:
-// - expanded: menyisakan 6% ruang di bagian paling atas layar (tinggi 94% viewport)
+// - expanded: melebar penuh edge-to-edge hingga menyentuh bagian atas layar (top: 0 / 100dvh)
 // - minimized: hanya menyisakan drag handle + search bar di atas floating BottomNav (~82px)
-const MOBILE_TOP_GAP_RATIO = 0.06
+const MOBILE_TOP_GAP_RATIO = 0
 const MOBILE_MINIMIZED_HEIGHT = 168
 const SWIPE_OFFSET_THRESHOLD_PX = 40
 const SWIPE_VELOCITY_THRESHOLD_PX_S = 300
@@ -35,11 +35,11 @@ function getViewportSize() {
 
 function computeMobileMetrics(viewportHeight) {
   const safeHeight = Math.max(420, viewportHeight)
-  const topOffset = Math.round(safeHeight * MOBILE_TOP_GAP_RATIO) // top: 6%
+  const topOffset = Math.round(safeHeight * MOBILE_TOP_GAP_RATIO) // top: 0 (full 100dvh)
   const expandedHeight = Math.max(320, safeHeight - topOffset)
   const minimizedHeight = Math.min(expandedHeight - 80, MOBILE_MINIMIZED_HEIGHT)
 
-  // Offset Y terhadap posisi expanded (y = 0 -> top: 6%, tinggi 94% layar)
+  // Offset Y terhadap posisi expanded (y = 0 -> top: 0, tinggi penuh 100dvh)
   const expandedY = 0
   const minimizedY = Math.max(0, expandedHeight - minimizedHeight)
 
@@ -357,7 +357,7 @@ export default function ResponsiveSidebar({
   }
 
   // =========================================================================
-  // 2. MOBILE (< 768px): Draggable Bottom Sheet 2 State (expanded top 6% / minimized)
+  // 2. MOBILE (< 768px): Draggable Bottom Sheet 2 State (expanded top 0 full / minimized)
   // =========================================================================
   const isExpandedMobile = mobileState === 'expanded'
   const handleAriaLabel = isExpandedMobile
@@ -375,7 +375,7 @@ export default function ResponsiveSidebar({
         dragListener={false}
         dragControls={dragControls}
         dragConstraints={{ top: mobileMetrics.expandedY, bottom: mobileMetrics.minimizedY }}
-        dragElastic={{ top: 0.06, bottom: 0.12 }}
+        dragElastic={{ top: 0, bottom: 0.12 }}
         dragMomentum={false}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
@@ -383,14 +383,23 @@ export default function ResponsiveSidebar({
           y: sheetY,
           height: mobileMetrics.expandedHeight,
         }}
-        className="apple-maps-sidebar pointer-events-auto fixed bottom-0 left-0 right-0 z-[500] m-0 flex w-full max-w-full flex-col overflow-hidden rounded-t-[28px] border-t border-white/[0.18] bg-[#161D16]/85 p-0 text-white shadow-[0_-16px_44px_-8px_rgba(0,0,0,0.62)] backdrop-blur-md will-change-transform"
+        className={`apple-maps-sidebar pointer-events-auto fixed inset-x-0 bottom-0 left-0 right-0 z-[500] m-0 flex w-full max-w-full flex-col overflow-hidden p-0 text-white backdrop-blur-md transition-[border-radius,background-color] duration-200 will-change-transform ${
+          isExpandedMobile
+            ? 'rounded-none border-t-0 bg-[#161D16]/95 shadow-none'
+            : 'rounded-t-[28px] border-t border-white/[0.18] bg-[#161D16]/85 shadow-[0_-16px_44px_-8px_rgba(0,0,0,0.62)]'
+        }`}
       >
         {/* Area drag handle khusus di bagian atas (terpisah penuh dari scrollable list agar card/gambar tidak bocor) */}
         <div
           id={`${id}-handle-container`}
           onPointerDown={handleHandlePointerDown}
-          style={{ touchAction: 'none' }}
-          className="relative z-10 flex w-full shrink-0 cursor-grab items-center justify-center bg-[#161D16]/70 pt-3 pb-2 select-none active:cursor-grabbing"
+          style={{
+            touchAction: 'none',
+            paddingTop: isExpandedMobile ? 'calc(env(safe-area-inset-top, 0px) + 12px)' : '12px',
+          }}
+          className={`relative z-10 flex w-full shrink-0 cursor-grab items-center justify-center pb-2 select-none active:cursor-grabbing ${
+            isExpandedMobile ? 'bg-[#161D16]/95' : 'bg-[#161D16]/70'
+          }`}
         >
           <button
             type="button"

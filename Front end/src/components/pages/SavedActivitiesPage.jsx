@@ -4,6 +4,7 @@ import NotificationDrawer from '../ui/NotificationDrawer'
 import GlassModal from '../ui/GlassModal'
 import SafeImage from '../ui/SafeImage'
 import { apiFetch, getAuthToken } from '../../utils/api'
+import { pushAppNotification } from '../../utils/notifications'
 import { DEFAULT_AVATAR_PLACEHOLDER, getBogorFallbackPhoto } from '../../utils/imageHelper'
 import {
   BellIcon,
@@ -213,6 +214,11 @@ function SavedActivitiesPage({
           ),
         )
       }
+      pushAppNotification({
+        type: 'success',
+        title: 'Aktivitas berhasil disimpan',
+        desc: `"${nameText}" di ${locText} berhasil ditambahkan ke Aktivitas Tersimpan.`,
+      })
     } catch (err) {
       console.warn('Gagal menyimpan aktivitas ke server:', err)
       setUserActivities(prevActivities)
@@ -848,7 +854,6 @@ function SavedActivitiesPage({
         onClose={() => setShowNotificationDrawer(false)}
         tourists={tourists}
         favorites={favorites}
-        recentSlugs={recentSlugs}
         onSelectPlace={onSelectPlace}
       />
     </div>

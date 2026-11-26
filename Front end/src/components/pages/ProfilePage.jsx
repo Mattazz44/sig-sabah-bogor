@@ -7,6 +7,7 @@ import {
 } from '../../utils/imageHelper'
 import { apiFetch, getAuthToken } from '../../utils/api'
 import { compressImage } from '../../utils/imageCompressor'
+import { pushAppNotification } from '../../utils/notifications'
 import {
   AlertTriangleIcon,
   CameraIcon,
@@ -254,6 +255,14 @@ function ProfilePage({
         }
       }
 
+      if (nextState) {
+        pushAppNotification({
+          type: 'social',
+          title: `Mulai mengikuti ${profileName}`,
+          desc: `Anda kini terhubung dengan ${profileName} di komunitas penjelajah Bogor.`,
+        })
+      }
+
       showToast(
         nextState
           ? `Berhasil mengikuti ${profileName}!`
@@ -319,6 +328,11 @@ function ProfilePage({
         if (onUpdateUser) {
           onUpdateUser(json.data)
         }
+        pushAppNotification({
+          type: 'success',
+          title: 'Foto profil berhasil diperbarui',
+          desc: 'Perubahan foto profil akun Anda telah tersimpan.',
+        })
         showToast('Foto profil berhasil diperbarui!')
       } else {
         throw new Error('Respon server tidak valid')

@@ -26,6 +26,7 @@ import {
   setStoredUser,
 } from './utils/api'
 import { getBogorFallbackPhoto, getImageUrl } from './utils/imageHelper'
+import { pushAppNotification, removeFavoriteNotification } from './utils/notifications'
 import { AlertTriangleIcon, RefreshIcon, XIcon } from './components/ui/VectorIcons'
 
 let handledOAuthCode = null
@@ -178,8 +179,33 @@ export default function App() {
   }, [])
 
   const userFavoriteKey = currentUser?.id ? `user_${currentUser.id}` : (currentUser?.email ? `email_${currentUser.email}` : 'guest')
-  const { favorites, toggleFavorite, isFavorite } = useFavorites(userFavoriteKey)
+  const { favorites, toggleFavorite: toggleFavoriteState, isFavorite } = useFavorites(userFavoriteKey)
   const { recentSlugs, addRecentlyViewed } = useRecentlyViewed()
+
+  const toggleFavorite = useCallback(
+    (slug) => {
+      if (!slug) return
+      const alreadySaved = favorites.includes(slug)
+      toggleFavoriteState(slug)
+      if (alreadySaved) {
+        removeFavoriteNotification(slug)
+        return
+      }
+      const matchedPlace = enrichedTourists.find((t) => t.slug === slug)
+      pushAppNotification({
+        id: `fav-${slug}`,
+        type: 'favorite',
+        slug,
+        title: matchedPlace
+          ? `${matchedPlace.name} disimpan ke Tersimpan`
+          : 'Destinasi disimpan ke Tersimpan',
+        desc: matchedPlace
+          ? `${matchedPlace.category || 'Destinasi wisata'} di Bogor masuk daftar tersimpan Anda.`
+          : 'Tempat wisata berhasil disimpan ke daftar tersimpan Anda.',
+      })
+    },
+    [favorites, toggleFavoriteState, enrichedTourists],
+  )
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -720,7 +746,6 @@ export default function App() {
               <ActivitiesPage
                 tourists={enrichedTourists}
                 favorites={favorites}
-                recentSlugs={recentSlugs}
                 onSelectPlace={handleOpenDetail}
                 isLoggedIn={isLoggedIn}
                 currentUser={currentUser}

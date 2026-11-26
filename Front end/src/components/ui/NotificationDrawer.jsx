@@ -1,26 +1,38 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   BellIcon,
-  CompassIcon,
+  CheckIcon,
   HeartIcon,
-  MapPinIcon,
+  RouteWaypointsIcon,
+  UserIcon,
   XIcon,
 } from './VectorIcons'
+import {
+  ALLOWED_NOTIFICATION_TYPES,
+  NOTIFICATIONS_UPDATED_EVENT,
+  formatNotificationTime,
+  getAppNotifications,
+} from '../../utils/notifications'
 
 const READ_STORAGE_KEY = 'sabah_read_notifications_v1'
 
 const ICON_MAP = {
-  heart: {
+  success: {
+    Icon: CheckIcon,
+    badgeClass: 'border-emerald-300/25 bg-[#1B3426] text-emerald-200',
+  },
+  route: {
+    Icon: RouteWaypointsIcon,
+    badgeClass: 'border-[#DFAA63]/35 bg-[#332A1B] text-[#DFAA63]',
+  },
+  social: {
+    Icon: UserIcon,
+    badgeClass: 'border-sky-300/25 bg-[#1C2C38] text-sky-200',
+  },
+  favorite: {
     Icon: HeartIcon,
     badgeClass: 'border-rose-300/25 bg-[#3B1D24] text-rose-200',
-  },
-  recent: {
-    Icon: MapPinIcon,
-    badgeClass: 'border-[rgba(244,239,230,0.18)] bg-white/[0.06] text-[#DFAA63]',
-  },
-  compass: {
-    Icon: CompassIcon,
-    badgeClass: 'border-[rgba(244,239,230,0.18)] bg-white/[0.06] text-[#F5F2EB]',
   },
 }
 
@@ -38,13 +50,13 @@ function NotificationDrawer({
   onClose,
   tourists = [],
   favorites = [],
-  recentSlugs = [],
   onSelectPlace,
   items = null,
 }) {
   const [prevOpen, setPrevOpen] = useState(isOpen)
   const [isClosing, setIsClosing] = useState(false)
   const [isEntered, setIsEntered] = useState(isOpen)
+  const [storedNotifications, setStoredNotifications] = useState(() => getAppNotifications())
   const cardRef = useRef(null)
   const previousFocusRef = useRef(null)
 
@@ -58,11 +70,22 @@ function NotificationDrawer({
     }
   })
 
+  useEffect(() => {
+    const syncNotifications = () => setStoredNotifications(getAppNotifications())
+    window.addEventListener(NOTIFICATIONS_UPDATED_EVENT, syncNotifications)
+    window.addEventListener('storage', syncNotifications)
+    return () => {
+      window.removeEventListener(NOTIFICATIONS_UPDATED_EVENT, syncNotifications)
+      window.removeEventListener('storage', syncNotifications)
+    }
+  }, [])
+
   if (isOpen !== prevOpen) {
     setPrevOpen(isOpen)
     if (isOpen) {
       setIsClosing(false)
       setIsEntered(false)
+      setStoredNotifications(getAppNotifications())
     } else {
       setIsClosing(true)
     }
@@ -132,37 +155,47 @@ function NotificationDrawer({
   }, [shouldRender, onClose])
 
   const notifications = useMemo(() => {
-    if (Array.isArray(items)) return items
-    const list = []
+    if (Array.isArray(items)) {
+      return items.filter((item) => item && ALLOWED_NOTIFICATION_TYPES.has(item.type))
+    }
 
+    const list = []
+    const seenFavoriteSlugs = new Set()
+
+    storedNotifications.forEach((entry) => {
+      if (!ALLOWED_NOTIFICATION_TYPES.has(entry.type)) return
+      if (entry.type === 'favorite' && entry.slug) {
+        if (!favorites.includes(entry.slug)) return
+        seenFavoriteSlugs.add(entry.slug)
+      }
+      list.push({
+        id: entry.id,
+        type: entry.type,
+        slug: entry.slug || null,
+        title: entry.title,
+        desc: entry.desc,
+        time: entry.time || formatNotificationTime(entry.createdAt),
+      })
+    })
+
+    // Pastikan destinasi favorit yang sudah tersimpan sebelumnya tetap muncul sebagai notifikasi Tersimpan
     favorites.forEach((slug) => {
+      if (seenFavoriteSlugs.has(slug)) return
       const place = tourists.find((t) => t.slug === slug)
       if (!place) return
+      seenFavoriteSlugs.add(slug)
       list.push({
         id: `fav-${slug}`,
-        type: 'heart',
+        type: 'favorite',
         slug,
-        title: `${place.name} tersimpan di favorit`,
-        desc: `${place.category} di kawasan Bogor siap dikunjungi.`,
+        title: `${place.name} disimpan ke Tersimpan`,
+        desc: `${place.category || 'Destinasi wisata'} di Bogor masuk daftar tersimpan Anda.`,
         time: 'Tersimpan',
       })
     })
 
-    recentSlugs.forEach((slug) => {
-      const place = tourists.find((t) => t.slug === slug)
-      if (!place || favorites.includes(slug)) return
-      list.push({
-        id: `recent-${slug}`,
-        type: 'recent',
-        slug,
-        title: `Baru dilihat: ${place.name}`,
-        desc: `Ketuk untuk membuka kembali detail dan rute menuju lokasi.`,
-        time: 'Riwayat jelajah',
-      })
-    })
-
-    return list.slice(0, 8)
-  }, [items, favorites, recentSlugs, tourists])
+    return list.slice(0, 20)
+  }, [items, storedNotifications, favorites, tourists])
 
   const unreadIds = useMemo(
     () => notifications.filter((item) => !readIds.includes(item.id)).map((item) => item.id),
@@ -190,11 +223,15 @@ function NotificationDrawer({
 
   if (!shouldRender) return null
 
-  return (
+  const modalContent = (
     <div
       id="notification-overlay"
       onClick={onClose}
-      className={`fixed inset-0 z-[2000] flex items-start justify-center bg-black/35 backdrop-blur-sm px-4 pt-12 pb-6 transition-opacity duration-200 ease-out ${
+      style={{
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 24px)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 96px)',
+      }}
+      className={`fixed inset-x-0 top-0 bottom-0 z-[2000] flex items-start justify-center bg-black/40 px-4 pb-24 backdrop-blur-sm transition-opacity duration-200 ease-out ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
     >
@@ -205,14 +242,17 @@ function NotificationDrawer({
         aria-modal="true"
         aria-labelledby="notification-drawer-title"
         onClick={(e) => e.stopPropagation()}
-        className={`liquid-glass-modal relative flex max-h-[calc(100dvh-4.5rem)] w-full max-w-sm flex-col overflow-hidden rounded-3xl text-[#F5F2EB] transition-[opacity,transform] duration-200 ease-out ${
+        className={`liquid-glass-modal relative flex max-h-[calc(100dvh-120px)] w-full max-w-sm flex-col overflow-hidden rounded-3xl text-[#F5F2EB] transition-[opacity,transform] duration-200 ease-out ${
           isVisible
             ? 'translate-y-0 scale-100 opacity-100'
             : 'translate-y-2.5 scale-[0.96] opacity-0'
         }`}
       >
         {/* Header Drawer */}
-        <div className="flex shrink-0 items-center justify-between border-b border-[rgba(244,239,230,0.14)] px-5 pt-5 pb-3.5">
+        <div
+          id="notification-header"
+          className="flex shrink-0 items-center justify-between border-b border-[rgba(244,239,230,0.14)] px-5 pt-5 pb-3.5"
+        >
           <div className="flex items-center gap-2.5">
             <span className="apple-glass-pill flex h-8 w-8 items-center justify-center rounded-xl text-[#DFAA63]">
               <BellIcon className="h-4 w-4" />
@@ -241,11 +281,15 @@ function NotificationDrawer({
           </button>
         </div>
 
-        {/* List Notifikasi */}
-        <div className="no-scrollbar flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain px-5 py-4">
+        {/* List Notifikasi (scrollable secara internal, item terbawah tidak terpotong) */}
+        <div
+          id="notification-list"
+          className="no-scrollbar flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto overscroll-contain px-5 pt-4 pb-4"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           {notifications.length > 0 ? (
             notifications.map((item) => {
-              const config = ICON_MAP[item.type] || ICON_MAP.compass
+              const config = ICON_MAP[item.type] || ICON_MAP.success
               const IconComponent = config.Icon
               const isUnread = !readIds.includes(item.id)
 
@@ -253,6 +297,7 @@ function NotificationDrawer({
                 <button
                   key={item.id}
                   type="button"
+                  data-notification-type={item.type}
                   onClick={() => {
                     markAsRead(item.id)
                     if (item.slug && onSelectPlace) {
@@ -260,7 +305,7 @@ function NotificationDrawer({
                       onSelectPlace(item.slug)
                     }
                   }}
-                  className={`apple-retro-bevel flex w-full items-start gap-3 rounded-2xl border p-3.5 text-left transition-all duration-150 active:scale-[0.98] ${
+                  className={`apple-retro-bevel flex w-full shrink-0 items-start gap-3 rounded-2xl border p-3.5 text-left transition-all duration-150 active:scale-[0.98] ${
                     isUnread
                       ? 'border-[rgba(244,239,230,0.2)] bg-white/[0.08] hover:bg-white/[0.12]'
                       : 'border-[rgba(244,239,230,0.1)] bg-white/[0.04] opacity-85 hover:opacity-100'
@@ -297,14 +342,17 @@ function NotificationDrawer({
                 Belum ada pembaruan
               </p>
               <p className="mt-1.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/65">
-                Simpan destinasi favorit atau buka detail wisata di peta untuk melihat ringkasan aktivitas Anda.
+                Notifikasi akan muncul saat Anda menyimpan destinasi favorit, membuat rute custom, berinteraksi sosial, atau menyelesaikan aksi.
               </p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex shrink-0 items-center gap-2 border-t border-[rgba(244,239,230,0.14)] px-5 py-3.5">
+        <div
+          id="notification-footer"
+          className="flex shrink-0 items-center gap-2 border-t border-[rgba(244,239,230,0.14)] px-5 py-3.5"
+        >
           {unreadIds.length > 0 && (
             <button
               type="button"
@@ -325,6 +373,8 @@ function NotificationDrawer({
       </div>
     </div>
   )
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent
 }
 
 export default memo(NotificationDrawer)

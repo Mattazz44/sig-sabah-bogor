@@ -170,7 +170,7 @@ export default function TouristList({
   const listTransitionKey = `${category}|${sortOption}|${minRating}|${onlyPopular}|${onlyFavorites}|${radiusKm}`
 
   return (
-    <div className="px-4 pt-1.5">
+    <div className="w-full px-4 pt-1.5">
       {/* 1. Search Bar */}
       <SearchBar
         value={query}

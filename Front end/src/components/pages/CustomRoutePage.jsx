@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { apiFetch, getAuthToken } from '../../utils/api'
 import { calculateDistanceKm } from '../../utils/distance'
+import { pushAppNotification } from '../../utils/notifications'
 import SafeImage from '../ui/SafeImage'
 import GlassModal from '../ui/GlassModal'
 import { DEFAULT_AVATAR_PLACEHOLDER, getBogorFallbackPhoto } from '../../utils/imageHelper'
@@ -242,6 +243,11 @@ function CustomRoutePage({
           prev.map((item) => (item.id === tempId ? hydrateRoute(json.data) : item)),
         )
       }
+      pushAppNotification({
+        type: 'route',
+        title: `Rute custom baru: ${titleText}`,
+        desc: `${chosenPlaces.length} destinasi wisata (${totalRoadKm.toFixed(1)} KM) berhasil ditambahkan ke Rute Custom.`,
+      })
     } catch (err) {
       console.warn('Gagal menyimpan rute custom ke server:', err)
       setCustomRoutesList(prevRoutes)
@@ -261,6 +267,11 @@ function CustomRoutePage({
         method: 'DELETE',
       })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      pushAppNotification({
+        type: 'success',
+        title: 'Rute custom berhasil dihapus',
+        desc: `Rute "${target.title}" telah dihapus dari daftar rute tersimpan.`,
+      })
     } catch (err) {
       console.warn('Gagal menghapus rute custom:', err)
       setCustomRoutesList(prevRoutes)

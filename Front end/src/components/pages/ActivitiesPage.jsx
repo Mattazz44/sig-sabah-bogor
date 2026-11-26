@@ -14,6 +14,7 @@ import {
 } from '../ui/VectorIcons'
 import { apiFetch } from '../../utils/api'
 import { compressImage } from '../../utils/imageCompressor'
+import { pushAppNotification } from '../../utils/notifications'
 import {
   DEFAULT_AVATAR_PLACEHOLDER,
   DEFAULT_IMAGE_PLACEHOLDER,
@@ -22,7 +23,6 @@ import {
 function ActivitiesPage({
   tourists = [],
   favorites = [],
-  recentSlugs = [],
   onSelectPlace,
   isLoggedIn = false,
   currentUser = null,
@@ -145,6 +145,11 @@ function ActivitiesPage({
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}`)
       }
+      pushAppNotification({
+        type: 'success',
+        title: 'Postingan berhasil dihapus',
+        desc: 'Cerita aktivitas Anda telah dihapus dari linimasa.',
+      })
     } catch (err) {
       console.warn('Gagal menghapus postingan:', err)
       setMyActivities(prevMy)
@@ -246,6 +251,11 @@ function ActivitiesPage({
         setMyActivities((prev) => prev.map((p) => (p.id === tempId ? savedPost : p)))
         setCommunityActivities((prev) => prev.map((p) => (p.id === tempId ? savedPost : p)))
       }
+      pushAppNotification({
+        type: 'social',
+        title: 'Cerita dibagikan ke komunitas',
+        desc: `"${titleText}" di ${locText} berhasil dipublikasikan di linimasa Aktivitas.`,
+      })
     } catch (err) {
       console.warn('Gagal menyimpan postingan aktivitas ke server:', err)
       setMyActivities(prevMy)
@@ -807,7 +817,6 @@ function ActivitiesPage({
         onClose={() => setShowNotificationDrawer(false)}
         tourists={tourists}
         favorites={favorites}
-        recentSlugs={recentSlugs}
         onSelectPlace={onSelectPlace}
       />
     </div>
