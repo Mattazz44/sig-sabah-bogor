@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/SABAH.png">
+    <link rel="apple-touch-icon" href="/SABAH.png">
     <title>Masuk Admin - Sabah Bogor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -108,11 +110,8 @@
         <div class="apple-glass-card rounded-3xl p-6 sm:p-8">
             <!-- Brand Header -->
             <header class="text-center">
-                <div class="apple-retro-bevel mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-[rgba(244,239,230,0.16)] bg-[rgba(28,36,28,0.72)] text-[#DFAA63]">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10" fill="currentColor" fill-opacity="0.14" />
-                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" fill-opacity="0.28" />
-                    </svg>
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-white/[0.18] bg-[#161D15] p-1.5 shadow-[0_14px_30px_-8px_rgba(78,138,54,0.42),0_4px_12px_rgba(0,0,0,0.45)]">
+                    <img src="/SABAH.png" alt="Logo Sabah Bogor" class="h-full w-full rounded-xl object-contain" />
                 </div>
 
                 <h1 class="text-[22px] font-bold tracking-tight text-[#F5F2EB]">

@@ -10,7 +10,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: false,
-      includeAssets: ['favicon.svg', 'manifest.json', 'pwa-192x192.png', 'pwa-512x512.png'],
+      includeAssets: ['SABAH.png', 'manifest.json', 'pwa-192x192.png', 'pwa-512x512.png'],
       workbox: {
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         navigateFallbackDenylist: [/^\/admin/, /^\/login/, /^\/logout/, /^\/api/],
