@@ -36,6 +36,7 @@ function SafeImage({
   fetchPriority,
   width,
   height,
+  onLoad,
   onError,
   ...rest
 }) {
@@ -210,7 +211,10 @@ function SafeImage({
               loading={effectiveLoading}
               decoding={decoding}
               fetchPriority={fetchPriority}
-              onLoad={() => setLoadedUrl(displaySrc)}
+              onLoad={(e) => {
+                setLoadedUrl(displaySrc)
+                onLoad?.(e)
+              }}
               onError={(e) => {
                 setLoadedUrl(displaySrc)
                 setImgFailedFor(displaySrc)

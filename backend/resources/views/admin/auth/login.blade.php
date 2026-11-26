@@ -97,10 +97,295 @@
             box-shadow: 0 0 0 2px rgba(242, 236, 225, 0.58);
         }
 
+        @keyframes logoIntroGlow {
+            0% {
+                opacity: 0.72;
+                transform: scale(0.94);
+                border-color: rgba(142, 201, 102, 0.12);
+                box-shadow:
+                    0 8px 20px -8px rgba(78, 138, 54, 0.12),
+                    0 0 8px 0 rgba(126, 188, 102, 0.06),
+                    0 4px 12px rgba(0, 0, 0, 0.38);
+            }
+            45% {
+                opacity: 1;
+                transform: scale(0.98);
+                border-color: rgba(142, 201, 102, 0.34);
+                box-shadow:
+                    0 12px 28px -8px rgba(96, 168, 72, 0.32),
+                    0 0 20px 1px rgba(142, 201, 102, 0.22),
+                    0 4px 14px rgba(0, 0, 0, 0.42);
+            }
+            82% {
+                opacity: 1;
+                transform: scale(1.015);
+                border-color: rgba(167, 214, 146, 0.38);
+                box-shadow:
+                    0 16px 34px -6px rgba(96, 168, 72, 0.46),
+                    0 0 28px 2px rgba(142, 201, 102, 0.30),
+                    0 6px 16px rgba(0, 0, 0, 0.46);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                border-color: rgba(244, 239, 230, 0.18);
+                box-shadow:
+                    0 14px 28px -8px rgba(78, 138, 54, 0.34),
+                    0 0 18px 0 rgba(126, 188, 102, 0.18),
+                    0 4px 12px rgba(0, 0, 0, 0.42);
+            }
+        }
+
+        @keyframes logoIdleBreath {
+            0%, 100% {
+                transform: translateY(0px);
+                box-shadow:
+                    0 14px 28px -8px rgba(78, 138, 54, 0.32),
+                    0 0 16px 0 rgba(126, 188, 102, 0.16),
+                    0 4px 12px rgba(0, 0, 0, 0.42);
+            }
+            50% {
+                transform: translateY(-4px);
+                box-shadow:
+                    0 18px 36px -6px rgba(96, 168, 72, 0.48),
+                    0 0 26px 2px rgba(140, 206, 114, 0.26),
+                    0 8px 18px rgba(0, 0, 0, 0.48);
+            }
+        }
+
+        /* Fase 1 (0% - 45%): Menggambar kotak rounded & garis jalur berkelok dengan stroke-dashoffset */
+        @keyframes sabahDrawFrame {
+            0% {
+                stroke-dashoffset: 320;
+                stroke-opacity: 0.2;
+            }
+            8% {
+                stroke-opacity: 0.95;
+            }
+            45% {
+                stroke-dashoffset: 0;
+                stroke-opacity: 0.95;
+            }
+            78% {
+                stroke-dashoffset: 0;
+                stroke-opacity: 0.65;
+            }
+            94%, 100% {
+                stroke-dashoffset: 0;
+                stroke-opacity: 0;
+            }
+        }
+
+        @keyframes sabahDrawRoad {
+            0%, 6% {
+                stroke-dashoffset: 150;
+                stroke-opacity: 0;
+            }
+            12% {
+                stroke-opacity: 1;
+            }
+            45% {
+                stroke-dashoffset: 0;
+                stroke-opacity: 1;
+            }
+            74% {
+                stroke-dashoffset: 0;
+                stroke-opacity: 0.7;
+            }
+            90%, 100% {
+                stroke-dashoffset: 0;
+                stroke-opacity: 0;
+            }
+        }
+
+        @keyframes sabahDrawLeaves {
+            0%, 24% {
+                stroke-dashoffset: 60;
+                stroke-opacity: 0;
+            }
+            30% {
+                stroke-opacity: 0.9;
+            }
+            48% {
+                stroke-dashoffset: 0;
+                stroke-opacity: 0.9;
+            }
+            76% {
+                stroke-dashoffset: 0;
+                stroke-opacity: 0.45;
+            }
+            90%, 100% {
+                stroke-dashoffset: 0;
+                stroke-opacity: 0;
+            }
+        }
+
+        /* Fase 2 (45% - 80%): Pin lokasi membesar scale(0 -> 1) & isian fill-opacity 0 -> 1 */
+        @keyframes sabahPinReveal {
+            0%, 44% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            58% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+            68% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            78% {
+                opacity: 0.85;
+                transform: scale(1);
+            }
+            90%, 100% {
+                opacity: 0;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes sabahPinPulse {
+            0%, 48% {
+                opacity: 0;
+                transform: scale(0.4);
+            }
+            60% {
+                opacity: 0.8;
+            }
+            78%, 100% {
+                opacity: 0;
+                transform: scale(1.75);
+            }
+        }
+
+        @keyframes sabahFillMorph {
+            0%, 45% {
+                fill-opacity: 0;
+                opacity: 0;
+            }
+            76% {
+                fill-opacity: 1;
+                opacity: 1;
+            }
+            88%, 100% {
+                fill-opacity: 1;
+                opacity: 1;
+            }
+        }
+
+        @keyframes sabahDetailReveal {
+            0%, 58% {
+                opacity: 0;
+            }
+            84%, 100% {
+                opacity: 1;
+            }
+        }
+
+        /* Fase 3 (80% - 100%): Kilau cahaya diagonal tenang saat logo menyatu utuh */
+        @keyframes sabahSheenSweep {
+            0%, 76% {
+                opacity: 0;
+                transform: translateX(-140%) skewX(-20deg);
+            }
+            84% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(160%) skewX(-20deg);
+            }
+        }
+
+        .admin-logo-stage {
+            display: inline-flex;
+            transition: transform 0.4s ease;
+            will-change: transform;
+        }
+
+        .admin-logo-stage:hover {
+            transform: scale(1.05);
+        }
+
+        .admin-logo-float {
+            animation:
+                logoIntroGlow 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+                logoIdleBreath 5s ease-in-out 3.8s infinite;
+            transition: border-color 0.4s ease;
+            will-change: transform, box-shadow;
+        }
+
+        .admin-logo-stage:hover .admin-logo-float {
+            border-color: rgba(167, 214, 146, 0.42);
+        }
+
+        .sabah-frame-stroke {
+            stroke-dasharray: 320;
+            stroke-dashoffset: 320;
+            animation: sabahDrawFrame 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .sabah-road-stroke {
+            stroke-dasharray: 150;
+            stroke-dashoffset: 150;
+            animation: sabahDrawRoad 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .sabah-leaf-stroke {
+            stroke-dasharray: 60;
+            stroke-dashoffset: 60;
+            animation: sabahDrawLeaves 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .sabah-pin-group {
+            transform-box: fill-box;
+            transform-origin: center;
+            opacity: 0;
+            animation: sabahPinReveal 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .sabah-pin-ripple {
+            transform-box: fill-box;
+            transform-origin: center;
+            opacity: 0;
+            animation: sabahPinPulse 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .sabah-fill-body {
+            fill-opacity: 0;
+            opacity: 0;
+            animation: sabahFillMorph 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .sabah-artwork-detail {
+            opacity: 0;
+            animation: sabahDetailReveal 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .sabah-sheen-bar {
+            opacity: 0;
+            animation: sabahSheenSweep 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 transition-duration: 0.01ms !important;
                 animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                animation-delay: 0s !important;
+            }
+            .sabah-frame-stroke,
+            .sabah-road-stroke,
+            .sabah-leaf-stroke,
+            .sabah-pin-group,
+            .sabah-pin-ripple,
+            .sabah-sheen-bar {
+                opacity: 0 !important;
+            }
+            .sabah-fill-body,
+            .sabah-artwork-detail {
+                opacity: 1 !important;
+                fill-opacity: 1 !important;
             }
         }
     </style>
@@ -110,8 +395,142 @@
         <div class="apple-glass-card rounded-3xl p-6 sm:p-8">
             <!-- Brand Header -->
             <header class="text-center">
-                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl border border-white/[0.18] bg-[#161D15] p-1.5 shadow-[0_14px_30px_-8px_rgba(78,138,54,0.42),0_4px_12px_rgba(0,0,0,0.45)]">
-                    <img src="/SABAH.png" alt="Logo Sabah Bogor" class="h-full w-full rounded-xl object-contain" />
+                <div class="mb-4 flex justify-center">
+                    <div class="admin-logo-stage">
+                        <div
+                            id="admin-brand-logo-wrap"
+                            class="admin-logo-float relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-white/[0.18] bg-[#161D15] p-1.5"
+                        >
+                            <!-- Inline SVG Logo Sabah Bogor: Path Drawing & Morphing (3.8s) -->
+                            <svg
+                                id="admin-sabah-svg"
+                                viewBox="0 0 100 100"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                role="img"
+                                aria-label="Logo Sabah Bogor"
+                                class="relative z-10 h-full w-full"
+                            >
+                                <defs>
+                                    <linearGradient id="sabahCanopyGrad" x1="20%" y1="12%" x2="82%" y2="88%">
+                                        <stop offset="0%" stop-color="#528530" />
+                                        <stop offset="55%" stop-color="#7EA246" />
+                                        <stop offset="100%" stop-color="#A7BE5E" />
+                                    </linearGradient>
+
+                                    <filter id="sabahSageGlow" x="-20%" y="-20%" width="140%" height="140%">
+                                        <feGaussianBlur stdDeviation="1.6" result="blur" />
+                                        <feMerge>
+                                            <feMergeNode in="blur" />
+                                            <feMergeNode in="SourceGraphic" />
+                                        </feMerge>
+                                    </filter>
+
+                                    <!-- Masker presisi sesuai bentuk asli SABAH.png (kotak B, jalur S, daun B, & pin) -->
+                                    <mask id="sabahEmblemMask">
+                                        <path
+                                            d="M 16.5 12 H 88 V 27 C 88 37.5 82 47.2 73 52.5 C 82 58 88 68.5 88 79.5 V 87 H 13 V 15.5 C 13 13.5 14.5 12 16.5 12 Z"
+                                            fill="#FFFFFF"
+                                        />
+                                        <!-- Potongan jalur S berkelok -->
+                                        <path
+                                            d="M 10 85.5 C 27 77.5 46 69.5 49 56.5 C 51.2 47 43.2 39.8 46 30 C 48.8 20.5 64 14.8 90 7.5"
+                                            stroke="#000000"
+                                            stroke-width="11.5"
+                                            stroke-linecap="round"
+                                            fill="none"
+                                        />
+                                        <!-- Potongan pin lokasi kiri atas -->
+                                        <path
+                                            d="M 25.8 16.8 C 21.1 16.8 17.6 20.3 17.6 24.8 C 17.6 29.8 23.5 35.8 25.2 37.8 C 25.5 38.2 26.1 38.2 26.4 37.8 C 28.1 35.8 34 29.8 34 24.8 C 34 20.3 30.5 16.8 25.8 16.8 Z"
+                                            fill="#000000"
+                                        />
+                                        <circle cx="25.8" cy="24.6" r="3.4" fill="#FFFFFF" />
+                                        <!-- Potongan dua daun huruf B di kanan -->
+                                        <path
+                                            d="M 64.5 52 C 63.8 45 65.2 39.5 71 38.5 C 72 44.5 70.5 51 64.5 52 Z"
+                                            fill="#000000"
+                                        />
+                                        <path
+                                            d="M 64.5 53.5 C 70.8 54.5 72.8 60 72 67 C 66 66.5 64 60.5 64.5 53.5 Z"
+                                            fill="#000000"
+                                        />
+                                    </mask>
+                                </defs>
+
+                                <!-- Fase 2 (45%-80%): Siluet vektor logo terisi bertahap (fill-opacity 0 -> 1) -->
+                                <g class="sabah-fill-body" mask="url(#sabahEmblemMask)">
+                                    <rect x="12" y="11" width="77" height="77" fill="url(#sabahCanopyGrad)" />
+                                    <rect x="12" y="81.5" width="77" height="6.5" fill="#6F8056" />
+                                </g>
+
+                                <!-- Detail siluet rusa Bogor & pepohonan menyatu presisi dari SABAH.png -->
+                                <image
+                                    href="/SABAH.png"
+                                    x="0"
+                                    y="0"
+                                    width="100"
+                                    height="100"
+                                    preserveAspectRatio="xMidYMid meet"
+                                    class="sabah-artwork-detail"
+                                />
+
+                                <!-- Fase 1 (0%-45%): Garis tepi kotak rounded & kontur B menggambar diri -->
+                                <path
+                                    d="M 16.5 12 H 88 V 27 C 88 37.5 82 47.2 73 52.5 C 82 58 88 68.5 88 79.5 V 87 H 13 V 15.5 C 13 13.5 14.5 12 16.5 12 Z"
+                                    stroke="#8EC966"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    filter="url(#sabahSageGlow)"
+                                    class="sabah-frame-stroke"
+                                />
+
+                                <!-- Fase 1 (0%-45%): Garis jalur berkelok S menggambar jalurnya sendiri -->
+                                <path
+                                    d="M 11 85 C 27.5 77 46 69.2 49 56.5 C 51.2 47 43.2 39.8 46 30 C 48.8 20.5 64 14.8 89 8"
+                                    stroke="#DDF0C8"
+                                    stroke-width="3.2"
+                                    stroke-linecap="round"
+                                    filter="url(#sabahSageGlow)"
+                                    class="sabah-road-stroke"
+                                />
+
+                                <!-- Fase 1: Garis kontur daun B kanan -->
+                                <path
+                                    d="M 64.5 52 C 63.8 45 65.2 39.5 71 38.5 C 72 44.5 70.5 51 64.5 52 Z M 64.5 53.5 C 70.8 54.5 72.8 60 72 67 C 66 66.5 64 60.5 64.5 53.5 Z"
+                                    stroke="#A7D682"
+                                    stroke-width="1.6"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="sabah-leaf-stroke"
+                                />
+
+                                <!-- Fase 2 (45%-80%): Pin lokasi membesar scale(0 -> 1) + cincin radar tipis -->
+                                <circle
+                                    cx="25.8"
+                                    cy="24.8"
+                                    r="7.5"
+                                    stroke="#8EC966"
+                                    stroke-width="1.4"
+                                    class="sabah-pin-ripple"
+                                />
+                                <g class="sabah-pin-group" filter="url(#sabahSageGlow)">
+                                    <path
+                                        d="M 25.8 16.8 C 21.1 16.8 17.6 20.3 17.6 24.8 C 17.6 29.8 23.5 35.8 25.2 37.8 C 25.5 38.2 26.1 38.2 26.4 37.8 C 28.1 35.8 34 29.8 34 24.8 C 34 20.3 30.5 16.8 25.8 16.8 Z"
+                                        fill="#DFAA63"
+                                    />
+                                    <circle cx="25.8" cy="24.6" r="3.4" fill="#161D15" />
+                                </g>
+                            </svg>
+
+                            <!-- Fase 3 (80%-100%): Sapuan cahaya diagonal lembut -->
+                            <span
+                                aria-hidden="true"
+                                class="sabah-sheen-bar pointer-events-none absolute inset-y-0 -left-6 z-20 w-10 bg-gradient-to-r from-transparent via-white/35 to-transparent"
+                            ></span>
+                        </div>
+                    </div>
                 </div>
 
                 <h1 class="text-[22px] font-bold tracking-tight text-[#F5F2EB]">

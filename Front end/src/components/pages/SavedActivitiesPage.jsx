@@ -1,8 +1,9 @@
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import CustomRoutePage from './CustomRoutePage'
 import NotificationDrawer from '../ui/NotificationDrawer'
 import GlassModal from '../ui/GlassModal'
 import SafeImage from '../ui/SafeImage'
+import ScrollToTopButton from '../ui/ScrollToTopButton'
 import { apiFetch, getAuthToken } from '../../utils/api'
 import { pushAppNotification } from '../../utils/notifications'
 import { DEFAULT_AVATAR_PLACEHOLDER, getBogorFallbackPhoto } from '../../utils/imageHelper'
@@ -77,6 +78,9 @@ function SavedActivitiesPage({
 }) {
   const [activeFolderView, setActiveFolderView] = useState(null)
   const [showNotificationDrawer, setShowNotificationDrawer] = useState(false)
+  const mainScrollRef = useRef(null)
+  const recentScrollRef = useRef(null)
+  const favoritesScrollRef = useRef(null)
 
   const [showActivityModal, setShowActivityModal] = useState(false)
   const [newActivityName, setNewActivityName] = useState('')
@@ -261,10 +265,12 @@ function SavedActivitiesPage({
 
   if (activeFolderView === 'recent') {
     return (
-      <div
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
-        className="apple-canopy-bg bg-[#111711] animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#F5F2EB]"
-      >
+      <div className="relative h-full min-h-0 w-full">
+        <div
+          ref={recentScrollRef}
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
+          className="apple-canopy-bg bg-[#111711] animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#F5F2EB]"
+        >
         <div className="mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
           <header className="flex items-center gap-3 border-b border-[rgba(244,239,230,0.14)] pb-4">
             <button
@@ -350,16 +356,24 @@ function SavedActivitiesPage({
             </ul>
           )}
         </div>
+        </div>
+
+        <ScrollToTopButton
+          scrollContainerRef={recentScrollRef}
+          className="absolute right-4 bottom-24 z-40 sm:right-6"
+        />
       </div>
     )
   }
 
   if (activeFolderView === 'favorites') {
     return (
-      <div
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
-        className="apple-canopy-bg bg-[#111711] animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#F5F2EB]"
-      >
+      <div className="relative h-full min-h-0 w-full">
+        <div
+          ref={favoritesScrollRef}
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
+          className="apple-canopy-bg bg-[#111711] animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#F5F2EB]"
+        >
         <div className="mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
           <header className="flex items-center gap-3 border-b border-[rgba(244,239,230,0.14)] pb-4">
             <button
@@ -404,15 +418,24 @@ function SavedActivitiesPage({
             </div>
           )}
         </div>
+        </div>
+
+        <ScrollToTopButton
+          scrollContainerRef={favoritesScrollRef}
+          className="absolute right-4 bottom-24 z-40 sm:right-6"
+        />
       </div>
     )
   }
 
   return (
-    <div
-      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
-      className="apple-canopy-bg bg-[#111711] animate-tab-enter relative h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#F5F2EB]"
-    >
+    <div className="relative h-full min-h-0 w-full">
+      <div
+        ref={mainScrollRef}
+        id="saved-scroll-container"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
+        className="apple-canopy-bg bg-[#111711] animate-tab-enter relative h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#F5F2EB]"
+      >
       <div className="mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
         {/* Top Header */}
         <header className="flex items-start justify-between gap-3 sm:items-center">
@@ -855,6 +878,12 @@ function SavedActivitiesPage({
         tourists={tourists}
         favorites={favorites}
         onSelectPlace={onSelectPlace}
+      />
+      </div>
+
+      <ScrollToTopButton
+        scrollContainerRef={mainScrollRef}
+        className="absolute right-4 bottom-24 z-40 sm:right-6"
       />
     </div>
   )

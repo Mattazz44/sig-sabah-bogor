@@ -45,6 +45,26 @@ export function formatDistance(distanceKm) {
 }
 
 /**
+ * Format jarak ringkas untuk mini-card popup peta.
+ * Contoh: "650 m", "3.2 km", "14.5 km"
+ */
+export function formatShortDistance(distanceKm) {
+  if (distanceKm === null || distanceKm === undefined || Number.isNaN(Number(distanceKm))) {
+    return null
+  }
+  const numericKm = Number(distanceKm)
+  if (!Number.isFinite(numericKm) || numericKm < 0) {
+    return null
+  }
+  if (numericKm < 1) {
+    const meters = Math.max(10, Math.round(numericKm * 1000))
+    return `${meters} m`
+  }
+  const formatted = numericKm < 100 ? numericKm.toFixed(1) : Math.round(numericKm)
+  return `${formatted} km`
+}
+
+/**
  * Menghitung estimasi waktu tempuh berkendara (mobil / motor) di kondisi lalu lintas kota Bogor.
  * Asumsi:
  * - Faktor kelokan jalan (winding factor / detour index): 1.35x dari garis lurus udara
@@ -83,6 +103,7 @@ export function enrichTouristWithUserLocation(place, userPosition) {
       ...place,
       distanceKm: null,
       distance: null,
+      shortDistance: null,
       travelTime: null,
     }
   }
@@ -102,6 +123,7 @@ export function enrichTouristWithUserLocation(place, userPosition) {
     ...place,
     distanceKm: distKm,
     distance: formatDistance(distKm),
+    shortDistance: formatShortDistance(distKm),
     travelTime: formatTravelTime(distKm),
   }
 }

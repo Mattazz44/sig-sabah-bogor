@@ -1,7 +1,8 @@
-import { memo, useEffect, useMemo, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiFetch } from '../../utils/api'
 import SafeImage from '../ui/SafeImage'
+import ScrollToTopButton from '../ui/ScrollToTopButton'
 import {
   CompassIcon,
   HeartIcon,
@@ -190,6 +191,7 @@ function ForYouPage({
   onOpenProfile,
 }) {
   const navigate = useNavigate()
+  const scrollContainerRef = useRef(null)
   const [reloadTick, setReloadTick] = useState(0)
   const requestKey = isLoggedIn
     ? `${favorites.join(',')}|${recentSlugs.join(',')}|${tourists.length}|${reloadTick}`
@@ -345,10 +347,13 @@ function ForYouPage({
   )
 
   return (
-    <div
-      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
-      className="apple-canopy-bg animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#EBF0EB]"
-    >
+    <div className="relative h-full min-h-0 w-full">
+      <div
+        ref={scrollContainerRef}
+        id="foryou-scroll-container"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
+        className="apple-canopy-bg animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#EBF0EB]"
+      >
       <div className="mx-auto w-full max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
         {/* Top Header */}
         <header className="flex items-start justify-between gap-4 sm:items-center">
@@ -623,6 +628,12 @@ function ForYouPage({
           </div>
         )}
       </div>
+      </div>
+
+      <ScrollToTopButton
+        scrollContainerRef={scrollContainerRef}
+        className="absolute right-4 bottom-24 z-40 sm:right-6"
+      />
     </div>
   )
 }

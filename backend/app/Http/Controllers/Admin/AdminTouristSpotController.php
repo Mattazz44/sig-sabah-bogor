@@ -74,7 +74,7 @@ class AdminTouristSpotController extends Controller
             'ticket_price' => 'nullable|string|max:100',
             'rating' => 'nullable|numeric|between:0,5',
             'is_popular' => 'nullable|boolean',
-            'photos.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'photos.*' => 'nullable|file|max:15360',
             'photo_order' => 'nullable|string', // JSON array of identifiers
         ]);
 
@@ -97,28 +97,7 @@ class AdminTouristSpotController extends Controller
         }
 
         // Upload file foto-foto yang diunggah ke folder public/images/spots/
-        $uploadedMap = []; // id -> path
-        if ($request->hasFile('photos')) {
-            $spotsDir = public_path('images/spots');
-            if (!file_exists($spotsDir)) {
-                mkdir($spotsDir, 0755, true);
-            }
-            foreach ($request->file('photos') as $idx => $photoFile) {
-                $guessedExt = strtolower((string) ($photoFile->guessExtension() ?: $photoFile->getClientOriginalExtension() ?: 'jpg'));
-                $ext = in_array($guessedExt, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true) ? $guessedExt : 'jpg';
-                $cleanName = Str::slug(pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'spot';
-                $fileName = time() . '_' . uniqid() . '_' . $cleanName . '.' . $ext;
-                // Kompresi foto tempat wisata: maksimal resolusi 1280x1280 px dengan kualitas 82%
-                try {
-                    ImageCompressor::compressAndSave($photoFile, $spotsDir, $fileName, 1280, 1280, 82);
-                } catch (\Throwable) {
-                    throw ValidationException::withMessages([
-                        'photos' => ['Salah satu file foto tidak valid atau gagal diproses.'],
-                    ]);
-                }
-                $uploadedMap['new_' . $idx] = '/images/spots/' . $fileName;
-            }
-        }
+        $uploadedMap = $this->processUploadedPhotos($request);
 
         // Susun urutan foto berdasarkan photo_order yang dikirim (hasil drag and drop)
         $orderedGallery = [];
@@ -135,9 +114,11 @@ class AdminTouristSpotController extends Controller
             }
         }
 
-        // Fallback jika tidak ada orderList yang terproses tapi ada foto yang diupload
-        if (empty($orderedGallery) && !empty($uploadedMap)) {
-            $orderedGallery = array_values($uploadedMap);
+        // Pastikan seluruh foto baru yang terunggah ikut masuk ke galeri (meski tidak ada di photo_order)
+        foreach ($uploadedMap as $uploadedPath) {
+            if (!in_array($uploadedPath, $orderedGallery, true)) {
+                $orderedGallery[] = $uploadedPath;
+            }
         }
 
         // Jika sama sekali tidak ada foto yang diupload, gunakan foto default
@@ -204,7 +185,7 @@ class AdminTouristSpotController extends Controller
             'ticket_price' => 'nullable|string|max:100',
             'rating' => 'nullable|numeric|between:0,5',
             'is_popular' => 'nullable|boolean',
-            'photos.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
+            'photos.*' => 'nullable|file|max:15360',
             'photo_order' => 'nullable|string',
         ]);
 
@@ -218,41 +199,33 @@ class AdminTouristSpotController extends Controller
         }
 
         // Upload file foto baru yang diunggah ke public/images/spots/
-        $uploadedMap = [];
-        if ($request->hasFile('photos')) {
-            $spotsDir = public_path('images/spots');
-            if (!file_exists($spotsDir)) {
-                mkdir($spotsDir, 0755, true);
-            }
-            foreach ($request->file('photos') as $idx => $photoFile) {
-                $guessedExt = strtolower((string) ($photoFile->guessExtension() ?: $photoFile->getClientOriginalExtension() ?: 'jpg'));
-                $ext = in_array($guessedExt, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true) ? $guessedExt : 'jpg';
-                $cleanName = Str::slug(pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'spot';
-                $fileName = time() . '_' . uniqid() . '_' . $cleanName . '.' . $ext;
-                // Kompresi foto tempat wisata: maksimal resolusi 1280x1280 px dengan kualitas 82%
-                try {
-                    ImageCompressor::compressAndSave($photoFile, $spotsDir, $fileName, 1280, 1280, 82);
-                } catch (\Throwable) {
-                    throw ValidationException::withMessages([
-                        'photos' => ['Salah satu file foto tidak valid atau gagal diproses.'],
-                    ]);
-                }
-                $uploadedMap['new_' . $idx] = '/images/spots/' . $fileName;
-            }
-        }
+        $uploadedMap = $this->processUploadedPhotos($request);
 
         // Susun urutan foto berdasarkan photo_order drag-and-drop
         $orderedGallery = [];
         $orderList = json_decode($request->input('photo_order', '[]'), true) ?: [];
 
-        foreach ($orderList as $item) {
-            $src = $item['src'] ?? '';
-            $fileId = $item['fileId'] ?? null;
-
-            if ($fileId && isset($uploadedMap[$fileId])) {
-                $orderedGallery[] = $uploadedMap[$fileId];
-            } elseif (!empty($src) && str_starts_with($src, '/images/')) {
-                $orderedGallery[] = $src;
+        if (!empty($uploadedMap)) {
+            // Ketika admin mengunggah foto baru pada halaman Edit, ganti foto lama dengan bersih
+            // mengikuti urutan drag-and-drop foto baru (dan pastikan semua foto baru tersimpan)
+            foreach ($orderList as $item) {
+                $fileId = $item['fileId'] ?? null;
+                if ($fileId && isset($uploadedMap[$fileId])) {
+                    $orderedGallery[] = $uploadedMap[$fileId];
+                }
+            }
+            foreach ($uploadedMap as $uploadedPath) {
+                if (!in_array($uploadedPath, $orderedGallery, true)) {
+                    $orderedGallery[] = $uploadedPath;
+                }
+            }
+        } else {
+            // Tidak ada foto baru: pertahankan urutan/penghapusan foto lama dari photo_order
+            foreach ($orderList as $item) {
+                $src = $item['src'] ?? '';
+                if (!empty($src) && str_starts_with($src, '/images/')) {
+                    $orderedGallery[] = $src;
+                }
             }
         }
 
@@ -298,6 +271,102 @@ class AdminTouristSpotController extends Controller
         $spot->delete();
 
         return redirect()->route('admin.spots.index')->with('success', "Tempat wisata '{$name}' telah dihapus.");
+    }
+
+    /**
+     * Proses seluruh file foto yang diunggah ke public/images/spots/ dengan validasi non-ketat (isValid + <= 15MB)
+     * dan fallback langsung copy/move jika GD gagal mendekode gambar unduhan browser.
+     *
+     * @return array<string, string>
+     */
+    private function processUploadedPhotos(Request $request): array
+    {
+        $uploadedMap = [];
+        if (!$request->hasFile('photos')) {
+            return $uploadedMap;
+        }
+
+        $spotsDir = public_path('images/spots');
+        if (!file_exists($spotsDir)) {
+            mkdir($spotsDir, 0755, true);
+        }
+
+        $files = $request->file('photos');
+        if (!is_array($files)) {
+            $files = [$files];
+        }
+
+        foreach (array_values($files) as $idx => $photoFile) {
+            if (!$photoFile) {
+                continue;
+            }
+
+            if (!$photoFile->isValid()) {
+                throw ValidationException::withMessages([
+                    'photos' => ['Upload foto gagal: ' . $photoFile->getErrorMessage()],
+                ]);
+            }
+
+            $ext = $this->resolvePhotoExtension($photoFile);
+            $cleanName = Str::slug(pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME)) ?: 'spot';
+            $fileName = time() . '_' . uniqid() . '_' . $cleanName . '.' . $ext;
+
+            try {
+                ImageCompressor::compressAndSave($photoFile, $spotsDir, $fileName, 1280, 1280, 82);
+            } catch (\Throwable $e) {
+                throw ValidationException::withMessages([
+                    'photos' => ['Salah satu file foto tidak valid atau gagal diproses: ' . $e->getMessage()],
+                ]);
+            }
+
+            $uploadedMap['new_' . $idx] = '/images/spots/' . $fileName;
+        }
+
+        return $uploadedMap;
+    }
+
+    /**
+     * Tentukan ekstensi aman dari tipe MIME asli file (menangani AVIF/WebP/JFIF yang berekstensi .jpg).
+     */
+    private function resolvePhotoExtension($photoFile): string
+    {
+        $realPath = $photoFile->getRealPath();
+        $realMime = is_string($realPath) && $realPath !== ''
+            ? ImageCompressor::detectRealMime($realPath)
+            : null;
+
+        $mimeToExt = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/webp' => 'webp',
+            'image/gif' => 'gif',
+            'image/avif' => 'avif',
+            'image/heic' => 'heic',
+            'image/heif' => 'heif',
+            'image/bmp' => 'bmp',
+        ];
+
+        if ($realMime && isset($mimeToExt[$realMime])) {
+            return $mimeToExt[$realMime];
+        }
+
+        $clientExt = strtolower((string) $photoFile->getClientOriginalExtension());
+        if ($clientExt === 'jfif' || $clientExt === 'jpeg') {
+            return 'jpg';
+        }
+
+        if (in_array($clientExt, ['jpg', 'png', 'webp', 'gif', 'avif', 'heic', 'heif', 'bmp'], true)) {
+            return $clientExt;
+        }
+
+        $guessedExt = strtolower((string) ($photoFile->guessExtension() ?: 'jpg'));
+        if ($guessedExt === 'jfif' || $guessedExt === 'jpeg') {
+            return 'jpg';
+        }
+
+        return in_array($guessedExt, ['jpg', 'png', 'webp', 'gif', 'avif', 'heic', 'heif', 'bmp'], true)
+            ? $guessedExt
+            : 'jpg';
     }
 
     /**

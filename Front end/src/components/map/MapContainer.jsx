@@ -312,6 +312,8 @@ export default function MapView({
               isNavigationMode={isNavigationMode}
               activeDestination={activeDestination}
               clusteringEnabled={clusteringEnabled}
+              userPosition={userPosition}
+              locationStatus={locationStatus}
             />
 
             {hasDestination && effectiveRouteOrigin && (

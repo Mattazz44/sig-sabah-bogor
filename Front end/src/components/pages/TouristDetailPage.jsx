@@ -630,11 +630,13 @@ function TouristDetailPage({
   const [prevSlug, setPrevSlug] = useState(place?.slug ?? null)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+  const [heroNaturalMeta, setHeroNaturalMeta] = useState({ src: '', width: 0, height: 0 })
 
   if ((place?.slug ?? null) !== prevSlug) {
     setPrevSlug(place?.slug ?? null)
     setIsLightboxOpen(false)
     setLightboxIndex(0)
+    setHeroNaturalMeta({ src: '', width: 0, height: 0 })
   }
 
   useEffect(() => {
@@ -772,6 +774,24 @@ function TouristDetailPage({
   ]
   const cleanAddress = cleanDetailText(place.address)
   const heroImage = cleanDetailText(place.image) || galleryImages[0] || fallbackPhoto
+  const isHeroMetaCurrent = heroNaturalMeta.src === heroImage && heroNaturalMeta.width > 0
+  const isHeroLowResOrPortrait =
+    isHeroMetaCurrent &&
+    (heroNaturalMeta.width < 680 || heroNaturalMeta.height > heroNaturalMeta.width * 0.92)
+
+  const handleHeroImageLoad = (e) => {
+    const imgEl = e?.currentTarget
+    if (!imgEl) return
+    const nextW = imgEl.naturalWidth || 0
+    const nextH = imgEl.naturalHeight || 0
+    if (nextW > 0 && nextH > 0) {
+      setHeroNaturalMeta((prev) =>
+        prev.src === heroImage && prev.width === nextW && prev.height === nextH
+          ? prev
+          : { src: heroImage, width: nextW, height: nextH },
+      )
+    }
+  }
 
   return (
     <div
@@ -838,42 +858,74 @@ function TouristDetailPage({
           </div>
         </header>
 
-        {/* Banner Hero Image */}
-        <section className="apple-retro-bevel relative h-64 md:h-80 w-full overflow-hidden bg-white/[0.04] md:rounded-3xl md:border md:border-[rgba(244,239,230,0.16)] md:shadow-2xl">
-          <SafeImage
-            src={heroImage}
-            fallback={fallbackPhoto}
-            alt={place.name}
-            width={1280}
-            height={720}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            className="h-full w-full object-cover object-center"
-          />
+        {/* Banner Hero Image Proporsional + Ambient Backdrop Blur + Gradient Overlay Halus */}
+        <section
+          id="detail-hero-banner"
+          className="apple-retro-bevel relative h-72 w-full overflow-hidden bg-[#131913] sm:aspect-[16/9] sm:h-auto md:h-[400px] lg:h-[440px] md:rounded-3xl md:border md:border-[rgba(244,239,230,0.16)] md:shadow-2xl"
+        >
+          {/* Lapisan Backdrop Blur dari gambar yang sama untuk kedalaman & pelindung foto resolusi rendah/portrait */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+            <SafeImage
+              src={heroImage}
+              fallback={fallbackPhoto}
+              alt=""
+              width={640}
+              height={360}
+              loading="eager"
+              decoding="async"
+              className="h-full w-full"
+              imgClassName="scale-110 object-cover object-center blur-2xl saturate-125 brightness-[0.58]"
+            />
+          </div>
 
-          {/* Top scrim mobile untuk visibilitas bar kontrol */}
+          {/* Foto Utama: object-cover penuh untuk foto landscape HD, atau object-contain tajam di atas backdrop blur bila foto kecil/portrait */}
+          <div className="relative z-[1] flex h-full w-full items-center justify-center">
+            <SafeImage
+              src={heroImage}
+              fallback={fallbackPhoto}
+              alt={place.name}
+              width={1280}
+              height={720}
+              fit={isHeroLowResOrPortrait ? 'contain' : 'cover'}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              onLoad={handleHeroImageLoad}
+              className={
+                isHeroLowResOrPortrait
+                  ? 'h-full w-full px-3 py-2 md:px-8 md:py-4'
+                  : 'h-full w-full object-cover object-center'
+              }
+              imgClassName={
+                isHeroLowResOrPortrait
+                  ? 'max-h-full max-w-full rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.75)] ring-1 ring-white/15'
+                  : 'object-cover object-center'
+              }
+            />
+          </div>
+
+          {/* Top scrim untuk visibilitas tombol kaca navigasi di atas foto terang */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/70 via-black/30 to-transparent md:hidden"
+            className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-28 bg-gradient-to-b from-[#0C120C]/75 via-[#0C120C]/32 to-transparent md:h-24 md:from-black/45 md:via-black/15"
           />
 
-          {/* Bottom scrim untuk transisi judul mobile & keterbacaan overlay judul desktop */}
+          {/* Bottom gradient overlay multi-stop yang lembut & pekat agar teks judul putih selalu kontras tajam */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#131913] via-[#131913]/80 to-transparent md:h-44 md:from-black/85 md:via-black/45 md:to-transparent"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-44 bg-gradient-to-t from-[#111711] via-[#111711]/80 via-45% to-transparent md:h-60 md:from-[#0C120C]/95 md:via-[#0C120C]/62 md:via-50% to-transparent"
           />
 
           {/* Overlay Judul, Rating, & Kategori menyatu elegan di sudut kiri bawah foto pada iPad / Nest Hub / Laptop */}
           <div className="hidden md:flex md:flex-col md:justify-end absolute inset-x-0 bottom-0 z-10 p-6 lg:p-7">
             <h1
               id="detail-title"
-              className="max-w-3xl text-[26px] lg:text-[32px] font-semibold leading-tight tracking-tight text-[#F5F2EB] drop-shadow-sm"
+              className="max-w-3xl text-[26px] lg:text-[32px] font-semibold leading-tight tracking-tight text-[#F5F2EB] drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)]"
             >
               {place.name}
             </h1>
 
-            <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[13px] font-medium text-[#F5F2EB]">
+            <div className="mt-2.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[13px] font-medium text-[#F5F2EB] drop-shadow-[0_1px_6px_rgba(0,0,0,0.55)]">
               <span className="inline-flex items-center gap-1.5">
                 <StarIcon filled className="h-4 w-4 shrink-0 text-[#DFAA63]" />
                 <span className="font-semibold not-italic tabular-nums text-[#F5F2EB]">

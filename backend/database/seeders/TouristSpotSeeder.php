@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Console\Commands\DeduplicateTouristSpots;
 use App\Models\TouristSpot;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,8 @@ use Illuminate\Support\Str;
 
 class TouristSpotSeeder extends Seeder
 {
+    private const SPATIAL_DEDUPE_RADIUS_METERS = 15.0;
+
     /**
      * Run the database seeds.
      */
@@ -24,26 +27,37 @@ class TouristSpotSeeder extends Seeder
             $geoJson = json_decode(File::get($jsonPath), true);
             $features = $geoJson['features'] ?? [];
             $seededGeo = 0;
+            $skippedGeoDupes = 0;
 
             foreach ($features as $feature) {
                 $props = $feature['properties'] ?? [];
                 $coords = $feature['geometry']['coordinates'] ?? null; // [longitude, latitude]
 
-                $lon = $coords ? $coords[0] : ($props['longitude'] ?? null);
-                $lat = $coords ? $coords[1] : ($props['latitude'] ?? null);
+                $lon = $coords ? (float) $coords[0] : (isset($props['longitude']) ? (float) $props['longitude'] : null);
+                $lat = $coords ? (float) $coords[1] : (isset($props['latitude']) ? (float) $props['latitude'] : null);
+                $name = trim((string) ($props['name'] ?? ''));
 
-                if ($lon === null || $lat === null || !$this->isInsideBogorBoundary((float) $lon, (float) $lat, $boundaryPolygons)) {
+                if ($name === '' || $lon === null || $lat === null || !$this->isInsideBogorBoundary($lon, $lat, $boundaryPolygons)) {
+                    continue;
+                }
+
+                $slug = trim((string) ($props['slug'] ?? '')) ?: Str::slug($name);
+                $address = $props['address'] ?? null;
+
+                $existingMatch = $this->findExistingSpot($slug, $name, $address, $lat, $lon);
+                if ($existingMatch && $existingMatch->slug !== $slug) {
+                    $skippedGeoDupes++;
                     continue;
                 }
 
                 $spot = TouristSpot::updateOrCreate(
-                    ['slug' => $props['slug']],
+                    ['slug' => $slug],
                     [
-                        'name' => $props['name'],
+                        'name' => $name,
                         'category' => $props['category'],
                         'description' => $props['description'] ?? null,
                         'detailed_description' => $props['detailed_description'] ?? 'kosong',
-                        'address' => $props['address'] ?? null,
+                        'address' => $address,
                         'rating' => $props['rating'] ?? 0,
                         'operational_hours' => $props['operational_hours'] ?? null,
                         'ticket_price' => $props['ticket_price'] ?? null,
@@ -59,7 +73,7 @@ class TouristSpotSeeder extends Seeder
                 $seededGeo++;
             }
 
-            $this->command->info("{$seededGeo} tourist spots inside Kota Bogor seeded from GeoJSON.");
+            $this->command?->info("{$seededGeo} tourist spots inside Kota Bogor seeded from GeoJSON ({$skippedGeoDupes} duplicates skipped).");
         }
 
         // 2. Seed Data Tambahan dari file CSV (tourist_spots_additional.csv)
@@ -72,6 +86,7 @@ class TouristSpotSeeder extends Seeder
 
             $addedCount = 0;
             $skippedCount = 0;
+            $skippedDupes = 0;
 
             while (($row = fgetcsv($handle, 0, ',', '"', '\\')) !== false) {
                 if (count($row) < 10) continue;
@@ -93,8 +108,20 @@ class TouristSpotSeeder extends Seeder
 
                 $slug = Str::slug($name);
 
-                // Cek apakah spot sudah ada di database
-                $existingSpot = TouristSpot::where('slug', $slug)->first();
+                // Alamat Lengkap
+                $address = trim($row[3] ?? '');
+                if (empty($address)) {
+                    $kel = trim($row[4] ?? '');
+                    $kec = trim($row[5] ?? '');
+                    $address = trim(($kel ? $kel . ', ' : '') . ($kec ? $kec . ', ' : '') . 'Kota Bogor');
+                }
+
+                // Cek apakah spot sudah ada di database berdasarkan slug, nama kanonik, atau tumpang tindih koordinat
+                $existingSpot = $this->findExistingSpot($slug, $name, $address, $lat, $lon);
+                if ($existingSpot && $existingSpot->slug !== $slug) {
+                    $skippedDupes++;
+                    continue;
+                }
 
                 // Format Jam Buka & Tutup
                 $jamBuka = trim($row[13] ?? '');
@@ -110,14 +137,6 @@ class TouristSpotSeeder extends Seeder
 
                 // HTM Lokal
                 $ticketPrice = !empty(trim($row[11] ?? '')) ? trim($row[11]) : null;
-
-                // Alamat Lengkap
-                $address = trim($row[3] ?? '');
-                if (empty($address)) {
-                    $kel = trim($row[4] ?? '');
-                    $kec = trim($row[5] ?? '');
-                    $address = trim(($kel ? $kel . ', ' : '') . ($kec ? $kec . ', ' : '') . 'Kota Bogor');
-                }
 
                 // Deskripsi Ringkas
                 $shortDesc = trim($row[22] ?? '');
@@ -140,29 +159,83 @@ class TouristSpotSeeder extends Seeder
                 $spot = TouristSpot::updateOrCreate(
                     ['slug' => $slug],
                     [
-                        'name' => $name,
-                        'category' => $category,
+                        'name' => $existingSpot?->name ?: $name,
+                        'category' => $existingSpot?->category ?: $category,
                         'description' => ($existingSpot && !empty($existingSpot->description)) ? $existingSpot->description : $shortDesc,
                         'detailed_description' => $detailedDesc,
-                        'address' => $address,
+                        'address' => ($existingSpot && !empty($existingSpot->address)) ? $existingSpot->address : $address,
                         'rating' => $existingSpot?->rating ?: 4.5,
                         'operational_hours' => ($existingSpot && !empty($existingSpot->operational_hours)) ? $existingSpot->operational_hours : $operationalHours,
-                        'ticket_price' => $ticketPrice,
+                        'ticket_price' => ($existingSpot && !empty($existingSpot->ticket_price)) ? $existingSpot->ticket_price : $ticketPrice,
                         'image' => $image,
                         'gallery' => $existingSpot?->gallery ?: [],
-                        'latitude' => $lat,
-                        'longitude' => $lon,
+                        'latitude' => $existingSpot?->latitude ?? $lat,
+                        'longitude' => $existingSpot?->longitude ?? $lon,
                         'is_popular' => $existingSpot?->is_popular ?? false,
                     ]
                 );
 
-                $this->updateGeometry($spot->id, $lon, $lat);
+                $this->updateGeometry($spot->id, (float) $spot->longitude, (float) $spot->latitude);
                 $addedCount++;
             }
 
             fclose($handle);
-            $this->command->info("{$addedCount} spots from CSV processed ({$skippedCount} skipped due to empty coords).");
+            $this->command?->info("{$addedCount} spots from CSV processed ({$skippedCount} skipped due to empty/outside coords, {$skippedDupes} duplicates skipped).");
         }
+    }
+
+    /**
+     * Cari record existing berdasarkan slug, nama kanonik serupa, atau koordinat spasial bertumpuk (<= 15m).
+     */
+    private function findExistingSpot(string $slug, string $name, ?string $address, float $lat, float $lon): ?TouristSpot
+    {
+        $bySlug = TouristSpot::where('slug', $slug)->first();
+        if ($bySlug) {
+            return $bySlug;
+        }
+
+        $targetNameKey = DeduplicateTouristSpots::canonicalNameKey($name);
+        $targetStreetKey = DeduplicateTouristSpots::streetKey($address);
+
+        $candidates = TouristSpot::query()
+            ->select(['id', 'slug', 'name', 'address', 'category', 'description', 'detailed_description', 'rating', 'operational_hours', 'ticket_price', 'image', 'gallery', 'latitude', 'longitude', 'is_popular'])
+            ->get();
+
+        foreach ($candidates as $candidate) {
+            $candNameKey = DeduplicateTouristSpots::canonicalNameKey((string) $candidate->name);
+            if ($targetNameKey !== '' && $targetNameKey === $candNameKey) {
+                return $candidate;
+            }
+
+            $distM = $this->haversineMeters($lat, $lon, (float) $candidate->latitude, (float) $candidate->longitude);
+            if ($distM <= self::SPATIAL_DEDUPE_RADIUS_METERS) {
+                return $candidate;
+            }
+
+            if (
+                $distM <= 100.0 &&
+                $targetStreetKey !== '' &&
+                $targetStreetKey === DeduplicateTouristSpots::streetKey($candidate->address) &&
+                strlen($targetNameKey) >= 10 &&
+                strlen($candNameKey) >= 10 &&
+                (str_contains($targetNameKey, $candNameKey) || str_contains($candNameKey, $targetNameKey))
+            ) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    private function haversineMeters(float $lat1, float $lon1, float $lat2, float $lon2): float
+    {
+        $earthRadius = 6371000.0;
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+        $a = sin($dLat / 2) ** 2
+            + cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * sin($dLon / 2) ** 2;
+
+        return 2.0 * $earthRadius * asin(min(1.0, sqrt($a)));
     }
 
     /**

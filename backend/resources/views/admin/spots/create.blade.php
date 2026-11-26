@@ -355,12 +355,14 @@
                     Unggah beberapa foto. Foto paling awal otomatis menjadi sampul utama tempat wisata.
                 </p>
 
-                <input type="file" id="photos-input" name="photos[]" multiple accept="image/*" class="hidden">
+                <input type="file" id="photos-input" name="photos[]" multiple accept="image/*,.avif,.webp,.jfif,.heic,.heif" class="sr-only">
 
-                <button
-                    type="button"
+                <label
+                    for="photos-input"
                     id="dropzone-area"
-                    class="mt-4 flex min-h-[136px] w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[rgba(244,239,230,0.2)] bg-white/[0.04] px-4 py-5 text-center transition-colors hover:border-[rgba(244,239,230,0.38)] hover:bg-white/[0.08]"
+                    tabindex="0"
+                    role="button"
+                    class="mt-4 flex min-h-[136px] w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[rgba(244,239,230,0.2)] bg-white/[0.04] px-4 py-5 text-center transition-colors hover:border-[rgba(244,239,230,0.38)] hover:bg-white/[0.08]"
                 >
                     <span class="apple-retro-bevel flex h-10 w-10 items-center justify-center rounded-xl border border-[rgba(244,239,230,0.16)] bg-[#111711]/75 text-[#DFAA63]">
                         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -372,9 +374,9 @@
                         Klik atau seret beberapa foto ke sini
                     </span>
                     <span class="text-[11.5px] text-[#F5F2EB]/65">
-                        JPG, PNG, WebP · Kompresi resolusi otomatis di browser
+                        JPG, PNG, WebP, AVIF (maks. 15 MB) · Kompresi resolusi otomatis di browser
                     </span>
-                </button>
+                </label>
 
                 <!-- Sortable Thumbnail Preview Grid -->
                 <div id="photo-sortable-list" class="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3"></div>
@@ -533,65 +535,84 @@ document.addEventListener('DOMContentLoaded', function () {
     const lngInput = document.getElementById('input-lng');
     const chipEl = document.getElementById('coord-display-chip');
 
-    let currentLat = parseFloat(latInput.value) || -6.5971;
-    let currentLng = parseFloat(lngInput.value) || 106.8060;
+    let currentLat = parseFloat(latInput ? latInput.value : '');
+    let currentLng = parseFloat(lngInput ? lngInput.value : '');
+    if (!Number.isFinite(currentLat)) currentLat = -6.5971;
+    if (!Number.isFinite(currentLng)) currentLng = 106.8060;
 
-    const map = L.map('map-picker', {
-        zoomControl: false,
-        attributionControl: false
-    }).setView([currentLat, currentLng], 13);
+    try {
+        if (typeof L !== 'undefined' && document.getElementById('map-picker')) {
+            const map = L.map('map-picker', {
+                zoomControl: false,
+                attributionControl: false
+            }).setView([currentLat, currentLng], 13);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19
-    }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19
+            }).addTo(map);
 
-    const adminPinIcon = L.divIcon({
-        className: 'wisata-marker',
-        iconSize: [32, 42],
-        iconAnchor: [16, 41],
-        html: `<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 4px 8px rgb(0 0 0 / .48))">
-            <path d="M16 41S3 26.5 3 16a13 13 0 1 1 26 0c0 10.5-13 25-13 25Z" fill="#1F8A5B" stroke="#F2ECE1" stroke-width="2.2"/>
-            <circle cx="16" cy="15" r="5" fill="#DFAA63"/>
-        </svg>`
-    });
+            const adminPinIcon = L.divIcon({
+                className: 'wisata-marker',
+                iconSize: [32, 42],
+                iconAnchor: [16, 41],
+                html: `<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 4px 8px rgb(0 0 0 / .48))">
+                    <path d="M16 41S3 26.5 3 16a13 13 0 1 1 26 0c0 10.5-13 25-13 25Z" fill="#1F8A5B" stroke="#F2ECE1" stroke-width="2.2"/>
+                    <circle cx="16" cy="15" r="5" fill="#DFAA63"/>
+                </svg>`
+            });
 
-    let marker = L.marker([currentLat, currentLng], { icon: adminPinIcon, draggable: true }).addTo(map);
+            const marker = L.marker([currentLat, currentLng], { icon: adminPinIcon, draggable: true }).addTo(map);
 
-    function updateCoordinates(lat, lng, pan = false) {
-        latInput.value = lat.toFixed(6);
-        lngInput.value = lng.toFixed(6);
-        chipEl.textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-        marker.setLatLng([lat, lng]);
-        if (pan) map.panTo([lat, lng]);
+            function updateCoordinates(lat, lng, pan = false) {
+                if (latInput) latInput.value = lat.toFixed(6);
+                if (lngInput) lngInput.value = lng.toFixed(6);
+                if (chipEl) chipEl.textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+                marker.setLatLng([lat, lng]);
+                if (pan) map.panTo([lat, lng]);
+            }
+
+            marker.on('dragend', function (e) {
+                const pos = e.target.getLatLng();
+                updateCoordinates(pos.lat, pos.lng);
+            });
+
+            map.on('click', function (e) {
+                updateCoordinates(e.latlng.lat, e.latlng.lng);
+            });
+
+            if (latInput) {
+                latInput.addEventListener('change', function () {
+                    const valLat = parseFloat(this.value);
+                    const valLng = parseFloat(lngInput ? lngInput.value : '');
+                    if (!isNaN(valLat) && !isNaN(valLng)) updateCoordinates(valLat, valLng, true);
+                });
+            }
+
+            if (lngInput) {
+                lngInput.addEventListener('change', function () {
+                    const valLat = parseFloat(latInput ? latInput.value : '');
+                    const valLng = parseFloat(this.value);
+                    if (!isNaN(valLat) && !isNaN(valLng)) updateCoordinates(valLat, valLng, true);
+                });
+            }
+
+            const btnZoomIn = document.getElementById('btn-zoom-in');
+            const btnZoomOut = document.getElementById('btn-zoom-out');
+            const btnCenterBogor = document.getElementById('btn-center-bogor');
+            if (btnZoomIn) btnZoomIn.addEventListener('click', () => map.zoomIn());
+            if (btnZoomOut) btnZoomOut.addEventListener('click', () => map.zoomOut());
+            if (btnCenterBogor) {
+                btnCenterBogor.addEventListener('click', () => {
+                    map.setView([-6.5971, 106.8060], 13);
+                    updateCoordinates(-6.5971, 106.8060, true);
+                });
+            }
+
+            setTimeout(() => map.invalidateSize(), 150);
+        }
+    } catch (mapErr) {
+        console.error('Gagal menginisialisasi peta Leaflet:', mapErr);
     }
-
-    marker.on('dragend', function (e) {
-        const pos = e.target.getLatLng();
-        updateCoordinates(pos.lat, pos.lng);
-    });
-
-    map.on('click', function (e) {
-        updateCoordinates(e.latlng.lat, e.latlng.lng);
-    });
-
-    latInput.addEventListener('change', function () {
-        const valLat = parseFloat(this.value);
-        const valLng = parseFloat(lngInput.value);
-        if (!isNaN(valLat) && !isNaN(valLng)) updateCoordinates(valLat, valLng, true);
-    });
-
-    lngInput.addEventListener('change', function () {
-        const valLat = parseFloat(latInput.value);
-        const valLng = parseFloat(this.value);
-        if (!isNaN(valLat) && !isNaN(valLng)) updateCoordinates(valLat, valLng, true);
-    });
-
-    document.getElementById('btn-zoom-in').addEventListener('click', () => map.zoomIn());
-    document.getElementById('btn-zoom-out').addEventListener('click', () => map.zoomOut());
-    document.getElementById('btn-center-bogor').addEventListener('click', () => {
-        map.setView([-6.5971, 106.8060], 13);
-        updateCoordinates(-6.5971, 106.8060, true);
-    });
 
     // ----------------------------------------------------
     // 3. Foto & Galeri Multi-Upload + Drag & Drop Reordering
@@ -605,31 +626,40 @@ document.addEventListener('DOMContentLoaded', function () {
     let photoItems = []; // [{ id, kind: 'new'|'existing', file, previewUrl, name }]
     let newFileCounter = 0;
 
-    dropzone.addEventListener('click', () => fileInput.click());
+    if (dropzone && fileInput) {
+        // Label[for="photos-input"] memicu dialog pilih file secara native pada klik.
+        dropzone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                fileInput.click();
+            }
+        });
 
-    dropzone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropzone.classList.add('border-[#DFAA63]', 'bg-white/[0.1]');
-    });
-    dropzone.addEventListener('dragleave', () => {
-        dropzone.classList.remove('border-[#DFAA63]', 'bg-white/[0.1]');
-    });
-    dropzone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropzone.classList.remove('border-[#DFAA63]', 'bg-white/[0.1]');
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            handleNewFiles(e.dataTransfer.files);
-        }
-    });
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('border-[#DFAA63]', 'bg-white/[0.1]');
+        });
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('border-[#DFAA63]', 'bg-white/[0.1]');
+        });
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('border-[#DFAA63]', 'bg-white/[0.1]');
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                handleNewFiles(Array.from(e.dataTransfer.files));
+            }
+        });
 
-    fileInput.addEventListener('change', function () {
-        if (this.files && this.files.length > 0) {
-            handleNewFiles(this.files);
-        }
-    });
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files.length > 0) {
+                const picked = Array.from(this.files);
+                handleNewFiles(picked);
+            }
+        });
+    }
 
     async function compressImageClient(file) {
-        if (!file || !file.type.startsWith('image/') || file.type === 'image/svg+xml' || file.type === 'image/gif') {
+        if (!file || !file.type || !file.type.startsWith('image/') || file.type === 'image/svg+xml' || file.type === 'image/gif') {
             return file;
         }
         return new Promise((resolve) => {
@@ -666,22 +696,44 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    async function handleNewFiles(files) {
-        for (const file of Array.from(files)) {
-            if (!file.type.startsWith('image/')) continue;
-            const compressed = await compressImageClient(file);
-            const fileId = `new_${newFileCounter++}`;
-            const previewUrl = URL.createObjectURL(compressed);
+    const submitBtnDefaultText = submitBtn ? submitBtn.textContent.trim() : 'Simpan Lokasi';
+    let pendingUploadBatches = 0;
 
-            photoItems.push({
-                id: fileId,
-                kind: 'new',
-                file: compressed,
-                previewUrl: previewUrl,
-                name: compressed.name
-            });
+    async function handleNewFiles(files) {
+        const pickedFiles = Array.from(files).filter((file) => {
+            if (!file) return false;
+            return (file.type && file.type.startsWith('image/')) || /\.(jpe?g|jfif|png|webp|avif|gif|heic|heif|bmp)$/i.test(file.name || '');
+        });
+        if (pickedFiles.length === 0) return;
+
+        pendingUploadBatches++;
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Memproses foto...';
         }
-        syncFileInputAndUI();
+
+        try {
+            for (const file of pickedFiles) {
+                const compressed = await compressImageClient(file);
+                const fileId = `new_${newFileCounter++}`;
+                const previewUrl = URL.createObjectURL(compressed);
+
+                photoItems.push({
+                    id: fileId,
+                    kind: 'new',
+                    file: compressed,
+                    previewUrl: previewUrl,
+                    name: compressed.name
+                });
+            }
+            syncFileInputAndUI();
+        } finally {
+            pendingUploadBatches = Math.max(0, pendingUploadBatches - 1);
+            if (submitBtn && pendingUploadBatches === 0) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = submitBtnDefaultText;
+            }
+        }
     }
 
     function renderPhotoGrid() {
@@ -739,37 +791,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function syncFileInputAndUI() {
         renderPhotoGrid();
-        // Update photo_order JSON
+        // Update real FileList on HTML input & selaraskan indeks fileId (new_0, new_1, ...) 1-ke-1 dengan DataTransfer
+        const dt = new DataTransfer();
+        let newIdx = 0;
         const orderArr = photoItems.map(item => {
-            if (item.kind === 'new') return { fileId: item.id };
+            if (item.kind === 'new' && item.file) {
+                dt.items.add(item.file);
+                return { fileId: `new_${newIdx++}` };
+            }
             return { src: item.previewUrl };
         });
         photoOrderInput.value = JSON.stringify(orderArr);
-
-        // Update real FileList on HTML input
-        const dt = new DataTransfer();
-        photoItems.forEach(item => {
-            if (item.kind === 'new' && item.file) dt.items.add(item.file);
-        });
         fileInput.files = dt.files;
     }
 
-    // Initialize SortableJS
-    new Sortable(sortableList, {
-        animation: 180,
-        ghostClass: 'sortable-ghost',
-        chosenClass: 'sortable-chosen',
-        onEnd: function () {
-            const reordered = [];
-            sortableList.querySelectorAll('[data-id]').forEach(el => {
-                const id = el.dataset.id;
-                const found = photoItems.find(p => p.id === id);
-                if (found) reordered.push(found);
-            });
-            photoItems = reordered;
-            syncFileInputAndUI();
-        }
-    });
+    // Initialize SortableJS (aman bila CDN terlambat/offline)
+    if (typeof Sortable !== 'undefined' && sortableList) {
+        new Sortable(sortableList, {
+            animation: 180,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: function () {
+                const reordered = [];
+                sortableList.querySelectorAll('[data-id]').forEach(el => {
+                    const id = el.dataset.id;
+                    const found = photoItems.find(p => p.id === id);
+                    if (found) reordered.push(found);
+                });
+                photoItems = reordered;
+                syncFileInputAndUI();
+            }
+        });
+    }
 });
 </script>
 @endpush

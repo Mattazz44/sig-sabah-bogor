@@ -29,6 +29,8 @@ function MapMarker({
   selectionStamp = 0,
   autoOpenPopup = false,
   isTransit = false,
+  userPosition = null,
+  locationStatus = 'idle',
 }) {
   const { map } = useMapLibre()
   const onSelectRef = useRef(onSelect)
@@ -99,7 +101,7 @@ function MapMarker({
     const popup = new Popup({
       className: 'wisata-popup',
       closeButton: false,
-      maxWidth: '248px',
+      maxWidth: '264px',
       offset: {
         top: [0, 10],
         'top-left': [0, 10],
@@ -234,6 +236,8 @@ function MapMarker({
       onOpenDetail={onOpenDetail}
       onSelect={onSelect}
       isTransit={isTransit}
+      userPosition={userPosition}
+      locationStatus={locationStatus}
     />,
     popupContainer,
   )

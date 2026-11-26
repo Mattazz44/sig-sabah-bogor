@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { DESKTOP_BREAKPOINT, getHalfHeight, getPeekHeight } from './sheetMetrics'
 import { BottomSheetContext } from './bottomSheetContext'
+import ScrollToTopButton from './ScrollToTopButton'
 
 const DRAG_THRESHOLD = 12 // px vertical before tap becomes drag
 const FLICK_VELOCITY = 0.35 // px/ms
@@ -591,6 +592,12 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
       >
         {children}
       </div>
+
+      <ScrollToTopButton
+        scrollContainerRef={contentRef}
+        hidden={!canScrollContent}
+        className={isDesktop ? 'absolute right-5 bottom-6 z-30' : 'absolute right-4 bottom-24 z-40'}
+      />
     </section>
     </BottomSheetContext.Provider>
   )

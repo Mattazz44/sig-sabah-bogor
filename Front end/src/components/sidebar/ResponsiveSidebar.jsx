@@ -6,6 +6,7 @@ import {
   getDesktopSidebarWidth,
 } from '../ui/sheetMetrics'
 import { BottomSheetContext } from '../ui/bottomSheetContext'
+import ScrollToTopButton from '../ui/ScrollToTopButton'
 
 // Mobile 2-state metrics:
 // - expanded: melebar penuh edge-to-edge hingga menyentuh bagian atas layar (top: 0 / 100dvh)
@@ -311,7 +312,7 @@ export default function ResponsiveSidebar({
           className="pointer-events-none fixed top-3 bottom-24 left-3 z-[500] xl:bottom-3 will-change-transform"
         >
           {/* Panel utama floating sidebar dengan dark glassmorphism */}
-          <div className="apple-maps-sidebar pointer-events-auto flex h-full w-full flex-col overflow-hidden rounded-3xl border border-white/[0.16] bg-[#161D16]/75 text-white shadow-2xl backdrop-blur-md">
+          <div className="apple-maps-sidebar pointer-events-auto relative flex h-full w-full flex-col overflow-hidden rounded-3xl border border-white/[0.16] bg-[#161D16]/75 text-white shadow-2xl backdrop-blur-md">
             <div
               ref={contentRef}
               id={`${id}-content`}
@@ -321,6 +322,12 @@ export default function ResponsiveSidebar({
             >
               {children}
             </div>
+
+            <ScrollToTopButton
+              scrollContainerRef={contentRef}
+              hidden={!desktopOpen}
+              className="absolute right-5 bottom-6 z-30"
+            />
           </div>
 
           {/* Tombol toggle panah kecil di sisi kanan luar panel */}
@@ -441,6 +448,12 @@ export default function ResponsiveSidebar({
         >
           {children}
         </div>
+
+        <ScrollToTopButton
+          scrollContainerRef={contentRef}
+          hidden={!isExpandedMobile}
+          className="absolute right-4 bottom-24 z-40"
+        />
       </motion.section>
     </BottomSheetContext.Provider>
   )

@@ -131,6 +131,8 @@ export default function MarkerClusterGroup({
   isNavigationMode = false,
   activeDestination = null,
   clusteringEnabled = true,
+  userPosition = null,
+  locationStatus = 'idle',
 }) {
   const { map } = useMapLibre()
   const [zoom, setZoom] = useState(() => (map ? map.getZoom() : 15.5))
@@ -354,6 +356,8 @@ export default function MarkerClusterGroup({
             selectionStamp={isSelectedPlace ? selectionStamp : 0}
             autoOpenPopup={isTransit}
             isTransit={isTransit}
+            userPosition={userPosition}
+            locationStatus={locationStatus}
           />
         )
       })}

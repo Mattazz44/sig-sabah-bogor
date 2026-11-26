@@ -1,15 +1,59 @@
 import SafeImage from '../ui/SafeImage'
 import { getBogorFallbackPhoto } from '../../utils/imageHelper'
-import { ChevronRightIcon, StarIcon } from '../ui/VectorIcons'
+import { calculateDistanceKm, formatShortDistance } from '../../utils/distance'
+import { ChevronRightIcon, MapPinIcon, RouteIcon, StarIcon } from '../ui/VectorIcons'
 
-export default function MapPopup({ place, onOpenDetail, onSelect, isTransit = false }) {
+function extractStreetName(address) {
+  if (!address || typeof address !== 'string') return null
+  const parts = address
+    .split(',')
+    .map((part) => part.trim())
+    .filter((part) => Boolean(part) && !/^(rt|rw)\.?\s*\d+/i.test(part))
+  if (parts.length === 0) return null
+
+  const streetPart = parts.find((p) => /^(jl\.?|jalan|gg\.?|gang)\b/i.test(p))
+  return streetPart || parts[0]
+}
+
+export default function MapPopup({
+  place,
+  onOpenDetail,
+  onSelect,
+  isTransit = false,
+  userPosition = null,
+  locationStatus = 'idle',
+}) {
   if (!place) return null
 
   const numericRating = Number(place.rating)
   const hasValidRating = Number.isFinite(numericRating) && numericRating > 0
   const ratingText = hasValidRating ? numericRating.toFixed(1) : null
+  const streetName = extractStreetName(place.address)
   const triggerOpenDetail = onOpenDetail || onSelect
   const fallbackPhoto = getBogorFallbackPhoto(place)
+
+  // Hitung jarak aktual dari posisi GPS user menggunakan utilitas distance.js
+  let resolvedDistanceKm =
+    typeof place.distanceKm === 'number' && Number.isFinite(place.distanceKm)
+      ? place.distanceKm
+      : null
+
+  if (
+    resolvedDistanceKm === null &&
+    Array.isArray(userPosition) &&
+    userPosition.length >= 2
+  ) {
+    const destLat = Number(place.coordinates?.lat ?? place.latitude)
+    const destLng = Number(place.coordinates?.lng ?? place.longitude)
+    if (Number.isFinite(destLat) && Number.isFinite(destLng)) {
+      resolvedDistanceKm = calculateDistanceKm(userPosition[0], userPosition[1], destLat, destLng)
+    }
+  }
+
+  const shortDistanceText =
+    place.shortDistance || formatShortDistance(resolvedDistanceKm)
+  const isGpsActive = Boolean(shortDistanceText)
+  const distanceFallbackLabel = locationStatus === 'requesting' ? 'GPS...' : 'GPS off'
 
   const handleOpen = (e) => {
     e.stopPropagation()
@@ -18,15 +62,15 @@ export default function MapPopup({ place, onOpenDetail, onSelect, isTransit = fa
 
   return (
     <article
-      className="group relative w-[228px] max-w-[238px] overflow-hidden rounded-2xl border border-[#F4EFE6]/15 bg-[#1C241C]/80 text-left text-[#F5F2EB] shadow-2xl backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(244,239,230,0.22)]"
+      className="group relative w-[244px] max-w-[256px] overflow-hidden rounded-2xl border border-[#F4EFE6]/15 bg-[#1C241C]/85 text-left text-[#F5F2EB] shadow-2xl backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(244,239,230,0.22)]"
     >
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-white/[0.04]">
         <SafeImage
           src={place.image || fallbackPhoto}
           fallback={fallbackPhoto}
           alt={place.name}
-          width={228}
-          height={142}
+          width={244}
+          height={152}
           className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105"
           loading="lazy"
           decoding="async"
@@ -52,27 +96,60 @@ export default function MapPopup({ place, onOpenDetail, onSelect, isTransit = fa
           {place.name}
         </h3>
 
-        <div className="mt-1.5 flex items-center justify-between gap-2">
+        {streetName && (
+          <p
+            data-popup-street="true"
+            title={place.address}
+            className="mt-0.5 flex items-center gap-1 text-[11px] leading-snug text-[#F5F2EB]/65"
+          >
+            <MapPinIcon className="h-3 w-3 shrink-0 text-[#F5F2EB]/45" />
+            <span className="truncate">{streetName}</span>
+          </p>
+        )}
+
+        <div className="mt-2 flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5 text-[11.5px]">
             {hasValidRating && (
-              <>
+              <span className="inline-flex shrink-0 items-center gap-1">
                 <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
                 <span className="font-semibold not-italic tabular-nums text-[#DFAA63]">
                   {ratingText}
                 </span>
-              </>
+              </span>
             )}
-            {place.distance && (
-              <>
-                {hasValidRating && (
-                  <span aria-hidden="true" className="text-[#F5F2EB]/35">
-                    ·
-                  </span>
-                )}
-                <span className="truncate not-italic tabular-nums text-[#F5F2EB]/70">
-                  {place.distance}
+
+            {hasValidRating && (
+              <span aria-hidden="true" className="shrink-0 text-[#F5F2EB]/35">
+                •
+              </span>
+            )}
+
+            {isGpsActive ? (
+              <span
+                data-popup-distance="active"
+                title={
+                  place.travelTime
+                    ? `${shortDistanceText} dari posisi Anda · Estimasi ${place.travelTime}`
+                    : `${shortDistanceText} dari posisi Anda`
+                }
+                className="inline-flex min-w-0 items-center gap-1 text-[#F5F2EB]/85"
+              >
+                <RouteIcon className="h-3.5 w-3.5 shrink-0 text-[#8AC757]" />
+                <span className="truncate font-medium not-italic tabular-nums">
+                  {shortDistanceText}
                 </span>
-              </>
+              </span>
+            ) : (
+              <span
+                data-popup-distance="gps-off"
+                title="Aktifkan izin lokasi GPS untuk melihat jarak dari posisi Anda"
+                className="inline-flex min-w-0 items-center gap-1 text-[#F5F2EB]/50"
+              >
+                <RouteIcon className="h-3 w-3 shrink-0 text-[#F5F2EB]/45" />
+                <span className="truncate text-[11px] font-medium">
+                  {distanceFallbackLabel}
+                </span>
+              </span>
             )}
           </div>
 

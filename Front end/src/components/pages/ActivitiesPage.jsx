@@ -2,6 +2,7 @@ import { memo, useEffect, useRef, useState } from 'react'
 import NotificationDrawer from '../ui/NotificationDrawer'
 import GlassModal from '../ui/GlassModal'
 import SafeImage from '../ui/SafeImage'
+import ScrollToTopButton from '../ui/ScrollToTopButton'
 import {
   AlertTriangleIcon,
   BellIcon,
@@ -48,6 +49,7 @@ function ActivitiesPage({
   const [isDeleting, setIsDeleting] = useState(false)
 
   const fileInputRef = useRef(null)
+  const scrollContainerRef = useRef(null)
   const requestKey = `${isLoggedIn}|${currentUser?.id || ''}|${currentUser?.name || ''}|${reloadTick}`
   const isLoading = loadedKey !== requestKey
 
@@ -303,10 +305,13 @@ function ActivitiesPage({
   }
 
   return (
-    <div
-      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
-      className="apple-canopy-bg animate-tab-enter relative h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#EBF0EB]"
-    >
+    <div className="relative h-full min-h-0 w-full">
+      <div
+        ref={scrollContainerRef}
+        id="activities-scroll-container"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
+        className="apple-canopy-bg animate-tab-enter relative h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#EBF0EB]"
+      >
       <div className="mx-auto w-full max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
         {/* Header: Judul & Aksi Notifikasi/Profil + Subjudul Penuh */}
         <header className="flex flex-col gap-1.5">
@@ -818,6 +823,12 @@ function ActivitiesPage({
         tourists={tourists}
         favorites={favorites}
         onSelectPlace={onSelectPlace}
+      />
+      </div>
+
+      <ScrollToTopButton
+        scrollContainerRef={scrollContainerRef}
+        className="absolute right-4 bottom-24 z-40 sm:right-6"
       />
     </div>
   )
