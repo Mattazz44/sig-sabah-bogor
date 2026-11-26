@@ -1,9 +1,9 @@
 // Pure layout metrics for the bottom sheet, shared by the sheet and the map (no Leaflet here).
 
-export const PEEK_RATIO = 0.21 // Mode minimal (peek): handle + search bar aman di atas dock
-export const PEEK_MIN = 160
-export const HALF_RATIO = 0.38 // Posisi awal/default di mobile (~38vh agar peta di atas tetap lega)
-export const HALF_MIN = 250
+export const PEEK_RATIO = 0.21 // Mode minimal (collapsed): handle + search bar aman di atas dock
+export const PEEK_MIN = 170
+export const HALF_RATIO = 0.5 // Posisi awal/default di mobile (50% layar agar peta di atas tetap lega)
+export const HALF_MIN = 280
 export const NAV_HEIGHT = 82 // Floating Liquid Glass Dock height + bottom margin offset
 export const DESKTOP_BREAKPOINT = 768
 export const SHEET_DESKTOP_LEFT = 12

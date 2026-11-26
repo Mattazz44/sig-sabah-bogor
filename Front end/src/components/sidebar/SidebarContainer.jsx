@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import TouristList from './TouristList'
 import TouristDetail from './TouristDetail'
-import BottomSheet from '../ui/BottomSheet'
+import ResponsiveSidebar from './ResponsiveSidebar'
 
 export default function SidebarContainer({
   places,
@@ -30,7 +30,7 @@ export default function SidebarContainer({
   const selectedStamp = selected && !Array.isArray(selected) ? (selected._selectedAt ?? selected.id ?? 0) : 0
 
   return (
-    <BottomSheet
+    <ResponsiveSidebar
       id="sidebar"
       label="Daftar tempat wisata"
       expanded={expanded}
@@ -67,6 +67,6 @@ export default function SidebarContainer({
         <Route path="/place/:slug" element={<TouristDetail place={selected} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BottomSheet>
+    </ResponsiveSidebar>
   )
 }
