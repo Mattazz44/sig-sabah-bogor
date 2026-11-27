@@ -690,6 +690,298 @@ img {
   );
 }
 
+/* Animasi halus mengangguk & melayang tenang untuk SabahMascot (Rusa Tutul Bogor) */
+@keyframes sabahMascotFloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -3.5px, 0);
+  }
+}
+
+@keyframes sabahMascotHeadNod {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  38% {
+    transform: rotate(2.2deg);
+  }
+  72% {
+    transform: rotate(-1.4deg);
+  }
+}
+
+.sabah-mascot-float {
+  animation: sabahMascotFloat 5.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+.sabah-mascot-head-nod {
+  transform-origin: 60px 76px;
+  animation: sabahMascotHeadNod 5.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Varian 1 (confused): Miring kepala kiri-kanan pelan + tanda tanya muncul-hilang (3.5s) */
+@keyframes sabahMascotHeadConfused {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+@keyframes sabahMascotQuestionFade {
+  0%,
+  100% {
+    opacity: 0.12;
+    transform: translate3d(0, 3px, 0) scale(0.9);
+  }
+  45%,
+  60% {
+    opacity: 1;
+    transform: translate3d(0, -2.5px, 0) scale(1.03);
+  }
+}
+
+.sabah-mascot-head-confused {
+  transform-origin: 60px 76px;
+  animation: sabahMascotHeadConfused 3.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+.sabah-mascot-question {
+  transform-origin: 94px 24px;
+  animation: sabahMascotQuestionFade 3.5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Varian 2 (taking-photo): Membungkuk fokus + kilatan flash emas/krem lembut setiap 4s */
+@keyframes sabahMascotFocusLean {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  46%,
+  64% {
+    transform: translate3d(0, 2.5px, 0) scale(1.028);
+  }
+}
+
+@keyframes sabahMascotCameraFlash {
+  0%,
+  50%,
+  74%,
+  100% {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+  57% {
+    opacity: 0.96;
+    transform: scale(1.08);
+  }
+  64% {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+}
+
+.sabah-mascot-focus-lean {
+  transform-origin: center bottom;
+  animation: sabahMascotFocusLean 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.sabah-mascot-flash {
+  transform-origin: 60px 73.5px;
+  animation: sabahMascotCameraFlash 4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Varian 3 (happy): Melompat ringan gembira, telinga bergerak ceria, & kilau lembut (2.8s) */
+@keyframes sabahMascotHappyHop {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  30% {
+    transform: translate3d(0, -5px, 0) rotate(-1.5deg);
+  }
+  55% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  75% {
+    transform: translate3d(0, -3px, 0) rotate(1.5deg);
+  }
+}
+
+@keyframes sabahMascotEarLeft {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(-8deg);
+  }
+  70% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes sabahMascotEarRight {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(8deg);
+  }
+  70% {
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes sabahMascotSparkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.75);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.sabah-mascot-happy-hop {
+  animation: sabahMascotHappyHop 2.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.sabah-mascot-ear-left {
+  transform-origin: 43px 47px;
+  animation: sabahMascotEarLeft 2.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.sabah-mascot-ear-right {
+  transform-origin: 77px 47px;
+  animation: sabahMascotEarRight 2.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.sabah-mascot-sparkle-1 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sabahMascotSparkle 2.8s ease-in-out infinite;
+}
+
+.sabah-mascot-sparkle-2 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sabahMascotSparkle 2.8s ease-in-out 0.9s infinite;
+}
+
+/* Varian Admin: Mengangguk meninjau data, tangan pena naik-turun, & centang emas berkedip (4s infinite) */
+@keyframes sabahMascotAdminHead {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  32% {
+    transform: translateY(1.6px) rotate(-2.8deg);
+  }
+  68% {
+    transform: translateY(-0.4px) rotate(1.8deg);
+  }
+}
+
+@keyframes sabahMascotAdminPen {
+  0%,
+  100% {
+    transform: translate(0px, 0px) rotate(0deg);
+  }
+  25% {
+    transform: translate(-2px, -3.5px) rotate(-6deg);
+  }
+  48% {
+    transform: translate(0.8px, 1.5px) rotate(3deg);
+  }
+  72% {
+    transform: translate(-1.5px, -2.2px) rotate(-4.5deg);
+  }
+}
+
+@keyframes sabahMascotAdminCheck {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.9);
+  }
+  42%,
+  58% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+.sabah-mascot-admin-head {
+  transform-origin: 60px 74px;
+  animation: sabahMascotAdminHead 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.sabah-mascot-admin-pen {
+  transform-origin: 74px 96px;
+  animation: sabahMascotAdminPen 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.sabah-mascot-admin-check {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sabahMascotAdminCheck 4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Varian Goodbye: Tangan melambai pelan (-12deg -> 14deg) & kepala miring ramah (2.2s infinite) */
+@keyframes sabahMascotWaveHand {
+  0%,
+  100% {
+    transform: rotate(-12deg);
+  }
+  50% {
+    transform: rotate(14deg);
+  }
+}
+
+@keyframes sabahMascotGoodbyeHead {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(3.5deg);
+  }
+}
+
+.sabah-mascot-wave-hand {
+  transform-origin: 84px 86px;
+  animation: sabahMascotWaveHand 2.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+.sabah-mascot-goodbye-head {
+  transform-origin: 60px 76px;
+  animation: sabahMascotGoodbyeHead 2.2s ease-in-out infinite;
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .user-pulse-ring,
   .shimmer-skeleton::after,
@@ -701,6 +993,22 @@ img {
   .animate-notif-item,
   .animate-tourist-card,
   .animate-auth-panel,
+  .sabah-mascot-float,
+  .sabah-mascot-head-nod,
+  .sabah-mascot-head-confused,
+  .sabah-mascot-question,
+  .sabah-mascot-focus-lean,
+  .sabah-mascot-flash,
+  .sabah-mascot-happy-hop,
+  .sabah-mascot-ear-left,
+  .sabah-mascot-ear-right,
+  .sabah-mascot-sparkle-1,
+  .sabah-mascot-sparkle-2,
+  .sabah-mascot-admin-head,
+  .sabah-mascot-admin-pen,
+  .sabah-mascot-admin-check,
+  .sabah-mascot-wave-hand,
+  .sabah-mascot-goodbye-head,
   .wisata-marker-hovered > .wisata-marker-sonar,
   .wisata-marker-active > .wisata-marker-sonar,
   .wisata-marker-popping .wisata-marker-body,

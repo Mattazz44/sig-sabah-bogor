@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 120 120" fill="none">
+  <title>Maskot Rusa Tutul Sabah Bogor - Bahagia Memegang Peta</title>
+  <style>
+    @keyframes earLeft {
+      0%, 100% { transform: rotate(0deg); }
+      35% { transform: rotate(-8deg); }
+      70% { transform: rotate(3deg); }
+    }
+    @keyframes earRight {
+      0%, 100% { transform: rotate(0deg); }
+      35% { transform: rotate(8deg); }
+      70% { transform: rotate(-3deg); }
+    }
+    @keyframes sparkle {
+      0%, 100% { opacity: 0.25; transform: scale(0.75); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+    .ear-left { transform-origin: 43px 47px; animation: earLeft 2.8s ease-in-out infinite; }
+    .ear-right { transform-origin: 77px 47px; animation: earRight 2.8s ease-in-out infinite; }
+    .sparkle-1 { transform-box: fill-box; transform-origin: center; animation: sparkle 2.8s ease-in-out infinite; }
+    .sparkle-2 { transform-box: fill-box; transform-origin: center; animation: sparkle 2.8s ease-in-out 0.9s infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .ear-left, .ear-right, .sparkle-1, .sparkle-2 { animation: none !important; opacity: 1 !important; transform: none !important; }
+    }
+  </style>
+  <defs>
+    <clipPath id="sabah-mascot-clip-happy">
+      <circle cx="60" cy="60" r="52"/>
+    </clipPath>
+  </defs>
+  <circle cx="60" cy="60" r="52" fill="#1E2B20"/>
+  <circle cx="60" cy="60" r="51.25" stroke="#76937A" stroke-opacity="0.42" stroke-width="1.5"/>
+  <g clip-path="url(#sabah-mascot-clip-happy)">
+    <path d="M 10 86 Q 36 74 62 82 T 112 76" stroke="#76937A" stroke-opacity="0.22" stroke-width="1.25" stroke-linecap="round"/>
+    <path d="M 12 96 Q 42 86 68 94 T 112 88" stroke="#76937A" stroke-opacity="0.16" stroke-width="1.25" stroke-linecap="round"/>
+    <g>
+      <path d="M 30 116 C 32 95 41 82 51 78 H 69 C 79 82 88 95 90 116 Z" fill="#F2EFE9"/>
+      <path d="M 30 116 C 32 95 41 82 51 78 H 58 C 54 90 52 103 52 116 Z" fill="#76937A" fill-opacity="0.24"/>
+      <circle cx="42" cy="98" r="2.1" fill="#C5A868" fill-opacity="0.72"/>
+      <circle cx="48" cy="106" r="1.6" fill="#C5A868" fill-opacity="0.62"/>
+      <circle cx="77" cy="100" r="2" fill="#76937A" fill-opacity="0.52"/>
+      <path d="M 42 79 C 47 85 73 85 78 79 L 81 86 C 72 92 48 92 39 86 Z" fill="#76937A"/>
+      <path d="M 44 82.5 C 52 86.5 68 86.5 76 82.5" stroke="#1E2B20" stroke-opacity="0.45" stroke-width="1.4" stroke-linecap="round"/>
+      
+      
+      
+      <g>
+        <path d="M 38 92 L 52 88.5 L 52 108.5 L 38 112 Z" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M 52 88.5 L 68 92 L 68 112 L 52 108.5 Z" fill="#76937A" stroke="#1E2B20" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M 68 92 L 82 88.5 L 82 108.5 L 68 112 Z" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M 42 104 Q 48 97 56 100 T 76 96" stroke="#C5A868" stroke-width="1.8" stroke-dasharray="2.5 2" stroke-linecap="round" fill="none"/>
+        <ellipse cx="38.5" cy="100.5" rx="3.4" ry="4.4" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.3"/>
+        <ellipse cx="81.5" cy="100.5" rx="3.4" ry="4.4" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.3"/>
+        <path d="M 60 80.5 C 57.2 80.5 55.1 82.6 55.1 85.3 C 55.1 88.5 59 92.2 59.7 92.9 C 59.9 93.1 60.1 93.1 60.3 92.9 C 61 92.2 64.9 88.5 64.9 85.3 C 64.9 82.6 62.8 80.5 60 80.5 Z" fill="#C5A868" stroke="#1E2B20" stroke-width="1.1"/>
+        <circle cx="60" cy="85.2" r="1.7" fill="#1E2B20"/>
+      </g>
+    </g>
+  </g>
+  <g>
+    <g stroke="#C5A868" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 48 39 C 42 30 37 22 41 13"/>
+      <path d="M 41.5 25 C 45.5 23 48.5 19.5 50 15.5"/>
+      <path d="M 40 20 C 35.5 19 33 17 31.5 14"/>
+      <path d="M 72 39 C 78 30 83 22 79 13"/>
+      <path d="M 78.5 25 C 74.5 23 71.5 19.5 70 15.5"/>
+      <path d="M 80 20 C 84.5 19 87 17 88.5 14"/>
+    </g>
+    <g class="ear-left">
+      <path d="M 44 43 C 33 38 25 41 25 48 C 25 53 34 55 43 52 Z" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M 41 45.5 C 34.5 43 29.5 44.5 29.5 48 C 29.5 50.5 34.5 51.5 40.5 49.5 Z" fill="#76937A"/>
+    </g>
+    <g class="ear-right">
+      <path d="M 76 43 C 87 38 95 41 95 48 C 95 53 86 55 77 52 Z" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M 79 45.5 C 85.5 43 90.5 44.5 90.5 48 C 90.5 50.5 85.5 51.5 79.5 49.5 Z" fill="#76937A"/>
+    </g>
+    <path d="M 41 47 C 41 35 79 35 79 47 C 79 62 71.5 76 60 79 C 48.5 76 41 62 41 47 Z" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.6"/>
+    <path d="M 60 36 C 48 36 41 40 41 47 C 41 62 48.5 76 60 79 C 54 71 52 59 53 47 C 53.5 41 56 37.5 60 36 Z" fill="#76937A" fill-opacity="0.16"/>
+    <path d="M 44 41 C 45 31.5 75 31.5 76 41 Z" fill="#76937A" stroke="#1E2B20" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M 41.5 41.5 Q 60 37.5 78.5 41.5" stroke="#1E2B20" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M 46.5 39.2 Q 60 36.4 73.5 39.2" stroke="#C5A868" stroke-width="1.8" stroke-linecap="round"/>
+    <circle cx="60" cy="45.5" r="1.4" fill="#C5A868"/>
+    <circle cx="54.8" cy="47.2" r="1.15" fill="#76937A" fill-opacity="0.7"/>
+    <circle cx="65.2" cy="47.2" r="1.15" fill="#76937A" fill-opacity="0.7"/>
+    
+    
+    
+    <circle cx="51" cy="55.2" r="3" fill="#1E2B20"/>
+    <circle cx="52.1" cy="53.9" r="1.1" fill="#F2EFE9"/>
+    <circle cx="49.7" cy="56.3" r="0.6" fill="#C5A868"/>
+    <circle cx="69" cy="55.2" r="3" fill="#1E2B20"/>
+    <circle cx="70.1" cy="53.9" r="1.1" fill="#F2EFE9"/>
+    <circle cx="67.7" cy="56.3" r="0.6" fill="#C5A868"/>
+    <ellipse cx="45.8" cy="60.8" rx="3.4" ry="1.8" fill="#C5A868" fill-opacity="0.42"/>
+    <ellipse cx="74.2" cy="60.8" rx="3.4" ry="1.8" fill="#C5A868" fill-opacity="0.42"/>
+    <ellipse cx="60" cy="66.8" rx="8.8" ry="6.2" fill="#F2EFE9"/>
+    <path d="M 56.5 64 C 56.5 62.6 63.5 62.6 63.5 64 C 63.5 65.6 61.5 67 60 67 C 58.5 67 56.5 65.6 56.5 64 Z" fill="#1E2B20"/>
+    <path d="M 54.4 69.2 Q 60 75.4 65.6 69.2 Z" fill="#1E2B20"/>
+    <path d="M 57 71.8 Q 60 73.6 63 71.8" stroke="#C5A868" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+    
+    
+  </g>
+  <g>
+    <path class="sparkle-1" d="M 22 25 L 23.6 29.4 L 28 31 L 23.6 32.6 L 22 37 L 20.4 32.6 L 16 31 L 20.4 29.4 Z" fill="#C5A868"/>
+    <path class="sparkle-2" d="M 98 24 L 99.3 27.7 L 103 29 L 99.3 30.3 L 98 34 L 96.7 30.3 L 93 29 L 96.7 27.7 Z" fill="#F2EFE9"/>
+    <circle class="sparkle-1" cx="94" cy="44" r="1.9" fill="#C5A868"/>
+    <circle class="sparkle-2" cx="26" cy="64" r="1.7" fill="#76937A"/>
+  </g>
+</svg>

@@ -151,9 +151,9 @@ function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
               <div
                 key={`${imgUrl}-${stackIdx}`}
                 aria-hidden={stackIdx > 0}
-                className={`absolute inset-0 rounded-2xl border border-[rgba(244,239,230,0.18)] bg-[#1C241C] p-1.5 shadow-[0_12px_28px_-8px_rgba(0,0,0,0.5)] will-change-transform transition-transform duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transform-none motion-reduce:transition-none ${layer.zIndex} ${activeTransform}`}
+                className={`absolute inset-0 overflow-hidden rounded-2xl border border-[rgba(244,239,230,0.18)] bg-[#1C241C] shadow-[0_12px_28px_-8px_rgba(0,0,0,0.5)] will-change-transform transition-transform duration-500 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transform-none motion-reduce:transition-none ${layer.zIndex} ${activeTransform}`}
               >
-                <div className="relative aspect-[16/10] h-full w-full overflow-hidden rounded-xl bg-white/[0.04]">
+                <div className="relative h-full w-full overflow-hidden bg-white/[0.04]">
                   <SafeImage
                     src={imgUrl}
                     fallback={fallbackPhoto}
@@ -162,7 +162,8 @@ function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
                     height={400}
                     loading={stackIdx === 0 ? 'eager' : 'lazy'}
                     decoding="async"
-                    className="h-full w-full object-cover object-center"
+                    className="h-full w-full"
+                    imgClassName="h-full w-full object-cover object-center"
                   />
 
                   {/* Badge penghitung foto di sudut kartu teratas */}
@@ -630,13 +631,11 @@ function TouristDetailPage({
   const [prevSlug, setPrevSlug] = useState(place?.slug ?? null)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
-  const [heroNaturalMeta, setHeroNaturalMeta] = useState({ src: '', width: 0, height: 0 })
 
   if ((place?.slug ?? null) !== prevSlug) {
     setPrevSlug(place?.slug ?? null)
     setIsLightboxOpen(false)
     setLightboxIndex(0)
-    setHeroNaturalMeta({ src: '', width: 0, height: 0 })
   }
 
   useEffect(() => {
@@ -774,24 +773,6 @@ function TouristDetailPage({
   ]
   const cleanAddress = cleanDetailText(place.address)
   const heroImage = cleanDetailText(place.image) || galleryImages[0] || fallbackPhoto
-  const isHeroMetaCurrent = heroNaturalMeta.src === heroImage && heroNaturalMeta.width > 0
-  const isHeroLowResOrPortrait =
-    isHeroMetaCurrent &&
-    (heroNaturalMeta.width < 680 || heroNaturalMeta.height > heroNaturalMeta.width * 0.92)
-
-  const handleHeroImageLoad = (e) => {
-    const imgEl = e?.currentTarget
-    if (!imgEl) return
-    const nextW = imgEl.naturalWidth || 0
-    const nextH = imgEl.naturalHeight || 0
-    if (nextW > 0 && nextH > 0) {
-      setHeroNaturalMeta((prev) =>
-        prev.src === heroImage && prev.width === nextW && prev.height === nextH
-          ? prev
-          : { src: heroImage, width: nextW, height: nextH },
-      )
-    }
-  }
 
   return (
     <div
@@ -858,62 +839,37 @@ function TouristDetailPage({
           </div>
         </header>
 
-        {/* Banner Hero Image Proporsional + Ambient Backdrop Blur + Gradient Overlay Halus */}
+        {/* Banner Hero Image Full-Bleed Responsif di Semua Ukuran Layar */}
         <section
           id="detail-hero-banner"
-          className="apple-retro-bevel relative h-72 w-full overflow-hidden bg-[#131913] sm:aspect-[16/9] sm:h-auto md:h-[400px] lg:h-[440px] md:rounded-3xl md:border md:border-[rgba(244,239,230,0.16)] md:shadow-2xl"
+          className="relative h-64 w-full overflow-hidden bg-[#141B14] sm:h-80 md:h-96 md:rounded-3xl md:border md:border-[rgba(244,239,230,0.16)] md:shadow-2xl lg:h-[420px]"
         >
-          {/* Lapisan Backdrop Blur dari gambar yang sama untuk kedalaman & pelindung foto resolusi rendah/portrait */}
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-            <SafeImage
-              src={heroImage}
-              fallback={fallbackPhoto}
-              alt=""
-              width={640}
-              height={360}
-              loading="eager"
-              decoding="async"
-              className="h-full w-full"
-              imgClassName="scale-110 object-cover object-center blur-2xl saturate-125 brightness-[0.58]"
-            />
-          </div>
-
-          {/* Foto Utama: object-cover penuh untuk foto landscape HD, atau object-contain tajam di atas backdrop blur bila foto kecil/portrait */}
-          <div className="relative z-[1] flex h-full w-full items-center justify-center">
-            <SafeImage
-              src={heroImage}
-              fallback={fallbackPhoto}
-              alt={place.name}
-              width={1280}
-              height={720}
-              fit={isHeroLowResOrPortrait ? 'contain' : 'cover'}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              onLoad={handleHeroImageLoad}
-              className={
-                isHeroLowResOrPortrait
-                  ? 'h-full w-full px-3 py-2 md:px-8 md:py-4'
-                  : 'h-full w-full object-cover object-center'
-              }
-              imgClassName={
-                isHeroLowResOrPortrait
-                  ? 'max-h-full max-w-full rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.75)] ring-1 ring-white/15'
-                  : 'object-cover object-center'
-              }
-            />
-          </div>
-
-          {/* Top scrim untuk visibilitas tombol kaca navigasi di atas foto terang */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-28 bg-gradient-to-b from-[#0C120C]/75 via-[#0C120C]/32 to-transparent md:h-24 md:from-black/45 md:via-black/15"
+          {/* Foto Utama Full-Bleed memenuhi 100% kontainer tanpa blur backdrop atau inner frame */}
+          <SafeImage
+            src={heroImage}
+            fallback={fallbackPhoto}
+            alt={place.name}
+            width={1280}
+            height={720}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            className="h-full w-full"
+            imgClassName="h-full w-full object-cover object-center"
           />
 
-          {/* Bottom gradient overlay multi-stop yang lembut & pekat agar teks judul putih selalu kontras tajam */}
+          {/* Seamless bottom fade KHUSUS mobile (< md) agar bawah foto menyatu mulus ke background halaman tanpa garis potong kaku */}
           <div
+            id="detail-hero-mobile-fade"
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] h-44 bg-gradient-to-t from-[#111711] via-[#111711]/80 via-45% to-transparent md:h-60 md:from-[#0C120C]/95 md:via-[#0C120C]/62 md:via-50% to-transparent"
+            className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-t from-[#141B14] via-[#141B14]/45 to-transparent md:hidden"
+          />
+
+          {/* Gradient gelap tipis khusus tablet & desktop (md+) agar judul, rating, dan badge tetap jelas terbaca */}
+          <div
+            id="detail-hero-desktop-scrim"
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-[2] hidden bg-gradient-to-t from-black/80 via-black/25 to-transparent md:block"
           />
 
           {/* Overlay Judul, Rating, & Kategori menyatu elegan di sudut kiri bawah foto pada iPad / Nest Hub / Laptop */}

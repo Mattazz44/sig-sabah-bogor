@@ -111,7 +111,7 @@ export default function GlassModal({
     <div
       id={overlayId}
       onClick={onClose}
-      className={`fixed inset-0 z-[2000] flex items-center justify-center bg-black/45 p-4 transition-opacity duration-200 ease-out motion-reduce:transition-none ${
+      className={`fixed inset-0 z-[2000] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm transition-opacity duration-200 ease-out motion-reduce:transition-none ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
     >

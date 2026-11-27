@@ -153,22 +153,22 @@
             }
         }
 
-        /* Fase 1 (0% - 45%): Menggambar kotak rounded & garis jalur berkelok dengan stroke-dashoffset */
+        /* Fase 1 (0% - 45% / ~0s - 2.9s): Menggambar kotak rounded & garis jalur berkelok secara perlahan */
         @keyframes sabahDrawFrame {
             0% {
                 stroke-dashoffset: 320;
-                stroke-opacity: 0.2;
+                stroke-opacity: 0.18;
             }
-            8% {
+            10% {
                 stroke-opacity: 0.95;
             }
-            45% {
+            44% {
                 stroke-dashoffset: 0;
                 stroke-opacity: 0.95;
             }
-            78% {
+            74% {
                 stroke-dashoffset: 0;
-                stroke-opacity: 0.65;
+                stroke-opacity: 0.62;
             }
             94%, 100% {
                 stroke-dashoffset: 0;
@@ -177,22 +177,22 @@
         }
 
         @keyframes sabahDrawRoad {
-            0%, 6% {
+            0%, 8% {
                 stroke-dashoffset: 150;
                 stroke-opacity: 0;
             }
-            12% {
+            15% {
                 stroke-opacity: 1;
             }
-            45% {
+            46% {
                 stroke-dashoffset: 0;
                 stroke-opacity: 1;
             }
             74% {
                 stroke-dashoffset: 0;
-                stroke-opacity: 0.7;
+                stroke-opacity: 0.68;
             }
-            90%, 100% {
+            91%, 100% {
                 stroke-dashoffset: 0;
                 stroke-opacity: 0;
             }
@@ -203,10 +203,10 @@
                 stroke-dashoffset: 60;
                 stroke-opacity: 0;
             }
-            30% {
+            31% {
                 stroke-opacity: 0.9;
             }
-            48% {
+            50% {
                 stroke-dashoffset: 0;
                 stroke-opacity: 0.9;
             }
@@ -214,13 +214,13 @@
                 stroke-dashoffset: 0;
                 stroke-opacity: 0.45;
             }
-            90%, 100% {
+            92%, 100% {
                 stroke-dashoffset: 0;
                 stroke-opacity: 0;
             }
         }
 
-        /* Fase 2 (45% - 80%): Pin lokasi membesar scale(0 -> 1) & isian fill-opacity 0 -> 1 */
+        /* Fase 2 (45% - 82% / ~2.9s - 5.3s): Pin lokasi muncul perlahan (scale 0 -> 1) & fill mengalir tenang */
         @keyframes sabahPinReveal {
             0%, 44% {
                 opacity: 0;
@@ -228,7 +228,7 @@
             }
             58% {
                 opacity: 1;
-                transform: scale(1.1);
+                transform: scale(1.06);
             }
             68% {
                 opacity: 1;
@@ -238,7 +238,7 @@
                 opacity: 0.85;
                 transform: scale(1);
             }
-            90%, 100% {
+            92%, 100% {
                 opacity: 0;
                 transform: scale(1);
             }
@@ -250,7 +250,7 @@
                 transform: scale(0.4);
             }
             60% {
-                opacity: 0.8;
+                opacity: 0.78;
             }
             78%, 100% {
                 opacity: 0;
@@ -259,15 +259,15 @@
         }
 
         @keyframes sabahFillMorph {
-            0%, 45% {
+            0%, 46% {
                 fill-opacity: 0;
                 opacity: 0;
             }
-            76% {
+            79% {
                 fill-opacity: 1;
                 opacity: 1;
             }
-            88%, 100% {
+            90%, 100% {
                 fill-opacity: 1;
                 opacity: 1;
             }
@@ -277,19 +277,19 @@
             0%, 58% {
                 opacity: 0;
             }
-            84%, 100% {
+            88%, 100% {
                 opacity: 1;
             }
         }
 
-        /* Fase 3 (80% - 100%): Kilau cahaya diagonal tenang saat logo menyatu utuh */
+        /* Fase 3 (80% - 100% / ~5.2s - 6.5s): Sapuan cahaya diagonal tenang saat logo menyatu utuh */
         @keyframes sabahSheenSweep {
-            0%, 76% {
+            0%, 78% {
                 opacity: 0;
                 transform: translateX(-140%) skewX(-20deg);
             }
-            84% {
-                opacity: 0.8;
+            86% {
+                opacity: 0.75;
             }
             100% {
                 opacity: 0;
@@ -309,8 +309,8 @@
 
         .admin-logo-float {
             animation:
-                logoIntroGlow 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards,
-                logoIdleBreath 5s ease-in-out 3.8s infinite;
+                logoIntroGlow 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards,
+                logoIdleBreath 5.5s ease-in-out 6.5s infinite;
             transition: border-color 0.4s ease;
             will-change: transform, box-shadow;
         }
@@ -322,49 +322,49 @@
         .sabah-frame-stroke {
             stroke-dasharray: 320;
             stroke-dashoffset: 320;
-            animation: sabahDrawFrame 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: sabahDrawFrame 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .sabah-road-stroke {
             stroke-dasharray: 150;
             stroke-dashoffset: 150;
-            animation: sabahDrawRoad 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: sabahDrawRoad 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .sabah-leaf-stroke {
             stroke-dasharray: 60;
             stroke-dashoffset: 60;
-            animation: sabahDrawLeaves 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: sabahDrawLeaves 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .sabah-pin-group {
             transform-box: fill-box;
             transform-origin: center;
             opacity: 0;
-            animation: sabahPinReveal 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: sabahPinReveal 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .sabah-pin-ripple {
             transform-box: fill-box;
             transform-origin: center;
             opacity: 0;
-            animation: sabahPinPulse 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: sabahPinPulse 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .sabah-fill-body {
             fill-opacity: 0;
             opacity: 0;
-            animation: sabahFillMorph 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: sabahFillMorph 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .sabah-artwork-detail {
             opacity: 0;
-            animation: sabahDetailReveal 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: sabahDetailReveal 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .sabah-sheen-bar {
             opacity: 0;
-            animation: sabahSheenSweep 3.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation: sabahSheenSweep 6.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -401,7 +401,7 @@
                             id="admin-brand-logo-wrap"
                             class="admin-logo-float relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-white/[0.18] bg-[#161D15] p-1.5"
                         >
-                            <!-- Inline SVG Logo Sabah Bogor: Path Drawing & Morphing (3.8s) -->
+                            <!-- Inline SVG Logo Sabah Bogor: Path Drawing & Morphing (6.5s) -->
                             <svg
                                 id="admin-sabah-svg"
                                 viewBox="0 0 100 100"

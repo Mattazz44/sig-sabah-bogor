@@ -2,9 +2,9 @@ import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiFetch } from '../../utils/api'
 import SafeImage from '../ui/SafeImage'
+import SabahMascot from '../ui/SabahMascot'
 import ScrollToTopButton from '../ui/ScrollToTopButton'
 import {
-  CompassIcon,
   HeartIcon,
   MapPinIcon,
   RefreshIcon,
@@ -111,7 +111,7 @@ function DestinationCard({
             fallback={fallbackPhoto}
             alt={place.name}
             loading="eager"
-            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+            className="h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           />
           <div
             aria-hidden="true"
@@ -401,10 +401,12 @@ function ForYouPage({
               className="apple-glass-card relative overflow-hidden rounded-3xl p-5 sm:p-6"
             >
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex min-w-0 items-start gap-4">
-                  <div className="apple-glass-pill flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl text-[#DFAA63]">
-                    <CompassIcon className="h-6 w-6" duotone />
-                  </div>
+                <div className="flex min-w-0 items-center gap-4">
+                  <SabahMascot
+                    size="sm"
+                    label="Maskot Rusa Tutul Sabah Bogor"
+                    className="drop-shadow-[0_8px_18px_rgba(0,0,0,0.35)]"
+                  />
                   <div className="min-w-0">
                     <h2
                       id="guest-invite-title"
@@ -521,15 +523,15 @@ function ForYouPage({
                   <button
                     type="button"
                     onClick={() => handleCardOpen(effectiveContinue)}
-                    className="flex flex-1 flex-col text-left transition-transform duration-150 active:scale-[0.99] sm:flex-row sm:items-center"
+                    className="flex flex-1 flex-col text-left transition-transform duration-150 active:scale-[0.99] sm:flex-row sm:items-stretch"
                   >
-                    <div className="aspect-[16/9] w-full shrink-0 overflow-hidden bg-[#141A14] sm:aspect-auto sm:h-36 sm:w-52">
+                    <div className="aspect-[16/9] w-full shrink-0 overflow-hidden bg-[#141A14] sm:aspect-auto sm:min-h-[144px] sm:w-52">
                       <SafeImage
                         src={effectiveContinue.image || getBogorFallbackPhoto(effectiveContinue)}
                         fallback={getBogorFallbackPhoto(effectiveContinue)}
                         alt={effectiveContinue.name}
                         loading="eager"
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover object-center"
                       />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col justify-center p-4">

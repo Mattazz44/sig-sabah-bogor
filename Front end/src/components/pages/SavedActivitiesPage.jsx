@@ -3,6 +3,7 @@ import CustomRoutePage from './CustomRoutePage'
 import NotificationDrawer from '../ui/NotificationDrawer'
 import GlassModal from '../ui/GlassModal'
 import SafeImage from '../ui/SafeImage'
+import SabahMascot from '../ui/SabahMascot'
 import ScrollToTopButton from '../ui/ScrollToTopButton'
 import { apiFetch, getAuthToken } from '../../utils/api'
 import { pushAppNotification } from '../../utils/notifications'
@@ -34,7 +35,7 @@ function SavedPlaceCard({ place, secondaryMeta, onSelect }) {
         src={place.image || photoFallback}
         fallback={photoFallback}
         alt={place.name}
-        className="h-16 w-16 shrink-0 rounded-xl object-cover"
+        className="h-16 w-16 shrink-0 rounded-xl object-cover object-center"
       />
       <div className="min-w-0 flex-1">
         {place.category && (
@@ -321,7 +322,7 @@ function SavedActivitiesPage({
                           alt={place.name}
                           loading="lazy"
                           decoding="async"
-                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
                         />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -621,7 +622,7 @@ function SavedActivitiesPage({
                         src={rp.image || thumbFallback}
                         fallback={thumbFallback}
                         alt={rp.name}
-                        className="h-full w-full rounded-xl object-cover"
+                        className="h-full w-full rounded-xl object-cover object-center"
                       />
                     )
                   })}
@@ -701,7 +702,7 @@ function SavedActivitiesPage({
                         src={place.image || thumbFallback}
                         fallback={thumbFallback}
                         alt={place.name}
-                        className="h-full w-full rounded-xl object-cover"
+                        className="h-full w-full rounded-xl object-cover object-center"
                       />
                     )
                   })}
@@ -811,8 +812,12 @@ function SavedActivitiesPage({
         closeAriaLabel="Tutup modal tambah aktivitas"
         maxWidthClass="max-w-sm"
       >
-        <div className="apple-glass-pill -mt-3 mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl text-[#DFAA63]">
-          <CompassIcon className="h-6 w-6" duotone />
+        <div className="-mt-3 mb-3 flex justify-center">
+          <SabahMascot
+            variant="happy"
+            size="modal"
+            className="drop-shadow-[0_10px_22px_rgba(0,0,0,0.38)]"
+          />
         </div>
 
         <h3 id="modal-activity-title" className="text-center text-[19px] font-semibold tracking-tight text-[#F5F2EB]">

@@ -163,10 +163,73 @@
             filter: brightness(0.86) contrast(1.06) saturate(0.88);
         }
 
+        /* Animasi looping halus (4s infinite) Maskot Rusa Tutul Role Admin */
+        @keyframes adminMascotHeadReview {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            32% {
+                transform: translateY(1.6px) rotate(-2.8deg);
+            }
+            68% {
+                transform: translateY(-0.4px) rotate(1.8deg);
+            }
+        }
+
+        @keyframes adminMascotPenCheck {
+            0%, 100% {
+                transform: translate(0px, 0px) rotate(0deg);
+            }
+            25% {
+                transform: translate(-2px, -3.5px) rotate(-6deg);
+            }
+            48% {
+                transform: translate(0.8px, 1.5px) rotate(3deg);
+            }
+            72% {
+                transform: translate(-1.5px, -2.2px) rotate(-4.5deg);
+            }
+        }
+
+        @keyframes adminMascotCheckGlint {
+            0%, 100% {
+                opacity: 0.45;
+                transform: scale(0.9);
+            }
+            42%, 58% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+
+        .admin-mascot-head-nod {
+            transform-origin: 60px 74px;
+            animation: adminMascotHeadReview 4s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        .admin-mascot-pen-hand {
+            transform-origin: 74px 96px;
+            animation: adminMascotPenCheck 4s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        .admin-mascot-check-glint {
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: adminMascotCheckGlint 4s ease-in-out infinite;
+            will-change: transform, opacity;
+        }
+
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
                 transition-duration: 0.01ms !important;
                 animation-duration: 0.01ms !important;
+            }
+            .admin-mascot-head-nod,
+            .admin-mascot-pen-hand,
+            .admin-mascot-check-glint {
+                animation: none !important;
             }
         }
     </style>
@@ -183,10 +246,108 @@
         <!-- Header Admin -->
         <header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-3.5 min-w-0">
-                <div class="apple-retro-bevel flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[rgba(244,239,230,0.16)] bg-[rgba(28,36,28,0.72)] text-[#DFAA63]">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10" fill="currentColor" fill-opacity="0.14" />
-                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" fill-opacity="0.28" />
+                <div
+                    id="admin-header-mascot-wrap"
+                    class="apple-retro-bevel flex h-[60px] w-[60px] sm:h-16 sm:w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[rgba(244,239,230,0.2)] bg-[#1E2B20] p-0 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.5)]"
+                >
+                    <!-- Maskot Rusa Tutul Bogor Role Admin Full-Bleed memenuhi bingkai + Animasi Looping 4s -->
+                    <svg
+                        id="admin-header-mascot"
+                        viewBox="14 8 92 104"
+                        preserveAspectRatio="xMidYMid slice"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        role="img"
+                        aria-label="Maskot Rusa Tutul Admin Sabah Bogor"
+                        class="block h-full w-full object-cover scale-[1.06]"
+                    >
+                        <!-- Latar penuh olive gelap tanpa margin kosong di tepi bingkai -->
+                        <rect x="0" y="0" width="120" height="120" fill="#1E2B20" />
+                        <path d="M 8 84 Q 36 72 62 80 T 114 74" stroke="#76937A" stroke-opacity="0.22" stroke-width="1.4" stroke-linecap="round" />
+                        <path d="M 8 96 Q 40 86 68 94 T 114 88" stroke="#76937A" stroke-opacity="0.16" stroke-width="1.4" stroke-linecap="round" />
+
+                        <!-- Bahu, kerah rompi admin sage, & lencana emas -->
+                        <g>
+                            <path d="M 28 118 C 30 95 40 82 51 78 H 69 C 80 82 90 95 92 118 Z" fill="#F2EFE9" />
+                            <path d="M 32 118 C 34 96 42 84 52 80 L 60 88 L 68 80 C 78 84 86 96 88 118 Z" fill="#76937A" fill-opacity="0.9" />
+                            <!-- Lencana Admin kecil di dada kanan -->
+                            <rect x="69" y="88" width="12" height="7.5" rx="2.2" fill="#C5A868" stroke="#1E2B20" stroke-width="1.1" />
+                            <line x1="72" y1="91.8" x2="78" y2="91.8" stroke="#1E2B20" stroke-width="1.3" stroke-linecap="round" />
+                        </g>
+
+                        <!-- Kepala Rusa Tutul Admin (mengangguk pelan meninjau data) -->
+                        <g class="admin-mascot-head-nod">
+                            <!-- Tanduk bercabang minimalis emas redup -->
+                            <g stroke="#C5A868" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M 48 37 C 42 28 37 20 41 11.5" />
+                                <path d="M 41.5 23.5 C 45.5 21.5 48.5 18 50 14" />
+                                <path d="M 72 37 C 78 28 83 20 79 11.5" />
+                                <path d="M 78.5 23.5 C 74.5 21.5 71.5 18 70 14" />
+                            </g>
+
+                            <!-- Telinga geometris duotone -->
+                            <path d="M 44 41 C 33 36 25 39 25 46 C 25 51 34 53 43 50 Z" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.5" stroke-linejoin="round" />
+                            <path d="M 41 43.5 C 34.5 41 29.5 42.5 29.5 46 C 29.5 48.5 34.5 49.5 40.5 47.5 Z" fill="#76937A" />
+                            <path d="M 76 41 C 87 36 95 39 95 46 C 95 51 86 53 77 50 Z" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.5" stroke-linejoin="round" />
+                            <path d="M 79 43.5 C 85.5 41 90.5 42.5 90.5 46 C 90.5 48.5 85.5 49.5 79.5 47.5 Z" fill="#76937A" />
+
+                            <!-- Wajah utama Rusa Tutul -->
+                            <path d="M 41 45 C 41 33 79 33 79 45 C 79 60 71.5 74 60 77 C 48.5 74 41 60 41 45 Z" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.7" />
+                            <path d="M 60 34 C 48 34 41 38 41 45 C 41 60 48.5 74 60 77 C 54 69 52 57 53 45 C 53.5 39 56 35.5 60 34 Z" fill="#76937A" fill-opacity="0.16" />
+
+                            <!-- Bintik tutul halus di dahi -->
+                            <circle cx="60" cy="41.5" r="1.6" fill="#C5A868" />
+                            <circle cx="54.2" cy="43.5" r="1.25" fill="#76937A" fill-opacity="0.78" />
+                            <circle cx="65.8" cy="43.5" r="1.25" fill="#76937A" fill-opacity="0.78" />
+
+                            <!-- Mata tenang di balik kacamata -->
+                            <circle cx="50.5" cy="54" r="2.4" fill="#1E2B20" />
+                            <circle cx="51.4" cy="53.1" r="0.8" fill="#F2EFE9" />
+                            <circle cx="69.5" cy="54" r="2.4" fill="#1E2B20" />
+                            <circle cx="70.4" cy="53.1" r="0.8" fill="#F2EFE9" />
+
+                            <!-- Kacamata bulat tipis editorial Role Admin -->
+                            <circle cx="50.5" cy="54" r="6.8" fill="#76937A" fill-opacity="0.15" stroke="#1E2B20" stroke-width="2" />
+                            <circle cx="69.5" cy="54" r="6.8" fill="#76937A" fill-opacity="0.15" stroke="#1E2B20" stroke-width="2" />
+                            <line x1="57.3" y1="53.8" x2="62.7" y2="53.8" stroke="#C5A868" stroke-width="2" stroke-linecap="round" />
+                            <line x1="41.5" y1="52.5" x2="43.7" y2="53.2" stroke="#1E2B20" stroke-width="1.7" stroke-linecap="round" />
+                            <line x1="76.3" y1="53.2" x2="78.5" y2="52.5" stroke="#1E2B20" stroke-width="1.7" stroke-linecap="round" />
+
+                            <!-- Hidung & senyum tenang -->
+                            <path d="M 56.5 63.2 C 56.5 61.8 63.5 61.8 63.5 63.2 C 63.5 64.8 61.5 66.2 60 66.2 C 58.5 66.2 56.5 64.8 56.5 63.2 Z" fill="#1E2B20" />
+                            <path d="M 56.4 69.2 Q 60 71.5 63.6 69.2" stroke="#1E2B20" stroke-width="1.6" stroke-linecap="round" fill="none" />
+                        </g>
+
+                        <!-- Papan jalan (Clipboard daftar wisata) -->
+                        <g>
+                            <rect x="24" y="75" width="38" height="36" rx="5" fill="#76937A" stroke="#1E2B20" stroke-width="1.6" />
+                            <rect x="28" y="80" width="30" height="27" rx="2.5" fill="#F2EFE9" />
+                            <!-- Penjepit papan emas -->
+                            <rect x="37" y="72" width="12" height="6" rx="2.2" fill="#C5A868" stroke="#1E2B20" stroke-width="1.3" />
+                            <!-- Baris daftar lokasi wisata -->
+                            <circle cx="33.5" cy="87" r="1.6" fill="#C5A868" />
+                            <line x1="38" y1="87" x2="53" y2="87" stroke="#1E2B20" stroke-opacity="0.7" stroke-width="1.8" stroke-linecap="round" />
+                            <circle cx="33.5" cy="94" r="1.6" fill="#C5A868" />
+                            <line x1="38" y1="94" x2="51" y2="94" stroke="#1E2B20" stroke-opacity="0.65" stroke-width="1.8" stroke-linecap="round" />
+                            <circle cx="33.5" cy="101" r="1.6" fill="#76937A" />
+                            <line x1="38" y1="101" x2="49" y2="101" stroke="#1E2B20" stroke-opacity="0.45" stroke-width="1.8" stroke-linecap="round" />
+                        </g>
+
+                        <!-- Tangan memegang pena bergerak naik-turun mencentang clipboard -->
+                        <g class="admin-mascot-pen-hand">
+                            <!-- Pena emas & ujung olive -->
+                            <path d="M 51 96 L 75 76 L 79.5 80.5 L 55.5 100.5 Z" fill="#C5A868" stroke="#1E2B20" stroke-width="1.4" stroke-linejoin="round" />
+                            <path d="M 51 96 L 47.5 102 L 55.5 100.5 Z" fill="#1E2B20" />
+                            <!-- Tangan rusa memegang batang pena -->
+                            <ellipse cx="70" cy="90" rx="5.2" ry="6.2" transform="rotate(-24 70 90)" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.5" />
+                        </g>
+
+                        <!-- Kilau / lencana centang emas kecil berkedip halus di pojok clipboard -->
+                        <g class="admin-mascot-check-glint">
+                            <circle cx="63" cy="76" r="8" fill="#C5A868" stroke="#1E2B20" stroke-width="1.4" />
+                            <path d="M 59.5 76.2 L 62 78.8 L 66.8 73.6" stroke="#1E2B20" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                            <path d="M 73 65 L 74.1 67.9 L 77 69 L 74.1 70.1 L 73 73 L 71.9 70.1 L 69 69 L 71.9 67.9 Z" fill="#F2EFE9" />
+                        </g>
                     </svg>
                 </div>
                 <div class="min-w-0">

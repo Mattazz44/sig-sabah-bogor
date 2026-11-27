@@ -1,5 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import SafeImage from '../ui/SafeImage'
+import SabahMascot from '../ui/SabahMascot'
 import GlassModal from '../ui/GlassModal'
 import {
   DEFAULT_AVATAR_PLACEHOLDER,
@@ -74,6 +75,7 @@ function ProfilePage({
   const [toast, setToast] = useState(null)
   const [postToDelete, setPostToDelete] = useState(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
 
   const fileInputRef = useRef(null)
   const toastTimerRef = useRef(null)
@@ -612,7 +614,7 @@ function ProfilePage({
                   <button
                     type="button"
                     id="btn-logout-profile"
-                    onClick={onLogout}
+                    onClick={() => setShowLogoutModal(true)}
                     className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-rose-300/25 bg-[#3B1D24]/60 px-4 py-2.5 text-[13px] font-semibold text-rose-200 transition-colors duration-150 hover:bg-[#4D242E] hover:text-white active:scale-[0.98]"
                   >
                     <svg
@@ -769,7 +771,7 @@ function ProfilePage({
                               src={act.image}
                               fallback={DEFAULT_IMAGE_PLACEHOLDER}
                               alt={act.title || 'Aktivitas'}
-                              className="h-full w-full object-cover"
+                              className="h-full w-full object-cover object-center"
                             />
                           </div>
                         )}
@@ -874,6 +876,57 @@ function ProfilePage({
               className="flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl border border-rose-300/25 bg-[#3B1D24] py-2.5 text-[12.5px] font-bold text-rose-100 transition-colors hover:bg-[#4D242E] disabled:opacity-50"
             >
               {isDeleting ? 'Menghapus...' : 'Ya, Hapus'}
+            </button>
+          </div>
+        </div>
+      </GlassModal>
+
+      {/* Modal Konfirmasi Keluar dari Akun (Liquid Glass + Maskot Goodbye) */}
+      <GlassModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        overlayId="modal-konfirmasi-logout-overlay"
+        modalId="modal-konfirmasi-logout"
+        closeButtonId="btn-close-logout-modal"
+        titleId="modal-logout-title"
+        closeAriaLabel="Tutup konfirmasi keluar"
+        maxWidthClass="max-w-sm"
+      >
+        <div className="text-center">
+          <div className="-mt-3 mb-3.5 flex justify-center">
+            <SabahMascot
+              variant="goodbye"
+              size="md"
+              className="drop-shadow-[0_12px_24px_rgba(0,0,0,0.4)]"
+            />
+          </div>
+
+          <h3 id="modal-logout-title" className="text-[19px] font-semibold tracking-tight text-[#F5F2EB]">
+            Kamu yakin ingin logout?
+          </h3>
+          <p className="mx-auto mt-1.5 max-w-xs text-[12.5px] leading-relaxed text-[#F5F2EB]/65">
+            Rute tersimpan dan catatan perjalananmu akan tetap aman tersimpan di akun ini.
+          </p>
+
+          <div className="mt-6 flex items-center gap-2.5">
+            <button
+              type="button"
+              id="btn-cancel-logout"
+              onClick={() => setShowLogoutModal(false)}
+              className="min-h-[44px] flex-1 rounded-xl border border-[rgba(244,239,230,0.18)] bg-white/[0.06] py-2.5 text-[13px] font-semibold text-[#F5F2EB] transition-colors duration-150 hover:bg-white/[0.12] active:scale-[0.98]"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              id="btn-confirm-logout"
+              onClick={() => {
+                setShowLogoutModal(false)
+                onLogout?.()
+              }}
+              className="min-h-[44px] flex-1 rounded-xl border border-rose-300/30 bg-[#3B1D24] py-2.5 text-[13px] font-bold text-rose-100 transition-colors duration-150 hover:bg-[#4F252F] hover:text-white active:scale-[0.98]"
+            >
+              Ya, Keluar
             </button>
           </div>
         </div>

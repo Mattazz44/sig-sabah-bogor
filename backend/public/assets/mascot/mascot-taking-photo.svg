@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 120 120" fill="none">
+  <title>Maskot Rusa Tutul Sabah Bogor - Sedang Memotret</title>
+  <style>
+    @keyframes cameraFlash {
+      0%, 50%, 74%, 100% { opacity: 0.16; transform: scale(0.55); }
+      57% { opacity: 1; transform: scale(1.12); }
+      64% { opacity: 0.45; transform: scale(0.96); }
+    }
+    .camera-flash { transform-origin: 60px 73.5px; animation: cameraFlash 4s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .camera-flash { animation: none !important; opacity: 0.35 !important; transform: scale(0.85) !important; }
+    }
+  </style>
+  <defs>
+    <clipPath id="sabah-mascot-clip-taking-photo">
+      <circle cx="60" cy="60" r="52"/>
+    </clipPath>
+  </defs>
+  <circle cx="60" cy="60" r="52" fill="#1E2B20"/>
+  <circle cx="60" cy="60" r="51.25" stroke="#76937A" stroke-opacity="0.42" stroke-width="1.5"/>
+  <g clip-path="url(#sabah-mascot-clip-taking-photo)">
+    <path d="M 10 86 Q 36 74 62 82 T 112 76" stroke="#76937A" stroke-opacity="0.22" stroke-width="1.25" stroke-linecap="round"/>
+    <path d="M 12 96 Q 42 86 68 94 T 112 88" stroke="#76937A" stroke-opacity="0.16" stroke-width="1.25" stroke-linecap="round"/>
+    <g>
+      <path d="M 30 116 C 32 95 41 82 51 78 H 69 C 79 82 88 95 90 116 Z" fill="#F2EFE9"/>
+      <path d="M 30 116 C 32 95 41 82 51 78 H 58 C 54 90 52 103 52 116 Z" fill="#76937A" fill-opacity="0.24"/>
+      <circle cx="42" cy="98" r="2.1" fill="#C5A868" fill-opacity="0.72"/>
+      <circle cx="48" cy="106" r="1.6" fill="#C5A868" fill-opacity="0.62"/>
+      <circle cx="77" cy="100" r="2" fill="#76937A" fill-opacity="0.52"/>
+      <path d="M 42 79 C 47 85 73 85 78 79 L 81 86 C 72 92 48 92 39 86 Z" fill="#76937A"/>
+      <path d="M 44 82.5 C 52 86.5 68 86.5 76 82.5" stroke="#1E2B20" stroke-opacity="0.45" stroke-width="1.4" stroke-linecap="round"/>
+      
+      
+      
+    </g>
+  </g>
+  <g>
+    <g stroke="#C5A868" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M 48 39 C 42 30 37 22 41 13"/>
+      <path d="M 41.5 25 C 45.5 23 48.5 19.5 50 15.5"/>
+      <path d="M 40 20 C 35.5 19 33 17 31.5 14"/>
+      <path d="M 72 39 C 78 30 83 22 79 13"/>
+      <path d="M 78.5 25 C 74.5 23 71.5 19.5 70 15.5"/>
+      <path d="M 80 20 C 84.5 19 87 17 88.5 14"/>
+    </g>
+    <g>
+      <path d="M 44 43 C 33 38 25 41 25 48 C 25 53 34 55 43 52 Z" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M 41 45.5 C 34.5 43 29.5 44.5 29.5 48 C 29.5 50.5 34.5 51.5 40.5 49.5 Z" fill="#76937A"/>
+    </g>
+    <g>
+      <path d="M 76 43 C 87 38 95 41 95 48 C 95 53 86 55 77 52 Z" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.4" stroke-linejoin="round"/>
+      <path d="M 79 45.5 C 85.5 43 90.5 44.5 90.5 48 C 90.5 50.5 85.5 51.5 79.5 49.5 Z" fill="#76937A"/>
+    </g>
+    <path d="M 41 47 C 41 35 79 35 79 47 C 79 62 71.5 76 60 79 C 48.5 76 41 62 41 47 Z" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.6"/>
+    <path d="M 60 36 C 48 36 41 40 41 47 C 41 62 48.5 76 60 79 C 54 71 52 59 53 47 C 53.5 41 56 37.5 60 36 Z" fill="#76937A" fill-opacity="0.16"/>
+    <path d="M 44 41 C 45 31.5 75 31.5 76 41 Z" fill="#76937A" stroke="#1E2B20" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="M 41.5 41.5 Q 60 37.5 78.5 41.5" stroke="#1E2B20" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M 46.5 39.2 Q 60 36.4 73.5 39.2" stroke="#C5A868" stroke-width="1.8" stroke-linecap="round"/>
+    <circle cx="60" cy="45.5" r="1.4" fill="#C5A868"/>
+    <circle cx="54.8" cy="47.2" r="1.15" fill="#76937A" fill-opacity="0.7"/>
+    <circle cx="65.2" cy="47.2" r="1.15" fill="#76937A" fill-opacity="0.7"/>
+    
+    
+    <circle cx="50.5" cy="52.5" r="2.4" fill="#1E2B20"/>
+    <circle cx="51.4" cy="51.6" r="0.8" fill="#F2EFE9"/>
+    <path d="M 65.5 52.8 Q 69.2 50.4 72.8 52.8" stroke="#1E2B20" stroke-width="1.8" stroke-linecap="round"/>
+    
+    
+    
+  </g>
+  <g>
+    <rect x="35" y="56" width="50" height="32" rx="6.5" fill="#1E2B20" stroke="#76937A" stroke-width="1.5"/>
+    <path d="M 36.5 64 V 62 C 36.5 59.2 38.7 57 41.5 57 H 78.5 C 81.3 57 83.5 59.2 83.5 62 V 64 Z" fill="#76937A"/>
+    <rect x="42" y="52.8" width="7.5" height="3.5" rx="1.5" fill="#C5A868" stroke="#1E2B20" stroke-width="1.1"/>
+    <rect x="70.5" y="59" width="7.5" height="3.6" rx="1.4" fill="#F2EFE9"/>
+    <circle cx="46.5" cy="60.8" r="1.5" fill="#C5A868"/>
+    <circle cx="60" cy="73.5" r="11.5" fill="#76937A" stroke="#F2EFE9" stroke-width="1.4"/>
+    <circle cx="60" cy="73.5" r="8.2" fill="#1E2B20" stroke="#C5A868" stroke-width="1.25"/>
+    <circle cx="60" cy="73.5" r="4.2" fill="#76937A" fill-opacity="0.35"/>
+    <circle cx="62.4" cy="71" r="1.6" fill="#F2EFE9"/>
+    <ellipse cx="35.5" cy="74" rx="4.2" ry="6.2" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.4"/>
+    <ellipse cx="84.5" cy="74" rx="4.2" ry="6.2" fill="#F2EFE9" stroke="#1E2B20" stroke-width="1.4"/>
+    <g class="camera-flash">
+      <circle cx="60" cy="73.5" r="17" fill="#C5A868" fill-opacity="0.32"/>
+      <circle cx="60" cy="73.5" r="11" fill="#F2EFE9" fill-opacity="0.58"/>
+      <path d="M 60 54 L 62.6 70.9 L 79.5 73.5 L 62.6 76.1 L 60 93 L 57.4 76.1 L 40.5 73.5 L 57.4 70.9 Z" fill="#F2EFE9"/>
+      <circle cx="60" cy="73.5" r="4.5" fill="#C5A868"/>
+    </g>
+  </g>
+</svg>

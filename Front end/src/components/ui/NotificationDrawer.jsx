@@ -1,5 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import SabahMascot from './SabahMascot'
 import {
   BellIcon,
   CheckIcon,
@@ -242,7 +243,7 @@ function NotificationDrawer({
         aria-modal="true"
         aria-labelledby="notification-drawer-title"
         onClick={(e) => e.stopPropagation()}
-        className={`liquid-glass-modal relative flex max-h-[calc(100dvh-120px)] w-full max-w-sm flex-col overflow-hidden rounded-3xl text-[#F5F2EB] transition-[opacity,transform] duration-200 ease-out ${
+        className={`relative flex max-h-[calc(100dvh-120px)] w-full max-w-sm flex-col overflow-hidden rounded-3xl border border-[rgba(244,239,230,0.18)] bg-[linear-gradient(180deg,rgba(30,43,32,0.92)_0%,rgba(19,27,20,0.94)_100%)] text-[#F5F2EB] shadow-[inset_0_1px_0_0_rgba(244,239,230,0.24),inset_0_-1px_0_0_rgba(0,0,0,0.4),0_28px_60px_-14px_rgba(0,0,0,0.68)] backdrop-blur-2xl transition-[opacity,transform] duration-200 ease-out ${
           isVisible
             ? 'translate-y-0 scale-100 opacity-100'
             : 'translate-y-2.5 scale-[0.96] opacity-0'
@@ -251,10 +252,10 @@ function NotificationDrawer({
         {/* Header Drawer */}
         <div
           id="notification-header"
-          className="flex shrink-0 items-center justify-between border-b border-[rgba(244,239,230,0.14)] px-5 pt-5 pb-3.5"
+          className="flex shrink-0 items-center justify-between border-b border-white/[0.09] bg-white/[0.02] px-5 pt-4 pb-3.5"
         >
-          <div className="flex items-center gap-2.5">
-            <span className="apple-glass-pill flex h-8 w-8 items-center justify-center rounded-xl text-[#DFAA63]">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/[0.12] bg-white/[0.06] text-[#DFAA63]">
               <BellIcon className="h-4 w-4" />
             </span>
             <h2
@@ -263,11 +264,16 @@ function NotificationDrawer({
             >
               Notifikasi
             </h2>
-            {unreadIds.length > 0 && (
-              <span className="rounded-full border border-[#DFAA63]/35 bg-[#DFAA63]/12 px-2 py-0.5 font-mono text-[10.5px] font-semibold tabular-nums tracking-wide text-[#DFAA63]">
-                {unreadIds.length} belum dibaca
-              </span>
-            )}
+            <span
+              id="notification-count-badge"
+              className={`rounded-full border px-2.5 py-0.5 font-mono text-[10.5px] font-semibold tabular-nums tracking-wide ${
+                unreadIds.length > 0
+                  ? 'border-[#C5A868]/40 bg-[#C5A868]/15 text-[#DFAA63]'
+                  : 'border-[#76937A]/30 bg-white/[0.06] text-[#F5F2EB]/70'
+              }`}
+            >
+              {unreadIds.length} Baru
+            </span>
           </div>
 
           <button
@@ -275,7 +281,7 @@ function NotificationDrawer({
             id="btn-close-notification"
             onClick={onClose}
             aria-label="Tutup notifikasi"
-            className="apple-glass-pill relative flex h-9 w-9 items-center justify-center rounded-full text-[#F5F2EB] transition-colors duration-150 hover:bg-white/[0.12] active:scale-[0.97] before:absolute before:-inset-1"
+            className="apple-glass-pill relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#F5F2EB] transition-colors duration-150 hover:bg-white/[0.12] active:scale-[0.97] before:absolute before:-inset-1"
           >
             <XIcon className="h-4 w-4" />
           </button>
@@ -305,43 +311,53 @@ function NotificationDrawer({
                       onSelectPlace(item.slug)
                     }
                   }}
-                  className={`apple-retro-bevel flex w-full shrink-0 items-start gap-3 rounded-2xl border p-3.5 text-left transition-all duration-150 active:scale-[0.98] ${
+                  className={`flex w-full shrink-0 items-start gap-3 rounded-2xl border p-3.5 text-left transition-all duration-150 active:scale-[0.985] ${
                     isUnread
-                      ? 'border-[rgba(244,239,230,0.2)] bg-white/[0.08] hover:bg-white/[0.12]'
-                      : 'border-[rgba(244,239,230,0.1)] bg-white/[0.04] opacity-85 hover:opacity-100'
+                      ? 'border-white/[0.16] bg-white/[0.065] shadow-[inset_0_1px_0_0_rgba(244,239,230,0.12)] hover:border-white/[0.24] hover:bg-white/[0.1]'
+                      : 'border-white/10 bg-white/[0.04] hover:border-white/[0.18] hover:bg-white/[0.08]'
                   }`}
                 >
                   <span
-                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${config.badgeClass}`}
+                    className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border ${config.badgeClass}`}
                   >
                     <IconComponent className="h-4 w-4" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold leading-snug tracking-tight text-[#F5F2EB]">
-                      {item.title}
-                    </p>
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-[13px] font-semibold leading-snug tracking-tight text-[#F5F2EB]">
+                        {item.title}
+                      </p>
+                      <div className="mt-0.5 flex shrink-0 items-center gap-1.5">
+                        <span className="whitespace-nowrap font-mono text-[10.5px] tabular-nums tracking-wide text-[#F5F2EB]/55">
+                          {item.time}
+                        </span>
+                        {isUnread && (
+                          <span
+                            className="h-2 w-2 shrink-0 rounded-full bg-[#C5A868]"
+                            aria-label="Belum dibaca"
+                          />
+                        )}
+                      </div>
+                    </div>
                     <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-[#F5F2EB]/70">
                       {item.desc}
                     </p>
-                    <span className="mt-1.5 block font-mono text-[10.5px] tabular-nums tracking-wide text-[#F5F2EB]/55">
-                      {item.time}
-                    </span>
                   </div>
-                  {isUnread && (
-                    <span
-                      className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#DFAA63]"
-                      aria-label="Belum dibaca"
-                    />
-                  )}
                 </button>
               )
             })
           ) : (
-            <div className="py-8 text-center">
-              <p className="text-[14px] font-semibold text-[#F5F2EB]">
+            <div className="flex flex-col items-center justify-center px-2 py-7 text-center">
+              <SabahMascot
+                variant="default"
+                size="md"
+                animate
+                className="mb-4"
+              />
+              <p className="text-[15px] font-semibold tracking-tight text-[#F5F2EB]">
                 Belum ada pembaruan
               </p>
-              <p className="mt-1.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/65">
+              <p className="mt-1.5 max-w-[260px] text-[12.5px] leading-relaxed text-[#F5F2EB]/65">
                 Notifikasi akan muncul saat Anda menyimpan destinasi favorit, membuat rute custom, berinteraksi sosial, atau menyelesaikan aksi.
               </p>
             </div>
@@ -351,7 +367,7 @@ function NotificationDrawer({
         {/* Footer */}
         <div
           id="notification-footer"
-          className="flex shrink-0 items-center gap-2 border-t border-[rgba(244,239,230,0.14)] px-5 py-3.5"
+          className="flex shrink-0 items-center gap-2.5 border-t border-white/[0.09] bg-black/[0.16] px-5 py-3.5"
         >
           {unreadIds.length > 0 && (
             <button
@@ -364,8 +380,9 @@ function NotificationDrawer({
           )}
           <button
             type="button"
+            id="btn-footer-close-notification"
             onClick={onClose}
-            className="apple-retro-cta flex min-h-[42px] flex-1 items-center justify-center rounded-xl px-3 py-2 text-[12px] font-semibold active:scale-[0.98]"
+            className="apple-retro-cta flex min-h-[42px] flex-1 items-center justify-center rounded-xl px-4 py-2 text-[12.5px] font-semibold shadow-[0_6px_16px_-4px_rgba(0,0,0,0.45)] transition-all duration-150 hover:bg-[#E7DFD1] hover:shadow-[0_8px_20px_-4px_rgba(0,0,0,0.55)] active:scale-[0.98]"
           >
             Tutup
           </button>

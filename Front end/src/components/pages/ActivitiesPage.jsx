@@ -2,6 +2,7 @@ import { memo, useEffect, useRef, useState } from 'react'
 import NotificationDrawer from '../ui/NotificationDrawer'
 import GlassModal from '../ui/GlassModal'
 import SafeImage from '../ui/SafeImage'
+import SabahMascot from '../ui/SabahMascot'
 import ScrollToTopButton from '../ui/ScrollToTopButton'
 import {
   AlertTriangleIcon,
@@ -442,9 +443,12 @@ function ActivitiesPage({
               key="empty-kamu"
               className="apple-glass-card animate-tab-enter rounded-3xl px-6 py-12 text-center"
             >
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/[0.14] bg-white/[0.06] text-[#E2D7B5] shadow-sm">
-                <CameraIcon className="h-8 w-8" />
-              </div>
+              <SabahMascot
+                size="md"
+                animate
+                label="Maskot Rusa Tutul Sabah Bogor"
+                className="mx-auto mb-4 drop-shadow-[0_12px_24px_rgba(0,0,0,0.38)]"
+              />
               <h2 className="text-[18px] font-semibold tracking-tight text-[#EBF0EB]">
                 Aktivitas Perjalanan Anda
               </h2>
@@ -513,13 +517,19 @@ function ActivitiesPage({
 
               {currentFeed.length === 0 ? (
                 <div className="apple-glass-card rounded-3xl px-6 py-10 text-center">
-                  <div className="mx-auto mb-3.5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.14] bg-white/[0.06] text-[#E2D7B5]">
-                    {subTab === 'Kamu' ? (
-                      <CameraIcon className="h-7 w-7" />
-                    ) : (
+                  {subTab === 'Kamu' ? (
+                    <div className="mb-3.5 flex justify-center">
+                      <SabahMascot
+                        variant="confused"
+                        size="md"
+                        className="drop-shadow-[0_10px_22px_rgba(0,0,0,0.36)]"
+                      />
+                    </div>
+                  ) : (
+                    <div className="mx-auto mb-3.5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.14] bg-white/[0.06] text-[#E2D7B5]">
                       <CompassIcon className="h-7 w-7" duotone />
-                    )}
-                  </div>
+                    </div>
+                  )}
                   <p className="text-[15px] font-bold text-[#EBF0EB]">
                     {subTab === 'Kamu'
                       ? 'Belum Ada Postingan Aktivitas'
@@ -623,7 +633,7 @@ function ActivitiesPage({
                             src={post.image}
                             fallback={DEFAULT_IMAGE_PLACEHOLDER}
                             alt={post.title}
-                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                            className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.02]"
                             loading="lazy"
                             decoding="async"
                           />
@@ -660,8 +670,12 @@ function ActivitiesPage({
         closeAriaLabel="Tutup modal posting"
         maxWidthClass="max-w-md"
       >
-        <div className="-mt-3 mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.2] bg-[rgba(20,28,20,0.45)] text-[#E2D7B5] shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22)]">
-          <CameraIcon className="h-6 w-6" />
+        <div className="-mt-3 mb-3 flex justify-center">
+          <SabahMascot
+            variant="taking-photo"
+            size="modal"
+            className="drop-shadow-[0_10px_22px_rgba(0,0,0,0.38)]"
+          />
         </div>
 
         <h3

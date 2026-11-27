@@ -159,8 +159,8 @@ function SafeImage({
   const defaultMaxW = /\bmax-w-/.test(combinedContainClasses) ? '' : 'max-w-full'
 
   const imageFitClasses = isContain
-    ? `${defaultMaxH} ${defaultMaxW} w-auto h-auto object-contain object-center`.trim()
-    : 'h-full w-full object-cover object-center'
+    ? `${defaultMaxH} ${defaultMaxW} block w-auto h-auto object-contain object-center`.trim()
+    : 'block h-full w-full object-cover object-center'
 
   return (
     <div

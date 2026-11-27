@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import AdminLocationPickerMap from '../map/AdminLocationPickerMap'
 import SafeImage from '../ui/SafeImage'
+import SabahMascot from '../ui/SabahMascot'
 import { useAdminLocations } from '../../hooks/useAdminLocations'
 import { compressImage } from '../../utils/imageCompressor'
 import { getImageUrl } from '../../utils/imageHelper'
@@ -11,7 +12,6 @@ import {
   CheckIcon,
   ChevronLeftIcon,
   ClockIcon,
-  CompassIcon,
   MapPinIcon,
   RefreshIcon,
   StarIcon,
@@ -500,8 +500,8 @@ function AdminPage({ onLocationsMutated }) {
         {/* Header Admin */}
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3.5">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/20 bg-[#141C14]/65 text-[#E2D7B5] backdrop-blur-xl shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.2)]">
-              <CompassIcon className="h-5 w-5" duotone />
+            <div className="flex h-[60px] w-[60px] sm:h-16 sm:w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[rgba(244,239,230,0.2)] bg-[#1E2B20] p-0 shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.18),0_10px_24px_-6px_rgba(0,0,0,0.5)]">
+              <SabahMascot variant="admin" size="sm" className="h-full w-full scale-[1.18]" />
             </div>
             <div>
               <h1 className="text-[20px] sm:text-[22px] font-bold tracking-tight text-[#EBF0EB]">
@@ -1239,7 +1239,7 @@ function AdminPage({ onLocationsMutated }) {
                             alt={loc.name}
                             width={480}
                             height={300}
-                            className="h-full w-full object-cover"
+                            className="h-full w-full object-cover object-center"
                           />
                           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/55 to-transparent" />
 
