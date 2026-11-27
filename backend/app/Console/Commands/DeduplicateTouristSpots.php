@@ -7,6 +7,7 @@ use App\Models\TouristSpot;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DeduplicateTouristSpots extends Command
 {
@@ -28,11 +29,14 @@ class DeduplicateTouristSpots extends Command
         }
 
         // Hitung referensi saved_activities agar record yang dipakai pengguna diprioritaskan tetap bertahan
-        $savedCounts = SavedActivity::query()
-            ->whereNotNull('tourist_spot_id')
-            ->select('tourist_spot_id', DB::raw('COUNT(*) as total'))
-            ->groupBy('tourist_spot_id')
-            ->pluck('total', 'tourist_spot_id');
+        $hasSpotIdColumn = Schema::hasColumn('saved_activities', 'tourist_spot_id');
+        $savedCounts = $hasSpotIdColumn
+            ? SavedActivity::query()
+                ->whereNotNull('tourist_spot_id')
+                ->select('tourist_spot_id', DB::raw('COUNT(*) as total'))
+                ->groupBy('tourist_spot_id')
+                ->pluck('total', 'tourist_spot_id')
+            : collect();
 
         // Fase 1: Duplikat nama kanonik atau sub-venue dalam alamat gedung yang sama (<= 100m)
         // Fase 2: Tumpang tindih koordinat spasial (<= radius) pada survivor tersisa (mencegah penggabungan transitif pada landmark berbeda seperti Lawang Salapan)
@@ -46,7 +50,7 @@ class DeduplicateTouristSpots extends Command
         $totalRemoved = 0;
         $totalReassigned = 0;
 
-        $execute = function () use ($plan, $dryRun, &$totalRemoved, &$totalReassigned): void {
+        $execute = function () use ($plan, $dryRun, $hasSpotIdColumn, &$totalRemoved, &$totalReassigned): void {
             foreach ($plan as $entry) {
                 /** @var TouristSpot $survivor */
                 $survivor = $entry['survivor'];
@@ -83,10 +87,12 @@ class DeduplicateTouristSpots extends Command
                     ));
 
                     if (!$dryRun) {
-                        $reassigned = SavedActivity::query()
-                            ->where('tourist_spot_id', $dup->id)
-                            ->update(['tourist_spot_id' => $survivor->id]);
-                        $totalReassigned += $reassigned;
+                        if ($hasSpotIdColumn) {
+                            $reassigned = SavedActivity::query()
+                                ->where('tourist_spot_id', $dup->id)
+                                ->update(['tourist_spot_id' => $survivor->id]);
+                            $totalReassigned += $reassigned;
+                        }
 
                         $dup->delete();
                     }
