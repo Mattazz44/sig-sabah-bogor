@@ -13,6 +13,14 @@ use Illuminate\Validation\ValidationException;
 
 class AdminTouristSpotController extends Controller
 {
+    private const PER_PAGE = 10;
+
+    private const ALLOWED_CATEGORIES = [
+        'Alam & Curug',
+        'Kuliner',
+        'Edukasi & Budaya',
+    ];
+
     /**
      * Tampilkan halaman dashboard admin daftar dan form input tempat wisata
      */
@@ -21,22 +29,11 @@ class AdminTouristSpotController extends Controller
         $category = $request->query('category', 'Semua');
         $search = $request->query('q', '');
 
-        $query = TouristSpot::query()->orderBy('created_at', 'desc');
+        $query = $this->buildFilteredSpotsQuery($category, $search)
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc');
 
-        if ($category && $category !== 'Semua') {
-            $query->where('category', $category);
-        }
-
-        if (!empty($search)) {
-            $likeOp = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
-            $query->where(function ($q) use ($search, $likeOp) {
-                $q->where('name', $likeOp, "%{$search}%")
-                  ->orWhere('address', $likeOp, "%{$search}%")
-                  ->orWhere('description', $likeOp, "%{$search}%");
-            });
-        }
-
-        $spots = $query->paginate(10)->withQueryString();
+        $spots = $query->paginate(self::PER_PAGE)->withQueryString();
         $totalSpots = TouristSpot::count();
         $popularSpots = TouristSpot::where('is_popular', true)->count();
         $freeSpots = TouristSpot::where(function ($q) {
@@ -178,11 +175,15 @@ class AdminTouristSpotController extends Controller
     /**
      * Tampilkan form edit tempat wisata
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
         $spot = TouristSpot::findOrFail($id);
         $totalSpots = TouristSpot::count();
-        return view('admin.spots.edit', compact('spot', 'totalSpots'));
+        $returnContext = $this->extractListContext($request);
+        $returnQuery = $this->formatRawListParams($returnContext);
+        $backToListUrl = route('admin.spots.index', $returnQuery);
+
+        return view('admin.spots.edit', compact('spot', 'totalSpots', 'returnQuery', 'backToListUrl'));
     }
 
     /**
@@ -191,6 +192,7 @@ class AdminTouristSpotController extends Controller
     public function update(Request $request, $id, SpatialBoundaryService $spatialBoundary)
     {
         $spot = TouristSpot::findOrFail($id);
+        $listContext = $this->extractListContext($request);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -212,8 +214,9 @@ class AdminTouristSpotController extends Controller
         if (!$spatialBoundary->isWithinKotaBogor((float) $validated['latitude'], (float) $validated['longitude'])) {
             $spatialBoundary->quarantine($request, $validated, 'update', 'web_admin', $spot);
             $cleanName = trim((string) $validated['name']);
+            $redirectParams = $this->buildListRedirectParams($listContext);
 
-            return redirect()->route('admin.spots.index')
+            return redirect()->route('admin.spots.index', $redirectParams)
                 ->with('success', "Tempat wisata '{$cleanName}' berhasil diperbarui!")
                 ->with('admin_feedback_type', 'save-success');
         }
@@ -278,7 +281,9 @@ class AdminTouristSpotController extends Controller
             $this->updateSpatialPoint($spot->id, (float) $validated['longitude'], (float) $validated['latitude']);
         });
 
-        return redirect()->route('admin.spots.index')
+        $redirectParams = $this->buildListRedirectParams($listContext);
+
+        return redirect()->route('admin.spots.index', $redirectParams)
             ->with('success', "Tempat wisata '{$spot->name}' berhasil diperbarui!")
             ->with('admin_feedback_type', 'save-success');
     }
@@ -286,15 +291,124 @@ class AdminTouristSpotController extends Controller
     /**
      * Hapus tempat wisata
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $spot = TouristSpot::findOrFail($id);
+        $listContext = $this->extractListContext($request);
         $name = $spot->name;
         $spot->delete();
 
-        return redirect()->route('admin.spots.index')
+        $redirectParams = $this->buildListRedirectParams($listContext);
+
+        return redirect()->route('admin.spots.index', $redirectParams)
             ->with('success', "Tempat wisata '{$name}' telah dihapus.")
             ->with('admin_feedback_type', 'delete-success');
+    }
+
+    /**
+     * Bangun query daftar destinasi berdasarkan filter kategori & kata kunci pencarian.
+     */
+    private function buildFilteredSpotsQuery(?string $category, ?string $search)
+    {
+        $query = TouristSpot::query();
+
+        if ($category && $category !== 'Semua' && in_array($category, self::ALLOWED_CATEGORIES, true)) {
+            $query->where('category', $category);
+        }
+
+        $trimmedSearch = trim((string) ($search ?? ''));
+        if ($trimmedSearch !== '') {
+            $likeOp = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+            $query->where(function ($q) use ($trimmedSearch, $likeOp) {
+                $q->where('name', $likeOp, "%{$trimmedSearch}%")
+                  ->orWhere('address', $likeOp, "%{$trimmedSearch}%")
+                  ->orWhere('description', $likeOp, "%{$trimmedSearch}%");
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Ekstrak konteks halaman daftar wisata (kategori, pencarian, nomor halaman) secara aman
+     * dari input form, query string, atau Referer internal /admin/spots (anti open-redirect).
+     *
+     * @return array{category: ?string, q: string, page: int}
+     */
+    private function extractListContext(Request $request): array
+    {
+        $rawCategory = $request->input('return_category', $request->query('category'));
+        $rawSearch = $request->input('return_q', $request->query('q'));
+        $rawPage = $request->input('return_page', $request->query('page'));
+
+        // Fallback aman: baca hanya query string dari Referer internal /admin/spots jika input tidak dikirim
+        if ($rawCategory === null && $rawSearch === null && $rawPage === null) {
+            $referer = (string) $request->headers->get('referer', '');
+            if ($referer !== '') {
+                $parsed = parse_url($referer);
+                $refPath = $parsed['path'] ?? '';
+                if (in_array($refPath, ['/admin', '/admin/spots'], true) && !empty($parsed['query'])) {
+                    parse_str($parsed['query'], $refParams);
+                    $rawCategory = $refParams['category'] ?? null;
+                    $rawSearch = $refParams['q'] ?? null;
+                    $rawPage = $refParams['page'] ?? null;
+                }
+            }
+        }
+
+        $category = is_string($rawCategory) && in_array($rawCategory, self::ALLOWED_CATEGORIES, true)
+            ? $rawCategory
+            : null;
+        $search = is_string($rawSearch) ? trim($rawSearch) : '';
+        $page = is_numeric($rawPage) ? max(1, (int) $rawPage) : 1;
+
+        return [
+            'category' => $category,
+            'q' => $search,
+            'page' => $page,
+        ];
+    }
+
+    /**
+     * Konversi konteks daftar mentah menjadi array query parameter yang ringkas.
+     *
+     * @param  array{category: ?string, q: string, page: int}  $context
+     * @return array<string, int|string>
+     */
+    private function formatRawListParams(array $context): array
+    {
+        $params = [];
+        if (!empty($context['category'])) {
+            $params['category'] = $context['category'];
+        }
+        if ($context['q'] !== '') {
+            $params['q'] = $context['q'];
+        }
+        if ($context['page'] > 1) {
+            $params['page'] = $context['page'];
+        }
+
+        return $params;
+    }
+
+    /**
+     * Bangun parameter redirect ke daftar wisata dengan clamp halaman otomatis
+     * agar tidak pernah mendarat pada halaman kosong pasca hapus/ubah kategori.
+     *
+     * @param  array{category: ?string, q: string, page: int}  $context
+     * @return array<string, int|string>
+     */
+    private function buildListRedirectParams(array $context): array
+    {
+        $matchingCount = $this->buildFilteredSpotsQuery($context['category'], $context['q'])->count();
+        $lastPage = max(1, (int) ceil($matchingCount / self::PER_PAGE));
+        $clampedPage = min(max(1, $context['page']), $lastPage);
+
+        return $this->formatRawListParams([
+            'category' => $context['category'],
+            'q' => $context['q'],
+            'page' => $clampedPage,
+        ]);
     }
 
     /**

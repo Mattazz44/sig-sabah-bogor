@@ -6,10 +6,10 @@
     <link rel="icon" type="image/png" href="/SABAH.png">
     <link rel="apple-touch-icon" href="/SABAH.png">
     <title>@yield('title', 'Admin') - Sabah Bogor</title>
-    <!-- Google Fonts: Inter -->
+    <!-- Google Fonts: Plus Jakarta Sans & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -18,17 +18,22 @@
                 extend: {
                     colors: {
                         canopy: {
-                            950: '#0d120d',
-                            900: '#111711',
-                            850: '#161d15',
-                            800: '#1c241c',
+                            950: '#0D110F',
+                            900: '#111613',
+                            850: '#161D19',
+                            800: '#1D2621',
+                        },
+                        sage: {
+                            300: '#A3C4A8',
+                            400: '#8FB596',
+                            500: '#76937A',
                         },
                         bone: '#F2ECE1',
                         paper: '#F5F2EB',
-                        ambervintage: '#DFAA63',
+                        ambervintage: '#C5A868',
                     },
                     fontFamily: {
-                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
                         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
                     }
                 }
@@ -64,73 +69,53 @@
         }
 
         .apple-canopy-bg {
-            font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-            background-color: #111711;
-            background-image:
-                radial-gradient(rgba(242, 239, 233, 0.055) 1px, transparent 1px),
-                radial-gradient(90% 48% at 50% -4%, rgba(118, 147, 122, 0.18) 0%, rgba(44, 62, 42, 0.14) 44%, transparent 74%),
-                linear-gradient(180deg, #161d15 0%, #111711 55%, #0d120d 100%);
-            background-size: 24px 24px, 100% 100%, 100% 100%;
-            background-attachment: fixed;
+            font-family: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+            background-color: #0D110F;
         }
 
         .apple-glass-card {
-            background: rgba(28, 36, 28, 0.65);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            backdrop-filter: blur(24px) saturate(180%);
-            border: 1px solid rgba(244, 239, 230, 0.14);
-            box-shadow:
-                inset 0 1px 0 0 rgba(244, 239, 230, 0.18),
-                inset 0 -1px 0 0 rgba(0, 0, 0, 0.32),
-                0 18px 36px -14px rgba(0, 0, 0, 0.48);
+            background-color: #161D19;
+            border: 1px solid rgba(242, 236, 225, 0.07);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
         }
 
         .apple-retro-bevel {
-            box-shadow:
-                inset 0 1px 0 0 rgba(244, 239, 230, 0.18),
-                inset 0 -1px 0 0 rgba(0, 0, 0, 0.32);
+            box-shadow: none;
         }
 
         .apple-retro-cta {
             background-color: #F2ECE1;
-            color: #141A14;
-            border: 1px solid rgba(255, 255, 255, 0.42);
-            box-shadow:
-                inset 0 1px 0 0 rgba(255, 255, 255, 0.72),
-                inset 0 -1.5px 0 0 rgba(0, 0, 0, 0.22),
-                0 4px 12px -2px rgba(0, 0, 0, 0.35);
-            transition: background-color 150ms ease-out, transform 150ms ease-out, box-shadow 150ms ease-out;
+            color: #0D110F;
+            border: 1px solid transparent;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+            transition: background-color 150ms ease-out, transform 150ms ease-out;
         }
 
         .apple-retro-cta:hover:not(:disabled) {
-            background-color: #E7DFD1;
+            background-color: #E6DEC9;
         }
 
         .apple-retro-cta:active:not(:disabled) {
-            background-color: #DDD4C3;
+            background-color: #DBD1B8;
             transform: scale(0.985);
-            box-shadow:
-                inset 0 1px 2px 0 rgba(0, 0, 0, 0.25),
-                0 1px 4px rgba(0, 0, 0, 0.28);
         }
 
         .liquid-glass-input {
-            background: rgba(244, 239, 230, 0.06);
-            border: 1px solid rgba(244, 239, 230, 0.15);
+            background-color: #111613;
+            border: 1px solid rgba(242, 236, 225, 0.1);
             color: #F5F2EB;
-            box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.22);
-            transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+            transition: background-color 150ms ease, border-color 150ms ease;
         }
 
         .liquid-glass-input:focus {
-            background: rgba(244, 239, 230, 0.09);
-            border-color: rgba(244, 239, 230, 0.38);
+            background-color: #161D19;
+            border-color: rgba(143, 181, 150, 0.55);
             outline: none;
         }
 
         .liquid-glass-input:focus-visible {
             outline: none;
-            box-shadow: 0 0 0 2px rgba(242, 236, 225, 0.58);
+            box-shadow: 0 0 0 2px rgba(143, 181, 150, 0.35);
         }
 
         .custom-scrollbar::-webkit-scrollbar {
@@ -243,13 +228,13 @@
         $isIndex = request()->routeIs('admin.spots.index') || request()->routeIs('admin.index') || request()->routeIs('admin.home');
     @endphp
 
-    <div class="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pt-6 pb-16 sm:px-6 sm:pt-8 lg:px-8">
-        <!-- Header Admin -->
-        <header class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex items-center gap-3.5 min-w-0">
+    <div class="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pt-5 pb-16 sm:px-6 sm:pt-7 lg:px-8">
+        <!-- Header Editorial Satu Baris: Maskot + Judul | Lihat Peta Utama & Keluar -->
+        <header class="flex flex-col gap-4 border-b border-[#F2ECE1]/[0.07] pb-5 sm:flex-row sm:items-center sm:justify-between">
+            <a href="{{ route('admin.spots.index') }}" class="group flex items-center gap-3.5 min-w-0">
                 <div
                     id="admin-header-mascot-wrap"
-                    class="apple-retro-bevel flex h-[60px] w-[60px] sm:h-16 sm:w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[rgba(244,239,230,0.2)] bg-[#1E2B20] p-0 shadow-[0_10px_24px_-6px_rgba(0,0,0,0.5)]"
+                    class="flex h-14 w-14 sm:h-[58px] sm:w-[58px] shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#F2ECE1]/10 bg-[#1B261E] p-0 transition-transform duration-200 group-hover:scale-[1.02]"
                 >
                     <!-- Maskot Rusa Tutul Bogor Role Admin Full-Bleed memenuhi bingkai + Animasi Looping 4s -->
                     <svg
@@ -352,38 +337,27 @@
                     </svg>
                 </div>
                 <div class="min-w-0">
-                    <h1 class="text-[20px] sm:text-[22px] font-bold tracking-tight text-[#F5F2EB]">
+                    <h1 class="text-[19px] sm:text-[21px] font-bold tracking-[-0.02em] text-[#F5F2EB]">
                         Admin Wisata Bogor
                     </h1>
-                    <p class="text-[12.5px] leading-snug text-[#F5F2EB]/65">
-                        Panel pengelolaan data destinasi, jam operasional, dan titik GIS Kota Bogor
+                    <p class="mt-0.5 text-[12.5px] leading-snug text-[#F5F2EB]/55">
+                        Pengelolaan direktori destinasi dan spasial Kota Bogor
                     </p>
                 </div>
-            </div>
+            </a>
 
-            <div class="flex flex-wrap items-center gap-2.5">
-                <span
-                    id="admin-db-status-pill"
-                    class="apple-retro-bevel inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[rgba(244,239,230,0.14)] bg-[rgba(28,36,28,0.68)] px-3.5 text-[12px] font-medium text-[#F5F2EB]/80 backdrop-blur-md"
-                >
-                    <span class="relative flex h-2 w-2 shrink-0" aria-hidden="true">
-                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
-                    </span>
-                    <span class="font-mono font-semibold tabular-nums text-[#DFAA63]">{{ $navTotalSpots }}</span>
-                    <span>lokasi di database</span>
-                </span>
-
+            <div class="flex items-center gap-2.5 self-start sm:self-auto">
                 <a href="{{ route('pwa.home') }}"
                    target="_blank"
                    rel="noopener noreferrer"
-                   class="apple-retro-bevel inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-[rgba(244,239,230,0.16)] bg-white/[0.06] px-3.5 py-2 text-[12.5px] font-semibold text-[#F5F2EB] transition-colors hover:border-[rgba(244,239,230,0.28)] hover:bg-white/[0.11] active:scale-[0.98]">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                   id="btn-view-main-map"
+                   class="inline-flex min-h-[42px] items-center gap-2 rounded-xl border border-[#F2ECE1]/10 bg-[#161D19] px-3.5 py-2 text-[12.5px] font-semibold text-[#F5F2EB]/90 transition-colors hover:border-[#F2ECE1]/20 hover:bg-[#1D2621] hover:text-[#F5F2EB] active:scale-[0.98]">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="text-[#8FB596]">
                         <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
                         <line x1="9" y1="3" x2="9" y2="18"></line>
                         <line x1="15" y1="6" x2="15" y2="21"></line>
                     </svg>
-                    <span>Peta Utama</span>
+                    <span>Lihat Peta Utama</span>
                 </a>
 
                 @auth
@@ -392,7 +366,7 @@
                         <button type="submit"
                                 id="btn-admin-logout"
                                 title="Keluar dari akun ({{ auth()->user()->name }})"
-                                class="apple-retro-bevel inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-rose-300/25 bg-[#3A1B22]/85 px-3.5 py-2 text-[12.5px] font-semibold text-rose-100 transition-colors hover:bg-[#49222B] active:scale-[0.98]">
+                                class="inline-flex min-h-[42px] items-center gap-1.5 rounded-xl border border-rose-300/15 bg-rose-500/10 px-3.5 py-2 text-[12.5px] font-semibold text-rose-200 transition-colors hover:border-rose-300/30 hover:bg-rose-500/20 hover:text-rose-100 active:scale-[0.98]">
                             <span>Keluar</span>
                         </button>
                     </form>
@@ -400,49 +374,39 @@
             </div>
         </header>
 
-        <!-- Top Tab Switcher -->
-        <nav aria-label="Navigasi admin" class="mt-6 flex flex-wrap items-center justify-between gap-3">
-            <div class="apple-glass-card relative grid w-full max-w-sm grid-cols-2 rounded-2xl p-1">
-                <a href="{{ route('admin.spots.create') }}"
-                   class="relative z-10 flex min-h-[44px] items-center justify-center rounded-xl px-4 text-[13px] transition-colors duration-150 {{ $isCreateOrEdit ? 'apple-retro-bevel font-semibold text-[#F5F2EB] bg-white/[0.13] border border-[rgba(244,239,230,0.22)]' : 'font-medium text-[#F5F2EB]/65 hover:text-[#F5F2EB]' }}">
-                    <span>{{ request()->routeIs('admin.spots.edit') ? 'Edit Lokasi' : 'Tambah Lokasi' }}</span>
-                </a>
-
-                <a href="{{ route('admin.spots.index') }}"
-                   class="relative z-10 flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl px-4 text-[13px] transition-colors duration-150 {{ $isIndex ? 'apple-retro-bevel font-semibold text-[#F5F2EB] bg-white/[0.13] border border-[rgba(244,239,230,0.22)]' : 'font-medium text-[#F5F2EB]/65 hover:text-[#F5F2EB]' }}">
-                    <span>Daftar Wisata</span>
-                    <span class="font-mono text-[12px] tabular-nums {{ $isIndex ? 'text-[#DFAA63]' : 'text-[#F5F2EB]/60' }}">({{ $navTotalSpots }})</span>
-                </a>
-            </div>
-
-            @if(request()->routeIs('admin.spots.edit'))
-                <a href="{{ route('admin.spots.index') }}"
-                   class="apple-retro-bevel inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-[rgba(244,239,230,0.14)] bg-[rgba(28,36,28,0.65)] px-4 py-2 text-[12.5px] font-medium text-[#F5F2EB]/75 transition-colors hover:border-[rgba(244,239,230,0.28)] hover:text-[#F5F2EB]">
+        @if($isCreateOrEdit)
+            <!-- Breadcrumb ringkas hanya saat membuka form Tambah / Edit -->
+            <nav aria-label="Navigasi kembali" class="mt-5 flex items-center justify-between gap-3">
+                <a href="{{ $backToListUrl ?? route('admin.spots.index') }}"
+                   class="inline-flex min-h-[40px] items-center gap-2 rounded-xl px-1 text-[13px] font-medium text-[#F5F2EB]/65 transition-colors hover:text-[#F5F2EB]">
                     <span aria-hidden="true">←</span>
-                    <span>Kembali ke daftar</span>
+                    <span>Kembali ke Daftar Destinasi</span>
                 </a>
-            @endif
-        </nav>
+                <span class="text-[12px] font-medium text-[#8FB596]">
+                    {{ request()->routeIs('admin.spots.edit') ? 'Mode Edit Destinasi' : 'Tambah Destinasi Baru' }}
+                </span>
+            </nav>
+        @endif
 
         <!-- Flash Notification Feedback (hanya untuk pesan non-toast seperti sambutan login) -->
         @if(session('success') && !session('admin_feedback_type'))
-            <div role="status" class="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-emerald-300/30 bg-[#182B1D]/90 px-4 py-2.5 text-[13px] text-emerald-100 shadow-sm">
+            <div role="status" class="mt-5 flex items-center justify-between gap-3 rounded-xl border border-emerald-400/20 bg-[#142018] px-4 py-2.5 text-[13px] text-emerald-100">
                 <div class="flex items-center gap-2.5">
-                    <svg class="h-4 w-4 shrink-0 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <svg class="h-4 w-4 shrink-0 text-[#8FB596]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <polyline points="20 6 9 17 4 12" />
                     </svg>
                     <span>{{ session('success') }}</span>
                 </div>
-                <button type="button" onclick="this.parentElement.remove()" aria-label="Tutup notifikasi" class="flex h-11 w-11 -mr-2 shrink-0 items-center justify-center rounded-xl text-emerald-200/70 transition-colors hover:bg-white/[0.08] hover:text-emerald-100 text-sm font-bold">
+                <button type="button" onclick="this.parentElement.remove()" aria-label="Tutup notifikasi" class="flex h-9 w-9 -mr-1.5 shrink-0 items-center justify-center rounded-lg text-emerald-200/70 transition-colors hover:bg-white/[0.08] hover:text-emerald-100 text-xs font-bold">
                     <span aria-hidden="true">✕</span>
                 </button>
             </div>
         @endif
 
         @if($errors->any())
-            <div role="alert" class="mt-5 rounded-2xl border border-rose-400/35 bg-[#2B1418]/90 px-4 py-3.5 text-[13px] text-rose-100 shadow-sm">
+            <div role="alert" class="mt-5 rounded-xl border border-rose-400/25 bg-[#231417] px-4 py-3.5 text-[13px] text-rose-100">
                 <p class="font-semibold text-rose-200 mb-1">Terjadi kesalahan pada formulir:</p>
-                <ul class="list-disc list-inside space-y-0.5 text-[12.5px] text-rose-100/90">
+                <ul class="list-disc list-inside space-y-0.5 text-[12.5px] text-rose-100/85">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -455,7 +419,7 @@
             @yield('content')
         </main>
 
-        <footer class="mt-12 border-t border-[rgba(244,239,230,0.08)] pt-5 text-center text-[11.5px] text-[#F5F2EB]/45">
+        <footer class="mt-14 border-t border-[#F2ECE1]/[0.06] pt-5 text-center text-[11.5px] text-[#F5F2EB]/40">
             Sabah Bogor GIS · Panel Administrasi Destinasi Kota Bogor
         </footer>
     </div>
@@ -466,7 +430,7 @@
         id="admin-scroll-to-top"
         aria-label="Kembali ke atas"
         title="Kembali ke atas"
-        class="pointer-events-none fixed right-5 bottom-6 z-40 flex h-12 w-12 translate-y-3 items-center justify-center rounded-full border border-white/20 bg-[#2c352d]/90 text-[#F5F2EB] opacity-0 shadow-xl backdrop-blur-md transition-all duration-200 hover:border-[#76937A]/60 hover:bg-[#3a463b] active:scale-95"
+        class="pointer-events-none fixed right-5 bottom-6 z-40 flex h-11 w-11 translate-y-3 items-center justify-center rounded-full border border-[#F2ECE1]/15 bg-[#161D19] text-[#F5F2EB] opacity-0 shadow-lg transition-all duration-200 hover:border-[#8FB596]/50 hover:bg-[#1D2621] active:scale-95"
     >
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="12" y1="19" x2="12" y2="5"></line>

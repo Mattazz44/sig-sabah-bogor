@@ -20,6 +20,9 @@
 <form id="spot-form" action="{{ route('admin.spots.update', $spot->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6" novalidate>
     @csrf
     @method('PUT')
+    <input type="hidden" name="return_category" value="{{ old('return_category', $returnQuery['category'] ?? '') }}">
+    <input type="hidden" name="return_q" value="{{ old('return_q', $returnQuery['q'] ?? '') }}">
+    <input type="hidden" name="return_page" value="{{ old('return_page', $returnQuery['page'] ?? '') }}">
     <input type="hidden" name="photo_order" id="photo_order" value="[]">
     <input type="hidden" name="operational_hours" id="input-operational-hours" value="{{ old('operational_hours', $spot->operational_hours) }}">
 
@@ -407,7 +410,7 @@
     <!-- Footer Aksi Form -->
     <div class="flex flex-col-reverse items-stretch justify-end gap-3 border-t border-[rgba(244,239,230,0.12)] pt-6 sm:flex-row sm:items-center">
         <a
-            href="{{ route('admin.spots.index') }}"
+            href="{{ $backToListUrl ?? route('admin.spots.index') }}"
             class="apple-retro-bevel inline-flex min-h-[48px] items-center justify-center rounded-xl border border-[rgba(244,239,230,0.16)] bg-[rgba(28,36,28,0.65)] px-6 py-2.5 text-[13.5px] font-medium text-[#F5F2EB]/75 transition-colors hover:border-[rgba(244,239,230,0.3)] hover:text-[#F5F2EB]"
         >
             Batal

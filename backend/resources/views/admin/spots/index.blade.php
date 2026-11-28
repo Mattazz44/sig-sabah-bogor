@@ -10,210 +10,194 @@
         'free' => 0,
         'avgRating' => 0,
     ];
+    $pillCategories = [
+        'Semua' => 'Semua',
+        'Alam & Curug' => 'Alam & Curug',
+        'Kuliner' => 'Kuliner',
+        'Edukasi & Budaya' => 'Edukasi & Budaya',
+    ];
+    $currentListParams = array_filter([
+        'category' => ($category && $category !== 'Semua') ? $category : null,
+        'q' => trim((string) $search) !== '' ? trim((string) $search) : null,
+        'page' => $spots->currentPage() > 1 ? $spots->currentPage() : null,
+    ], fn ($value) => $value !== null && $value !== '');
 @endphp
 
-<section class="space-y-6">
-    <!-- Baris Statistik Cepat (Bento Summary Cards) -->
-    <div id="admin-bento-stats" class="grid grid-cols-2 gap-3.5 md:grid-cols-4 md:gap-4" aria-label="Ringkasan statistik destinasi">
-        <!-- 1. Total Destinasi -->
-        <div class="group rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(244,239,230,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#76937A]/45 hover:bg-white/[0.055]">
-            <div class="flex items-center justify-between gap-2">
-                <span class="text-[11.5px] font-medium text-[#F5F2EB]/65">Total Destinasi</span>
-                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#76937A]/30 bg-[#76937A]/15 text-[#76937A]">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                        <circle cx="12" cy="10" r="3"></circle>
-                    </svg>
-                </span>
-            </div>
-            <p class="mt-2.5 flex items-baseline gap-1.5">
-                <span class="font-mono text-[22px] sm:text-[24px] font-bold tracking-tight tabular-nums text-[#F5F2EB]">{{ $summaryStats['total'] }}</span>
-                <span class="text-[12px] font-medium text-[#F5F2EB]/60">Lokasi</span>
+<section class="space-y-7">
+    <!-- 1. Compact Metric Strip: 1 Baris Statistik Ringkas (Tanpa Ikon Kotak Berlebih) -->
+    <div
+        id="admin-metric-strip"
+        aria-label="Ringkasan statistik destinasi"
+        class="grid grid-cols-2 overflow-hidden rounded-2xl border border-[#F2ECE1]/[0.07] bg-[#161D19] md:grid-cols-4"
+    >
+        <div class="border-b border-r border-[#F2ECE1]/[0.07] px-5 py-4 md:border-b-0">
+            <span class="block text-[11.5px] font-medium tracking-wide text-[#F5F2EB]/50">Total Destinasi</span>
+            <p class="mt-1.5 flex items-baseline gap-1.5">
+                <span class="text-[24px] font-bold leading-none tracking-[-0.02em] tabular-nums text-[#F5F2EB]">{{ $summaryStats['total'] }}</span>
+                <span class="text-[12px] font-medium text-[#F5F2EB]/50">lokasi</span>
             </p>
         </div>
 
-        <!-- 2. Wisata Populer -->
-        <div class="group rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(244,239,230,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#C5A868]/45 hover:bg-white/[0.055]">
-            <div class="flex items-center justify-between gap-2">
-                <span class="text-[11.5px] font-medium text-[#F5F2EB]/65">Wisata Populer</span>
-                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#C5A868]/35 bg-[#C5A868]/15 text-[#C5A868]">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
-                    </svg>
-                </span>
-            </div>
-            <p class="mt-2.5 flex items-baseline gap-1.5">
-                <span class="font-mono text-[22px] sm:text-[24px] font-bold tracking-tight tabular-nums text-[#F5F2EB]">{{ $summaryStats['popular'] }}</span>
-                <span class="text-[12px] font-medium text-[#C5A868]/90">Spot</span>
+        <div class="border-b border-[#F2ECE1]/[0.07] px-5 py-4 md:border-b-0 md:border-r">
+            <span class="block text-[11.5px] font-medium tracking-wide text-[#F5F2EB]/50">Wisata Populer</span>
+            <p class="mt-1.5 flex items-baseline gap-1.5">
+                <span class="text-[24px] font-bold leading-none tracking-[-0.02em] tabular-nums text-[#F5F2EB]">{{ $summaryStats['popular'] }}</span>
+                <span class="text-[12px] font-medium text-[#C5A868]">unggulan</span>
             </p>
         </div>
 
-        <!-- 3. Wisata Gratis -->
-        <div class="group rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(244,239,230,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-400/40 hover:bg-white/[0.055]">
-            <div class="flex items-center justify-between gap-2">
-                <span class="text-[11.5px] font-medium text-[#F5F2EB]/65">Wisata Gratis</span>
-                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-emerald-400/30 bg-emerald-400/12 text-emerald-300">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
-                        <path d="M13 5v2"></path>
-                        <path d="M13 17v2"></path>
-                        <path d="M13 11v2"></path>
-                    </svg>
-                </span>
-            </div>
-            <p class="mt-2.5 flex items-baseline gap-1.5">
-                <span class="font-mono text-[22px] sm:text-[24px] font-bold tracking-tight tabular-nums text-[#F5F2EB]">{{ $summaryStats['free'] }}</span>
-                <span class="text-[12px] font-medium text-emerald-300/85">Bebas Tiket</span>
+        <div class="border-r border-[#F2ECE1]/[0.07] px-5 py-4">
+            <span class="block text-[11.5px] font-medium tracking-wide text-[#F5F2EB]/50">Wisata Gratis</span>
+            <p class="mt-1.5 flex items-baseline gap-1.5">
+                <span class="text-[24px] font-bold leading-none tracking-[-0.02em] tabular-nums text-[#F5F2EB]">{{ $summaryStats['free'] }}</span>
+                <span class="text-[12px] font-medium text-[#8FB596]">bebas tiket</span>
             </p>
         </div>
 
-        <!-- 4. Rating Rata-Rata -->
-        <div class="group rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(244,239,230,0.12)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#C5A868]/45 hover:bg-white/[0.055]">
-            <div class="flex items-center justify-between gap-2">
-                <span class="text-[11.5px] font-medium text-[#F5F2EB]/65">Rating Rata-Rata</span>
-                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#C5A868]/35 bg-[#C5A868]/15 text-[#C5A868]">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                </span>
-            </div>
-            <p class="mt-2.5 flex items-baseline gap-1.5">
-                <span class="font-mono text-[22px] sm:text-[24px] font-bold tracking-tight tabular-nums text-[#F5F2EB]">{{ number_format((float)$summaryStats['avgRating'], 1) }}</span>
-                <span class="text-[15px] font-semibold text-[#C5A868]" aria-hidden="true">★</span>
-                <span class="text-[11.5px] font-medium text-[#F5F2EB]/55">/ 5.0</span>
+        <div class="px-5 py-4">
+            <span class="block text-[11.5px] font-medium tracking-wide text-[#F5F2EB]/50">Rating Rata-Rata</span>
+            <p class="mt-1.5 flex items-baseline gap-1.5">
+                <span class="text-[24px] font-bold leading-none tracking-[-0.02em] tabular-nums text-[#F5F2EB]">{{ number_format((float)$summaryStats['avgRating'], 1) }}</span>
+                <span class="text-[14px] font-semibold text-[#C5A868]" aria-hidden="true">★</span>
+                <span class="text-[12px] font-medium text-[#F5F2EB]/45">/ 5.0</span>
             </p>
         </div>
     </div>
 
-    <!-- Toolbar Pencarian & Filter Kategori -->
-    <div class="apple-glass-card rounded-3xl p-5 sm:p-6 space-y-4">
-        <form id="admin-filter-form" data-applied-category="{{ $category }}" action="{{ route('admin.spots.index') }}" method="GET" class="flex flex-wrap items-center gap-3 sm:flex-nowrap">
-            <input type="hidden" id="admin-filter-category-input" name="category" value="{{ $category }}">
+    <!-- 2. Toolbar Terpadu: Filter Kategori Minimalis + Pencarian + Aksi Primer Tunggal -->
+    <div id="admin-control-bar" class="space-y-4">
+        <div class="flex flex-col gap-3.5 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+            <!-- Form Pencarian Ringkas -->
+            <form
+                id="admin-filter-form"
+                data-applied-category="{{ $category }}"
+                action="{{ route('admin.spots.index') }}"
+                method="GET"
+                class="flex w-full items-center gap-2 lg:max-w-md"
+            >
+                <input type="hidden" id="admin-filter-category-input" name="category" value="{{ $category }}">
 
-            <div class="relative w-full min-w-0 sm:w-auto sm:flex-1">
-                <label for="admin-search-q" class="sr-only">Cari destinasi wisata</label>
-                <input
-                    id="admin-search-q"
-                    type="search"
-                    name="q"
-                    value="{{ $search }}"
-                    data-applied-query="{{ $search }}"
-                    placeholder="Cari nama wisata, kategori, atau alamat..."
-                    class="liquid-glass-input h-11 w-full rounded-xl pl-10 pr-11 text-[13.5px] placeholder:text-[#F5F2EB]/45"
-                />
-                <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                    class="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-[#F5F2EB]/60"
-                >
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
+                <div class="relative min-w-0 flex-1">
+                    <label for="admin-search-q" class="sr-only">Cari destinasi wisata</label>
+                    <input
+                        id="admin-search-q"
+                        type="search"
+                        name="q"
+                        value="{{ $search }}"
+                        data-applied-query="{{ $search }}"
+                        placeholder="Cari nama wisata, alamat, atau deskripsi..."
+                        class="h-11 w-full rounded-xl border border-[#F2ECE1]/10 bg-[#161D19] pl-10 pr-10 text-[13.5px] text-[#F5F2EB] placeholder:text-[#F5F2EB]/40 transition-colors focus:border-[#8FB596]/55 focus:bg-[#19211C] focus:outline-none"
+                    />
+                    <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                        class="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-[#F5F2EB]/45"
+                    >
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
 
-                @if($search)
-                    <a href="{{ route('admin.spots.index', ['category' => $category]) }}"
-                       aria-label="Hapus kata kunci pencarian"
-                       class="absolute top-1/2 right-0.5 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-xl text-[#F5F2EB]/65 transition-colors hover:bg-white/[0.08] hover:text-[#F5F2EB]">
-                        <span aria-hidden="true">✕</span>
-                    </a>
-                @endif
-            </div>
+                    @if($search)
+                        <a
+                            href="{{ route('admin.spots.index', ['category' => $category]) }}"
+                            aria-label="Hapus kata kunci pencarian"
+                            class="absolute top-1/2 right-1 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-[#F5F2EB]/55 transition-colors hover:bg-white/[0.06] hover:text-[#F5F2EB]"
+                        >
+                            <span aria-hidden="true">✕</span>
+                        </a>
+                    @endif
+                </div>
 
-            <div class="flex w-full items-center gap-3 sm:w-auto sm:shrink-0">
                 <button
                     type="submit"
                     id="admin-search-submit"
-                    class="apple-retro-bevel flex-auto sm:flex-none shrink-0 inline-flex h-11 items-center justify-center whitespace-nowrap rounded-xl border border-[rgba(244,239,230,0.16)] bg-white/[0.06] px-5 text-[13px] font-medium text-[#F5F2EB] transition-colors hover:bg-white/[0.12] active:scale-[0.98]"
+                    class="inline-flex h-11 shrink-0 items-center justify-center rounded-xl border border-[#F2ECE1]/10 bg-[#161D19] px-4 text-[13px] font-semibold text-[#F5F2EB]/85 transition-colors hover:border-[#F2ECE1]/20 hover:bg-[#1D2621] hover:text-[#F5F2EB] active:scale-[0.98]"
                 >
                     Cari
                 </button>
+            </form>
 
-                <a
-                    href="{{ route('admin.spots.create') }}"
-                    class="apple-retro-cta flex-auto sm:flex-none shrink-0 inline-flex h-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-5 text-[13px] font-semibold"
-                >
-                    <span>+ Tambah Baru</span>
-                </a>
-            </div>
-        </form>
+            <!-- Satu-satunya Tombol Aksi Primer Berwarna Aksen Cerah -->
+            <a
+                href="{{ route('admin.spots.create') }}"
+                id="btn-add-destination"
+                class="apple-retro-cta inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-5 text-[13.5px] font-bold tracking-[-0.01em] sm:w-auto"
+            >
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Tambah Destinasi</span>
+            </a>
+        </div>
 
-        <!-- Kategori Filter Pills -->
-        <div class="flex flex-wrap items-center gap-2 pt-3 border-t border-[rgba(244,239,230,0.12)]">
-            @php
-                $pillCategories = [
-                    'Semua' => 'Semua',
-                    'Alam & Curug' => 'Alam & Curug',
-                    'Kuliner' => 'Kuliner',
-                    'Edukasi & Budaya' => 'Edukasi & Budaya',
-                ];
-            @endphp
-            @foreach($pillCategories as $catValue => $catLabel)
-                @php
-                    $isActive = ($category === $catValue) || (empty($category) && $catValue === 'Semua');
-                    $count = $categoriesCount[$catValue] ?? 0;
-                @endphp
-                <a
-                    href="{{ route('admin.spots.index', ['category' => $catValue, 'q' => request('q')]) }}"
-                    data-admin-category-pill
-                    data-category-value="{{ $catValue }}"
-                    class="min-h-[44px] inline-flex items-center gap-1.5 rounded-xl border px-3.5 text-[12.5px] font-semibold transition-colors {{ $isActive ? 'apple-retro-cta border-[#F2ECE1]' : 'apple-retro-bevel border-[rgba(244,239,230,0.14)] bg-white/[0.05] text-[#F5F2EB]/70 hover:border-[rgba(244,239,230,0.28)] hover:bg-white/[0.09] hover:text-[#F5F2EB]' }}"
-                >
-                    <span>{{ $catLabel }}</span>
-                    <span class="font-mono text-[11.5px] tabular-nums {{ $isActive ? 'text-[#141A14]/75' : 'text-[#DFAA63]' }}">({{ $count }})</span>
-                </a>
-            @endforeach
+        <!-- Baris Tab Kategori Minimalis (Garis Bawah Halus, Tanpa Kotak Putih Mencolok) -->
+        <div class="flex flex-col gap-2.5 border-b border-[#F2ECE1]/[0.08] sm:flex-row sm:items-center sm:justify-between">
+            <nav aria-label="Filter kategori wisata" class="-mb-px flex flex-wrap items-center gap-x-1 gap-y-0.5 sm:flex-nowrap sm:gap-x-2">
+                @foreach($pillCategories as $catValue => $catLabel)
+                    @php
+                        $isActive = ($category === $catValue) || (empty($category) && $catValue === 'Semua');
+                        $count = $categoriesCount[$catValue] ?? 0;
+                    @endphp
+                    <a
+                        href="{{ route('admin.spots.index', ['category' => $catValue, 'q' => request('q')]) }}"
+                        data-admin-category-pill
+                        data-category-value="{{ $catValue }}"
+                        aria-current="{{ $isActive ? 'page' : 'false' }}"
+                        class="relative inline-flex min-h-[42px] shrink-0 items-center gap-1.5 border-b-2 px-2.5 py-2 text-[13px] transition-colors sm:min-h-[44px] sm:px-3 sm:py-2.5 {{ $isActive ? 'border-[#8FB596] font-semibold text-[#F5F2EB]' : 'border-transparent font-medium text-[#F5F2EB]/55 hover:border-[#F2ECE1]/20 hover:text-[#F5F2EB]/90' }}"
+                    >
+                        <span>{{ $catLabel }}</span>
+                        <span class="font-mono text-[11.5px] tabular-nums {{ $isActive ? 'text-[#8FB596]' : 'text-[#F5F2EB]/40' }}">{{ $count }}</span>
+                    </a>
+                @endforeach
+            </nav>
+
+            @if(!$spots->isEmpty())
+                <p class="pb-2.5 text-[12px] font-medium text-[#F5F2EB]/50 sm:pb-0">
+                    Menampilkan <span class="font-mono tabular-nums text-[#F5F2EB]/85">{{ $spots->firstItem() }}–{{ $spots->lastItem() }}</span> dari <span class="font-mono tabular-nums text-[#F5F2EB]/85">{{ $spots->total() }}</span>
+                </p>
+            @endif
         </div>
     </div>
 
-    <!-- Konten Grid Tempat Wisata -->
+    <!-- 3. Konten Grid Tempat Wisata -->
     @if($spots->isEmpty())
-        <div class="apple-glass-card rounded-3xl flex flex-col items-center justify-center py-14 px-6 text-center">
-            <svg class="h-10 w-10 text-[#DFAA63]/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <p class="mt-3.5 text-[15px] font-semibold text-[#F5F2EB]">
-                {{ $totalSpots === 0 ? 'Belum ada tempat wisata di database' : 'Tidak ada tempat wisata yang sesuai' }}
+        <div class="flex flex-col items-center justify-center rounded-2xl border border-[#F2ECE1]/[0.07] bg-[#161D19] py-16 px-6 text-center">
+            <p class="text-[15px] font-semibold text-[#F5F2EB]">
+                {{ $totalSpots === 0 ? 'Belum ada destinasi wisata di database' : 'Tidak ada destinasi yang sesuai filter' }}
             </p>
-            <p class="mt-1 max-w-sm text-[12.5px] text-[#F5F2EB]/65">
-                {{ $totalSpots === 0 ? 'Mulai menambahkan destinasi pertama dengan menekan tombol di bawah.' : 'Coba gunakan kata kunci pencarian yang lain atau pilih kategori Semua.' }}
+            <p class="mt-1.5 max-w-sm text-[13px] text-[#F5F2EB]/55">
+                {{ $totalSpots === 0 ? 'Mulai tambahkan destinasi pertama Anda untuk mengisi peta wisata Kota Bogor.' : 'Ubah kata kunci pencarian atau pilih kategori Semua untuk melihat seluruh data.' }}
             </p>
             <div class="mt-6">
                 @if($totalSpots === 0)
                     <a href="{{ route('admin.spots.create') }}"
-                       class="apple-retro-cta inline-flex min-h-[44px] items-center rounded-xl px-6 text-[13px] font-semibold">
-                        + Tambah Lokasi Pertama
+                       class="apple-retro-cta inline-flex min-h-[44px] items-center rounded-xl px-5 text-[13px] font-bold">
+                        + Tambah Destinasi Pertama
                     </a>
                 @else
                     <a href="{{ route('admin.spots.index') }}"
-                       class="apple-retro-cta inline-flex min-h-[44px] items-center rounded-xl px-6 text-[13px] font-semibold">
+                       class="inline-flex min-h-[44px] items-center rounded-xl border border-[#F2ECE1]/15 bg-[#1D2621] px-5 text-[13px] font-semibold text-[#F5F2EB] transition-colors hover:bg-[#243029]">
                         Reset Filter
                     </a>
                 @endif
             </div>
         </div>
     @else
-        <div class="flex items-center justify-between px-0.5">
-            <p class="text-[12.5px] font-medium text-[#F5F2EB]/65">
-                Menampilkan <span class="font-mono tabular-nums font-semibold text-[#F5F2EB]">{{ $spots->firstItem() }}–{{ $spots->lastItem() }}</span> dari <span class="font-mono tabular-nums font-semibold text-[#DFAA63]">{{ $spots->total() }}</span> destinasi wisata
-            </p>
-        </div>
-
         <!-- Grid Kartu Wisata Responsif: 1 kolom mobile, 2 kolom tablet, 3 kolom desktop -->
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             @foreach($spots as $spot)
-                <article class="group apple-glass-card relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[rgba(244,239,230,0.14)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#76937A]/50 hover:shadow-[0_22px_40px_-14px_rgba(0,0,0,0.65),0_0_0_1px_rgba(118,147,122,0.2)]">
+                <article class="group flex flex-col justify-between overflow-hidden rounded-2xl border border-[#F2ECE1]/[0.06] bg-[#161D19] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:border-[#8FB596]/35">
                     <div>
-                        <!-- Thumbnail Header Seragam 16:10 + Zoom Halus -->
-                        <div class="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-[#141A14]">
+                        <!-- Thumbnail Seragam 16:10 Bersih Tanpa Overlay Tombol -->
+                        <div class="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-[#111613]">
                             <img
                                 src="{{ $spot->image ?: '/images/spots/taman-peranginan.jpg' }}"
                                 alt="{{ $spot->name }}"
@@ -224,26 +208,26 @@
                                 loading="{{ $loop->index < 3 ? 'eager' : 'lazy' }}"
                                 @if($loop->first) fetchpriority="high" @endif
                             />
-                            <div class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/75 via-black/25 to-transparent transition-opacity duration-300 group-hover:from-black/85"></div>
+                            <div class="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#161D19]/80 via-[#161D19]/15 to-transparent"></div>
 
-                            <span class="apple-retro-bevel absolute top-2.5 left-2.5 rounded-lg border border-[rgba(244,239,230,0.18)] bg-[#111711]/85 px-2.5 py-1 text-[11px] font-semibold text-[#F5F2EB] backdrop-blur-sm">
+                            <span class="absolute top-2.5 left-2.5 rounded-lg bg-[#0D110F]/80 px-2.5 py-1 text-[11px] font-medium text-[#F5F2EB]/95 backdrop-blur-sm">
                                 {{ $spot->category }}
                             </span>
 
                             @if($spot->is_popular)
-                                <span class="apple-retro-bevel absolute top-2.5 right-2.5 rounded-lg border border-[#C5A868]/45 bg-[#111711]/90 px-2.5 py-1 text-[10.5px] font-semibold text-[#C5A868] backdrop-blur-sm">
+                                <span class="absolute top-2.5 right-2.5 rounded-lg bg-[#0D110F]/85 px-2.5 py-1 text-[10.5px] font-semibold text-[#C5A868] backdrop-blur-sm">
                                     Populer
                                 </span>
                             @endif
                         </div>
 
                         <!-- Info Body -->
-                        <div class="p-4 sm:p-5 space-y-2">
+                        <div class="space-y-2 p-4 sm:p-5">
                             <div class="flex items-start justify-between gap-2.5">
-                                <h2 class="line-clamp-1 text-[15px] font-bold tracking-tight text-[#F5F2EB] transition-colors duration-200 group-hover:text-[#F2ECE1]" title="{{ $spot->name }}">
+                                <h2 class="line-clamp-1 text-[15px] font-semibold tracking-[-0.01em] text-[#F5F2EB]" title="{{ $spot->name }}">
                                     {{ $spot->name }}
                                 </h2>
-                                <span class="inline-flex shrink-0 items-center gap-1 font-mono text-[12.5px] font-semibold tabular-nums text-[#C5A868]">
+                                <span class="inline-flex shrink-0 items-center gap-1 font-mono text-[12px] font-semibold tabular-nums text-[#C5A868]">
                                     <svg class="h-3.5 w-3.5 text-[#C5A868]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                                     </svg>
@@ -251,27 +235,27 @@
                                 </span>
                             </div>
 
-                            <p class="font-mono text-[12.5px] font-medium tabular-nums text-[#F5F2EB]/90">
+                            <p class="text-[12.5px] font-medium tabular-nums text-[#8FB596]">
                                 {{ $spot->ticket_price ?: 'Gratis' }}
                             </p>
 
-                            <p class="line-clamp-2 min-h-[36px] text-[12px] leading-relaxed text-[#F5F2EB]/65">
+                            <p class="line-clamp-2 min-h-[36px] text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
                                 {{ $spot->address ?: 'Alamat belum tercatat' }}
                             </p>
 
-                            <p class="font-mono text-[11.5px] tabular-nums text-[#F5F2EB]/55">
+                            <p class="font-mono text-[11px] tabular-nums text-[#F5F2EB]/40">
                                 {{ number_format((float)$spot->latitude, 5) }}, {{ number_format((float)$spot->longitude, 5) }}
                             </p>
                         </div>
                     </div>
 
-                    <!-- Tombol Aksi Bawah Kartu (Selalu aksesibel di perangkat sentuh & keyboard) -->
-                    <div class="grid grid-cols-2 gap-2.5 border-t border-white/[0.09] bg-black/[0.12] px-4 py-3 sm:px-5">
+                    <!-- Satu Pasang Tombol Aksi Edit & Hapus di Footer Kartu -->
+                    <div class="grid grid-cols-2 gap-2.5 border-t border-[#F2ECE1]/[0.06] px-4 py-3 sm:px-5">
                         <a
-                            href="{{ route('admin.spots.edit', $spot->id) }}"
-                            class="apple-retro-bevel inline-flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl border border-[rgba(244,239,230,0.16)] bg-white/[0.05] px-3 text-[12.5px] font-semibold text-[#F5F2EB] transition-all duration-150 hover:border-[#76937A]/50 hover:bg-white/[0.12] active:scale-[0.98]"
+                            href="{{ route('admin.spots.edit', array_merge(['id' => $spot->id], $currentListParams)) }}"
+                            class="inline-flex min-h-[40px] items-center justify-center gap-1.5 rounded-xl bg-[#1D2621] px-3 text-[12.5px] font-semibold text-[#F5F2EB]/90 transition-colors hover:bg-[#25312A] hover:text-[#F5F2EB] active:scale-[0.98]"
                         >
-                            <svg class="h-3.5 w-3.5 text-[#76937A]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <svg class="h-3.5 w-3.5 text-[#8FB596]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M12 20h9"></path>
                                 <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                             </svg>
@@ -286,11 +270,20 @@
                         >
                             @csrf
                             @method('DELETE')
+                            @if(!empty($currentListParams['category']))
+                                <input type="hidden" name="return_category" value="{{ $currentListParams['category'] }}">
+                            @endif
+                            @if(!empty($currentListParams['q']))
+                                <input type="hidden" name="return_q" value="{{ $currentListParams['q'] }}">
+                            @endif
+                            @if(!empty($currentListParams['page']))
+                                <input type="hidden" name="return_page" value="{{ $currentListParams['page'] }}">
+                            @endif
                             <button
                                 type="submit"
-                                class="apple-retro-bevel inline-flex w-full min-h-[42px] items-center justify-center gap-1.5 rounded-xl border border-rose-300/25 bg-[#3A1B22]/80 px-3 text-[12.5px] font-semibold text-rose-100 transition-all duration-150 hover:bg-[#4F232D] active:scale-[0.98]"
+                                class="inline-flex w-full min-h-[40px] items-center justify-center gap-1.5 rounded-xl bg-rose-500/10 px-3 text-[12.5px] font-semibold text-rose-200 transition-colors hover:bg-rose-500/20 hover:text-rose-100 active:scale-[0.98]"
                             >
-                                <svg class="h-3.5 w-3.5 text-rose-200/85" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <svg class="h-3.5 w-3.5 text-rose-300/85" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <polyline points="3 6 5 6 21 6"></polyline>
                                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                                 </svg>
@@ -302,33 +295,33 @@
             @endforeach
         </div>
 
-        <!-- Pagination -->
+        <!-- Pagination Ringkas -->
         @if($spots->hasPages())
-            <nav aria-label="Navigasi halaman wisata" class="apple-glass-card rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12.5px] text-[#F5F2EB]/70">
+            <nav aria-label="Navigasi halaman wisata" class="flex flex-col items-center justify-between gap-3 rounded-2xl border border-[#F2ECE1]/[0.06] bg-[#161D19] px-4 py-3 text-[12.5px] text-[#F5F2EB]/65 sm:flex-row">
                 <div class="flex items-center gap-2">
                     @if($spots->onFirstPage())
-                        <span class="inline-flex min-h-[44px] items-center px-4 rounded-xl border border-[rgba(244,239,230,0.08)] bg-white/[0.03] text-[#F5F2EB]/35">
+                        <span class="inline-flex min-h-[40px] items-center rounded-xl bg-[#111613] px-3.5 text-[#F5F2EB]/30">
                             ← Sebelumnya
                         </span>
                     @else
-                        <a href="{{ $spots->previousPageUrl() }}" class="apple-retro-bevel inline-flex min-h-[44px] items-center px-4 rounded-xl border border-[rgba(244,239,230,0.16)] bg-white/[0.06] text-[#F5F2EB] hover:bg-white/[0.12] transition-colors">
+                        <a href="{{ $spots->previousPageUrl() }}" class="inline-flex min-h-[40px] items-center rounded-xl bg-[#1D2621] px-3.5 font-medium text-[#F5F2EB]/90 transition-colors hover:bg-[#25312A] hover:text-[#F5F2EB]">
                             ← Sebelumnya
                         </a>
                     @endif
 
                     @if($spots->hasMorePages())
-                        <a href="{{ $spots->nextPageUrl() }}" class="apple-retro-bevel inline-flex min-h-[44px] items-center px-4 rounded-xl border border-[rgba(244,239,230,0.16)] bg-white/[0.06] text-[#F5F2EB] hover:bg-white/[0.12] transition-colors">
+                        <a href="{{ $spots->nextPageUrl() }}" class="inline-flex min-h-[40px] items-center rounded-xl bg-[#1D2621] px-3.5 font-medium text-[#F5F2EB]/90 transition-colors hover:bg-[#25312A] hover:text-[#F5F2EB]">
                             Berikutnya →
                         </a>
                     @else
-                        <span class="inline-flex min-h-[44px] items-center px-4 rounded-xl border border-[rgba(244,239,230,0.08)] bg-white/[0.03] text-[#F5F2EB]/35">
+                        <span class="inline-flex min-h-[40px] items-center rounded-xl bg-[#111613] px-3.5 text-[#F5F2EB]/30">
                             Berikutnya →
                         </span>
                     @endif
                 </div>
 
-                <span class="font-medium text-[#F5F2EB]/80">
-                    Halaman <span class="font-mono tabular-nums text-[#F5F2EB]">{{ $spots->currentPage() }}</span> dari <span class="font-mono tabular-nums text-[#DFAA63]">{{ $spots->lastPage() }}</span>
+                <span class="font-medium text-[#F5F2EB]/65">
+                    Halaman <span class="font-mono tabular-nums text-[#F5F2EB]">{{ $spots->currentPage() }}</span> dari <span class="font-mono tabular-nums text-[#8FB596]">{{ $spots->lastPage() }}</span>
                 </span>
             </nav>
         @endif
