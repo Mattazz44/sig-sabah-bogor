@@ -2,96 +2,174 @@ import { useEffect, useMemo, useRef } from 'react'
 import { LngLatBounds, Marker } from 'maplibre-gl'
 import { useMapLibre } from './mapContext'
 import { calculateDistanceKm } from '../../utils/distance'
+import {
+  buildConnectedRouteGeometry,
+  buildCumulativePath,
+  samplePointAndBearing,
+  sliceCoordsAtProgress,
+  sliceTwoPointSegment,
+} from '../../utils/routeGeometry'
 
 const ROUTE_SOURCE_ID = 'navigation-route'
 const ROUTE_CASING_LAYER_ID = 'navigation-route-casing'
 const ROUTE_LINE_LAYER_ID = 'navigation-route-line'
-const ROUTE_DRAW_DURATION_MS = 720
+
+const CONNECTOR_SOURCE_ID = 'navigation-route-connector'
+const CONNECTOR_CASING_LAYER_ID = 'navigation-route-connector-casing'
+const CONNECTOR_LINE_LAYER_ID = 'navigation-route-connector-line'
+
+const ROUTE_DRAW_DURATION_MS = 640
 const TRAVELER_CYCLE_MS = 4600
 
 function removeRouteLayers(map) {
   if (!map) return
   try {
     if (!map.getStyle()) return
-    if (map.getLayer(ROUTE_LINE_LAYER_ID)) map.removeLayer(ROUTE_LINE_LAYER_ID)
-    if (map.getLayer(ROUTE_CASING_LAYER_ID)) map.removeLayer(ROUTE_CASING_LAYER_ID)
-    if (map.getSource(ROUTE_SOURCE_ID)) map.removeSource(ROUTE_SOURCE_ID)
+    const layerIds = [
+      CONNECTOR_LINE_LAYER_ID,
+      CONNECTOR_CASING_LAYER_ID,
+      ROUTE_LINE_LAYER_ID,
+      ROUTE_CASING_LAYER_ID,
+    ]
+    const sourceIds = [CONNECTOR_SOURCE_ID, ROUTE_SOURCE_ID]
+    layerIds.forEach((id) => {
+      if (map.getLayer(id)) map.removeLayer(id)
+    })
+    sourceIds.forEach((id) => {
+      if (map.getSource(id)) map.removeSource(id)
+    })
   } catch {
     // Abaikan bila map sudah unmount
   }
 }
 
-/** Hitung jarak kumulatif tiap titik agar animasi garis meluncur konstan tanpa tersendat. */
-function buildCumulativePath(coords) {
-  if (!Array.isArray(coords) || coords.length === 0) {
-    return { coords: [], cumDist: [], totalDist: 0 }
+function buildLineFeatureCollection(lines) {
+  const features = (lines || [])
+    .filter((coords) => Array.isArray(coords) && coords.length >= 2)
+    .map((coords) => ({
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates: coords,
+      },
+      properties: {},
+    }))
+  return {
+    type: 'FeatureCollection',
+    features,
   }
-  const cumDist = [0]
-  let running = 0
-  for (let i = 1; i < coords.length; i += 1) {
-    const [lng1, lat1] = coords[i - 1]
-    const [lng2, lat2] = coords[i]
-    const seg = Math.hypot(lng2 - lng1, lat2 - lat1)
-    running += seg
-    cumDist.push(running)
-  }
-  return { coords, cumDist, totalDist: running }
 }
 
-function sliceCoordsAtProgress(pathData, progress) {
-  const { coords, cumDist, totalDist } = pathData
-  if (coords.length <= 2 || totalDist <= 0 || progress >= 1) {
-    return coords
+function upsertGeoJsonSource(map, sourceId, featureCollection) {
+  if (!map || !map.getStyle()) return
+  const existingSource = map.getSource(sourceId)
+  if (existingSource) {
+    existingSource.setData(featureCollection)
+  } else {
+    map.addSource(sourceId, {
+      type: 'geojson',
+      data: featureCollection,
+    })
   }
-  if (progress <= 0) {
-    return [coords[0], coords[0]]
-  }
-
-  const targetDist = totalDist * progress
-  const sliced = [coords[0]]
-
-  for (let i = 1; i < coords.length; i += 1) {
-    if (cumDist[i] <= targetDist) {
-      sliced.push(coords[i])
-    } else {
-      const prevDist = cumDist[i - 1]
-      const segDist = cumDist[i] - prevDist
-      const frac = segDist > 0 ? (targetDist - prevDist) / segDist : 0
-      const [lng1, lat1] = coords[i - 1]
-      const [lng2, lat2] = coords[i]
-      sliced.push([lng1 + (lng2 - lng1) * frac, lat1 + (lat2 - lat1) * frac])
-      break
-    }
-  }
-
-  return sliced.length >= 2 ? sliced : [coords[0], coords[0]]
 }
 
-function samplePointAndBearing(pathData, progress) {
-  const { coords, cumDist, totalDist } = pathData
-  if (!coords || coords.length === 0) return null
-  if (coords.length === 1 || totalDist <= 0) {
-    return { lngLat: coords[0], bearingDeg: 0 }
+function ensureRouteLayers(map) {
+  if (!map || !map.getStyle()) return
+
+  const roadBeforeId = map.getLayer('building-3d')
+    ? 'building-3d'
+    : map.getLayer('road-label')
+      ? 'road-label'
+      : undefined
+  const connectorBeforeId = map.getLayer('road-label')
+    ? 'road-label'
+    : map.getLayer('park-label')
+      ? 'park-label'
+      : undefined
+
+  // 1. Satu garis rute utama berwarna biru navigasi solid (#2563EB) dengan casing biru gelap
+  if (!map.getLayer(ROUTE_CASING_LAYER_ID)) {
+    map.addLayer(
+      {
+        id: ROUTE_CASING_LAYER_ID,
+        type: 'line',
+        source: ROUTE_SOURCE_ID,
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+        paint: {
+          'line-color': '#1d4ed8',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5.6, 16, 10.6],
+          'line-opacity': 0.88,
+        },
+      },
+      roadBeforeId,
+    )
   }
 
-  const clamped = Math.min(1, Math.max(0, progress))
-  const targetDist = totalDist * clamped
-
-  for (let i = 1; i < coords.length; i += 1) {
-    if (cumDist[i] >= targetDist || i === coords.length - 1) {
-      const prevDist = cumDist[i - 1]
-      const segDist = cumDist[i] - prevDist
-      const frac = segDist > 0 ? Math.min(1, Math.max(0, (targetDist - prevDist) / segDist)) : 0
-      const [lng1, lat1] = coords[i - 1]
-      const [lng2, lat2] = coords[i]
-      const lng = lng1 + (lng2 - lng1) * frac
-      const lat = lat1 + (lat2 - lat1) * frac
-      const bearingDeg = Math.atan2(lng2 - lng1, lat2 - lat1) * (180 / Math.PI)
-      return { lngLat: [lng, lat], bearingDeg }
-    }
+  if (!map.getLayer(ROUTE_LINE_LAYER_ID)) {
+    map.addLayer(
+      {
+        id: ROUTE_LINE_LAYER_ID,
+        type: 'line',
+        source: ROUTE_SOURCE_ID,
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+        paint: {
+          'line-color': '#2563eb',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3.4, 16, 7],
+          'line-opacity': 0.98,
+        },
+      },
+      roadBeforeId,
+    )
   }
 
-  return { lngLat: coords[coords.length - 1], bearingDeg: 0 }
+  // 2. Last-mile dashed connector biru di ujung rute agar menyambung rapat tepat ke pusat ikon pin
+  if (!map.getLayer(CONNECTOR_CASING_LAYER_ID)) {
+    map.addLayer(
+      {
+        id: CONNECTOR_CASING_LAYER_ID,
+        type: 'line',
+        source: CONNECTOR_SOURCE_ID,
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+        paint: {
+          'line-color': '#ffffff',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 4.4, 16, 7.8],
+          'line-dasharray': [1.2, 1.9],
+          'line-opacity': 0.84,
+        },
+      },
+      connectorBeforeId,
+    )
+  }
+
+  if (!map.getLayer(CONNECTOR_LINE_LAYER_ID)) {
+    map.addLayer(
+      {
+        id: CONNECTOR_LINE_LAYER_ID,
+        type: 'line',
+        source: CONNECTOR_SOURCE_ID,
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+        paint: {
+          'line-color': '#2563eb',
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 2.8, 16, 5.2],
+          'line-dasharray': [1.2, 1.9],
+          'line-opacity': 0.98,
+        },
+      },
+      connectorBeforeId,
+    )
+  }
 }
 
 export default function RoutingMachine({
@@ -110,8 +188,20 @@ export default function RoutingMachine({
     onRouteFoundRef.current = onRouteFound
   }, [onRouteFound])
 
-  const userLat = userPosition ? Number(userPosition[0].toFixed(4)) : null
-  const userLng = userPosition ? Number(userPosition[1].toFixed(4)) : null
+  const exactUserLat =
+    userPosition && Number.isFinite(Number(userPosition[0])) ? Number(userPosition[0]) : null
+  const exactUserLng =
+    userPosition && Number.isFinite(Number(userPosition[1])) ? Number(userPosition[1]) : null
+  const userFetchKey =
+    exactUserLat !== null && exactUserLng !== null
+      ? `${exactUserLat.toFixed(4)},${exactUserLng.toFixed(4)}`
+      : null
+
+  const exactOriginRef = useRef(null)
+  useEffect(() => {
+    exactOriginRef.current =
+      exactUserLat !== null && exactUserLng !== null ? [exactUserLng, exactUserLat] : null
+  }, [exactUserLat, exactUserLng])
 
   const destPoints = useMemo(() => {
     if (!destination) return []
@@ -164,7 +254,7 @@ export default function RoutingMachine({
   }, [destSignature])
 
   useEffect(() => {
-    if (!map || !isStyleLoaded || userLat === null || userLng === null || !destSignature) {
+    if (!map || !isStyleLoaded || !userFetchKey || !destSignature) {
       return undefined
     }
 
@@ -175,95 +265,49 @@ export default function RoutingMachine({
     let travelerMarker = null
     const controller = new AbortController()
     const currentDestPoints = destPointsRef.current
+    const exactOriginLngLat = exactOriginRef.current
+    if (!exactOriginLngLat) return undefined
+
     const useStopToStopOnly = isFallbackOrigin && currentDestPoints.length > 1
     const waypointsLngLat = useStopToStopOnly
       ? currentDestPoints.map(([lat, lng]) => [lng, lat])
       : [
-          [userLng, userLat],
+          exactOriginLngLat,
           ...currentDestPoints.map(([lat, lng]) => [lng, lat]),
         ]
 
-    const updateSourceCoords = (coords) => {
+    const updateRouteSources = (roadCoords, connectorLines) => {
       if (isDisposed || !map || !map.getStyle()) return
-      const featureCollection = {
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'LineString',
-              coordinates: coords,
-            },
-            properties: {},
-          },
-        ],
-      }
-
-      const existingSource = map.getSource(ROUTE_SOURCE_ID)
-      if (existingSource) {
-        existingSource.setData(featureCollection)
-      } else {
-        map.addSource(ROUTE_SOURCE_ID, {
-          type: 'geojson',
-          data: featureCollection,
-        })
-      }
+      upsertGeoJsonSource(
+        map,
+        ROUTE_SOURCE_ID,
+        buildLineFeatureCollection(roadCoords ? [roadCoords] : []),
+      )
+      upsertGeoJsonSource(
+        map,
+        CONNECTOR_SOURCE_ID,
+        buildLineFeatureCollection(connectorLines),
+      )
     }
 
-    const ensureRouteLayers = () => {
-      if (!map || !map.getStyle()) return
-      const beforeId = map.getLayer('building-3d') ? 'building-3d' : undefined
-
-      if (!map.getLayer(ROUTE_CASING_LAYER_ID)) {
-        map.addLayer(
-          {
-            id: ROUTE_CASING_LAYER_ID,
-            type: 'line',
-            source: ROUTE_SOURCE_ID,
-            layout: {
-              'line-cap': 'round',
-              'line-join': 'round',
-            },
-            paint: {
-              'line-color': '#1d4ed8',
-              'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 16, 10],
-              'line-opacity': 0.85,
-            },
-          },
-          beforeId,
-        )
-      }
-
-      if (!map.getLayer(ROUTE_LINE_LAYER_ID)) {
-        map.addLayer(
-          {
-            id: ROUTE_LINE_LAYER_ID,
-            type: 'line',
-            source: ROUTE_SOURCE_ID,
-            layout: {
-              'line-cap': 'round',
-              'line-join': 'round',
-            },
-            paint: {
-              'line-color': '#3b82f6',
-              'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 16, 6.5],
-              'line-opacity': 0.95,
-            },
-          },
-          beforeId,
-        )
-      }
-    }
-
-    const drawRouteGeoJson = (geometry, totalMeters, totalSecs) => {
+    const drawPrimaryRoute = (geometry, totalMeters, totalSecs) => {
       if (isDisposed || !map || !map.getStyle()) return
 
       const rawCoords = Array.isArray(geometry?.coordinates) ? geometry.coordinates : []
+      const connected = buildConnectedRouteGeometry(rawCoords, waypointsLngLat)
+      const allConnectors = [
+        connected.originConnector,
+        ...connected.intermediateConnectors,
+        connected.destConnector,
+      ].filter(Boolean)
+
       const prefersReducedMotion =
         typeof window !== 'undefined' &&
         window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
       const shouldAnimateDraw =
-        !hasAnimatedRouteRef.current && !prefersReducedMotion && rawCoords.length >= 2
+        !hasAnimatedRouteRef.current &&
+        !prefersReducedMotion &&
+        connected.fullPathCoords.length >= 2
 
       cancelAnimationFrame(animFrameId)
       cancelAnimationFrame(travelerFrameId)
@@ -272,10 +316,11 @@ export default function RoutingMachine({
         travelerMarker = null
       }
 
-      const pathData = buildCumulativePath(rawCoords)
+      const roadPathData = buildCumulativePath(connected.roadCoords)
+      const fullPathData = buildCumulativePath(connected.fullPathCoords)
 
       const startRouteTraveler = () => {
-        if (isDisposed || !map || !map.getStyle() || pathData.coords.length < 2) return
+        if (isDisposed || !map || !map.getStyle() || fullPathData.coords.length < 2) return
 
         const el = document.createElement('div')
         el.className = 'nav-route-traveler'
@@ -288,7 +333,7 @@ export default function RoutingMachine({
           </div>
         `
         const badgeEl = el.querySelector('.nav-route-traveler-badge')
-        const initialSample = samplePointAndBearing(pathData, prefersReducedMotion ? 0.5 : 0)
+        const initialSample = samplePointAndBearing(fullPathData, prefersReducedMotion ? 0.5 : 0)
         if (!initialSample) return
 
         if (badgeEl) {
@@ -315,7 +360,7 @@ export default function RoutingMachine({
             rawProgress < 0.5
               ? 2 * rawProgress * rawProgress
               : 1 - Math.pow(-2 * rawProgress + 2, 2) / 2
-          const sample = samplePointAndBearing(pathData, easedProgress)
+          const sample = samplePointAndBearing(fullPathData, easedProgress)
           if (sample) {
             travelerMarker.setLngLat(sample.lngLat)
             if (badgeEl) {
@@ -336,8 +381,50 @@ export default function RoutingMachine({
 
       if (shouldAnimateDraw) {
         hasAnimatedRouteRef.current = true
-        updateSourceCoords(sliceCoordsAtProgress(pathData, 0.02))
-        ensureRouteLayers()
+        const originLen = connected.originConnector
+          ? buildCumulativePath(connected.originConnector).totalDist
+          : 0
+        const roadLen = roadPathData.totalDist
+        const destLen = connected.destConnector
+          ? buildCumulativePath(connected.destConnector).totalDist
+          : 0
+        const totalDrawLen = Math.max(originLen + roadLen + destLen, 1e-9)
+
+        const renderProgress = (eased) => {
+          const distCursor = totalDrawLen * eased
+          const activeConnectors = []
+
+          if (connected.originConnector) {
+            const originProgress = originLen > 0 ? Math.min(1, distCursor / originLen) : 1
+            const slicedOrigin = sliceTwoPointSegment(connected.originConnector, originProgress)
+            if (slicedOrigin) activeConnectors.push(slicedOrigin)
+          }
+
+          let activeRoad = null
+          if (distCursor > originLen || originLen === 0) {
+            const roadProgress =
+              roadLen > 0 ? Math.min(1, Math.max(0, (distCursor - originLen) / roadLen)) : 1
+            activeRoad = sliceCoordsAtProgress(roadPathData, roadProgress)
+          }
+
+          if (eased >= 0.85 && connected.intermediateConnectors.length > 0) {
+            activeConnectors.push(...connected.intermediateConnectors)
+          }
+
+          if (connected.destConnector && distCursor > originLen + roadLen) {
+            const destProgress =
+              destLen > 0
+                ? Math.min(1, Math.max(0, (distCursor - originLen - roadLen) / destLen))
+                : 1
+            const slicedDest = sliceTwoPointSegment(connected.destConnector, destProgress)
+            if (slicedDest) activeConnectors.push(slicedDest)
+          }
+
+          updateRouteSources(activeRoad, activeConnectors)
+        }
+
+        renderProgress(0.05)
+        ensureRouteLayers(map)
 
         const startTime = performance.now()
         const step = (now) => {
@@ -346,27 +433,28 @@ export default function RoutingMachine({
           const t = Math.min(1, elapsed / ROUTE_DRAW_DURATION_MS)
           const eased = 1 - Math.pow(1 - t, 3)
 
-          updateSourceCoords(sliceCoordsAtProgress(pathData, eased))
           if (t < 1) {
+            renderProgress(eased)
             animFrameId = requestAnimationFrame(step)
           } else {
+            updateRouteSources(connected.roadCoords, allConnectors)
             animFrameId = 0
             startRouteTraveler()
           }
         }
         animFrameId = requestAnimationFrame(step)
       } else {
-        updateSourceCoords(rawCoords)
-        ensureRouteLayers()
+        updateRouteSources(connected.roadCoords, allConnectors)
+        ensureRouteLayers(map)
         startRouteTraveler()
       }
 
       if (!hasFittedBoundsRef.current) {
         const bounds = new LngLatBounds()
         waypointsLngLat.forEach((coord) => bounds.extend(coord))
-        rawCoords.forEach((coord) => bounds.extend(coord))
+        connected.fullPathCoords.forEach((coord) => bounds.extend(coord))
         map.fitBounds(bounds, {
-          padding: { top: 140, bottom: 160, left: 24, right: 24 },
+          padding: { top: 155, bottom: 160, left: 32, right: 64 },
           maxZoom: 15.5,
           pitch: map.getPitch(),
           duration: 850,
@@ -376,12 +464,12 @@ export default function RoutingMachine({
 
       if (onRouteFoundRef.current) {
         const minutes = Math.max(1, Math.round(totalSecs / 60))
-        const km = Math.max(0.1, totalMeters / 1000).toFixed(1)
+        const totalKm = Number(Math.max(0.1, totalMeters / 1000).toFixed(1))
         onRouteFoundRef.current({
           timeText: `${minutes} Menit`,
-          distanceText: `${km} KM`,
+          distanceText: `${totalKm.toFixed(1)} KM`,
           totalMinutes: minutes,
-          totalKm: km,
+          totalKm,
           isCustomRoute: currentDestPoints.length > 1,
           isFallbackOrigin,
         })
@@ -390,7 +478,7 @@ export default function RoutingMachine({
 
     const computeHaversineFallback = () => {
       let totalKm = 0
-      for (let i = 0; i < waypointsLngLat.length - 1; i++) {
+      for (let i = 0; i < waypointsLngLat.length - 1; i += 1) {
         const [lng1, lat1] = waypointsLngLat[i]
         const [lng2, lat2] = waypointsLngLat[i + 1]
         totalKm += (calculateDistanceKm(lat1, lng1, lat2, lng2) ?? 0) * 1.35
@@ -402,11 +490,11 @@ export default function RoutingMachine({
     }
 
     const coordParam = waypointsLngLat.map(([lng, lat]) => `${lng},${lat}`).join(';')
-    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coordParam}?overview=full&geometries=geojson`
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coordParam}?overview=full&geometries=geojson&steps=false&alternatives=false`
     const fetchTimeoutId = window.setTimeout(() => {
       timedOut = true
       controller.abort()
-    }, 2500)
+    }, 3500)
 
     fetch(osrmUrl, { signal: controller.signal })
       .then((res) => {
@@ -418,14 +506,14 @@ export default function RoutingMachine({
         if (isDisposed) return
         const route = data?.routes?.[0]
         if (!route?.geometry) throw new Error('Rute tidak ditemukan')
-        drawRouteGeoJson(route.geometry, route.distance ?? 0, route.duration ?? 0)
+        drawPrimaryRoute(route.geometry, route.distance ?? 0, route.duration ?? 0)
       })
       .catch((err) => {
         window.clearTimeout(fetchTimeoutId)
         if (isDisposed || (err?.name === 'AbortError' && !timedOut)) return
         console.warn('OSRM routing fallback (Haversine):', err?.message || err)
         const { totalMeters, totalSecs } = computeHaversineFallback()
-        drawRouteGeoJson(
+        drawPrimaryRoute(
           { type: 'LineString', coordinates: waypointsLngLat },
           totalMeters,
           totalSecs,
@@ -444,7 +532,7 @@ export default function RoutingMachine({
       controller.abort()
       removeRouteLayers(map)
     }
-  }, [map, isStyleLoaded, userLat, userLng, destSignature, isFallbackOrigin])
+  }, [map, isStyleLoaded, userFetchKey, destSignature, isFallbackOrigin])
 
   return null
 }

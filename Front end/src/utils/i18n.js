@@ -120,6 +120,9 @@ export const TRANSLATIONS = {
     'map.endJourney': 'Akhiri perjalanan',
     'map.transitBadge': 'Lokasi transit',
     'map.viewDetailAria': 'Lihat detail {name}',
+    'map.startBtn': 'Mulai',
+    'map.startNavAria': 'Mulai perjalanan ke {name}',
+    'map.openHudDetailAria': 'Lihat detail tujuan {name}',
     'map.routeBtn': 'Rute',
     'map.detailBtn': 'Detail',
     'map.distanceFromYou': '{distance} dari posisi Anda',
@@ -156,8 +159,18 @@ export const TRANSLATIONS = {
     'map.estimate': 'Estimasi:',
     'map.totalDistance': 'Jarak total:',
     'map.distance': 'Jarak:',
-    'map.gpsFallbackMulti': 'GPS nonaktif — estimasi dihitung antar titik rute',
-    'map.gpsFallbackSingle': 'GPS nonaktif — estimasi dari Pusat Kota Bogor',
+    'map.gpsFallbackMulti': 'GPS nonaktif · estimasi dihitung antar titik rute',
+    'map.gpsFallbackSingle': 'GPS nonaktif · estimasi dari Pusat Kota Bogor',
+    'map.routeSelectorAria': 'Pilihan jalur rute',
+    'map.routeOptionLabel': 'Rute {index}',
+    'map.routeOptionAria': 'Pilih Rute {index}, estimasi {time}, jarak {distance}',
+    'map.trafficAria': 'Kondisi lalu lintas Bogor: {status}',
+    'map.trafficSmooth': 'Lalu lintas lancar',
+    'map.trafficMorningRush': 'Potensi padat jam sibuk',
+    'map.trafficEveningRush': 'Potensi padat jam sibuk',
+    'map.trafficWeekend': 'Potensi padat akhir pekan',
+    'map.trafficWeekendPeak': 'Padat akhir pekan',
+    'map.trafficExtraMin': '+{min} mnt',
     'map.adminZoomIn': 'Perbesar peta',
     'map.adminZoomOut': 'Perkecil peta',
     'map.adminCenterBogor': 'Pusatkan ke Kota Bogor',
@@ -798,6 +811,9 @@ export const TRANSLATIONS = {
     'map.endJourney': 'End Trip',
     'map.transitBadge': 'Transit stop',
     'map.viewDetailAria': 'View details for {name}',
+    'map.startBtn': 'Start',
+    'map.startNavAria': 'Start navigation to {name}',
+    'map.openHudDetailAria': 'View details for destination {name}',
     'map.routeBtn': 'Route',
     'map.detailBtn': 'Details',
     'map.distanceFromYou': '{distance} from your location',
@@ -834,8 +850,18 @@ export const TRANSLATIONS = {
     'map.estimate': 'ETA:',
     'map.totalDistance': 'Total distance:',
     'map.distance': 'Distance:',
-    'map.gpsFallbackMulti': 'GPS off — estimate calculated between route stops',
-    'map.gpsFallbackSingle': 'GPS off — estimate calculated from Bogor City Center',
+    'map.gpsFallbackMulti': 'GPS off · estimate calculated between route stops',
+    'map.gpsFallbackSingle': 'GPS off · estimate calculated from Bogor City Center',
+    'map.routeSelectorAria': 'Route options',
+    'map.routeOptionLabel': 'Route {index}',
+    'map.routeOptionAria': 'Select Route {index}, estimated {time}, distance {distance}',
+    'map.trafficAria': 'Bogor traffic status: {status}',
+    'map.trafficSmooth': 'Smooth traffic',
+    'map.trafficMorningRush': 'Morning rush hour traffic',
+    'map.trafficEveningRush': 'Evening rush hour traffic',
+    'map.trafficWeekend': 'Potential weekend traffic',
+    'map.trafficWeekendPeak': 'Busy weekend traffic',
+    'map.trafficExtraMin': '+{min} min',
     'map.adminZoomIn': 'Zoom in',
     'map.adminZoomOut': 'Zoom out',
     'map.adminCenterBogor': 'Center on Bogor City',
@@ -1357,9 +1383,15 @@ export const TRANSLATIONS = {
   },
 }
 
+const CATEGORY_ID_MAP = {
+  'alam & curug': 'Taman & Alam',
+  'taman & alam': 'Taman & Alam',
+}
+
 const CATEGORY_EN_MAP = {
   semua: 'All',
-  'alam & curug': 'Nature & Waterfalls',
+  'alam & curug': 'Parks & Nature',
+  'taman & alam': 'Parks & Nature',
   'wisata alam': 'Nature',
   'ruang publik': 'Public Space',
   'rekreasi keluarga': 'Family Recreation',
@@ -1461,9 +1493,11 @@ export function translateKey(language, key, params = {}) {
 
 export function translateCategory(category, language = 'id') {
   if (!category || typeof category !== 'string') return ''
-  if (language !== 'en') return category
   const key = category.trim().toLowerCase()
-  return CATEGORY_EN_MAP[key] || category
+  if (language === 'en') {
+    return CATEGORY_EN_MAP[key] || category
+  }
+  return CATEGORY_ID_MAP[key] || category
 }
 
 export function translateDuration(rawText, language = 'id') {

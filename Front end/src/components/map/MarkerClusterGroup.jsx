@@ -126,11 +126,13 @@ export default function MarkerClusterGroup({
   selected,
   onSelect,
   onOpenDetail,
+  onStartNavigation = null,
   onMarkerHover = null,
   registerMarker,
   markerRefs = null,
   onRegisterHoverHandler = null,
   isNavigationMode = false,
+  isNavigating = false,
   activeDestination = null,
   clusteringEnabled = true,
   userPosition = null,
@@ -354,11 +356,13 @@ export default function MarkerClusterGroup({
             place={place}
             onSelect={onSelect}
             onOpenDetail={onOpenDetail}
+            onStartNavigation={onStartNavigation}
             onMarkerHover={onMarkerHover}
             registerMarker={registerMarker}
             isSelected={isSelectedPlace}
             selectionStamp={isSelectedPlace ? selectionStamp : 0}
-            autoOpenPopup={isTransit}
+            autoOpenPopup={false}
+            isNavigating={isNavigating}
             isTransit={isTransit}
             userPosition={userPosition}
             locationStatus={locationStatus}

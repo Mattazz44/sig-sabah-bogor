@@ -3,10 +3,15 @@ import { useMapLibre } from './mapContext'
 import { useFlyToSelected } from '../../hooks/useMapControls'
 
 /** Renders nothing; syncs the selected place and resizes the MapLibre map when its container changes. */
-export default function MapController({ selected, markerRefs, getFocusOffset }) {
+export default function MapController({
+  selected,
+  markerRefs,
+  getFocusOffset,
+  suppressAutoPopup = false,
+}) {
   const { map } = useMapLibre()
 
-  useFlyToSelected(selected, markerRefs, getFocusOffset)
+  useFlyToSelected(selected, markerRefs, getFocusOffset, suppressAutoPopup)
 
   useEffect(() => {
     if (!map) return undefined

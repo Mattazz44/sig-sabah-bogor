@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import SafeImage from '../ui/SafeImage'
 import { getBogorFallbackPhoto } from '../../utils/imageHelper'
 import { CheckIcon, HeartIcon, ShareIcon, StarIcon } from '../ui/VectorIcons'
@@ -29,10 +30,12 @@ function TouristCard({
   onHover,
   isSelected = false,
   isMapHovered = false,
+  isPriorityImage = false,
   saved = false,
   onToggleFavorite,
 }) {
   const { t, tCategory } = usePreferences()
+  const prefersReduced = useReducedMotion()
   const [copied, setCopied] = useState(false)
   const [isPressed, setIsPressed] = useState(false)
   const displayLocation = formatLocationLabel(place.address, t('common.bogorCityWestJava'))
@@ -77,15 +80,17 @@ function TouristCard({
         onHover?.(null)
       }}
     >
-      <div
-        className={`relative rounded-2xl border p-2 transition-all duration-200 ease-out has-[>button:active]:scale-[0.98] ${
-          isPressed ? 'scale-[0.98]' : ''
-        } ${
+      <motion.div
+        animate={isMapHovered && !prefersReduced ? { y: -2 } : { y: 0 }}
+        whileHover={prefersReduced ? undefined : { y: -2 }}
+        whileTap={prefersReduced ? undefined : { scale: 0.98 }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className={`relative rounded-2xl border p-2 transition-[background-color,border-color,box-shadow] duration-200 ease-out will-change-transform ${
           isSelected
             ? 'border-[#DFAA63]/65 bg-[#DFAA63]/[0.11] ring-1 ring-[#DFAA63]/45 shadow-[0_14px_30px_-8px_rgba(223,170,99,0.24),inset_0_1px_0_0_rgba(244,239,230,0.2)]'
             : isMapHovered
-              ? '-translate-y-0.5 border-[#DFAA63]/45 bg-white/[0.06] ring-1 ring-[#DFAA63]/30 shadow-[0_14px_28px_-8px_rgba(0,0,0,0.58)]'
-              : 'border-transparent bg-transparent hover:-translate-y-0.5 hover:border-[#DFAA63]/35 hover:bg-white/[0.045] hover:ring-1 hover:ring-[#DFAA63]/25 hover:shadow-[0_14px_28px_-8px_rgba(0,0,0,0.52)]'
+              ? 'border-[#DFAA63]/45 bg-white/[0.06] ring-1 ring-[#DFAA63]/30 shadow-[0_14px_28px_-8px_rgba(0,0,0,0.58)]'
+              : 'border-transparent bg-transparent hover:border-[#DFAA63]/35 hover:bg-white/[0.045] hover:ring-1 hover:ring-[#DFAA63]/25 hover:shadow-[0_14px_28px_-8px_rgba(0,0,0,0.52)]'
         }`}
       >
         <button
@@ -100,7 +105,7 @@ function TouristCard({
           onFocus={() => onHover?.(place.id)}
           onBlur={() => onHover?.(null)}
           onClick={() => onSelect?.(place)}
-          className="relative z-[1] block w-full text-left active:scale-[0.98] transition-transform duration-150 ease-out"
+          className="relative z-[1] block w-full text-left"
         >
           <div
             className={`apple-retro-bevel relative aspect-[16/10] w-full overflow-hidden rounded-xl ring-1 shadow-md transition-all duration-200 ease-out ${
@@ -122,7 +127,7 @@ function TouristCard({
               alt={place.name}
               width={640}
               height={400}
-              loading="eager"
+              loading={isPriorityImage ? 'eager' : 'lazy'}
               decoding="async"
               className={`h-full w-full object-cover object-center transition-transform duration-200 ease-out ${
                 isMapHovered ? 'scale-105' : 'group-hover:scale-105'
@@ -204,7 +209,7 @@ function TouristCard({
             <HeartIcon filled={saved} className="h-4 w-4" />
           </button>
         </div>
-      </div>
+      </motion.div>
     </article>
   )
 }

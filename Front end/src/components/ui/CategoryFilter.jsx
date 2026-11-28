@@ -81,7 +81,7 @@ export default function CategoryFilter({
   const hasAnyFilter = active !== ALL_CATEGORY || activeAdvancedCount > 0
 
   return (
-    <div ref={containerRef} className="relative z-40 mt-3 flex items-center gap-2">
+    <div ref={containerRef} className="relative z-40 mt-4 flex items-center gap-2.5">
       <button
         type="button"
         id="btn-advanced-filter"
@@ -128,7 +128,7 @@ export default function CategoryFilter({
       <div
         role="tablist"
         aria-label={t('explore.categoryTabsAria')}
-        className="no-scrollbar flex min-w-0 flex-1 gap-1.5 overflow-x-auto py-0.5 pr-6"
+        className="no-scrollbar flex min-w-0 flex-1 gap-2.5 overflow-x-auto py-0.5 pr-5"
       >
         {CATEGORIES.map((cat) => {
           const isActive = cat === active

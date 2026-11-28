@@ -27,11 +27,21 @@ export function useFilteredTourists(tourists, category, query, radiusKm = 0) {
  * Smoothly flies the MapLibre map to the selected place and opens its popup once the move ends.
  * Must be called inside MapLibreContext. Only re-runs when `selected` changes.
  */
-export function useFlyToSelected(selected, markerRefs, getFocusOffset) {
+export function useFlyToSelected(
+  selected,
+  markerRefs,
+  getFocusOffset,
+  suppressAutoPopup = false,
+) {
   const { map } = useMapLibre()
 
   useEffect(() => {
     if (!map) return undefined
+
+    if (suppressAutoPopup) {
+      markerRefs.current?.forEach((handle) => handle?.closePopup?.())
+      return undefined
+    }
 
     if (!selected || Array.isArray(selected) || !selected.coordinates) {
       markerRefs.current?.forEach((handle) => handle?.closePopup?.())
@@ -93,5 +103,5 @@ export function useFlyToSelected(selected, markerRefs, getFocusOffset) {
       window.clearTimeout(fallbackTimerId)
       map.off('moveend', openPopup)
     }
-  }, [map, selected, markerRefs, getFocusOffset])
+  }, [map, selected, markerRefs, getFocusOffset, suppressAutoPopup])
 }

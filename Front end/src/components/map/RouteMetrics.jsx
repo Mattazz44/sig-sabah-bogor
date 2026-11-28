@@ -69,6 +69,7 @@ function RouteMetrics({
   activeDestination,
   routeInfo,
   isNavigationMode = false,
+  onOpenDetail = null,
 }) {
   const { language, distanceUnit, t, tDuration, formatDistanceUnit } = usePreferences()
   const prefersReduced = useReducedMotion()
@@ -86,8 +87,8 @@ function RouteMetrics({
         : parseNumericSuffix(activeDestination?.distance, /([\d.,]+)\s*km/i))
     : null
 
-  const animatedMinutes = useRollingNumber(targetMinutes, 420)
-  const animatedKm = useRollingNumber(targetKm, 460)
+  const animatedMinutes = useRollingNumber(targetMinutes, 380)
+  const animatedKm = useRollingNumber(targetKm, 420)
 
   if (!isActive) return null
 
@@ -110,7 +111,8 @@ function RouteMetrics({
     title = activeDestination?.name || t('common.destinationFallback')
   }
 
-  const fallbackTimeText = tDuration(routeInfo?.timeText || activeDestination?.travelTime) || t('map.calculating')
+  const fallbackTimeText =
+    tDuration(routeInfo?.timeText || activeDestination?.travelTime) || t('map.calculating')
   const fallbackDistanceText =
     routeInfo?.distanceText || activeDestination?.distance
       ? formatDistanceUnit(routeInfo?.distanceText || activeDestination?.distance)
@@ -129,6 +131,11 @@ function RouteMetrics({
         : `${animatedKm.toFixed(1)} KM`
       : fallbackDistanceText
 
+  const primaryInspectPlace = Array.isArray(activeDestination)
+    ? activeDestination[activeDestination.length - 1] || activeDestination[0] || null
+    : activeDestination || null
+  const canInspectPlace = Boolean(onOpenDetail && primaryInspectPlace?.slug)
+
   return (
     <aside
       id="route-metrics-panel"
@@ -136,30 +143,69 @@ function RouteMetrics({
       className="pointer-events-none fixed top-4 inset-x-4 z-[900] mx-auto max-w-sm animate-tab-enter"
     >
       <div className="pointer-events-auto apple-glass-card flex flex-col gap-1.5 rounded-2xl px-4 py-3">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="h-2 w-2 shrink-0 rounded-full bg-[#DFAA63]" aria-hidden="true" />
-            <h2 className="truncate text-[13.5px] font-semibold tracking-tight text-[#F5F2EB]" title={title}>
-              {title}
-            </h2>
+        {canInspectPlace ? (
+          <button
+            type="button"
+            id="btn-hud-open-detail"
+            onClick={() => onOpenDetail(primaryInspectPlace)}
+            aria-label={t('map.openHudDetailAria', { name: title })}
+            className="group -mx-1.5 -mt-1 flex items-center justify-between gap-2 rounded-xl px-1.5 py-1 text-left transition-colors duration-150 hover:bg-white/[0.08] active:scale-[0.99]"
+          >
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-[#DFAA63]" aria-hidden="true" />
+              <h2
+                className="truncate text-[13.5px] font-semibold tracking-tight text-[#F5F2EB] transition-colors group-hover:text-[#DFAA63]"
+                title={title}
+              >
+                {title}
+              </h2>
+            </div>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <span className="rounded-full border border-[#DFAA63]/35 bg-[#DFAA63]/12 px-2.5 py-0.5 font-mono text-[10.5px] font-semibold tracking-wide text-[#DFAA63]">
+                {badgeLabel}
+              </span>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="text-[#F5F2EB]/60 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[#F5F2EB]"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </div>
+          </button>
+        ) : (
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-[#DFAA63]" aria-hidden="true" />
+              <h2 className="truncate text-[13.5px] font-semibold tracking-tight text-[#F5F2EB]" title={title}>
+                {title}
+              </h2>
+            </div>
+            <span className="shrink-0 rounded-full border border-[#DFAA63]/35 bg-[#DFAA63]/12 px-2.5 py-0.5 font-mono text-[10.5px] font-semibold tracking-wide text-[#DFAA63]">
+              {badgeLabel}
+            </span>
           </div>
-          <span className="shrink-0 rounded-full border border-[#DFAA63]/35 bg-[#DFAA63]/12 px-2.5 py-0.5 font-mono text-[10.5px] font-semibold tracking-wide text-[#DFAA63]">
-            {badgeLabel}
-          </span>
-        </div>
+        )}
 
         {/* Animated Route Progress Track & Moving Navigation Icon */}
         <div
           id="nav-route-progress-track"
           aria-hidden="true"
-          className="relative mt-1 flex items-center gap-2 py-1"
+          className="relative mt-0.5 flex items-center gap-2 py-0.5"
         >
           <span className="h-2 w-2 shrink-0 rounded-full bg-[#F2ECE1]" />
           <div className="relative h-[3px] flex-1 overflow-visible rounded-full bg-[#F2ECE1]/14">
             <motion.div
               initial={prefersReduced ? { scaleX: 1 } : { scaleX: 0 }}
               animate={{ scaleX: 1 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
               style={{ transformOrigin: 'left center' }}
               className="absolute inset-0 rounded-full bg-gradient-to-r from-[#F2ECE1]/70 via-[#DFAA63] to-[#C5A868]"
             />
@@ -187,7 +233,10 @@ function RouteMetrics({
             <span className="text-[#F5F2EB]/60">
               {isCustomRoute ? t('map.totalEstimate') : t('map.estimate')}
             </span>
-            <span className="font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+            <span
+              id="nav-eta-value"
+              className="font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]"
+            >
               {formattedTime}
             </span>
           </div>
@@ -196,14 +245,17 @@ function RouteMetrics({
             <span className="text-[#F5F2EB]/60">
               {isCustomRoute ? t('map.totalDistance') : t('map.distance')}
             </span>
-            <span className="font-mono font-semibold tabular-nums tracking-wide text-[#DFAA63]">
+            <span
+              id="nav-distance-value"
+              className="font-mono font-semibold tabular-nums tracking-wide text-[#DFAA63]"
+            >
               {formattedDistance}
             </span>
           </div>
         </div>
 
         {isFallbackOrigin && (
-          <p className="mt-1 text-center text-[10.5px] font-medium text-[#F5F2EB]/65">
+          <p className="mt-0.5 text-center text-[10.5px] font-medium text-[#F5F2EB]/65">
             {isCustomRoute ? t('map.gpsFallbackMulti') : t('map.gpsFallbackSingle')}
           </p>
         )}

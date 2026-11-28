@@ -80,9 +80,9 @@ function calcQuickDistanceKm(coordA, coordB) {
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(coordA.lat)) *
-      Math.cos(toRad(coordB.lat)) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2)
+    Math.cos(toRad(coordB.lat)) *
+    Math.sin(dLng / 2) *
+    Math.sin(dLng / 2)
   return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
@@ -458,9 +458,8 @@ function PhotoLightboxModal({
       aria-modal="true"
       aria-label={t('detail.lightboxAria', { name: placeName })}
       onClick={handleOverlayClick}
-      className={`fixed inset-0 z-[2100] flex flex-col justify-between bg-black/75 backdrop-blur-xl pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] select-none transition-opacity duration-200 ease-out motion-reduce:transition-none ${
-        isVisible ? 'opacity-100' : 'opacity-0'
-      }`}
+      className={`fixed inset-0 z-[2100] flex flex-col justify-between bg-black/75 backdrop-blur-xl pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] select-none transition-opacity duration-200 ease-out motion-reduce:transition-none ${isVisible ? 'opacity-100' : 'opacity-0'
+        }`}
     >
       {/* Header Lightbox: Indikator Posisi & Tombol Tutup */}
       <div className="relative z-20 flex items-center justify-between gap-3 px-4 py-2 sm:px-6">
@@ -493,9 +492,8 @@ function PhotoLightboxModal({
         onPointerMove={handleStagePointerMove}
         onPointerUp={finishStageDrag}
         onPointerCancel={finishStageDrag}
-        className={`relative flex-1 min-h-0 w-full flex items-center overflow-hidden touch-pan-y transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transform-none motion-reduce:transition-none ${
-          isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
-        }`}
+        className={`relative flex-1 min-h-0 w-full flex items-center overflow-hidden touch-pan-y transition-[opacity,transform] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transform-none motion-reduce:transition-none ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+          }`}
       >
         {totalPhotos > 1 && (
           <button
@@ -577,9 +575,8 @@ function PhotoLightboxModal({
                   >
                     <span
                       aria-hidden="true"
-                      className={`h-2 rounded-full transition-all duration-200 ${
-                        isCurrent ? 'w-6 bg-[#EBF0EB]' : 'w-2 bg-[#EBF0EB]/40'
-                      }`}
+                      className={`h-2 rounded-full transition-all duration-200 ${isCurrent ? 'w-6 bg-[#EBF0EB]' : 'w-2 bg-[#EBF0EB]/40'
+                        }`}
                     />
                   </button>
                 )
@@ -597,11 +594,10 @@ function PhotoLightboxModal({
                     onClick={() => onChangeIndex(idx)}
                     aria-label={t('detail.selectPhotoAria', { index: idx + 1, total: totalPhotos })}
                     aria-current={isCurrent ? 'true' : undefined}
-                    className={`relative aspect-[16/10] w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-150 ${
-                      isCurrent
-                        ? 'scale-105 border-[#EBF0EB] opacity-100'
-                        : 'border-white/20 opacity-60 hover:opacity-95'
-                    }`}
+                    className={`relative aspect-[16/10] w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-150 ${isCurrent
+                      ? 'scale-105 border-[#EBF0EB] opacity-100'
+                      : 'border-white/20 opacity-60 hover:opacity-95'
+                      }`}
                   >
                     <SafeImage
                       src={imgUrl}
@@ -807,9 +803,6 @@ function TouristDetailPage({
   }
 
   const favoriteActive = isFavorite ? isFavorite(place.slug) : false
-  const lat = place.coordinates?.lat ?? -6.6115
-  const lng = place.coordinates?.lng ?? 106.7725
-  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
 
   const handleShare = async () => {
     const shareData = {
@@ -837,11 +830,7 @@ function TouristDetailPage({
   }
 
   const handleStartJourney = () => {
-    if (onStartNavigation) {
-      onStartNavigation(place)
-    } else {
-      window.open(googleMapsUrl, '_blank', 'noopener,noreferrer')
-    }
+    onStartNavigation?.(place)
   }
 
   const openLightbox = (startIndex = 0) => {
@@ -924,9 +913,8 @@ function TouristDetailPage({
           >
             <span className="inline-flex items-center gap-2 rounded-full border border-[#F2ECE1]/18 bg-[#151D17]/92 px-3.5 py-1.5 text-[12px] font-semibold text-[#F5F2EB] shadow-lg backdrop-blur-md">
               <span
-                className={`h-2 w-2 rounded-full ${
-                  pullPhase === 'refreshed' ? 'bg-[#8FB596]' : 'bg-[#C5A868]'
-                }`}
+                className={`h-2 w-2 rounded-full ${pullPhase === 'refreshed' ? 'bg-[#8FB596]' : 'bg-[#C5A868]'
+                  }`}
                 aria-hidden="true"
               />
               {pullPhase === 'ready'
@@ -973,11 +961,10 @@ function TouristDetailPage({
                 aria-pressed={favoriteActive}
                 aria-label={favoriteActive ? t('detail.removeFavoriteAria') : t('detail.addFavoriteAria')}
                 onClick={() => toggleFavorite && toggleFavorite(place.slug)}
-                className={`inline-flex h-11 min-w-[44px] items-center justify-center gap-2 rounded-full border text-[13px] font-medium shadow-md backdrop-blur-md transition-all duration-150 active:scale-[0.97] sm:px-3.5 ${
-                  favoriteActive
-                    ? 'border-rose-300/35 bg-[#3B1D24]/85 text-rose-200 hover:bg-[#49242D]'
-                    : 'apple-glass-pill text-[#F5F2EB] hover:bg-white/[0.14]'
-                }`}
+                className={`inline-flex h-11 min-w-[44px] items-center justify-center gap-2 rounded-full border text-[13px] font-medium shadow-md backdrop-blur-md transition-all duration-150 active:scale-[0.97] sm:px-3.5 ${favoriteActive
+                  ? 'border-rose-300/35 bg-[#3B1D24]/85 text-rose-200 hover:bg-[#49242D]'
+                  : 'apple-glass-pill text-[#F5F2EB] hover:bg-white/[0.14]'
+                  }`}
               >
                 <HeartIcon filled={favoriteActive} className="h-5 w-5 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">
@@ -1116,11 +1103,8 @@ function TouristDetailPage({
           {/* Kolom Kiri (7 kolom): Aksi Utama, Info Operasional, Alamat, & Tentang Destinasi */}
           <div className="md:col-span-7">
             <div className="apple-glass-card rounded-2xl p-4 sm:p-6">
-              {/* Baris Tombol Aksi Utama */}
-              <section
-                aria-label={t('detail.actionsAria')}
-                className="grid grid-cols-1 gap-3 sm:grid-cols-2"
-              >
+              {/* Tombol Aksi Navigasi Utama */}
+              <section aria-label={t('detail.actionsAria')}>
                 <button
                   type="button"
                   id="btn-mulai-perjalanan"
@@ -1142,16 +1126,6 @@ function TouristDetailPage({
                   </svg>
                   <span>{t('detail.startJourney')}</span>
                 </button>
-
-                <a
-                  href={googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="apple-glass-pill inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-[14px] font-medium text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.98]"
-                >
-                  <MapPinIcon className="h-4 w-4 text-[#DFAA63]" />
-                  <span>{t('detail.openGoogleMaps')}</span>
-                </a>
               </section>
 
               {/* Kartu Info Ringkas (Jam buka, Tiket masuk, Estimasi tiba) */}
@@ -1193,7 +1167,7 @@ function TouristDetailPage({
                       className="flex min-w-0 flex-col items-center justify-center px-3 py-3.5 text-center sm:px-4"
                     >
                       <span className="text-[11px] font-medium text-[#F5F2EB]/60">{item.label}</span>
-                      <span className="mt-1 w-full break-words font-mono text-[12px] font-semibold leading-snug tabular-nums tracking-wide text-[#F5F2EB] sm:text-[13px]">
+                      <span className="mt-1 break-words font-mono text-[12.5px] font-semibold leading-snug tabular-nums tracking-wide text-[#F5F2EB] sm:text-[13px]">
                         {item.value}
                       </span>
                     </div>

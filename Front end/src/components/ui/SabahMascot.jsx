@@ -93,7 +93,6 @@ function SabahMascot({
   label,
   interactive = false,
   bubbleAlign = 'center',
-  bubblePlacement = 'top',
   id,
 }) {
   const { t } = usePreferences()
@@ -154,9 +153,6 @@ function SabahMascot({
         ? 'right-0'
         : 'left-1/2 -translate-x-1/2'
 
-  const bubblePlacementClass =
-    bubblePlacement === 'bottom' ? 'top-full mt-2' : '-top-11'
-
   if (interactive) {
     const reaction = TAP_REACTIONS[tapCount % TAP_REACTIONS.length]
     return (
@@ -167,19 +163,11 @@ function SabahMascot({
               key={`${tapCount}-${bubbleText}`}
               role="status"
               aria-live="polite"
-              initial={
-                prefersReduced
-                  ? { opacity: 0 }
-                  : { opacity: 0, y: bubblePlacement === 'bottom' ? -6 : 6, scale: 0.9 }
-              }
+              initial={prefersReduced ? { opacity: 0 } : { opacity: 0, y: 6, scale: 0.9 }}
               animate={prefersReduced ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
-              exit={
-                prefersReduced
-                  ? { opacity: 0 }
-                  : { opacity: 0, y: bubblePlacement === 'bottom' ? -4 : 4, scale: 0.94 }
-              }
+              exit={prefersReduced ? { opacity: 0 } : { opacity: 0, y: -4, scale: 0.94 }}
               transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-              className={`pointer-events-none absolute z-40 w-max max-w-[220px] rounded-xl border border-[#C5A868]/30 bg-[#19231D]/95 px-3 py-1.5 text-center text-[11.5px] font-medium leading-snug text-[#F5F2EB] shadow-[0_10px_24px_-6px_rgba(0,0,0,0.65)] ${bubblePlacementClass} ${bubbleAlignClass}`}
+              className={`pointer-events-none absolute -top-11 z-40 w-max max-w-[210px] rounded-xl border border-[#C5A868]/30 bg-[#19231D]/95 px-3 py-1.5 text-center text-[11.5px] font-medium leading-snug text-[#F5F2EB] shadow-[0_10px_24px_-6px_rgba(0,0,0,0.65)] ${bubbleAlignClass}`}
             >
               <span>{bubbleText}</span>
             </motion.div>

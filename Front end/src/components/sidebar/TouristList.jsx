@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion'
 import SearchBar from '../ui/SearchBar'
 import CategoryFilter from '../ui/CategoryFilter'
 import TouristCard from './TouristCard'
@@ -57,7 +58,13 @@ export default function TouristList({
   toggleFavorite,
 }) {
   const { t, tCategory } = usePreferences()
+  const prefersReduced = useReducedMotion()
   const sheetCtx = useBottomSheet()
+  const scrollContainerRef = sheetCtx?.scrollContainerRef
+  const [isHeaderScrolled, setIsHeaderScrolled] = useState(false)
+  const scrollYMotion = useMotionValue(0)
+  const carouselParallaxY = useTransform(scrollYMotion, [0, 180], [0, -10])
+  const carouselParallaxOpacity = useTransform(scrollYMotion, [0, 180], [1, 0.84])
   const [sortOption, setSortOption] = useState('Paling relevan')
   const currentSortLabel =
     t(SORT_OPTIONS.find((opt) => opt.key === sortOption)?.labelKey || 'explore.sortRelevant')
@@ -72,6 +79,34 @@ export default function TouristList({
   const listContainerRef = useRef(null)
   const carouselRef = useRef(null)
   const carouselRafRef = useRef(0)
+
+  useEffect(() => {
+    const container = scrollContainerRef?.current || document.getElementById('sidebar-content')
+    if (!container) return undefined
+
+    let rafId = 0
+    const syncScrollState = () => {
+      rafId = 0
+      const top = container.scrollTop || 0
+      scrollYMotion.set(top)
+      setIsHeaderScrolled((prev) => {
+        const next = top > 8
+        return prev === next ? prev : next
+      })
+    }
+
+    const handleScroll = () => {
+      if (rafId) return
+      rafId = window.requestAnimationFrame(syncScrollState)
+    }
+
+    rafId = window.requestAnimationFrame(syncScrollState)
+    container.addEventListener('scroll', handleScroll, { passive: true })
+    return () => {
+      container.removeEventListener('scroll', handleScroll)
+      if (rafId) window.cancelAnimationFrame(rafId)
+    }
+  }, [scrollContainerRef, scrollYMotion])
 
   useEffect(() => {
     if (selectedId === null || selectedId === undefined) return undefined
@@ -220,53 +255,68 @@ export default function TouristList({
   const listTransitionKey = `${category}|${sortOption}|${minRating}|${onlyPopular}|${onlyFavorites}|${radiusKm}`
 
   return (
-    <div className="w-full px-4 pt-1.5">
-      {/* 1. Search Bar */}
-      <SearchBar
-        value={query}
-        onChange={onQueryChange}
-        onSubmit={() => {
-          if (sortedPlaces.length > 0) {
-            onSelect?.(sortedPlaces[0])
-          }
-        }}
-      />
+    <div className="w-full px-4 md:px-5">
+      {/* 1 & 2. Sticky Header: Search Bar + Category Filter dengan efek glassmorphism progresif saat di-scroll */}
+      <div
+        id="explore-sticky-header"
+        data-scrolled={isHeaderScrolled ? 'true' : 'false'}
+        className={`sticky top-0 z-40 -mx-4 px-4 pt-2 pb-3 md:-mx-5 md:px-5 md:pt-3 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-250 ease-out ${
+          isHeaderScrolled
+            ? 'border-b border-white/[0.12] bg-[#141B14]/88 shadow-[0_14px_30px_-10px_rgba(0,0,0,0.62)] backdrop-blur-xl'
+            : 'border-b border-transparent bg-transparent shadow-none'
+        }`}
+      >
+        <SearchBar
+          value={query}
+          onChange={onQueryChange}
+          onSubmit={() => {
+            if (sortedPlaces.length > 0) {
+              onSelect?.(sortedPlaces[0])
+            }
+          }}
+        />
 
-      {/* 2. Category Filter + Tombol Filter Lanjutan */}
-      <CategoryFilter
-        active={category}
-        onChange={onCategoryChange}
-        minRating={minRating}
-        onlyPopular={onlyPopular}
-        onlyFavorites={onlyFavorites}
-        radiusKm={radiusKm}
-        onRadiusChange={onRadiusChange}
-        hasUserLocation={hasUserLocation}
-        onRequestLocation={onRequestLocation}
-        onFilterChange={handleFilterChange}
-        onResetFilters={handleResetAllFilters}
-        resultCount={sortedPlaces.length}
-        isOpen={filterOpen}
-        onToggleOpen={(next) => {
-          if (next) {
-            setSortMenuOpen(false)
-            sheetCtx?.ensurePeekCleared?.()
-          }
-          setFilterOpen(next)
-        }}
-        onClose={() => setFilterOpen(false)}
-      />
+        <CategoryFilter
+          active={category}
+          onChange={onCategoryChange}
+          minRating={minRating}
+          onlyPopular={onlyPopular}
+          onlyFavorites={onlyFavorites}
+          radiusKm={radiusKm}
+          onRadiusChange={onRadiusChange}
+          hasUserLocation={hasUserLocation}
+          onRequestLocation={onRequestLocation}
+          onFilterChange={handleFilterChange}
+          onResetFilters={handleResetAllFilters}
+          resultCount={sortedPlaces.length}
+          isOpen={filterOpen}
+          onToggleOpen={(next) => {
+            if (next) {
+              setSortMenuOpen(false)
+              sheetCtx?.ensurePeekCleared?.()
+            }
+            setFilterOpen(next)
+          }}
+          onClose={() => setFilterOpen(false)}
+        />
+      </div>
 
-      {/* 3. Sorotan Populer Interaktif (Swipe horizontal menyinkronkan pin peta secara real-time) */}
+      {/* 3. Sorotan Populer Interaktif (Header lega, kartu tanpa border kaku, parallax lembut saat scroll) */}
       {carouselSpots.length > 0 && !query && !isLoading && (
-        <section className="mt-4" aria-labelledby="populer-heading">
-          <div className="flex items-baseline justify-between gap-2">
-            <h2 id="populer-heading" className="text-[13px] font-semibold tracking-tight text-[#F5F2EB]/90">
+        <motion.section
+          id="explore-popular-section"
+          style={
+            prefersReduced
+              ? undefined
+              : { y: carouselParallaxY, opacity: carouselParallaxOpacity }
+          }
+          className="mt-1 will-change-transform"
+          aria-labelledby="populer-heading"
+        >
+          <div className="flex items-center justify-between">
+            <h2 id="populer-heading" className="text-[13.5px] font-semibold tracking-tight text-[#F5F2EB]/92">
               {t('explore.popularHeading')}
             </h2>
-            <span className="truncate text-[11px] text-[#F5F2EB]/50">
-              {t('motion.exploreSwipeHint')}
-            </span>
           </div>
           <div
             ref={carouselRef}
@@ -274,7 +324,7 @@ export default function TouristList({
             data-no-sheet-drag
             onScroll={handleCarouselScroll}
             onPointerDown={(e) => e.stopPropagation()}
-            className="no-scrollbar mt-2 -mx-4 flex snap-x snap-mandatory gap-2.5 overflow-x-auto border-b border-[rgba(244,239,230,0.12)] px-4 pb-3.5"
+            className="no-scrollbar scroll-smooth mt-3 -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 py-1 md:-mx-5 md:px-5"
           >
             {carouselSpots.map((spot) => {
               const isSpotSelected = selectedId !== null && spot.id === selectedId
@@ -282,13 +332,16 @@ export default function TouristList({
                 (hoveredPlaceId !== null && spot.id === hoveredPlaceId) ||
                 (activeCarouselId !== null && spot.id === activeCarouselId)
               return (
-                <button
+                <motion.button
                   key={spot.id}
                   type="button"
                   data-carousel-place-id={spot.id}
                   data-selected={isSpotSelected ? 'true' : 'false'}
                   data-synced={isSpotSynced ? 'true' : 'false'}
                   aria-current={isSpotSelected ? 'location' : undefined}
+                  whileHover={prefersReduced ? undefined : { y: -2 }}
+                  whileTap={prefersReduced ? undefined : { scale: 0.98 }}
+                  transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
                   onMouseEnter={() => {
                     setActiveCarouselId(spot.id)
                     onHoverPlace?.(spot.id)
@@ -299,21 +352,15 @@ export default function TouristList({
                     onHoverPlace?.(spot.id)
                   }}
                   onClick={() => onSelect?.(spot)}
-                  className={`group flex w-[264px] shrink-0 snap-start items-center gap-3 rounded-2xl border p-2 text-left transition-all duration-200 ease-out active:scale-[0.98] ${
+                  className={`group flex w-[264px] min-w-[264px] shrink-0 snap-start items-center gap-3.5 rounded-2xl p-3.5 text-left transition-[background-color,box-shadow] duration-200 ease-out will-change-transform ${
                     isSpotSelected
-                      ? 'border-[#DFAA63]/65 bg-[#DFAA63]/[0.12] ring-1 ring-[#DFAA63]/40 shadow-[0_10px_24px_-8px_rgba(223,170,99,0.25)]'
+                      ? 'bg-[#DFAA63]/[0.16] shadow-[0_10px_24px_-10px_rgba(223,170,99,0.28)]'
                       : isSpotSynced
-                        ? '-translate-y-0.5 border-[#DFAA63]/50 bg-white/[0.09] ring-1 ring-[#DFAA63]/30 shadow-lg'
-                        : 'border-white/[0.08] bg-white/[0.03] hover:-translate-y-0.5 hover:border-[#DFAA63]/35 hover:bg-white/[0.06]'
+                        ? 'bg-white/[0.11] shadow-[0_10px_24px_-10px_rgba(0,0,0,0.45)]'
+                        : 'bg-white/[0.055] hover:bg-white/[0.095]'
                   }`}
                 >
-                  <div
-                    className={`apple-retro-bevel relative aspect-[16/10] w-20 shrink-0 overflow-hidden rounded-xl ring-1 transition-all duration-200 ease-out ${
-                      isSpotSelected || isSpotSynced
-                        ? 'ring-[#DFAA63]/55'
-                        : 'ring-[rgba(244,239,230,0.16)] group-hover:ring-[#DFAA63]/35'
-                    }`}
-                  >
+                  <div className="relative aspect-[16/10] w-[76px] shrink-0 overflow-hidden rounded-xl bg-black/25">
                     <SafeImage
                       src={spot.image || getBogorFallbackPhoto(spot)}
                       fallback={getBogorFallbackPhoto(spot)}
@@ -326,13 +373,14 @@ export default function TouristList({
                       }`}
                     />
                   </div>
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 pr-0.5">
                     <h3
                       className={`truncate text-[13.5px] font-semibold tracking-tight transition-colors duration-200 ${
                         isSpotSelected || isSpotSynced
                           ? 'text-[#DFAA63]'
                           : 'text-[#F5F2EB] group-hover:text-[#DFAA63]'
                       }`}
+                      title={spot.name}
                     >
                       {spot.name}
                     </h3>
@@ -354,18 +402,18 @@ export default function TouristList({
                     className={`h-4 w-4 shrink-0 transition-all duration-200 ${
                       isSpotSelected || isSpotSynced
                         ? 'translate-x-0.5 text-[#DFAA63]'
-                        : 'text-[#F5F2EB]/35 group-hover:translate-x-0.5 group-hover:text-[#F5F2EB]/80'
+                        : 'text-[#F5F2EB]/40 group-hover:translate-x-0.5 group-hover:text-[#F5F2EB]/85'
                     }`}
                   />
-                </button>
+                </motion.button>
               )
             })}
           </div>
-        </section>
+        </motion.section>
       )}
 
-      {/* 4. Subheader jumlah & Dropdown Pengurutan (Liquid Glass melayang z-[700]) */}
-      <div className="relative z-30 mt-4 flex items-center justify-between gap-2">
+      {/* 4. Subheader jumlah & Dropdown Pengurutan (spasi vertikal lega 32px tanpa garis pembatas) */}
+      <div id="explore-list-header" className="relative z-30 mt-8 flex items-center justify-between gap-2">
         <h2 id="tourist-count" className="text-[13px] font-semibold tracking-tight text-[#F5F2EB]">
           {isLoading ? (
             t('explore.loadingDestinations')
@@ -462,7 +510,7 @@ export default function TouristList({
 
       {/* 5. Daftar destinasi wisata + animasi pergantian + loading/error/empty states */}
       {isLoading && places.length === 0 ? (
-        <div className="mt-3.5 flex flex-col" aria-live="polite">
+        <div className="mt-4 flex flex-col" aria-live="polite">
           {[1, 2, 3].map((item) => (
             <div
               key={item}
@@ -497,12 +545,28 @@ export default function TouristList({
           )}
         </div>
       ) : sortedPlaces.length > 0 ? (
-        <ul key={listTransitionKey} ref={listContainerRef} id="tourist-list" className="mt-3.5 flex flex-col">
+        <ul key={listTransitionKey} ref={listContainerRef} id="tourist-list" className="mt-4 flex flex-col">
           {sortedPlaces.map((place, index) => (
-            <li
+            <motion.li
               key={place.id}
-              className="animate-tourist-card border-b border-white/10 py-3.5 first:pt-1 last:border-b-0 last:pb-0"
-              style={{ animationDelay: `${Math.min(index, 8) * 30}ms` }}
+              data-scroll-reveal="true"
+              initial={prefersReduced ? false : { opacity: 0, y: 16, scale: 0.97 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{
+                once: true,
+                amount: 0.15,
+                root: scrollContainerRef,
+              }}
+              transition={
+                prefersReduced
+                  ? { duration: 0.01 }
+                  : {
+                      duration: 0.35,
+                      delay: index < 4 ? index * 0.045 : 0.02,
+                      ease: [0.22, 1, 0.36, 1],
+                    }
+              }
+              className="border-b border-white/10 py-3.5 first:pt-0 last:border-b-0 last:pb-0 will-change-transform"
             >
               <TouristCard
                 place={place}
@@ -510,10 +574,11 @@ export default function TouristList({
                 onHover={onHoverPlace}
                 isSelected={selectedId !== null && place.id === selectedId}
                 isMapHovered={hoveredPlaceId !== null && place.id === hoveredPlaceId}
+                isPriorityImage={index < 4}
                 saved={Boolean(isFavorite?.(place.slug))}
                 onToggleFavorite={toggleFavorite}
               />
-            </li>
+            </motion.li>
           ))}
         </ul>
       ) : (

@@ -6,6 +6,7 @@ export const CATEGORIES = [ALL_CATEGORY, 'Alam & Curug', 'Kuliner', 'Edukasi & B
 
 export const CATEGORY_COLORS = {
   'Alam & Curug': 'var(--color-pin-alam)',
+  'Taman & Alam': 'var(--color-pin-alam)',
   'Wisata Alam': 'var(--color-pin-alam)',
   'Ruang Publik': 'var(--color-pin-alam)',
   'Rekreasi Keluarga': 'var(--color-pin-alam)',
@@ -21,6 +22,7 @@ export const CATEGORY_COLORS = {
 
 export const CATEGORY_RGB = {
   'Alam & Curug': '31, 138, 91',
+  'Taman & Alam': '31, 138, 91',
   'Wisata Alam': '31, 138, 91',
   'Ruang Publik': '31, 138, 91',
   'Rekreasi Keluarga': '31, 138, 91',
@@ -41,6 +43,7 @@ const GLYPH_EDUKASI = '<path fill="#fff" d="M12 2 2 8v2h20V8L12 2Z"/><rect fill=
 
 export const CATEGORY_GLYPHS = {
   'Alam & Curug': GLYPH_ALAM,
+  'Taman & Alam': GLYPH_ALAM,
   'Wisata Alam': GLYPH_ALAM,
   'Ruang Publik': GLYPH_ALAM,
   'Rekreasi Keluarga': GLYPH_ALAM,

@@ -22,6 +22,7 @@ export default function MapView({
   selected,
   onSelect,
   onOpenDetail,
+  onStartNavigation = null,
   onMarkerHover = null,
   onMapInteract = null,
   userPosition,
@@ -204,6 +205,23 @@ export default function MapView({
     }
   }, [initialView])
 
+  const isNavigating = Boolean(isNavigationMode && hasDestination)
+
+  // Pastikan seluruh kartu preview/popup pin tertutup otomatis saat navigasi aktif
+  useEffect(() => {
+    if (!isNavigating) return
+    markerRefs.current.forEach((handle) => handle?.closePopup?.())
+  }, [isNavigating, activeDestinationKey])
+
+  const handleStartNavigationFromPopup = useCallback(
+    (place) => {
+      markerRefs.current.forEach((handle) => handle?.closePopup?.())
+      onMapInteractRef.current?.()
+      onStartNavigation?.(place)
+    },
+    [onStartNavigation],
+  )
+
   const handleSelectMarker = useCallback(
     (place) => {
       onMapInteractRef.current?.()
@@ -224,11 +242,12 @@ export default function MapView({
       className="relative z-0 m-0 h-[100dvh] w-full overflow-hidden bg-[#F5F5F7] p-0"
     >
       {/* 3. PANEL METRICS MELAYANG (RouteMetrics.jsx) */}
-      {isNavigationMode && hasDestination && (
+      {isNavigating && (
         <RouteMetrics
           activeDestination={activeDestination}
           routeInfo={activeRouteInfo}
           isNavigationMode={isNavigationMode}
+          onOpenDetail={onOpenDetail}
         />
       )}
 
@@ -309,11 +328,13 @@ export default function MapView({
               selected={selected}
               onSelect={handleSelectMarker}
               onOpenDetail={onOpenDetail}
+              onStartNavigation={handleStartNavigationFromPopup}
               onMarkerHover={onMarkerHover}
               registerMarker={registerMarker}
               markerRefs={markerRefs}
               onRegisterHoverHandler={onRegisterHoverHandler}
               isNavigationMode={isNavigationMode}
+              isNavigating={isNavigating}
               activeDestination={activeDestination}
               clusteringEnabled={clusteringEnabled}
               userPosition={userPosition}
@@ -335,6 +356,7 @@ export default function MapView({
                 selected={selected}
                 markerRefs={markerRefs}
                 getFocusOffset={getMapFocusOffset}
+                suppressAutoPopup={isNavigating}
               />
             )}
 

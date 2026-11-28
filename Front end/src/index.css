@@ -293,6 +293,7 @@ img {
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 860;
   display: block;
   margin: 0;
   padding: 0;
@@ -303,7 +304,7 @@ img {
 }
 
 .wisata-marker-active {
-  z-index: 880;
+  z-index: 930;
 }
 
 .wisata-marker:hover,
@@ -469,13 +470,13 @@ img {
 }
 
 .wisata-marker-active .wisata-marker-body {
-  transform: translateY(-2px) scale(1.14);
+  transform: translateY(0) scale(1.14);
 }
 
 .wisata-marker-active:hover .wisata-marker-body,
 .wisata-marker-active:focus-visible .wisata-marker-body,
 .wisata-marker-active.wisata-marker-hovered .wisata-marker-body {
-  transform: translateY(-5px) scale(1.28);
+  transform: translateY(-2px) scale(1.24);
 }
 
 .wisata-marker-popping .wisata-marker-body {
@@ -626,10 +627,14 @@ img {
   will-change: transform;
 }
 
+.user-location-marker {
+  z-index: 900;
+}
+
 /* Active navigation moving route traveler beacon */
 .nav-route-traveler {
   pointer-events: none;
-  z-index: 910;
+  z-index: 880;
 }
 
 .nav-route-traveler-badge {

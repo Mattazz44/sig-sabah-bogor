@@ -350,14 +350,14 @@ function CustomRoutePage({
 
         {/* Daftar Rute Custom: Borderless Editorial Cards with Timeline Connector */}
         {visibleCustomRoutes.length > 0 ? (
-          <div
-            className={`mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 ${
-              visibleCustomRoutes.length >= 3 ? 'xl:grid-cols-3' : ''
-            }`}
-          >
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
             {visibleCustomRoutes.map((route) => {
               const displayTitle = tDynamic(route.title)
               const displayDesc = tDynamic(route.desc)
+              const stopsCountLabel = t(
+                route.stops.length === 1 ? 'routes.stopsBadgeSingle' : 'routes.stopsBadge',
+                { count: route.stops.length },
+              )
               return (
                 <article
                   key={route.id}
@@ -370,11 +370,13 @@ function CustomRoutePage({
                       <h2 className="text-[17px] font-bold tracking-[-0.02em] leading-snug text-[#F5F2EB]">
                         {displayTitle}
                       </h2>
-                      {displayDesc && (
-                        <p className="mt-1 text-[12.5px] leading-relaxed text-[#A7B2AA]">
-                          {displayDesc}
-                        </p>
-                      )}
+                      <p className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[12.5px] leading-relaxed text-[#A7B2AA]">
+                        {displayDesc && <span>{displayDesc}</span>}
+                        {displayDesc && (
+                          <span aria-hidden="true" className="text-[#94A198]/60">•</span>
+                        )}
+                        <span className="tabular-nums text-[#94A198]">{stopsCountLabel}</span>
+                      </p>
                     </div>
 
                     <button
@@ -427,9 +429,9 @@ function CustomRoutePage({
                               animate={
                                 isLaunching && !prefersReduced
                                   ? {
-                                      scale: [1, 1.24, 1],
-                                      transition: { duration: 0.34, delay: idx * 0.09 },
-                                    }
+                                    scale: [1, 1.24, 1],
+                                    transition: { duration: 0.34, delay: idx * 0.09 },
+                                  }
                                   : undefined
                               }
                               transition={{
@@ -438,13 +440,12 @@ function CustomRoutePage({
                                 damping: 24,
                                 delay: idx * 0.08,
                               }}
-                              className={`z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold tabular-nums ${
-                                isFirst
-                                  ? 'bg-[#F2ECE1] text-[#141A14]'
-                                  : isLast
-                                    ? 'bg-[#C5A868] text-[#141A14]'
-                                    : 'bg-[#222D26] text-[#F5F2EB]'
-                              }`}
+                              className={`z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold tabular-nums ${isFirst
+                                ? 'bg-[#F2ECE1] text-[#141A14]'
+                                : isLast
+                                  ? 'bg-[#C5A868] text-[#141A14]'
+                                  : 'bg-[#222D26] text-[#F5F2EB]'
+                                }`}
                             >
                               {idx + 1}
                             </motion.span>
@@ -469,11 +470,10 @@ function CustomRoutePage({
                                     ease: [0.22, 1, 0.36, 1],
                                   }}
                                   style={{ transformOrigin: 'top center' }}
-                                  className={`absolute inset-0 rounded-full ${
-                                    isLaunching
-                                      ? 'bg-gradient-to-b from-[#F2ECE1] via-[#DFAA63] to-[#C5A868]'
-                                      : 'bg-gradient-to-b from-[#F2ECE1]/60 via-[#C5A868]/65 to-[#C5A868]/85'
-                                  }`}
+                                  className={`absolute inset-0 rounded-full ${isLaunching
+                                    ? 'bg-gradient-to-b from-[#F2ECE1] via-[#DFAA63] to-[#C5A868]'
+                                    : 'bg-gradient-to-b from-[#F2ECE1]/60 via-[#C5A868]/65 to-[#C5A868]/85'
+                                    }`}
                                 />
                               </span>
                             )}
@@ -481,9 +481,8 @@ function CustomRoutePage({
 
                           {/* Stop Name, Role & Leg Distance */}
                           <div
-                            className={`flex min-w-0 flex-1 items-start justify-between gap-2.5 ${
-                              hasNext ? 'pb-4' : 'pb-0'
-                            }`}
+                            className={`flex min-w-0 flex-1 items-start justify-between gap-2.5 ${hasNext ? 'pb-4' : 'pb-0'
+                              }`}
                           >
                             <div className="min-w-0">
                               <p className="truncate text-[14px] font-semibold tracking-[-0.012em] leading-snug text-[#F5F2EB]">

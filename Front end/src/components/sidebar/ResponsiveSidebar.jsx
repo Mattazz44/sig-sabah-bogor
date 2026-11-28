@@ -137,7 +137,7 @@ export default function ResponsiveSidebar({
   // Reset scroll internal ke puncak saat sheet turun ke mode minimized agar search bar selalu terlihat
   useEffect(() => {
     if (!isDesktop && mobileState === 'minimized' && contentRef.current) {
-      contentRef.current.scrollTop = 0
+      contentRef.current.scrollTo({ top: 0, behavior: 'instant' })
     }
   }, [isDesktop, mobileState])
 
@@ -182,7 +182,7 @@ export default function ResponsiveSidebar({
   }, [isDesktop, mobileState, commitMobileState])
 
   const sheetContextValue = useMemo(
-    () => ({ ensurePeekCleared, minimizeSheet }),
+    () => ({ ensurePeekCleared, minimizeSheet, scrollContainerRef: contentRef }),
     [ensurePeekCleared, minimizeSheet],
   )
 
@@ -320,7 +320,7 @@ export default function ResponsiveSidebar({
               ref={contentRef}
               id={`${id}-content`}
               onFocusCapture={handleContentFocusCapture}
-              className="no-scrollbar min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto overscroll-contain pt-2.5 pb-6"
+              className="no-scrollbar scroll-smooth min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto overscroll-contain pb-6"
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
               {children}
@@ -439,7 +439,7 @@ export default function ResponsiveSidebar({
           onTouchEnd={handleContentTouchEnd}
           onTouchCancel={handleContentTouchEnd}
           onFocusCapture={handleContentFocusCapture}
-          className={`no-scrollbar relative z-0 min-h-0 w-full overscroll-contain ${
+          className={`no-scrollbar scroll-smooth relative z-0 min-h-0 w-full overscroll-contain ${
             isExpandedMobile
               ? 'flex-1 overflow-x-hidden overflow-y-auto pb-[calc(env(safe-area-inset-bottom,0px)+112px)]'
               : 'max-h-[54px] shrink-0 overflow-hidden pb-0'

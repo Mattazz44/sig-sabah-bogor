@@ -95,11 +95,10 @@ function DestinationCard({
             : t('explore.addFavAria', { name: place.name })
         }
         onClick={() => onToggleFavorite?.(place.slug)}
-        className={`apple-glass-pill absolute top-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full transition-all duration-150 active:scale-[0.95] ${
-          favoriteActive
-            ? 'border-rose-300/35 bg-[#3B1D24]/85 text-rose-300 hover:bg-[#49242D]'
-            : 'text-[#EBF0EB] hover:bg-white/[0.16]'
-        }`}
+        className={`apple-glass-pill absolute top-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full transition-all duration-150 active:scale-[0.95] ${favoriteActive
+          ? 'border-rose-300/35 bg-[#3B1D24]/85 text-rose-300 hover:bg-[#49242D]'
+          : 'text-[#EBF0EB] hover:bg-white/[0.16]'
+          }`}
       >
         <HeartIcon filled={favoriteActive} className="h-5 w-5" />
       </button>
@@ -362,319 +361,317 @@ function ForYouPage({
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
         className="apple-canopy-bg animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#EBF0EB]"
       >
-      <div className="mx-auto w-full max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
-        {/* Top Header */}
-        <header className="flex items-start justify-between gap-4 sm:items-center">
-          <div className="flex min-w-0 items-center gap-3">
-            {isLoggedIn && (
-              <SabahMascot
-                id="foryou-header-mascot"
-                variant="happy"
-                size="xs"
-                interactive
-                bubbleAlign="left"
-                bubblePlacement="bottom"
-              />
-            )}
-            <div className="min-w-0">
-              <h1 className="text-[26px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[30px]">
-                {t('foryou.title')}
-              </h1>
-              <p className="mt-1 text-[13px] leading-relaxed text-[#F5F2EB]/60">
-                {isLoggedIn
-                  ? t('foryou.subtitleLoggedIn', {
+        <div className="mx-auto w-full max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
+          {/* Top Header */}
+          <header className="flex items-start justify-between gap-4 sm:items-center">
+            <div className="flex min-w-0 items-center gap-3">
+              {isLoggedIn && (
+                <SabahMascot
+                  id="foryou-header-mascot"
+                  variant="happy"
+                  size="xs"
+                  interactive
+                  bubbleAlign="left"
+                />
+              )}
+              <div className="min-w-0">
+                <h1 className="text-[26px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[30px]">
+                  {t('foryou.title')}
+                </h1>
+                <p className="mt-1 text-[13px] leading-relaxed text-[#F5F2EB]/60">
+                  {isLoggedIn
+                    ? t('foryou.subtitleLoggedIn', {
                       name: currentUser?.name || t('foryou.subtitleDefaultName'),
                     })
-                  : t('foryou.subtitleGuest')}
-              </p>
+                    : t('foryou.subtitleGuest')}
+                </p>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              if (!isLoggedIn) {
-                if (onRequireLogin) onRequireLogin()
-              } else if (onOpenProfile) {
-                onOpenProfile('self')
-              }
-            }}
-            aria-label={isLoggedIn ? t('foryou.openProfileAria') : t('foryou.signInAria')}
-            className="apple-glass-pill flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
-          >
-            {isLoggedIn ? (
-              <SafeImage
-                src={currentUser?.avatar}
-                fallback={DEFAULT_AVATAR_PLACEHOLDER}
-                alt={currentUser?.name || t('profile.defaultUser')}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <UserIcon className="h-5 w-5" />
-            )}
-          </button>
-        </header>
-
-        {!isLoggedIn ? (
-          <div className="mt-6 space-y-8">
-            {/* Banner Ajakan Login Liquid Glass */}
-            <section
-              aria-labelledby="guest-invite-title"
-              className="apple-glass-card relative overflow-visible rounded-3xl p-5 sm:p-6"
+            <button
+              type="button"
+              onClick={() => {
+                if (!isLoggedIn) {
+                  if (onRequireLogin) onRequireLogin()
+                } else if (onOpenProfile) {
+                  onOpenProfile('self')
+                }
+              }}
+              aria-label={isLoggedIn ? t('foryou.openProfileAria') : t('foryou.signInAria')}
+              className="apple-glass-pill flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
             >
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex min-w-0 items-center gap-4">
-                  <SabahMascot
-                    id="foryou-guest-mascot"
-                    size="sm"
-                    interactive
-                    bubbleAlign="left"
-                    className="drop-shadow-[0_8px_18px_rgba(0,0,0,0.35)]"
-                  />
-                  <div className="min-w-0">
+              {isLoggedIn ? (
+                <SafeImage
+                  src={currentUser?.avatar}
+                  fallback={DEFAULT_AVATAR_PLACEHOLDER}
+                  alt={currentUser?.name || t('profile.defaultUser')}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <UserIcon className="h-5 w-5" />
+              )}
+            </button>
+          </header>
+
+          {!isLoggedIn ? (
+            <div className="mt-6 space-y-8">
+              {/* Banner Ajakan Login Liquid Glass */}
+              <section
+                aria-labelledby="guest-invite-title"
+                className="apple-glass-card relative overflow-visible rounded-3xl p-5 sm:p-6"
+              >
+                <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex min-w-0 items-center gap-4">
+                    <SabahMascot
+                      id="foryou-guest-mascot"
+                      size="sm"
+                      interactive
+                      bubbleAlign="left"
+                      className="drop-shadow-[0_8px_18px_rgba(0,0,0,0.35)]"
+                    />
+                    <div className="min-w-0">
+                      <h2
+                        id="guest-invite-title"
+                        className="text-[17px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[18px]"
+                      >
+                        {t('foryou.guestTitle')}
+                      </h2>
+                      <p className="mt-1 max-w-2xl text-[13px] leading-relaxed text-[#F5F2EB]/65">
+                        {t('foryou.guestDesc')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={onRequireLogin}
+                    className="apple-retro-cta inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-xl px-5 py-2.5 text-[13px] font-semibold active:scale-[0.98]"
+                  >
+                    {t('foryou.guestCta')}
+                  </button>
+                </div>
+              </section>
+
+              {/* Interactive Stacked Photo Deck untuk Jelajah Cepat */}
+              {curatedBogorPlaces.length >= 2 && (
+                <InteractivePhotoStack
+                  idPrefix="foryou-guest-stack"
+                  places={curatedBogorPlaces}
+                  onOpenDetail={handleCardOpen}
+                  onStartNavigation={onStartNavigation ? handleQuickRoute : undefined}
+                />
+              )}
+
+              {/* Kurasi Rekomendasi Pilihan untuk Pengunjung */}
+              <section aria-labelledby="curated-bogor-heading">
+                <div className="flex items-end justify-between gap-3">
+                  <div>
                     <h2
-                      id="guest-invite-title"
+                      id="curated-bogor-heading"
                       className="text-[17px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[18px]"
                     >
-                      {t('foryou.guestTitle')}
+                      {t('foryou.curatedHeading')}
                     </h2>
-                    <p className="mt-1 max-w-2xl text-[13px] leading-relaxed text-[#F5F2EB]/65">
-                      {t('foryou.guestDesc')}
+                    <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
+                      {t('foryou.curatedDesc')}
                     </p>
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={onRequireLogin}
-                  className="apple-retro-cta inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-xl px-5 py-2.5 text-[13px] font-semibold active:scale-[0.98]"
-                >
-                  {t('foryou.guestCta')}
-                </button>
-              </div>
-            </section>
-
-            {/* Interactive Stacked Photo Deck untuk Jelajah Cepat */}
-            {curatedBogorPlaces.length >= 2 && (
-              <InteractivePhotoStack
-                idPrefix="foryou-guest-stack"
-                places={curatedBogorPlaces}
-                onOpenDetail={handleCardOpen}
-                onStartNavigation={onStartNavigation ? handleQuickRoute : undefined}
-              />
-            )}
-
-            {/* Kurasi Rekomendasi Pilihan untuk Pengunjung */}
-            <section aria-labelledby="curated-bogor-heading">
-              <div className="flex items-end justify-between gap-3">
-                <div>
-                  <h2
-                    id="curated-bogor-heading"
-                    className="text-[17px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[18px]"
-                  >
-                    {t('foryou.curatedHeading')}
-                  </h2>
-                  <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
-                    {t('foryou.curatedDesc')}
-                  </p>
-                </div>
-              </div>
-
-              {isLoadingTourists && curatedBogorPlaces.length === 0 ? (
-                renderSkeletonGrid()
-              ) : isBackendError && curatedBogorPlaces.length === 0 ? (
-                <div className="mt-5 rounded-2xl border border-rose-400/25 bg-[#2a1216] p-5 text-center">
-                  <p className="text-[14px] font-semibold text-[#EBF0EB]">
-                    {t('foryou.loadErrorTitle')}
-                  </p>
-                  <p className="mt-1 text-[12.5px] text-rose-100/85">
-                    {t('foryou.loadErrorDesc')}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => onRetryBackend && onRetryBackend()}
-                    className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/12 px-4 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-[#EBF0EB]/20"
-                  >
-                    <RefreshIcon className="h-3.5 w-3.5" />
-                    <span>{t('common.retry')}</span>
-                  </button>
-                </div>
-              ) : curatedBogorPlaces.length > 0 ? (
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {curatedBogorPlaces.map((place) => (
-                    <DestinationCard
-                      key={place.slug}
-                      place={place}
-                      favoriteActive={checkFavorite(place.slug)}
-                      onToggleFavorite={toggleFavorite}
-                      onOpenDetail={handleCardOpen}
-                      onStartNavigation={onStartNavigation ? handleQuickRoute : undefined}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <p className="apple-glass-card mt-4 rounded-2xl p-5 text-[13px] text-white/65">
-                  {t('foryou.emptyAvailable')}
-                </p>
-              )}
-            </section>
-          </div>
-        ) : (isLoadingTourists || isFetching) && displayedPersonalized.length === 0 ? (
-          renderSkeletonGrid()
-        ) : (recState.error || isBackendError) && displayedPersonalized.length === 0 ? (
-          <div className="mt-8 rounded-2xl border border-rose-400/25 bg-[#2a1216] p-5 text-center">
-            <p className="text-[14px] font-semibold text-[#EBF0EB]">
-              {t('foryou.loadErrorAuthTitle')}
-            </p>
-            <p className="mt-1 text-[12.5px] text-rose-100/85">
-              {t('foryou.loadErrorDesc')}
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                if (onRetryBackend) onRetryBackend()
-                setReloadTick((prev) => prev + 1)
-              }}
-              className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/12 px-4 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-[#EBF0EB]/20"
-            >
-              <RefreshIcon className="h-3.5 w-3.5" />
-              <span>{t('common.retry')}</span>
-            </button>
-          </div>
-        ) : (
-          <div className="mt-6 space-y-8">
-            {displayedPersonalized.length >= 2 && (
-              <InteractivePhotoStack
-                idPrefix="foryou-stack"
-                places={displayedPersonalized}
-                onOpenDetail={handleCardOpen}
-                onStartNavigation={onStartNavigation ? handleQuickRoute : undefined}
-              />
-            )}
-
-            {effectiveContinue && (
-              <section aria-labelledby="continue-heading">
-                <h2
-                  id="continue-heading"
-                  className="text-[16px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[17px]"
-                >
-                  {t('foryou.continueHeading')}
-                </h2>
-                <p className="mt-0.5 text-[12.5px] text-[#F5F2EB]/60">{t('foryou.continueDesc')}</p>
-
-                <article className="apple-glass-card apple-glass-card-hover mt-3 overflow-hidden rounded-2xl sm:flex sm:items-stretch">
-                  <button
-                    type="button"
-                    onClick={() => handleCardOpen(effectiveContinue)}
-                    className="flex flex-1 flex-col text-left transition-transform duration-150 active:scale-[0.99] sm:flex-row sm:items-stretch"
-                  >
-                    <div className="aspect-[16/9] w-full shrink-0 overflow-hidden bg-[#141A14] sm:aspect-auto sm:min-h-[144px] sm:w-52">
-                      <SafeImage
-                        src={effectiveContinue.image || getBogorFallbackPhoto(effectiveContinue)}
-                        fallback={getBogorFallbackPhoto(effectiveContinue)}
-                        alt={effectiveContinue.name}
-                        loading="eager"
-                        className="h-full w-full object-cover object-center"
-                      />
-                    </div>
-                    <div className="flex min-w-0 flex-1 flex-col justify-center p-4">
-                      <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-[#DFAA63]">
-                        {t('foryou.lastViewed')}
-                      </span>
-                      <h3 className="mt-1 line-clamp-1 text-[16px] font-semibold tracking-tight text-[#F5F2EB]">
-                        {effectiveContinue.name}
-                      </h3>
-                      <p className="mt-1 line-clamp-1 text-[12.5px] text-[#F5F2EB]/65">
-                        {effectiveContinue.address || effectiveContinue.location || t('common.bogorWestJava')}
-                      </p>
-                      <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px]">
-                        <span className="inline-flex items-center gap-1 font-semibold not-italic tabular-nums text-[#F5F2EB]">
-                          <StarIcon filled className="h-3.5 w-3.5 text-[#DFAA63]" aria-hidden="true" />
-                          {Number(effectiveContinue.rating || 0).toFixed(1)}
-                        </span>
-                        {formatDistanceLabel(effectiveContinue, { distanceUnit, tDuration }) && (
-                          <span className="font-medium not-italic tabular-nums text-[#DFAA63]">
-                            {t('foryou.distanceFromYou', {
-                              distance: formatDistanceLabel(effectiveContinue, { distanceUnit, tDuration }),
-                            })}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </button>
-
-                  <div className="flex items-center justify-end gap-2 border-t border-[rgba(244,239,230,0.12)] p-3 sm:border-t-0 sm:border-l sm:px-4">
+                {isLoadingTourists && curatedBogorPlaces.length === 0 ? (
+                  renderSkeletonGrid()
+                ) : isBackendError && curatedBogorPlaces.length === 0 ? (
+                  <div className="mt-5 rounded-2xl border border-rose-400/25 bg-[#2a1216] p-5 text-center">
+                    <p className="text-[14px] font-semibold text-[#EBF0EB]">
+                      {t('foryou.loadErrorTitle')}
+                    </p>
+                    <p className="mt-1 text-[12.5px] text-rose-100/85">
+                      {t('foryou.loadErrorDesc')}
+                    </p>
                     <button
                       type="button"
-                      aria-pressed={checkFavorite(effectiveContinue.slug)}
-                      aria-label={
-                        checkFavorite(effectiveContinue.slug)
-                          ? t('explore.removeFavAria', { name: effectiveContinue.name })
-                          : t('explore.addFavAria', { name: effectiveContinue.name })
-                      }
-                      onClick={() => toggleFavorite && toggleFavorite(effectiveContinue.slug)}
-                      className={`apple-retro-bevel flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-all duration-150 active:scale-[0.96] ${
-                        checkFavorite(effectiveContinue.slug)
-                          ? 'border-rose-300/35 bg-[#3B1D24]/75 text-rose-300'
-                          : 'border-[rgba(244,239,230,0.16)] bg-white/[0.06] text-[#F5F2EB] hover:bg-white/[0.12]'
-                      }`}
+                      onClick={() => onRetryBackend && onRetryBackend()}
+                      className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/12 px-4 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-[#EBF0EB]/20"
                     >
-                      <HeartIcon filled={checkFavorite(effectiveContinue.slug)} className="h-5 w-5" />
+                      <RefreshIcon className="h-3.5 w-3.5" />
+                      <span>{t('common.retry')}</span>
                     </button>
-                    {onStartNavigation && (
+                  </div>
+                ) : curatedBogorPlaces.length > 0 ? (
+                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {curatedBogorPlaces.map((place) => (
+                      <DestinationCard
+                        key={place.slug}
+                        place={place}
+                        favoriteActive={checkFavorite(place.slug)}
+                        onToggleFavorite={toggleFavorite}
+                        onOpenDetail={handleCardOpen}
+                        onStartNavigation={onStartNavigation ? handleQuickRoute : undefined}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="apple-glass-card mt-4 rounded-2xl p-5 text-[13px] text-white/65">
+                    {t('foryou.emptyAvailable')}
+                  </p>
+                )}
+              </section>
+            </div>
+          ) : (isLoadingTourists || isFetching) && displayedPersonalized.length === 0 ? (
+            renderSkeletonGrid()
+          ) : (recState.error || isBackendError) && displayedPersonalized.length === 0 ? (
+            <div className="mt-8 rounded-2xl border border-rose-400/25 bg-[#2a1216] p-5 text-center">
+              <p className="text-[14px] font-semibold text-[#EBF0EB]">
+                {t('foryou.loadErrorAuthTitle')}
+              </p>
+              <p className="mt-1 text-[12.5px] text-rose-100/85">
+                {t('foryou.loadErrorDesc')}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onRetryBackend) onRetryBackend()
+                  setReloadTick((prev) => prev + 1)
+                }}
+                className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/12 px-4 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-[#EBF0EB]/20"
+              >
+                <RefreshIcon className="h-3.5 w-3.5" />
+                <span>{t('common.retry')}</span>
+              </button>
+            </div>
+          ) : (
+            <div className="mt-6 space-y-8">
+              {displayedPersonalized.length >= 2 && (
+                <InteractivePhotoStack
+                  idPrefix="foryou-stack"
+                  places={displayedPersonalized}
+                  onOpenDetail={handleCardOpen}
+                  onStartNavigation={onStartNavigation ? handleQuickRoute : undefined}
+                />
+              )}
+
+              {effectiveContinue && (
+                <section aria-labelledby="continue-heading">
+                  <h2
+                    id="continue-heading"
+                    className="text-[16px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[17px]"
+                  >
+                    {t('foryou.continueHeading')}
+                  </h2>
+                  <p className="mt-0.5 text-[12.5px] text-[#F5F2EB]/60">{t('foryou.continueDesc')}</p>
+
+                  <article className="apple-glass-card apple-glass-card-hover mt-3 overflow-hidden rounded-2xl sm:flex sm:items-stretch">
+                    <button
+                      type="button"
+                      onClick={() => handleCardOpen(effectiveContinue)}
+                      className="flex flex-1 flex-col text-left transition-transform duration-150 active:scale-[0.99] sm:flex-row sm:items-stretch"
+                    >
+                      <div className="aspect-[16/9] w-full shrink-0 overflow-hidden bg-[#141A14] sm:aspect-auto sm:min-h-[144px] sm:w-52">
+                        <SafeImage
+                          src={effectiveContinue.image || getBogorFallbackPhoto(effectiveContinue)}
+                          fallback={getBogorFallbackPhoto(effectiveContinue)}
+                          alt={effectiveContinue.name}
+                          loading="eager"
+                          className="h-full w-full object-cover object-center"
+                        />
+                      </div>
+                      <div className="flex min-w-0 flex-1 flex-col justify-center p-4">
+                        <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-[#DFAA63]">
+                          {t('foryou.lastViewed')}
+                        </span>
+                        <h3 className="mt-1 line-clamp-1 text-[16px] font-semibold tracking-tight text-[#F5F2EB]">
+                          {effectiveContinue.name}
+                        </h3>
+                        <p className="mt-1 line-clamp-1 text-[12.5px] text-[#F5F2EB]/65">
+                          {effectiveContinue.address || effectiveContinue.location || t('common.bogorWestJava')}
+                        </p>
+                        <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px]">
+                          <span className="inline-flex items-center gap-1 font-semibold not-italic tabular-nums text-[#F5F2EB]">
+                            <StarIcon filled className="h-3.5 w-3.5 text-[#DFAA63]" aria-hidden="true" />
+                            {Number(effectiveContinue.rating || 0).toFixed(1)}
+                          </span>
+                          {formatDistanceLabel(effectiveContinue, { distanceUnit, tDuration }) && (
+                            <span className="font-medium not-italic tabular-nums text-[#DFAA63]">
+                              {t('foryou.distanceFromYou', {
+                                distance: formatDistanceLabel(effectiveContinue, { distanceUnit, tDuration }),
+                              })}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+
+                    <div className="flex items-center justify-end gap-2 border-t border-[rgba(244,239,230,0.12)] p-3 sm:border-t-0 sm:border-l sm:px-4">
                       <button
                         type="button"
-                        onClick={() => handleQuickRoute(effectiveContinue)}
-                        className="apple-retro-cta inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-4 text-[12.5px] font-semibold active:scale-[0.98]"
+                        aria-pressed={checkFavorite(effectiveContinue.slug)}
+                        aria-label={
+                          checkFavorite(effectiveContinue.slug)
+                            ? t('explore.removeFavAria', { name: effectiveContinue.name })
+                            : t('explore.addFavAria', { name: effectiveContinue.name })
+                        }
+                        onClick={() => toggleFavorite && toggleFavorite(effectiveContinue.slug)}
+                        className={`apple-retro-bevel flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-all duration-150 active:scale-[0.96] ${checkFavorite(effectiveContinue.slug)
+                          ? 'border-rose-300/35 bg-[#3B1D24]/75 text-rose-300'
+                          : 'border-[rgba(244,239,230,0.16)] bg-white/[0.06] text-[#F5F2EB] hover:bg-white/[0.12]'
+                          }`}
                       >
-                        <RouteWaypointsIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                        <span>{t('foryou.continueRoute')}</span>
+                        <HeartIcon filled={checkFavorite(effectiveContinue.slug)} className="h-5 w-5" />
                       </button>
-                    )}
-                  </div>
-                </article>
-              </section>
-            )}
-
-            <section aria-labelledby="rec-heading">
-              <div className="flex flex-wrap items-end justify-between gap-2">
-                <div>
-                  <h2
-                    id="rec-heading"
-                    className="text-[17px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[18px]"
-                  >
-                    {t('foryou.personalizedHeading')}
-                  </h2>
-                  <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
-                    {usingCuratedFallbackForLoggedIn
-                      ? t('foryou.personalizedFallbackDesc')
-                      : t('foryou.personalizedDesc')}
-                  </p>
-                </div>
-              </div>
-
-              {displayedPersonalized.length > 0 ? (
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {displayedPersonalized.map((item) => (
-                    <DestinationCard
-                      key={item.id || item.slug}
-                      place={item}
-                      favoriteActive={checkFavorite(item.slug)}
-                      onToggleFavorite={toggleFavorite}
-                      onOpenDetail={handleCardOpen}
-                      onStartNavigation={onStartNavigation ? handleQuickRoute : undefined}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <p className="apple-glass-card mt-4 rounded-2xl p-5 text-[13px] text-white/65">
-                  {t('foryou.emptyRecs')}
-                </p>
+                      {onStartNavigation && (
+                        <button
+                          type="button"
+                          onClick={() => handleQuickRoute(effectiveContinue)}
+                          className="apple-retro-cta inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-4 text-[12.5px] font-semibold active:scale-[0.98]"
+                        >
+                          <RouteWaypointsIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                          <span>{t('foryou.continueRoute')}</span>
+                        </button>
+                      )}
+                    </div>
+                  </article>
+                </section>
               )}
-            </section>
-          </div>
-        )}
-      </div>
+
+              <section aria-labelledby="rec-heading">
+                <div className="flex flex-wrap items-end justify-between gap-2">
+                  <div>
+                    <h2
+                      id="rec-heading"
+                      className="text-[17px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[18px]"
+                    >
+                      {t('foryou.personalizedHeading')}
+                    </h2>
+                    <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
+                      {usingCuratedFallbackForLoggedIn
+                        ? t('foryou.personalizedFallbackDesc')
+                        : t('foryou.personalizedDesc')}
+                    </p>
+                  </div>
+                </div>
+
+                {displayedPersonalized.length > 0 ? (
+                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {displayedPersonalized.map((item) => (
+                      <DestinationCard
+                        key={item.id || item.slug}
+                        place={item}
+                        favoriteActive={checkFavorite(item.slug)}
+                        onToggleFavorite={toggleFavorite}
+                        onOpenDetail={handleCardOpen}
+                        onStartNavigation={onStartNavigation ? handleQuickRoute : undefined}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="apple-glass-card mt-4 rounded-2xl p-5 text-[13px] text-white/65">
+                    {t('foryou.emptyRecs')}
+                  </p>
+                )}
+              </section>
+            </div>
+          )}
+        </div>
       </div>
 
       <ScrollToTopButton

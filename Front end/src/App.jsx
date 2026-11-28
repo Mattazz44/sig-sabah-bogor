@@ -655,6 +655,7 @@ export default function App() {
                 selected={selected}
                 onSelect={handleSelectOnMap}
                 onOpenDetail={handleOpenDetail}
+                onStartNavigation={handleStartNavigation}
                 onMarkerHover={setMapHoveredPlaceId}
                 onMapInteract={minimizeSheet}
                 userPosition={userPosition}
@@ -705,6 +706,7 @@ export default function App() {
                 selected={Array.isArray(navigationTarget) ? null : navigationTarget}
                 onSelect={handleSelectOnMap}
                 onOpenDetail={handleOpenDetail}
+                onStartNavigation={handleStartNavigation}
                 userPosition={userPosition}
                 locationStatus={locationStatus}
                 onRequestLocation={handleRequestLocation}

@@ -23,18 +23,22 @@ function MapMarker({
   place,
   onSelect,
   onOpenDetail,
+  onStartNavigation = null,
   onMarkerHover,
   registerMarker,
   isSelected = false,
   selectionStamp = 0,
   autoOpenPopup = false,
+  isNavigating = false,
   isTransit = false,
   userPosition = null,
   locationStatus = 'idle',
 }) {
   const { map } = useMapLibre()
   const onSelectRef = useRef(onSelect)
+  const onOpenDetailRef = useRef(onOpenDetail)
   const onMarkerHoverRef = useRef(onMarkerHover)
+  const isNavigatingRef = useRef(isNavigating)
   const placeRef = useRef(place)
   const markerRef = useRef(null)
   const markerElRef = useRef(null)
@@ -48,8 +52,16 @@ function MapMarker({
   }, [onSelect])
 
   useEffect(() => {
+    onOpenDetailRef.current = onOpenDetail
+  }, [onOpenDetail])
+
+  useEffect(() => {
     onMarkerHoverRef.current = onMarkerHover
   }, [onMarkerHover])
+
+  useEffect(() => {
+    isNavigatingRef.current = isNavigating
+  }, [isNavigating])
 
   useEffect(() => {
     placeRef.current = place
@@ -151,6 +163,11 @@ function MapMarker({
       lastClickedStampRef.current = performance.now()
       markerElRef.current = el
       triggerPop()
+      if (isNavigatingRef.current) {
+        closeManagedPopup()
+        onOpenDetailRef.current?.(placeRef.current)
+        return
+      }
       openManagedPopup()
       onSelectRef.current?.(placeRef.current)
     }
@@ -203,6 +220,17 @@ function MapMarker({
       el.setAttribute('aria-pressed', isSelected ? 'true' : 'false')
     }
 
+    if (isNavigating) {
+      try {
+        if (popupRef.current?.isOpen()) {
+          popupRef.current.remove()
+        }
+      } catch {
+        // ignore
+      }
+      return undefined
+    }
+
     if (isSelected) {
       const nextKey = `${placeId}:${selectionStamp}`
       const recentlyClickedDirectly = performance.now() - lastClickedStampRef.current < 150
@@ -218,7 +246,7 @@ function MapMarker({
     const delayMs = autoOpenPopup ? 350 : 20
     const timer = setTimeout(() => {
       try {
-        if (map && popupRef.current && !popupRef.current.isOpen()) {
+        if (map && popupRef.current && !popupRef.current.isOpen() && !isNavigatingRef.current) {
           popupRef.current.setLngLat([lng, lat]).addTo(map)
         }
       } catch {
@@ -226,7 +254,7 @@ function MapMarker({
       }
     }, delayMs)
     return () => clearTimeout(timer)
-  }, [isSelected, selectionStamp, autoOpenPopup, map, placeId, lng, lat])
+  }, [isSelected, selectionStamp, autoOpenPopup, isNavigating, map, placeId, lng, lat])
 
   if (!place || !isValidCoord) return null
 
@@ -234,6 +262,14 @@ function MapMarker({
     <MapPopup
       place={place}
       onOpenDetail={onOpenDetail}
+      onStartNavigation={onStartNavigation}
+      onClosePopup={() => {
+        try {
+          if (popupRef.current?.isOpen()) popupRef.current.remove()
+        } catch {
+          // ignore
+        }
+      }}
       onSelect={onSelect}
       isTransit={isTransit}
       userPosition={userPosition}
