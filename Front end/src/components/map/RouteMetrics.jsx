@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { usePreferences } from '../../utils/preferences'
 
 function parseNumericSuffix(text, unitRegex) {
@@ -70,6 +71,7 @@ function RouteMetrics({
   isNavigationMode = false,
 }) {
   const { language, distanceUnit, t, tDuration, formatDistanceUnit } = usePreferences()
+  const prefersReduced = useReducedMotion()
   const isActive = isNavigationMode && Boolean(activeDestination)
 
   const targetMinutes = isActive
@@ -144,6 +146,40 @@ function RouteMetrics({
           <span className="shrink-0 rounded-full border border-[#DFAA63]/35 bg-[#DFAA63]/12 px-2.5 py-0.5 font-mono text-[10.5px] font-semibold tracking-wide text-[#DFAA63]">
             {badgeLabel}
           </span>
+        </div>
+
+        {/* Animated Route Progress Track & Moving Navigation Icon */}
+        <div
+          id="nav-route-progress-track"
+          aria-hidden="true"
+          className="relative mt-1 flex items-center gap-2 py-1"
+        >
+          <span className="h-2 w-2 shrink-0 rounded-full bg-[#F2ECE1]" />
+          <div className="relative h-[3px] flex-1 overflow-visible rounded-full bg-[#F2ECE1]/14">
+            <motion.div
+              initial={prefersReduced ? { scaleX: 1 } : { scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+              style={{ transformOrigin: 'left center' }}
+              className="absolute inset-0 rounded-full bg-gradient-to-r from-[#F2ECE1]/70 via-[#DFAA63] to-[#C5A868]"
+            />
+            <motion.span
+              id="nav-progress-mover"
+              initial={prefersReduced ? { left: '50%' } : { left: '0%' }}
+              animate={prefersReduced ? { left: '50%' } : { left: ['0%', '96%'] }}
+              transition={
+                prefersReduced
+                  ? undefined
+                  : { duration: 3.8, repeat: Infinity, ease: 'easeInOut' }
+              }
+              className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full bg-[#141A14] text-[#DFAA63] ring-1.5 ring-[#F2ECE1] shadow-md"
+            >
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+            </motion.span>
+          </div>
+          <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#DFAA63] ring-2 ring-[#DFAA63]/30" />
         </div>
 
         <div className="mt-0.5 flex items-center justify-between border-t border-[rgba(244,239,230,0.14)] pt-2 text-[12px]">

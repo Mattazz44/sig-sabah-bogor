@@ -29,14 +29,16 @@ function UserLocationMarker({ position = USER_POSITION }) {
 
     const el = document.createElement('div')
     el.className = 'user-location-marker'
-    el.style.width = '44px'
-    el.style.height = '44px'
+    el.style.width = '56px'
+    el.style.height = '56px'
     el.style.pointerEvents = 'none'
     el.setAttribute('aria-label', t('map.yourLocationAria'))
     el.innerHTML = `
-      <div style="position:relative; width:44px; height:44px; display:flex; align-items:center; justify-content:center;">
-        <div class="user-pulse-ring" style="position:absolute; width:44px; height:44px; border-radius:9999px; background:rgba(37,99,235,0.35);"></div>
-        <div style="position:relative; width:16px; height:16px; border-radius:9999px; background:#1d4ed8; border:3px solid #ffffff; box-shadow:0 2px 8px rgba(0,0,0,0.35);"></div>
+      <div style="position:relative; width:56px; height:56px; display:flex; align-items:center; justify-content:center;">
+        <span aria-hidden="true" class="user-pulse-ring"></span>
+        <span aria-hidden="true" class="user-pulse-ring user-pulse-ring-secondary"></span>
+        <span aria-hidden="true" class="user-pulse-ring user-pulse-ring-tertiary"></span>
+        <span aria-hidden="true" class="user-location-core"></span>
       </div>
     `
 

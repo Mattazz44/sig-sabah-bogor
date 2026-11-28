@@ -300,7 +300,9 @@ export default function MapView({
           <>
             <BogorBoundaryLayer visible={showBoundary} />
 
-            {userPosition && <UserLocationMarker position={userPosition} />}
+            {(userPosition || effectiveRouteOrigin) && (
+              <UserLocationMarker position={userPosition || effectiveRouteOrigin} />
+            )}
 
             <MarkerClusterGroup
               places={places}

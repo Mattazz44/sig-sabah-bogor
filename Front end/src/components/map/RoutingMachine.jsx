@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { LngLatBounds } from 'maplibre-gl'
+import { LngLatBounds, Marker } from 'maplibre-gl'
 import { useMapLibre } from './mapContext'
 import { calculateDistanceKm } from '../../utils/distance'
 
@@ -7,6 +7,7 @@ const ROUTE_SOURCE_ID = 'navigation-route'
 const ROUTE_CASING_LAYER_ID = 'navigation-route-casing'
 const ROUTE_LINE_LAYER_ID = 'navigation-route-line'
 const ROUTE_DRAW_DURATION_MS = 720
+const TRAVELER_CYCLE_MS = 4600
 
 function removeRouteLayers(map) {
   if (!map) return
@@ -64,6 +65,33 @@ function sliceCoordsAtProgress(pathData, progress) {
   }
 
   return sliced.length >= 2 ? sliced : [coords[0], coords[0]]
+}
+
+function samplePointAndBearing(pathData, progress) {
+  const { coords, cumDist, totalDist } = pathData
+  if (!coords || coords.length === 0) return null
+  if (coords.length === 1 || totalDist <= 0) {
+    return { lngLat: coords[0], bearingDeg: 0 }
+  }
+
+  const clamped = Math.min(1, Math.max(0, progress))
+  const targetDist = totalDist * clamped
+
+  for (let i = 1; i < coords.length; i += 1) {
+    if (cumDist[i] >= targetDist || i === coords.length - 1) {
+      const prevDist = cumDist[i - 1]
+      const segDist = cumDist[i] - prevDist
+      const frac = segDist > 0 ? Math.min(1, Math.max(0, (targetDist - prevDist) / segDist)) : 0
+      const [lng1, lat1] = coords[i - 1]
+      const [lng2, lat2] = coords[i]
+      const lng = lng1 + (lng2 - lng1) * frac
+      const lat = lat1 + (lat2 - lat1) * frac
+      const bearingDeg = Math.atan2(lng2 - lng1, lat2 - lat1) * (180 / Math.PI)
+      return { lngLat: [lng, lat], bearingDeg }
+    }
+  }
+
+  return { lngLat: coords[coords.length - 1], bearingDeg: 0 }
 }
 
 export default function RoutingMachine({
@@ -143,6 +171,8 @@ export default function RoutingMachine({
     let isDisposed = false
     let timedOut = false
     let animFrameId = 0
+    let travelerFrameId = 0
+    let travelerMarker = null
     const controller = new AbortController()
     const currentDestPoints = destPointsRef.current
     const useStopToStopOnly = isFallbackOrigin && currentDestPoints.length > 1
@@ -236,10 +266,76 @@ export default function RoutingMachine({
         !hasAnimatedRouteRef.current && !prefersReducedMotion && rawCoords.length >= 2
 
       cancelAnimationFrame(animFrameId)
+      cancelAnimationFrame(travelerFrameId)
+      if (travelerMarker) {
+        travelerMarker.remove()
+        travelerMarker = null
+      }
+
+      const pathData = buildCumulativePath(rawCoords)
+
+      const startRouteTraveler = () => {
+        if (isDisposed || !map || !map.getStyle() || pathData.coords.length < 2) return
+
+        const el = document.createElement('div')
+        el.className = 'nav-route-traveler'
+        el.setAttribute('aria-hidden', 'true')
+        el.innerHTML = `
+          <div class="nav-route-traveler-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
+            </svg>
+          </div>
+        `
+        const badgeEl = el.querySelector('.nav-route-traveler-badge')
+        const initialSample = samplePointAndBearing(pathData, prefersReducedMotion ? 0.5 : 0)
+        if (!initialSample) return
+
+        if (badgeEl) {
+          badgeEl.style.transform = `rotate(${initialSample.bearingDeg.toFixed(1)}deg)`
+        }
+
+        travelerMarker = new Marker({
+          element: el,
+          anchor: 'center',
+          subpixelPositioning: true,
+          pitchAlignment: 'viewport',
+          rotationAlignment: 'viewport',
+        })
+          .setLngLat(initialSample.lngLat)
+          .addTo(map)
+
+        if (prefersReducedMotion) return
+
+        const loopStart = performance.now()
+        const animateTraveler = (now) => {
+          if (isDisposed || !map || !map.getStyle() || !travelerMarker) return
+          const rawProgress = ((now - loopStart) % TRAVELER_CYCLE_MS) / TRAVELER_CYCLE_MS
+          const easedProgress =
+            rawProgress < 0.5
+              ? 2 * rawProgress * rawProgress
+              : 1 - Math.pow(-2 * rawProgress + 2, 2) / 2
+          const sample = samplePointAndBearing(pathData, easedProgress)
+          if (sample) {
+            travelerMarker.setLngLat(sample.lngLat)
+            if (badgeEl) {
+              const fade =
+                rawProgress < 0.06
+                  ? rawProgress / 0.06
+                  : rawProgress > 0.94
+                    ? (1 - rawProgress) / 0.06
+                    : 1
+              badgeEl.style.opacity = fade.toFixed(2)
+              badgeEl.style.transform = `rotate(${sample.bearingDeg.toFixed(1)}deg)`
+            }
+          }
+          travelerFrameId = requestAnimationFrame(animateTraveler)
+        }
+        travelerFrameId = requestAnimationFrame(animateTraveler)
+      }
 
       if (shouldAnimateDraw) {
         hasAnimatedRouteRef.current = true
-        const pathData = buildCumulativePath(rawCoords)
         updateSourceCoords(sliceCoordsAtProgress(pathData, 0.02))
         ensureRouteLayers()
 
@@ -255,12 +351,14 @@ export default function RoutingMachine({
             animFrameId = requestAnimationFrame(step)
           } else {
             animFrameId = 0
+            startRouteTraveler()
           }
         }
         animFrameId = requestAnimationFrame(step)
       } else {
         updateSourceCoords(rawCoords)
         ensureRouteLayers()
+        startRouteTraveler()
       }
 
       if (!hasFittedBoundsRef.current) {
@@ -338,6 +436,11 @@ export default function RoutingMachine({
       isDisposed = true
       window.clearTimeout(fetchTimeoutId)
       cancelAnimationFrame(animFrameId)
+      cancelAnimationFrame(travelerFrameId)
+      if (travelerMarker) {
+        travelerMarker.remove()
+        travelerMarker = null
+      }
       controller.abort()
       removeRouteLayers(map)
     }

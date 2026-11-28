@@ -4,6 +4,7 @@ import NotificationDrawer from '../ui/NotificationDrawer'
 import GlassModal from '../ui/GlassModal'
 import SafeImage from '../ui/SafeImage'
 import SabahMascot from '../ui/SabahMascot'
+import InteractivePhotoStack from '../ui/InteractivePhotoStack'
 import ScrollToTopButton from '../ui/ScrollToTopButton'
 import { apiFetch, getAuthToken } from '../../utils/api'
 import { pushAppNotification } from '../../utils/notifications'
@@ -256,13 +257,13 @@ function SavedActivitiesPage({
           prev.map((item) =>
             item.id === tempId
               ? {
-                  id: json.data.id,
-                  tourist_spot_id: json.data.tourist_spot_id,
-                  spot_slug: json.data.spot_slug,
-                  name: json.data.name,
-                  location: json.data.location,
-                  date: json.data.date_label || 'Baru saja',
-                }
+                id: json.data.id,
+                tourist_spot_id: json.data.tourist_spot_id,
+                spot_slug: json.data.spot_slug,
+                name: json.data.name,
+                location: json.data.location,
+                date: json.data.date_label || 'Baru saja',
+              }
               : item,
           ),
         )
@@ -358,17 +359,28 @@ function SavedActivitiesPage({
                 </p>
               </div>
             ) : (
-              <ul className="mt-2 divide-y divide-[#F2ECE1]/[0.07] overflow-hidden rounded-2xl bg-[#151C18]">
-                {recentPlaces.map((place) => (
-                  <li key={place.id || place.slug}>
-                    <SavedPlaceRow
-                      place={place}
-                      secondaryMeta={place.travelTime || place.distance || 'Bogor'}
-                      onSelect={onSelectPlace}
-                    />
-                  </li>
-                ))}
-              </ul>
+              <div className="mt-2 space-y-7">
+                {recentPlaces.length >= 2 && (
+                  <InteractivePhotoStack
+                    idPrefix="recent-stack"
+                    places={recentPlaces}
+                    heading={t('motion.stackRecentHeading')}
+                    subtitle={t('motion.stackRecentHint')}
+                    onOpenDetail={onSelectPlace}
+                  />
+                )}
+                <ul className="divide-y divide-[#F2ECE1]/[0.07] overflow-hidden rounded-2xl bg-[#151C18]">
+                  {recentPlaces.map((place) => (
+                    <li key={place.id || place.slug}>
+                      <SavedPlaceRow
+                        place={place}
+                        secondaryMeta={place.travelTime || place.distance || 'Bogor'}
+                        onSelect={onSelectPlace}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
         </div>
@@ -460,10 +472,10 @@ function SavedActivitiesPage({
           {/* Top Header */}
           <header className="flex items-start justify-between gap-3 sm:items-center">
             <div className="min-w-0">
-              <h1 className="text-[26px] leading-[1.15] font-bold tracking-[-0.03em] text-[#F5F2EB] sm:text-[32px]">
+              <h1 className="text-[28px] font-bold tracking-[-0.03em] text-[#F5F2EB] sm:text-[32px]">
                 {t('saved.title')}
               </h1>
-              <p className="mt-1.5 text-[13.5px] leading-relaxed text-[#A7B2AA]">
+              <p className="mt-1 text-[13.5px] leading-relaxed text-[#A7B2AA]">
                 {t('saved.subtitle')}
               </p>
             </div>
@@ -682,18 +694,18 @@ function SavedActivitiesPage({
                 className="lg:col-span-7"
                 aria-labelledby="user-activities-heading"
               >
-                <div className="mb-2.5 flex items-end justify-between gap-3 px-1">
-                  <div className="min-w-0">
+                <div className="mb-2.5 flex items-center justify-between gap-3 px-1">
+                  <div className="flex min-w-0 items-baseline gap-2">
                     <h2
                       id="user-activities-heading"
-                      className="text-[17px] leading-tight font-bold tracking-[-0.02em] text-[#F5F2EB] sm:text-[18px]"
+                      className="truncate text-[18px] font-bold tracking-[-0.02em] text-[#F5F2EB]"
                     >
                       {t('saved.myActivitiesHeading')}
                     </h2>
                     {effectiveUserActivities.length > 0 && (
-                      <p className="mt-0.5 text-[12px] tabular-nums text-[#94A198]">
+                      <span className="shrink-0 text-[12.5px] tabular-nums text-[#94A198]">
                         {t('saved.recordedCount', { count: effectiveUserActivities.length })}
-                      </p>
+                      </span>
                     )}
                   </div>
 
@@ -705,13 +717,9 @@ function SavedActivitiesPage({
                       onClick={() => setShowSortMenu((prev) => !prev)}
                       aria-expanded={showSortMenu}
                       aria-haspopup="menu"
-                      aria-label={t('saved.sortPrefix', { option: currentSortLabel })}
                       className="relative inline-flex min-h-[36px] items-center gap-1.5 rounded-xl bg-[#151C18] px-3 py-1.5 text-[12.5px] font-medium text-[#A7B2AA] transition-colors duration-150 hover:bg-[#1C2520] hover:text-[#F5F2EB] active:scale-[0.98] before:absolute before:-inset-y-1 before:inset-x-0"
                     >
-                      <span className="sm:hidden">{currentSortLabel}</span>
-                      <span className="hidden sm:inline">
-                        {t('saved.sortPrefix', { option: currentSortLabel })}
-                      </span>
+                      <span>{t('saved.sortPrefix', { option: currentSortLabel })}</span>
                       <svg
                         width="12"
                         height="12"
@@ -750,11 +758,10 @@ function SavedActivitiesPage({
                                 setSortOption(opt.key)
                                 setShowSortMenu(false)
                               }}
-                              className={`flex min-h-[40px] w-full items-center justify-between rounded-xl px-3 py-1.5 text-left transition-colors ${
-                                sortOption === opt.key
-                                  ? 'bg-[#243029] font-semibold text-[#C5A868]'
-                                  : 'text-[#F5F2EB]/80 hover:bg-[#222D26] hover:text-[#F5F2EB]'
-                              }`}
+                              className={`flex min-h-[40px] w-full items-center justify-between rounded-xl px-3 py-1.5 text-left transition-colors ${sortOption === opt.key
+                                ? 'bg-[#243029] font-semibold text-[#C5A868]'
+                                : 'text-[#F5F2EB]/80 hover:bg-[#222D26] hover:text-[#F5F2EB]'
+                                }`}
                             >
                               <span>{t(opt.labelKey)}</span>
                               {sortOption === opt.key && (
@@ -841,7 +848,7 @@ function SavedActivitiesPage({
           maxWidthClass="max-w-sm"
         >
           <div className="-mt-3 mb-3 flex justify-center">
-            <SabahMascot variant="happy" size="modal" />
+            <SabahMascot variant="happy" size="modal" interactive />
           </div>
 
           <h3 id="modal-activity-title" className="text-center text-[19px] font-bold tracking-[-0.02em] text-[#F5F2EB]">

@@ -355,7 +355,7 @@ function NotificationDrawer({
               <SabahMascot
                 variant="default"
                 size="md"
-                animate
+                interactive
                 className="mb-4"
               />
               <p className="text-[15px] font-semibold tracking-tight text-[#F5F2EB]">

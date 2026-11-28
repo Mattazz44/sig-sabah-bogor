@@ -96,7 +96,7 @@ function MapMarker({
     el.setAttribute('title', placeName)
     el.setAttribute('aria-label', placeName)
     el.setAttribute('aria-pressed', 'false')
-    el.innerHTML = `<span aria-hidden="true" class="wisata-marker-sonar"></span><span aria-hidden="true" class="wisata-marker-sonar wisata-marker-sonar-secondary"></span><span class="wisata-marker-body">${getCategorySvgHtml(placeCategory)}</span>`
+    el.innerHTML = `<span aria-hidden="true" class="wisata-marker-sonar"></span><span aria-hidden="true" class="wisata-marker-sonar wisata-marker-sonar-secondary"></span><span aria-hidden="true" class="wisata-marker-tap-ripple"></span><span class="wisata-marker-body">${getCategorySvgHtml(placeCategory)}</span>`
 
     const popup = new Popup({
       className: 'wisata-popup',

@@ -66,10 +66,12 @@ export default function TouristList({
   const [minRating, setMinRating] = useState(0)
   const [onlyPopular, setOnlyPopular] = useState(false)
   const [onlyFavorites, setOnlyFavorites] = useState(false)
-  const [isPopularPressed, setIsPopularPressed] = useState(false)
+  const [activeCarouselId, setActiveCarouselId] = useState(null)
 
   const sortMenuRef = useRef(null)
   const listContainerRef = useRef(null)
+  const carouselRef = useRef(null)
+  const carouselRafRef = useRef(0)
 
   useEffect(() => {
     if (selectedId === null || selectedId === undefined) return undefined
@@ -132,10 +134,49 @@ export default function TouristList({
     setOnlyFavorites(false)
   }
 
-  const popularSpot = useMemo(
-    () => places.find((p) => p.isPopular) || places[0] || null,
-    [places],
-  )
+  const carouselSpots = useMemo(() => {
+    const popularFirst = [...places].sort(
+      (a, b) => (b.isPopular ? 1 : 0) - (a.isPopular ? 1 : 0) || Number(b.rating || 0) - Number(a.rating || 0),
+    )
+    return popularFirst.slice(0, 8)
+  }, [places])
+
+  useEffect(() => {
+    return () => {
+      if (carouselRafRef.current) cancelAnimationFrame(carouselRafRef.current)
+    }
+  }, [])
+
+  const handleCarouselScroll = () => {
+    if (carouselRafRef.current) return
+    carouselRafRef.current = requestAnimationFrame(() => {
+      carouselRafRef.current = 0
+      const container = carouselRef.current
+      if (!container) return
+      const containerRect = container.getBoundingClientRect()
+      const centerX = containerRect.left + containerRect.width * 0.42
+      const cards = container.querySelectorAll('[data-carousel-place-id]')
+      let closestId = null
+      let minDist = Number.POSITIVE_INFINITY
+
+      cards.forEach((card) => {
+        const rect = card.getBoundingClientRect()
+        const cardCenter = rect.left + rect.width / 2
+        const dist = Math.abs(cardCenter - centerX)
+        if (dist < minDist) {
+          minDist = dist
+          const rawId = card.getAttribute('data-carousel-place-id')
+          const numId = Number(rawId)
+          closestId = Number.isNaN(numId) ? rawId : numId
+        }
+      })
+
+      if (closestId !== null && closestId !== activeCarouselId) {
+        setActiveCarouselId(closestId)
+        onHoverPlace?.(closestId)
+      }
+    })
+  }
 
   const sortedPlaces = useMemo(() => {
     const refined = places.filter((place) => {
@@ -216,100 +257,109 @@ export default function TouristList({
         onClose={() => setFilterOpen(false)}
       />
 
-      {/* 3. Sorotan Populer (Apple Maps Favorites Compact Row) */}
-      {popularSpot && !query && !isLoading && (
-        <section className="mt-5" aria-labelledby="populer-heading">
-          <h2 id="populer-heading" className="text-[13px] font-semibold tracking-tight text-[#F5F2EB]/90">
-            {t('explore.popularHeading')}
-          </h2>
-          <div className="mt-1.5 border-b border-[rgba(244,239,230,0.12)] pb-3">
-            {(() => {
-              const isPopularSelected = selectedId !== null && popularSpot.id === selectedId
-              const isPopularMapHovered = hoveredPlaceId !== null && popularSpot.id === hoveredPlaceId
+      {/* 3. Sorotan Populer Interaktif (Swipe horizontal menyinkronkan pin peta secara real-time) */}
+      {carouselSpots.length > 0 && !query && !isLoading && (
+        <section className="mt-4" aria-labelledby="populer-heading">
+          <div className="flex items-baseline justify-between gap-2">
+            <h2 id="populer-heading" className="text-[13px] font-semibold tracking-tight text-[#F5F2EB]/90">
+              {t('explore.popularHeading')}
+            </h2>
+            <span className="truncate text-[11px] text-[#F5F2EB]/50">
+              {t('motion.exploreSwipeHint')}
+            </span>
+          </div>
+          <div
+            ref={carouselRef}
+            id="explore-card-carousel"
+            data-no-sheet-drag
+            onScroll={handleCarouselScroll}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="no-scrollbar mt-2 -mx-4 flex snap-x snap-mandatory gap-2.5 overflow-x-auto border-b border-[rgba(244,239,230,0.12)] px-4 pb-3.5"
+          >
+            {carouselSpots.map((spot) => {
+              const isSpotSelected = selectedId !== null && spot.id === selectedId
+              const isSpotSynced =
+                (hoveredPlaceId !== null && spot.id === hoveredPlaceId) ||
+                (activeCarouselId !== null && spot.id === activeCarouselId)
               return (
                 <button
+                  key={spot.id}
                   type="button"
-                  data-selected={isPopularSelected ? 'true' : 'false'}
-                  data-pressed={isPopularPressed ? 'true' : 'false'}
-                  aria-current={isPopularSelected ? 'location' : undefined}
-                  onPointerDown={() => setIsPopularPressed(true)}
-                  onPointerUp={() => setIsPopularPressed(false)}
-                  onPointerCancel={() => setIsPopularPressed(false)}
-                  onMouseEnter={() => onHoverPlace?.(popularSpot.id)}
-                  onMouseLeave={() => {
-                    setIsPopularPressed(false)
-                    onHoverPlace?.(null)
+                  data-carousel-place-id={spot.id}
+                  data-selected={isSpotSelected ? 'true' : 'false'}
+                  data-synced={isSpotSynced ? 'true' : 'false'}
+                  aria-current={isSpotSelected ? 'location' : undefined}
+                  onMouseEnter={() => {
+                    setActiveCarouselId(spot.id)
+                    onHoverPlace?.(spot.id)
                   }}
-                  onFocus={() => onHoverPlace?.(popularSpot.id)}
-                  onBlur={() => onHoverPlace?.(null)}
-                  onClick={() => onSelect?.(popularSpot)}
-                  className={`group flex w-full items-center gap-3 rounded-2xl border p-2 text-left transition-all duration-200 ease-out active:scale-[0.98] ${
-                    isPopularPressed ? 'scale-[0.98]' : ''
-                  } ${
-                    isPopularSelected
-                      ? 'border-[#DFAA63]/65 bg-[#DFAA63]/[0.11] ring-1 ring-[#DFAA63]/45 shadow-[0_10px_24px_-8px_rgba(223,170,99,0.22)]'
-                      : isPopularMapHovered
-                        ? '-translate-y-0.5 border-[#DFAA63]/45 bg-white/[0.08] ring-1 ring-[#DFAA63]/30 shadow-lg'
-                        : 'border-transparent bg-transparent hover:-translate-y-0.5 hover:border-[#DFAA63]/30 hover:bg-white/[0.05] hover:ring-1 hover:ring-[#DFAA63]/20 hover:shadow-lg'
+                  onMouseLeave={() => onHoverPlace?.(null)}
+                  onFocus={() => {
+                    setActiveCarouselId(spot.id)
+                    onHoverPlace?.(spot.id)
+                  }}
+                  onClick={() => onSelect?.(spot)}
+                  className={`group flex w-[264px] shrink-0 snap-start items-center gap-3 rounded-2xl border p-2 text-left transition-all duration-200 ease-out active:scale-[0.98] ${
+                    isSpotSelected
+                      ? 'border-[#DFAA63]/65 bg-[#DFAA63]/[0.12] ring-1 ring-[#DFAA63]/40 shadow-[0_10px_24px_-8px_rgba(223,170,99,0.25)]'
+                      : isSpotSynced
+                        ? '-translate-y-0.5 border-[#DFAA63]/50 bg-white/[0.09] ring-1 ring-[#DFAA63]/30 shadow-lg'
+                        : 'border-white/[0.08] bg-white/[0.03] hover:-translate-y-0.5 hover:border-[#DFAA63]/35 hover:bg-white/[0.06]'
                   }`}
                 >
                   <div
                     className={`apple-retro-bevel relative aspect-[16/10] w-20 shrink-0 overflow-hidden rounded-xl ring-1 transition-all duration-200 ease-out ${
-                      isPopularSelected
+                      isSpotSelected || isSpotSynced
                         ? 'ring-[#DFAA63]/55'
                         : 'ring-[rgba(244,239,230,0.16)] group-hover:ring-[#DFAA63]/35'
                     }`}
                   >
                     <SafeImage
-                      src={popularSpot.image || getBogorFallbackPhoto(popularSpot)}
-                      fallback={getBogorFallbackPhoto(popularSpot)}
-                      alt={popularSpot.name}
+                      src={spot.image || getBogorFallbackPhoto(spot)}
+                      fallback={getBogorFallbackPhoto(spot)}
+                      alt={spot.name}
                       width={160}
                       height={100}
                       loading="eager"
                       className={`h-full w-full object-cover object-center transition-transform duration-200 ease-out ${
-                        isPopularMapHovered ? 'scale-105' : 'group-hover:scale-105'
+                        isSpotSynced ? 'scale-105' : 'group-hover:scale-105'
                       }`}
-                    />
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-70 transition-opacity duration-200 group-hover:opacity-35"
                     />
                   </div>
                   <div className="min-w-0 flex-1">
                     <h3
-                      className={`truncate text-[14px] font-semibold tracking-tight transition-colors duration-200 ${
-                        isPopularSelected || isPopularMapHovered
+                      className={`truncate text-[13.5px] font-semibold tracking-tight transition-colors duration-200 ${
+                        isSpotSelected || isSpotSynced
                           ? 'text-[#DFAA63]'
                           : 'text-[#F5F2EB] group-hover:text-[#DFAA63]'
                       }`}
                     >
-                      {popularSpot.name}
+                      {spot.name}
                     </h3>
-                    <p className="mt-0.5 truncate text-[12px] text-[#F5F2EB]/60">
-                      {formatCompactArea(popularSpot.address, t('common.bogorCityWestJava'))}
+                    <p className="mt-0.5 truncate text-[11.5px] text-[#F5F2EB]/60">
+                      {formatCompactArea(spot.address, t('common.bogorCityWestJava'))}
                     </p>
-                    <div className="mt-1 flex items-center gap-1.5 text-[12px] text-[#F5F2EB]/80">
-                      <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
+                    <div className="mt-1 flex items-center gap-1.5 text-[11.5px] text-[#F5F2EB]/80">
+                      <StarIcon filled className="h-3 w-3 shrink-0 text-[#DFAA63]" />
                       <span className="font-semibold not-italic tabular-nums text-[#F5F2EB]">
-                        {Number(popularSpot.rating || 0).toFixed(1)}
+                        {Number(spot.rating || 0).toFixed(1)}
                       </span>
                       <span className="text-[#F5F2EB]/35" aria-hidden="true">·</span>
-                      <span className="truncate text-[11.5px] not-italic tabular-nums text-[#F5F2EB]/65">
-                        {popularSpot.distance || tCategory(popularSpot.category)}
+                      <span className="truncate text-[11px] not-italic tabular-nums text-[#F5F2EB]/65">
+                        {spot.distance || tCategory(spot.category)}
                       </span>
                     </div>
                   </div>
                   <ChevronRightIcon
                     className={`h-4 w-4 shrink-0 transition-all duration-200 ${
-                      isPopularSelected
+                      isSpotSelected || isSpotSynced
                         ? 'translate-x-0.5 text-[#DFAA63]'
                         : 'text-[#F5F2EB]/35 group-hover:translate-x-0.5 group-hover:text-[#F5F2EB]/80'
                     }`}
                   />
                 </button>
               )
-            })()}
+            })}
           </div>
         </section>
       )}

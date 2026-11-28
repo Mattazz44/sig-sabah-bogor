@@ -1,4 +1,5 @@
-import { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { apiFetch, getAuthToken } from '../../utils/api'
 import { calculateDistanceKm } from '../../utils/distance'
 import { pushAppNotification } from '../../utils/notifications'
@@ -40,6 +41,15 @@ function CustomRoutePage({
   onStartCustomRoute,
 }) {
   const { t, tCategory, tDynamic, tDuration, formatDistanceUnit } = usePreferences()
+  const prefersReduced = useReducedMotion()
+  const [launchingRouteId, setLaunchingRouteId] = useState(null)
+  const launchTimerRef = useRef(null)
+
+  useEffect(() => {
+    return () => {
+      if (launchTimerRef.current) window.clearTimeout(launchTimerRef.current)
+    }
+  }, [])
   const savedTouristSpots = useMemo(() => {
     if (!Array.isArray(tourists) || tourists.length === 0) return []
 
@@ -302,10 +312,10 @@ function CustomRoutePage({
               <ChevronLeftIcon className="h-5 w-5" />
             </button>
             <div className="min-w-0">
-              <h1 className="truncate text-[24px] leading-tight font-bold tracking-[-0.025em] text-[#F5F2EB] sm:text-[28px]">
+              <h1 className="truncate text-[24px] font-bold tracking-[-0.025em] text-[#F5F2EB] sm:text-[28px]">
                 {t('routes.title')}
               </h1>
-              <p className="mt-0.5 text-[12.5px] leading-snug text-[#A7B2AA]">
+              <p className="mt-0.5 truncate text-[12.5px] text-[#A7B2AA]">
                 {t('routes.subtitle')}
               </p>
             </div>
@@ -392,12 +402,13 @@ function CustomRoutePage({
                     </button>
                   </div>
 
-                  {/* Stepper Pemberhentian dengan Garis Penghubung Vertikal (Timeline Connector) */}
+                  {/* Stepper Pemberhentian dengan Garis Penghubung Vertikal Progresif */}
                   <ol className="mt-4 border-t border-[#F2ECE1]/[0.07] pt-4">
                     {route.stops.map((stop, idx) => {
                       const isFirst = idx === 0
                       const isLast = idx === route.stops.length - 1
                       const hasNext = idx < route.stops.length - 1
+                      const isLaunching = launchingRouteId === route.id
                       const stopDistText = /[\d.,]+\s*(km|m|mi)/i.test(String(stop.distance || ''))
                         ? formatDistanceUnit(stop.distance)
                         : tDynamic(stop.distance)
@@ -407,9 +418,26 @@ function CustomRoutePage({
                           key={`${route.id}-stop-${idx}`}
                           className="relative flex items-stretch gap-3.5"
                         >
-                          {/* Timeline Column: Number Node + Vertical Connector Line */}
+                          {/* Timeline Column: Number Node + Animated Progressive Connector Line */}
                           <div className="flex flex-col items-center">
-                            <span
+                            <motion.span
+                              initial={prefersReduced ? false : { scale: 0.72, opacity: 0.5 }}
+                              whileInView={{ scale: 1, opacity: 1 }}
+                              viewport={{ once: true, amount: 0.25 }}
+                              animate={
+                                isLaunching && !prefersReduced
+                                  ? {
+                                      scale: [1, 1.24, 1],
+                                      transition: { duration: 0.34, delay: idx * 0.09 },
+                                    }
+                                  : undefined
+                              }
+                              transition={{
+                                type: 'spring',
+                                stiffness: 360,
+                                damping: 24,
+                                delay: idx * 0.08,
+                              }}
                               className={`z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold tabular-nums ${
                                 isFirst
                                   ? 'bg-[#F2ECE1] text-[#141A14]'
@@ -419,12 +447,35 @@ function CustomRoutePage({
                               }`}
                             >
                               {idx + 1}
-                            </span>
+                            </motion.span>
                             {hasNext && (
                               <span
                                 aria-hidden="true"
-                                className="my-1 w-[1.5px] flex-1 min-h-[20px] rounded-full bg-[#F2ECE1]/20"
-                              />
+                                className="relative my-1 w-[2px] flex-1 min-h-[22px] overflow-hidden rounded-full bg-[#F2ECE1]/12"
+                              >
+                                <motion.span
+                                  data-route-timeline-fill="true"
+                                  initial={prefersReduced ? { scaleY: 1 } : { scaleY: 0 }}
+                                  whileInView={{ scaleY: 1 }}
+                                  viewport={{ once: true, amount: 0.25 }}
+                                  animate={
+                                    isLaunching && !prefersReduced
+                                      ? { scaleY: [0, 1] }
+                                      : undefined
+                                  }
+                                  transition={{
+                                    duration: isLaunching ? 0.32 : 0.6,
+                                    delay: isLaunching ? idx * 0.08 : 0.14 + idx * 0.12,
+                                    ease: [0.22, 1, 0.36, 1],
+                                  }}
+                                  style={{ transformOrigin: 'top center' }}
+                                  className={`absolute inset-0 rounded-full ${
+                                    isLaunching
+                                      ? 'bg-gradient-to-b from-[#F2ECE1] via-[#DFAA63] to-[#C5A868]'
+                                      : 'bg-gradient-to-b from-[#F2ECE1]/60 via-[#C5A868]/65 to-[#C5A868]/85'
+                                  }`}
+                                />
+                              </span>
                             )}
                           </div>
 
@@ -467,12 +518,22 @@ function CustomRoutePage({
                       <button
                         type="button"
                         id={`btn-mulai-${route.id}`}
+                        disabled={launchingRouteId === route.id}
                         onClick={() => {
-                          if (onStartCustomRoute && route.places) {
-                            onStartCustomRoute(route.places.filter(Boolean))
+                          if (!onStartCustomRoute || !route.places) return
+                          const validPlaces = route.places.filter(Boolean)
+                          if (prefersReduced) {
+                            onStartCustomRoute(validPlaces)
+                            return
                           }
+                          setLaunchingRouteId(route.id)
+                          if (launchTimerRef.current) window.clearTimeout(launchTimerRef.current)
+                          launchTimerRef.current = window.setTimeout(() => {
+                            setLaunchingRouteId(null)
+                            onStartCustomRoute(validPlaces)
+                          }, 340)
                         }}
-                        className="relative inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[#F2ECE1] px-4 py-2 text-[13px] font-semibold text-[#141A14] transition-colors duration-150 hover:bg-[#E7DFD1] active:scale-[0.97] before:absolute before:-inset-y-0.5 before:inset-x-0"
+                        className="relative inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[#F2ECE1] px-4 py-2 text-[13px] font-semibold text-[#141A14] transition-colors duration-150 hover:bg-[#E7DFD1] active:scale-[0.97] disabled:opacity-85 before:absolute before:-inset-y-0.5 before:inset-x-0"
                       >
                         <svg
                           width="11"
@@ -574,11 +635,10 @@ function CustomRoutePage({
                     role="checkbox"
                     aria-checked={isChecked}
                     onClick={() => handleToggleDest(place.id)}
-                    className={`flex min-h-[54px] w-full items-center justify-between gap-3 rounded-xl p-2.5 text-left transition-colors duration-150 ${
-                      isChecked
-                        ? 'bg-[#233028] ring-1 ring-[#C5A868]/60'
-                        : 'bg-[#19221D] hover:bg-[#202B24]'
-                    }`}
+                    className={`flex min-h-[54px] w-full items-center justify-between gap-3 rounded-xl p-2.5 text-left transition-colors duration-150 ${isChecked
+                      ? 'bg-[#233028] ring-1 ring-[#C5A868]/60'
+                      : 'bg-[#19221D] hover:bg-[#202B24]'
+                      }`}
                   >
                     <div className="flex min-w-0 items-center gap-3">
                       <SafeImage
@@ -599,11 +659,10 @@ function CustomRoutePage({
 
                     <span
                       aria-hidden="true"
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md transition-colors ${
-                        isChecked
-                          ? 'bg-[#F2ECE1] text-[#141A14]'
-                          : 'bg-[#26322B] text-transparent'
-                      }`}
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md transition-colors ${isChecked
+                        ? 'bg-[#F2ECE1] text-[#141A14]'
+                        : 'bg-[#26322B] text-transparent'
+                        }`}
                     >
                       <CheckIcon className="h-3.5 w-3.5" />
                     </span>

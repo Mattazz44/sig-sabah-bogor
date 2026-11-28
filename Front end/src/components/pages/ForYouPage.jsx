@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { apiFetch } from '../../utils/api'
 import SafeImage from '../ui/SafeImage'
 import SabahMascot from '../ui/SabahMascot'
+import InteractivePhotoStack from '../ui/InteractivePhotoStack'
 import ScrollToTopButton from '../ui/ScrollToTopButton'
 import {
   HeartIcon,
@@ -364,17 +365,29 @@ function ForYouPage({
       <div className="mx-auto w-full max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
         {/* Top Header */}
         <header className="flex items-start justify-between gap-4 sm:items-center">
-          <div className="min-w-0">
-            <h1 className="text-[26px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[30px]">
-              {t('foryou.title')}
-            </h1>
-            <p className="mt-1 text-[13px] leading-relaxed text-[#F5F2EB]/60">
-              {isLoggedIn
-                ? t('foryou.subtitleLoggedIn', {
-                    name: currentUser?.name || t('foryou.subtitleDefaultName'),
-                  })
-                : t('foryou.subtitleGuest')}
-            </p>
+          <div className="flex min-w-0 items-center gap-3">
+            {isLoggedIn && (
+              <SabahMascot
+                id="foryou-header-mascot"
+                variant="happy"
+                size="xs"
+                interactive
+                bubbleAlign="left"
+                bubblePlacement="bottom"
+              />
+            )}
+            <div className="min-w-0">
+              <h1 className="text-[26px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[30px]">
+                {t('foryou.title')}
+              </h1>
+              <p className="mt-1 text-[13px] leading-relaxed text-[#F5F2EB]/60">
+                {isLoggedIn
+                  ? t('foryou.subtitleLoggedIn', {
+                      name: currentUser?.name || t('foryou.subtitleDefaultName'),
+                    })
+                  : t('foryou.subtitleGuest')}
+              </p>
+            </div>
           </div>
 
           <button
@@ -407,12 +420,15 @@ function ForYouPage({
             {/* Banner Ajakan Login Liquid Glass */}
             <section
               aria-labelledby="guest-invite-title"
-              className="apple-glass-card relative overflow-hidden rounded-3xl p-5 sm:p-6"
+              className="apple-glass-card relative overflow-visible rounded-3xl p-5 sm:p-6"
             >
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex min-w-0 items-center gap-4">
                   <SabahMascot
+                    id="foryou-guest-mascot"
                     size="sm"
+                    interactive
+                    bubbleAlign="left"
                     className="drop-shadow-[0_8px_18px_rgba(0,0,0,0.35)]"
                   />
                   <div className="min-w-0">
@@ -437,6 +453,16 @@ function ForYouPage({
                 </button>
               </div>
             </section>
+
+            {/* Interactive Stacked Photo Deck untuk Jelajah Cepat */}
+            {curatedBogorPlaces.length >= 2 && (
+              <InteractivePhotoStack
+                idPrefix="foryou-guest-stack"
+                places={curatedBogorPlaces}
+                onOpenDetail={handleCardOpen}
+                onStartNavigation={onStartNavigation ? handleQuickRoute : undefined}
+              />
+            )}
 
             {/* Kurasi Rekomendasi Pilihan untuk Pengunjung */}
             <section aria-labelledby="curated-bogor-heading">
@@ -517,6 +543,15 @@ function ForYouPage({
           </div>
         ) : (
           <div className="mt-6 space-y-8">
+            {displayedPersonalized.length >= 2 && (
+              <InteractivePhotoStack
+                idPrefix="foryou-stack"
+                places={displayedPersonalized}
+                onOpenDetail={handleCardOpen}
+                onStartNavigation={onStartNavigation ? handleQuickRoute : undefined}
+              />
+            )}
+
             {effectiveContinue && (
               <section aria-labelledby="continue-heading">
                 <h2

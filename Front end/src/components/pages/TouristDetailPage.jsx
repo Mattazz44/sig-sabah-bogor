@@ -1,5 +1,14 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from 'framer-motion'
 import SafeImage from '../ui/SafeImage'
 import {
   DEFAULT_IMAGE_PLACEHOLDER,
@@ -635,11 +644,91 @@ function TouristDetailPage({
   toggleFavorite,
 }) {
   const { t, tCategory, tHours, tTicket, tDuration, distanceUnit } = usePreferences()
+  const prefersReduced = useReducedMotion()
   const scrollContainerRef = useRef(null)
+  const pullStartRef = useRef(null)
+  const refreshTimerRef = useRef(null)
+  const [pullPhase, setPullPhase] = useState('idle') // 'idle' | 'pulling' | 'ready' | 'refreshed'
   const [copied, setCopied] = useState(false)
   const [prevSlug, setPrevSlug] = useState(place?.slug ?? null)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
+
+  // Scroll-linked parallax + elastic pull-to-zoom MotionValues (60fps GPU)
+  const { scrollY } = useScroll({ container: scrollContainerRef })
+  const pullY = useMotionValue(0)
+  const smoothPull = useSpring(pullY, { stiffness: 320, damping: 28, mass: 0.6 })
+  const heroParallaxY = useTransform([scrollY, smoothPull], ([s, p]) => {
+    if (prefersReduced) return 0
+    if (p > 0) return p * 0.22
+    return Math.min(125, s * 0.34)
+  })
+  const heroZoomScale = useTransform([scrollY, smoothPull], ([s, p]) => {
+    if (prefersReduced) return 1
+    if (p > 0) return 1 + Math.min(0.24, p / 380)
+    return 1 + Math.min(0.08, s / 4200)
+  })
+
+  useEffect(() => {
+    return () => {
+      if (refreshTimerRef.current) window.clearTimeout(refreshTimerRef.current)
+    }
+  }, [])
+
+  const beginPullGesture = (clientX, clientY, target) => {
+    if (prefersReduced || isLightboxOpen) return
+    if (target?.closest?.('button, a, input, [role="dialog"]')) return
+    const scroller = scrollContainerRef.current
+    if (!scroller || scroller.scrollTop > 1) return
+    pullStartRef.current = { x: clientX, y: clientY, engaged: false }
+  }
+
+  const movePullGesture = (clientX, clientY) => {
+    const gesture = pullStartRef.current
+    if (!gesture || prefersReduced) return
+    const scroller = scrollContainerRef.current
+    if (!scroller || scroller.scrollTop > 1) {
+      pullStartRef.current = null
+      pullY.set(0)
+      return
+    }
+    const dy = clientY - gesture.y
+    const dx = clientX - gesture.x
+    if (!gesture.engaged) {
+      if (dy < 8) return
+      if (Math.abs(dx) > dy * 0.85) {
+        pullStartRef.current = null
+        return
+      }
+      gesture.engaged = true
+    }
+    const damped = Math.max(0, Math.min(132, (dy - 6) * 0.48))
+    pullY.set(damped)
+    if (damped >= 62 && pullPhase !== 'ready') {
+      setPullPhase('ready')
+    } else if (damped >= 18 && damped < 62 && pullPhase !== 'pulling') {
+      setPullPhase('pulling')
+    } else if (damped < 18 && pullPhase !== 'idle' && pullPhase !== 'refreshed') {
+      setPullPhase('idle')
+    }
+  }
+
+  const endPullGesture = () => {
+    const gesture = pullStartRef.current
+    pullStartRef.current = null
+    if (!gesture?.engaged) return
+    const reachedThreshold = pullY.get() >= 62
+    pullY.set(0)
+    if (reachedThreshold) {
+      setPullPhase('refreshed')
+      if (refreshTimerRef.current) window.clearTimeout(refreshTimerRef.current)
+      refreshTimerRef.current = window.setTimeout(() => {
+        setPullPhase('idle')
+      }, 1500)
+    } else {
+      setPullPhase('idle')
+    }
+  }
 
   if ((place?.slug ?? null) !== prevSlug) {
     setPrevSlug(place?.slug ?? null)
@@ -695,6 +784,7 @@ function TouristDetailPage({
   if (!place) {
     return (
       <div
+        ref={scrollContainerRef}
         id="tourist-detail-page"
         className="apple-canopy-bg flex h-full w-full flex-col items-center justify-center px-6 pb-32 text-center text-[#EBF0EB]"
       >
@@ -793,8 +883,62 @@ function TouristDetailPage({
     <div
       ref={scrollContainerRef}
       id="tourist-detail-page"
+      onTouchStart={(e) => {
+        const touch = e.touches?.[0]
+        if (touch) beginPullGesture(touch.clientX, touch.clientY, e.target)
+      }}
+      onTouchMove={(e) => {
+        const touch = e.touches?.[0]
+        if (touch) movePullGesture(touch.clientX, touch.clientY)
+      }}
+      onTouchEnd={endPullGesture}
+      onTouchCancel={endPullGesture}
+      onPointerDown={(e) => {
+        if (e.pointerType === 'mouse' && e.button === 0) {
+          beginPullGesture(e.clientX, e.clientY, e.target)
+        }
+      }}
+      onPointerMove={(e) => {
+        if (e.pointerType === 'mouse' && pullStartRef.current) {
+          movePullGesture(e.clientX, e.clientY)
+        }
+      }}
+      onPointerUp={(e) => {
+        if (e.pointerType === 'mouse') endPullGesture()
+      }}
+      onPointerCancel={endPullGesture}
       className="apple-canopy-bg animate-detail-enter relative h-full w-full overflow-y-auto overflow-x-hidden overscroll-contain text-[#F5F2EB]"
     >
+      {/* Elastic Pull-to-Refresh Micro Pill (Non-Blocking) */}
+      <AnimatePresence>
+        {pullPhase !== 'idle' && (
+          <motion.div
+            id="detail-pull-indicator"
+            role="status"
+            aria-live="polite"
+            initial={{ opacity: 0, y: -14, scale: 0.92 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.94 }}
+            transition={{ type: 'spring', stiffness: 420, damping: 28 }}
+            className="pointer-events-none fixed inset-x-0 top-4 z-40 flex justify-center"
+          >
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#F2ECE1]/18 bg-[#151D17]/92 px-3.5 py-1.5 text-[12px] font-semibold text-[#F5F2EB] shadow-lg backdrop-blur-md">
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  pullPhase === 'refreshed' ? 'bg-[#8FB596]' : 'bg-[#C5A868]'
+                }`}
+                aria-hidden="true"
+              />
+              {pullPhase === 'ready'
+                ? t('motion.pullReleaseHint')
+                : pullPhase === 'refreshed'
+                  ? t('motion.pullRefreshed')
+                  : t('motion.pullRefreshHint')}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Wrapper atas: Full-bleed di mobile (< 768px), terbingkai proporsional max-w-5xl di iPad / Nest Hub / Laptop */}
       <div className="relative w-full md:mx-auto md:max-w-5xl md:px-6 md:pt-6">
         {/* Top Navigation Glass Bar: Mengambang di Hero (Mobile) / Bar Navigasi Ringkas di atas Hero (Desktop & iPad) */}
@@ -859,19 +1003,29 @@ function TouristDetailPage({
           id="detail-hero-banner"
           className="relative h-64 w-full overflow-hidden bg-[#141B14] sm:h-80 md:h-96 md:rounded-3xl md:border md:border-[rgba(244,239,230,0.16)] md:shadow-2xl lg:h-[420px]"
         >
-          {/* Foto Utama Full-Bleed memenuhi 100% kontainer tanpa blur backdrop atau inner frame */}
-          <SafeImage
-            src={heroImage}
-            fallback={fallbackPhoto}
-            alt={place.name}
-            width={1280}
-            height={720}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            className="h-full w-full"
-            imgClassName="h-full w-full object-cover object-center"
-          />
+          {/* Foto Utama Full-Bleed dengan Scroll-Linked Parallax & Elastic Pull-to-Zoom */}
+          <motion.div
+            id="detail-hero-parallax"
+            style={{
+              y: heroParallaxY,
+              scale: heroZoomScale,
+              transformOrigin: 'center top',
+            }}
+            className="h-full w-full will-change-transform"
+          >
+            <SafeImage
+              src={heroImage}
+              fallback={fallbackPhoto}
+              alt={place.name}
+              width={1280}
+              height={720}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="h-full w-full"
+              imgClassName="h-full w-full object-cover object-center"
+            />
+          </motion.div>
 
           {/* Seamless bottom fade KHUSUS mobile (< md) agar bawah foto menyatu mulus ke background halaman tanpa garis potong kaku */}
           <div
@@ -1039,7 +1193,7 @@ function TouristDetailPage({
                       className="flex min-w-0 flex-col items-center justify-center px-3 py-3.5 text-center sm:px-4"
                     >
                       <span className="text-[11px] font-medium text-[#F5F2EB]/60">{item.label}</span>
-                      <span className="mt-1 break-words font-mono text-[12.5px] font-semibold leading-snug tabular-nums tracking-wide text-[#F5F2EB] sm:text-[13px]">
+                      <span className="mt-1 w-full break-words font-mono text-[12px] font-semibold leading-snug tabular-nums tracking-wide text-[#F5F2EB] sm:text-[13px]">
                         {item.value}
                       </span>
                     </div>

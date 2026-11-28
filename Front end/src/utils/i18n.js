@@ -294,7 +294,7 @@ export const TRANSLATIONS = {
 
     // Custom Routes Page
     'routes.title': 'Rute Custom',
-    'routes.subtitle': 'Rute tersimpan di akun Anda',
+    'routes.subtitle': 'Rute perjalanan tersimpan akun Anda',
     'routes.backAria': 'Kembali ke aktivitas tersimpan',
     'routes.createBtn': 'Buat Rute',
     'routes.createShortBtn': 'Buat',
@@ -557,6 +557,24 @@ export const TRANSLATIONS = {
     'mascot.happy': 'Maskot Rusa Tutul Sabah Bogor bahagia memegang peta lipat',
     'mascot.goodbye': 'Maskot Rusa Tutul Sabah Bogor melambaikan tangan perpisahan',
     'mascot.admin': 'Maskot Rusa Tutul Admin Sabah Bogor memeriksa daftar wisata',
+    'mascot.tapAria': 'Ketuk maskot Rusa Sabah Bogor untuk menyapa',
+    'mascot.greet1': 'Halo! Siap jelajah Bogor hari ini?',
+    'mascot.greet2': 'Udara curug Bogor lagi sejuk banget!',
+    'mascot.greet3': 'Yuk mampir ke Kebun Raya atau Suryakencana!',
+    'mascot.greet4': 'Selamat berpetualang, hati-hati di jalan!',
+
+    // Interactive Motion & Gestures
+    'motion.stackHeading': 'Jelajah Cepat Destinasi',
+    'motion.stackHint': 'Geser atau ketuk tumpukan kartu untuk melihat destinasi berikutnya',
+    'motion.stackRecentHeading': 'Tumpukan Terakhir Dilihat',
+    'motion.stackRecentHint': 'Geser atau ketuk kartu untuk melihat riwayat destinasi',
+    'motion.stackNextAria': 'Lihat kartu destinasi berikutnya',
+    'motion.stackTapFlipAria': 'Ketuk atau geser untuk melewati {name}',
+    'motion.pullRefreshHint': 'Tarik ke bawah untuk memperbarui',
+    'motion.pullReleaseHint': 'Lepas untuk menyegarkan',
+    'motion.pullRefreshed': 'Info destinasi diperbarui',
+    'motion.exploreSwipeHint': 'Geser kartu untuk menyorot pin di peta',
+    'motion.navActiveProgress': 'Menuju tujuan',
 
     // Admin SPA & Mascot Feedback
     'admin.title': 'Admin Wisata Bogor',
@@ -1217,6 +1235,24 @@ export const TRANSLATIONS = {
     'mascot.happy': 'Sabah Bogor Spotted Deer Mascot happily holding a folded map',
     'mascot.goodbye': 'Sabah Bogor Spotted Deer Mascot waving goodbye',
     'mascot.admin': 'Sabah Bogor Admin Spotted Deer Mascot reviewing destinations',
+    'mascot.tapAria': 'Tap the Sabah Bogor deer mascot to say hello',
+    'mascot.greet1': 'Hi! Ready to explore Bogor today?',
+    'mascot.greet2': 'Bogor waterfalls feel crisp and refreshing!',
+    'mascot.greet3': 'How about the Botanical Gardens or Suryakencana?',
+    'mascot.greet4': 'Enjoy your trip and travel safe!',
+
+    // Interactive Motion & Gestures
+    'motion.stackHeading': 'Quick Discovery Deck',
+    'motion.stackHint': 'Swipe or tap the photo stack to flip to the next spot',
+    'motion.stackRecentHeading': 'Recently Viewed Stack',
+    'motion.stackRecentHint': 'Swipe or tap the card stack to browse your history',
+    'motion.stackNextAria': 'Flip to next destination card',
+    'motion.stackTapFlipAria': 'Tap or swipe to flip past {name}',
+    'motion.pullRefreshHint': 'Pull down to refresh',
+    'motion.pullReleaseHint': 'Release to refresh',
+    'motion.pullRefreshed': 'Destination info refreshed',
+    'motion.exploreSwipeHint': 'Swipe cards to highlight map pins',
+    'motion.navActiveProgress': 'En route to destination',
 
     // Admin SPA & Mascot Feedback
     'admin.title': 'Bogor Tourism Admin',
@@ -1445,12 +1481,18 @@ export function translateDuration(rawText, language = 'id') {
 
 export function translateTicketPrice(rawText, language = 'id') {
   if (!rawText || typeof rawText !== 'string') return rawText || ''
-  if (language !== 'en') return rawText
-  const trimmed = rawText.trim()
-  if (/^gratis$/i.test(trimmed)) return 'Free'
-  if (/^cek di lokasi$/i.test(trimmed)) return 'Check on site'
-  if (/^belum tersedia$/i.test(trimmed)) return 'Not available'
-  return trimmed
+  const normalized = rawText
+    .trim()
+    .replace(/(\d)\(/g, '$1 (')
+    .replace(/\)\s*&\s*/g, ') & ')
+    .replace(/([^\s])&([^\s])/g, '$1 & $2')
+    .replace(/\)\s*\/\s*/g, ') / ')
+    .replace(/\s{2,}/g, ' ')
+  if (language !== 'en') return normalized
+  if (/^gratis$/i.test(normalized)) return 'Free'
+  if (/^cek di lokasi$/i.test(normalized)) return 'Check on site'
+  if (/^belum tersedia$/i.test(normalized)) return 'Not available'
+  return normalized
     .replace(/\bGratis\b/gi, 'Free')
     .replace(/\barea publik\b/gi, 'public area')
     .replace(/\bmulai dari\b/gi, 'from')

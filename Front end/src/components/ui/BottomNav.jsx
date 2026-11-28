@@ -138,25 +138,29 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
     [setActiveTab, onTabChange, location.pathname, navigate],
   )
 
-  const applyVisuals = useCallback((floatIdx, stretch, sheenShift, isDraggingNow) => {
-    const clampedStretch = clamp(stretch, -0.045, 0.38)
+  const applyVisuals = useCallback((floatIdx, stretch, sheenShift, isDraggingNow, moveDir = 0) => {
+    const clampedStretch = clamp(stretch, -0.05, 0.44)
     const sx = 1 + clampedStretch
     const sy = isDraggingNow && clampedStretch < 0.06
-      ? 1.035
-      : clamp(1 - clampedStretch * 0.22, 0.91, 1.035)
+      ? 1.04
+      : clamp(1 - clampedStretch * 0.28, 0.86, 1.04)
 
     const pillEl = pillRef.current
     if (pillEl) {
+      // Geser titik tumpu morphing ke sisi ekor agar kapsul meluncur memanjang seperti tetesan cairan
+      const originX = moveDir > 0.15 ? '36%' : moveDir < -0.15 ? '64%' : '50%'
+      pillEl.style.transformOrigin = `${originX} 50%`
       pillEl.style.transform = `translate3d(${floatIdx * 100}%, 0, 0) scale(${sx.toFixed(4)}, ${sy.toFixed(4)})`
       pillEl.dataset.dragging = isDraggingNow ? 'true' : 'false'
+      pillEl.dataset.morphing = Math.abs(clampedStretch) > 0.04 ? 'true' : 'false'
     }
 
     const sheenEl = sheenRef.current
     if (sheenEl) {
-      const clampedShift = clamp(sheenShift, -32, 32)
-      const energy = clamp(Math.abs(clampedStretch) / 0.32, 0, 1)
+      const clampedShift = clamp(sheenShift, -36, 36)
+      const energy = clamp(Math.abs(clampedStretch) / 0.34, 0, 1)
       sheenEl.style.transform = `translate3d(${clampedShift.toFixed(2)}%, 0, 0)`
-      sheenEl.style.opacity = (0.38 + energy * 0.56).toFixed(3)
+      sheenEl.style.opacity = (0.38 + energy * 0.58).toFixed(3)
     }
 
     for (let i = 0; i < ITEMS.length; i++) {
@@ -171,8 +175,8 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
 
       const iconEl = iconRefs.current[i]
       if (iconEl) {
-        const iconScale = 1 + 0.14 * proximity
-        const iconY = -1 * proximity
+        const iconScale = 1 + 0.17 * proximity
+        const iconY = -1.8 * proximity
         iconEl.style.transform = `translate3d(0, ${iconY.toFixed(2)}px, 0) scale(${iconScale.toFixed(3)})`
         iconEl.style.color = color
       }
@@ -235,16 +239,16 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
       p.pos += p.vel * dt
 
       const stretchTarget = clamp(
-        Math.abs(p.vel) * 0.031 + Math.min(0.24, Math.abs(displacement) * 0.19),
+        Math.abs(p.vel) * 0.038 + Math.min(0.3, Math.abs(displacement) * 0.24),
         0,
-        0.38,
+        0.44,
       )
       const stretchAccel =
         STRETCH_STIFFNESS * (stretchTarget - p.stretchPos) - STRETCH_DAMPING * p.stretchVel
       p.stretchVel += stretchAccel * dt
       p.stretchPos += p.stretchVel * dt
 
-      const targetSheen = clamp(p.vel * 3.8, -32, 32)
+      const targetSheen = clamp(p.vel * 4.2, -36, 36)
       p.sheenShift += (targetSheen - p.sheenShift) * Math.min(1, dt * 12)
 
       const isSettled =
@@ -260,7 +264,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
         p.stretchVel = 0
         p.sheenShift = 0
         p.rafId = 0
-        applyVisuals(p.pos, 0, 0, false)
+        applyVisuals(p.pos, 0, 0, false, 0)
         return
       }
 
@@ -269,6 +273,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
         p.stretchPos,
         p.sheenShift,
         false,
+        p.vel,
       )
       p.rafId = requestAnimationFrame(step)
     }
@@ -353,12 +358,12 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
 
     const phys = physicsRef.current
     phys.pos = nextPos
-    const dragStretchTarget = clamp(Math.abs(drag.dragVel) * 0.044 + 0.06, 0.05, 0.38)
-    phys.stretchPos += (dragStretchTarget - phys.stretchPos) * 0.45
+    const dragStretchTarget = clamp(Math.abs(drag.dragVel) * 0.052 + 0.08, 0.06, 0.44)
+    phys.stretchPos += (dragStretchTarget - phys.stretchPos) * 0.48
     phys.stretchVel = 0
-    phys.sheenShift = clamp(drag.dragVel * 3.8, -32, 32)
+    phys.sheenShift = clamp(drag.dragVel * 4.2, -36, 36)
 
-    applyVisuals(nextPos, phys.stretchPos, phys.sheenShift, true)
+    applyVisuals(nextPos, phys.stretchPos, phys.sheenShift, true, drag.dragVel)
   }
 
   const finishDrag = (e) => {
@@ -401,8 +406,8 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
     // Beri dorongan impuls stretch awal agar klik tab terdekat sekalipun memanjang cair
     const jumpDist = Math.abs(index - phys.pos)
     if (jumpDist > 0.25 && !prefersReducedMotion()) {
-      phys.stretchPos = Math.max(phys.stretchPos, clamp(0.14 + jumpDist * 0.06, 0.16, 0.34))
-      phys.sheenShift = clamp((index - prevTarget) * 10, -28, 28)
+      phys.stretchPos = Math.max(phys.stretchPos, clamp(0.18 + jumpDist * 0.075, 0.2, 0.4))
+      phys.sheenShift = clamp((index - prevTarget) * 12, -32, 32)
     }
 
     startSpringLoop()

@@ -165,7 +165,7 @@ export default function MarkerClusterGroup({
 
     const clearActive = () => {
       if (activeEl && activeClass) {
-        activeEl.classList.remove(activeClass)
+        activeEl.classList.remove(activeClass, 'wisata-marker-sync-pop')
       }
       if (activeMarker?.setZIndexOffset) {
         try {
@@ -188,7 +188,9 @@ export default function MarkerClusterGroup({
       if (directMarker) {
         const el = directMarker.getElement?.()
         if (el) {
-          el.classList.add('wisata-marker-hovered')
+          el.classList.remove('wisata-marker-sync-pop')
+          void el.offsetWidth
+          el.classList.add('wisata-marker-hovered', 'wisata-marker-sync-pop')
           directMarker.setZIndexOffset?.(960)
           activeEl = el
           activeMarker = directMarker
