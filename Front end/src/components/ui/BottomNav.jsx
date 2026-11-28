@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { usePreferences } from '../../utils/preferences'
 
 const stroke = {
   fill: 'none',
@@ -12,7 +13,8 @@ const stroke = {
 const ITEMS = [
   {
     id: 'explore',
-    label: 'Explore',
+    tabKey: 'Explore',
+    labelKey: 'nav.explore',
     icon: (
       <g {...stroke} strokeWidth="2.2">
         <circle cx="11" cy="11" r="7" />
@@ -22,7 +24,8 @@ const ITEMS = [
   },
   {
     id: 'untuk-anda',
-    label: 'Untuk Anda',
+    tabKey: 'Untuk Anda',
+    labelKey: 'nav.forYou',
     icon: (
       <g {...stroke}>
         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
@@ -32,7 +35,8 @@ const ITEMS = [
   },
   {
     id: 'navigasi',
-    label: 'Navigasi',
+    tabKey: 'Navigasi',
+    labelKey: 'nav.navigation',
     icon: (
       <g {...stroke}>
         <path d="M21 3 3 10.5l7.5 3L14 21l7-18Z" />
@@ -41,7 +45,8 @@ const ITEMS = [
   },
   {
     id: 'tersimpan',
-    label: 'Tersimpan',
+    tabKey: 'Tersimpan',
+    labelKey: 'nav.saved',
     icon: (
       <g {...stroke}>
         <path d="M12 20s-7.5-4.6-9-9.2C2 7.4 4.3 4.5 7.5 4.5c1.9 0 3.4 1 4.5 2.6 1.1-1.6 2.6-2.6 4.5-2.6 3.2 0 5.5 2.9 4.5 6.3-1.5 4.6-9 9.2-9 9.2Z" />
@@ -50,7 +55,8 @@ const ITEMS = [
   },
   {
     id: 'aktivitas',
-    label: 'Aktivitas',
+    tabKey: 'Aktivitas',
+    labelKey: 'nav.activity',
     icon: (
       <g {...stroke}>
         <path d="M2 12h5l2-5 4 10 2-5h7" />
@@ -78,8 +84,8 @@ function resolveActiveIndex(activeTab) {
   const normalized = (activeTab || 'Explore').toLowerCase()
   const idx = ITEMS.findIndex(
     (item) =>
-      item.label.toLowerCase() === normalized ||
-      (item.label === 'Tersimpan' && normalized === 'aktivitas tersimpan'),
+      item.tabKey.toLowerCase() === normalized ||
+      (item.tabKey === 'Tersimpan' && normalized === 'aktivitas tersimpan'),
   )
   return idx >= 0 ? idx : 0
 }
@@ -92,6 +98,7 @@ function prefersReducedMotion() {
 }
 
 export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabChange }) {
+  const { t } = usePreferences()
   const location = useLocation()
   const navigate = useNavigate()
   const activeIndex = useMemo(() => resolveActiveIndex(activeTab), [activeTab])
@@ -378,14 +385,14 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
     phys.vel = clamp(drag.dragVel, -10, 10)
     startSpringLoop()
 
-    emitTabSelect(ITEMS[snappedIndex].label)
+    emitTabSelect(ITEMS[snappedIndex].tabKey)
 
     setTimeout(() => {
       suppressClickRef.current = false
     }, 60)
   }
 
-  const handleButtonClick = (index, label) => {
+  const handleButtonClick = (index, tabKey) => {
     if (suppressClickRef.current) return
     const phys = physicsRef.current
     const prevTarget = phys.target
@@ -399,7 +406,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
     }
 
     startSpringLoop()
-    emitTabSelect(label)
+    emitTabSelect(tabKey)
   }
 
   const handleKeyDown = (e, index) => {
@@ -412,7 +419,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
     if (nextIndex !== null) {
       e.preventDefault()
       buttonRefs.current[nextIndex]?.focus()
-      handleButtonClick(nextIndex, ITEMS[nextIndex].label)
+      handleButtonClick(nextIndex, ITEMS[nextIndex].tabKey)
     }
   }
 
@@ -433,7 +440,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
       >
         <nav
           id="bottom-navigation"
-          aria-label="Navigasi utama"
+          aria-label={t('nav.mainAria')}
           className="liquid-glass-dock pointer-events-auto relative w-full max-w-[424px] overflow-hidden rounded-full p-1.5 select-none transform-gpu"
         >
           <div
@@ -469,7 +476,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
                   }}
                   id={`nav-${item.id}`}
                   type="button"
-                  onClick={() => handleButtonClick(idx, item.label)}
+                  onClick={() => handleButtonClick(idx, item.tabKey)}
                   onKeyDown={(e) => handleKeyDown(e, idx)}
                   aria-current={isActive ? 'page' : undefined}
                   className="relative z-10 flex min-h-[48px] w-full flex-col items-center justify-center gap-1 rounded-full px-1 py-1.5 transition-opacity duration-150 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[#EBF0EB] active:scale-[0.97]"
@@ -497,7 +504,7 @@ export default function BottomNav({ activeTab = 'Explore', setActiveTab, onTabCh
                       fontWeight: isActive ? 700 : 500,
                     }}
                   >
-                    {item.label}
+                    {t(item.labelKey)}
                   </span>
                 </button>
               )

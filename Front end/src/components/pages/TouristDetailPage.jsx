@@ -17,6 +17,8 @@ import {
   StarIcon,
   XIcon,
 } from '../ui/VectorIcons'
+import { usePreferences } from '../../utils/preferences'
+import { formatShortDistance } from '../../utils/distance'
 
 function cleanDetailText(value) {
   if (typeof value !== 'string') return ''
@@ -39,19 +41,19 @@ function cleanDetailText(value) {
   return trimmed
 }
 
-function buildAutoDescription(place) {
-  const name = place?.name || 'Destinasi ini'
+function buildAutoDescription(place, t) {
+  const name = place?.name || t('common.destinationFallback')
   const category = (place?.category || '').toLowerCase()
   if (category.includes('alam')) {
-    return `${name} merupakan destinasi wisata alam populer di kawasan Bogor dengan suasana sejuk dan lanskap asri yang menarik untuk dikunjungi bersama keluarga maupun teman.`
+    return t('detail.autoDescNature', { name })
   }
   if (category.includes('kuliner')) {
-    return `${name} adalah destinasi kuliner pilihan di kawasan Bogor yang menyajikan beragam hidangan menarik dengan suasana nyaman untuk bersantai bersama keluarga maupun teman.`
+    return t('detail.autoDescCulinary', { name })
   }
   if (category.includes('edukasi') || category.includes('budaya')) {
-    return `${name} merupakan wisata edukasi dan budaya unggulan di kawasan Bogor yang memadukan rekreasi serta wawasan menarik untuk dikunjungi bersama keluarga maupun teman.`
+    return t('detail.autoDescEducation', { name })
   }
-  return 'Destinasi wisata dan pusat aktivitas populer di kawasan Bogor yang menarik untuk dikunjungi bersama keluarga maupun teman.'
+  return t('detail.autoDescGeneric')
 }
 
 function calcQuickDistanceKm(coordA, coordB) {
@@ -117,6 +119,7 @@ function getFocusableElements(container) {
  * dengan efek spring fan-out saat hover, fokus keyboard, maupun sentuhan layar.
  */
 function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
+  const { t } = usePreferences()
   const [isPressed, setIsPressed] = useState(false)
 
   const displayImages = images && images.length > 0 ? images : [fallbackPhoto].filter(Boolean)
@@ -137,7 +140,7 @@ function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
         onPointerUp={() => setIsPressed(false)}
         onPointerCancel={() => setIsPressed(false)}
         onPointerLeave={() => setIsPressed(false)}
-        aria-label={`Buka galeri foto ${placeName}, ${displayImages.length} foto`}
+        aria-label={t('detail.openGalleryAria', { name: placeName, count: displayImages.length })}
         className="group relative block w-full rounded-2xl py-2.5 text-left transition-opacity duration-150 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#EBF0EB]"
       >
         {/* Wadah tumpukan berasio 16:10 seragam agar foto landscape tidak gepeng atau terpotong sempit */}
@@ -157,7 +160,7 @@ function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
                   <SafeImage
                     src={imgUrl}
                     fallback={fallbackPhoto}
-                    alt={stackIdx === 0 ? `${placeName} foto galeri` : ''}
+                    alt={stackIdx === 0 ? t('detail.lightboxAria', { name: placeName }) : ''}
                     width={640}
                     height={400}
                     loading={stackIdx === 0 ? 'eager' : 'lazy'}
@@ -170,7 +173,7 @@ function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
                   {stackIdx === 0 && (
                     <span className="pointer-events-none absolute top-2.5 right-2.5 z-10 inline-flex items-center gap-1.5 rounded-full border border-[rgba(244,239,230,0.2)] bg-[#111711]/85 px-2.5 py-1 text-[11px] font-semibold not-italic tabular-nums text-[#F5F2EB] shadow-sm backdrop-blur-md">
                       <CameraIcon className="h-3.5 w-3.5 text-[#DFAA63]" />
-                      <span>{displayImages.length} Foto</span>
+                      <span>{t('detail.photosBadge', { count: displayImages.length })}</span>
                     </span>
                   )}
                 </div>
@@ -180,19 +183,23 @@ function PhotoStackDeck({ placeName, images, fallbackPhoto, onOpenLightbox }) {
         </div>
 
         <p className="mt-2.5 text-center text-[12px] font-medium text-white/60 transition-colors duration-150 group-hover:text-[#EBF0EB]">
-          Ketuk foto untuk memperbesar di galeri penuh
+          {t('detail.photosTapHint')}
         </p>
       </button>
 
       {/* Grid Preview Galeri 3 Foto Proporsional (aspect-[16/10] object-cover) */}
       {visibleStack.length > 1 && (
-        <div className="mt-2.5 grid grid-cols-3 gap-2" role="group" aria-label={`Preview galeri ${placeName}`}>
+        <div
+          className="mt-2.5 grid grid-cols-3 gap-2"
+          role="group"
+          aria-label={t('detail.galleryPreviewAria', { name: placeName })}
+        >
           {visibleStack.map((imgUrl, idx) => (
             <button
               key={`${imgUrl}-preview-${idx}`}
               type="button"
               onClick={() => onOpenLightbox(idx)}
-              aria-label={`Perbesar foto ${idx + 1} dari ${displayImages.length}`}
+              aria-label={t('detail.zoomPhotoAria', { index: idx + 1, total: displayImages.length })}
               className="group/thumb relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-[rgba(244,239,230,0.16)] bg-white/[0.04] shadow-sm transition-all duration-150 hover:border-[#DFAA63]/55 active:scale-[0.97]"
             >
               <SafeImage
@@ -226,6 +233,7 @@ function PhotoLightboxModal({
   onClose,
   onChangeIndex,
 }) {
+  const { t } = usePreferences()
   const modalRef = useRef(null)
   const closeBtnRef = useRef(null)
   const previousFocusRef = useRef(null)
@@ -439,7 +447,7 @@ function PhotoLightboxModal({
       id="photo-lightbox-modal"
       role="dialog"
       aria-modal="true"
-      aria-label={`Galeri foto ${placeName}`}
+      aria-label={t('detail.lightboxAria', { name: placeName })}
       onClick={handleOverlayClick}
       className={`fixed inset-0 z-[2100] flex flex-col justify-between bg-black/75 backdrop-blur-xl pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))] select-none transition-opacity duration-200 ease-out motion-reduce:transition-none ${
         isVisible ? 'opacity-100' : 'opacity-0'
@@ -462,7 +470,7 @@ function PhotoLightboxModal({
           type="button"
           id="lightbox-close-button"
           onClick={onClose}
-          aria-label="Tutup galeri foto"
+          aria-label={t('detail.closeGalleryAria')}
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-[#161E16]/90 text-[#EBF0EB] shadow-md transition-colors duration-150 hover:bg-[#253320] active:scale-[0.96]"
         >
           <XIcon className="h-5 w-5" />
@@ -485,7 +493,7 @@ function PhotoLightboxModal({
             type="button"
             id="lightbox-prev-button"
             onClick={goPrev}
-            aria-label="Foto sebelumnya"
+            aria-label={t('detail.prevPhotoAria')}
             className="hidden sm:flex absolute left-4 md:left-6 top-1/2 z-20 h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-[#161E16]/90 text-[#EBF0EB] shadow-lg transition-colors duration-150 hover:bg-[#253320] active:scale-[0.96]"
           >
             <ChevronLeftIcon className="h-6 w-6" />
@@ -507,7 +515,7 @@ function PhotoLightboxModal({
               <SafeImage
                 src={imgUrl}
                 fallback={fallbackPhoto}
-                alt={`${placeName} - foto ${idx + 1} dari ${totalPhotos}`}
+                alt={t('detail.photoAlt', { name: placeName, index: idx + 1, total: totalPhotos })}
                 fit="contain"
                 loading="eager"
                 decoding="async"
@@ -523,7 +531,7 @@ function PhotoLightboxModal({
             type="button"
             id="lightbox-next-button"
             onClick={goNext}
-            aria-label="Foto berikutnya"
+            aria-label={t('detail.nextPhotoAria')}
             className="hidden sm:flex absolute right-4 md:right-6 top-1/2 z-20 h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-[#161E16]/90 text-[#EBF0EB] shadow-lg transition-colors duration-150 hover:bg-[#253320] active:scale-[0.96]"
           >
             <ChevronRightIcon className="h-6 w-6" />
@@ -539,7 +547,7 @@ function PhotoLightboxModal({
               type="button"
               id="lightbox-prev-mobile"
               onClick={goPrev}
-              aria-label="Foto sebelumnya"
+              aria-label={t('detail.prevPhotoAria')}
               className="flex sm:hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-[#161E16]/90 text-[#EBF0EB] transition-colors duration-150 hover:bg-[#253320] active:scale-[0.96]"
             >
               <ChevronLeftIcon className="h-5 w-5" />
@@ -554,7 +562,7 @@ function PhotoLightboxModal({
                     key={idx}
                     type="button"
                     onClick={() => onChangeIndex(idx)}
-                    aria-label={`Lihat foto ${idx + 1}`}
+                    aria-label={t('detail.viewPhotoAria', { index: idx + 1 })}
                     aria-current={isCurrent ? 'true' : undefined}
                     className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full"
                   >
@@ -578,7 +586,7 @@ function PhotoLightboxModal({
                     key={`${imgUrl}-thumb-${idx}`}
                     type="button"
                     onClick={() => onChangeIndex(idx)}
-                    aria-label={`Pilih foto ${idx + 1} dari ${totalPhotos}`}
+                    aria-label={t('detail.selectPhotoAria', { index: idx + 1, total: totalPhotos })}
                     aria-current={isCurrent ? 'true' : undefined}
                     className={`relative aspect-[16/10] w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-all duration-150 ${
                       isCurrent
@@ -604,7 +612,7 @@ function PhotoLightboxModal({
               type="button"
               id="lightbox-next-mobile"
               onClick={goNext}
-              aria-label="Foto berikutnya"
+              aria-label={t('detail.nextPhotoAria')}
               className="flex sm:hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 bg-[#161E16]/90 text-[#EBF0EB] transition-colors duration-150 hover:bg-[#253320] active:scale-[0.96]"
             >
               <ChevronRightIcon className="h-5 w-5" />
@@ -626,6 +634,7 @@ function TouristDetailPage({
   isFavorite,
   toggleFavorite,
 }) {
+  const { t, tCategory, tHours, tTicket, tDuration, distanceUnit } = usePreferences()
   const scrollContainerRef = useRef(null)
   const [copied, setCopied] = useState(false)
   const [prevSlug, setPrevSlug] = useState(place?.slug ?? null)
@@ -689,9 +698,9 @@ function TouristDetailPage({
         id="tourist-detail-page"
         className="apple-canopy-bg flex h-full w-full flex-col items-center justify-center px-6 pb-32 text-center text-[#EBF0EB]"
       >
-        <p className="text-[15px] font-semibold">Data tempat wisata tidak ditemukan.</p>
+        <p className="text-[15px] font-semibold">{t('detail.notFoundTitle')}</p>
         <p className="mt-1.5 text-[13px] text-white/60">
-          Pilih destinasi lain melalui halaman Explore untuk melihat informasi lengkapnya.
+          {t('detail.notFoundDesc')}
         </p>
         {onBack && (
           <button
@@ -700,7 +709,7 @@ function TouristDetailPage({
             className="apple-retro-cta mt-5 inline-flex min-h-[44px] items-center gap-2 rounded-full px-6 py-2.5 text-[13px] font-semibold active:scale-[0.98]"
           >
             <ChevronLeftIcon className="h-4 w-4" />
-            <span>Kembali ke peta</span>
+            <span>{t('detail.backToMap')}</span>
           </button>
         )}
       </div>
@@ -715,7 +724,7 @@ function TouristDetailPage({
   const handleShare = async () => {
     const shareData = {
       title: place.name,
-      text: `${place.name} - Rekomendasi wisata di Bogor`,
+      text: t('detail.shareText', { name: place.name }),
       url: window.location.href,
     }
 
@@ -754,22 +763,28 @@ function TouristDetailPage({
 
   const cleanDetailed = cleanDetailText(place.detailedDescription)
   const cleanShort = cleanDetailText(place.description)
-  const descriptionText = cleanDetailed || cleanShort || buildAutoDescription(place)
+  const descriptionText = cleanDetailed || cleanShort || buildAutoDescription(place, t)
   const rawParagraphs = descriptionText
     .split('\n\n')
     .map((p) => cleanDetailText(p))
     .filter(Boolean)
-  const paragraphs = rawParagraphs.length > 0 ? rawParagraphs : [buildAutoDescription(place)]
+  const paragraphs = rawParagraphs.length > 0 ? rawParagraphs : [buildAutoDescription(place, t)]
 
-  const cleanOperational = cleanDetailText(place.operationalHours) || 'Belum tersedia'
+  const cleanOperational = cleanDetailText(place.operationalHours) || t('common.notAvailable')
   const operationalHoursParts = cleanOperational
     .split(';')
-    .map((part) => cleanDetailText(part))
+    .map((part) => tHours(cleanDetailText(part)))
     .filter(Boolean)
 
   const priceAndTravelSummary = [
-    { label: 'Tiket masuk', value: cleanDetailText(place.ticketPrice) || 'Cek di lokasi' },
-    { label: 'Estimasi tiba', value: cleanDetailText(place.travelTime) || 'Aktifkan GPS' },
+    {
+      label: t('detail.ticketPrice'),
+      value: tTicket(cleanDetailText(place.ticketPrice) || t('common.checkOnSite')),
+    },
+    {
+      label: t('detail.eta'),
+      value: tDuration(cleanDetailText(place.travelTime)) || t('common.enableGps'),
+    },
   ]
   const cleanAddress = cleanDetailText(place.address)
   const heroImage = cleanDetailText(place.image) || galleryImages[0] || fallbackPhoto
@@ -788,31 +803,31 @@ function TouristDetailPage({
             <button
               type="button"
               id="detail-back-button"
-              aria-label="Kembali ke peta"
+              aria-label={t('detail.backToMap')}
               onClick={onBack}
               className="apple-glass-pill pointer-events-auto inline-flex h-11 min-w-[44px] items-center justify-center gap-2 rounded-full text-[13px] font-semibold text-[#F5F2EB] shadow-md transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97] px-3 sm:px-4"
             >
               <ChevronLeftIcon className="h-5 w-5" />
-              <span className="hidden sm:inline">Kembali ke peta</span>
+              <span className="hidden sm:inline">{t('detail.backToMap')}</span>
             </button>
 
             <div className="pointer-events-auto relative flex items-center gap-2.5">
               <button
                 type="button"
                 id="detail-share-button"
-                aria-label="Bagikan tempat ini"
+                aria-label={t('detail.shareAria')}
                 onClick={handleShare}
                 className="apple-glass-pill inline-flex h-11 min-w-[44px] items-center justify-center gap-2 rounded-full text-[13px] font-medium text-[#F5F2EB] shadow-md transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97] sm:px-3.5"
               >
                 <ShareIcon className="h-4 w-4" />
-                <span className="hidden sm:inline">Bagikan</span>
+                <span className="hidden sm:inline">{t('common.share')}</span>
               </button>
 
               <button
                 type="button"
                 id="detail-favorite-button"
                 aria-pressed={favoriteActive}
-                aria-label={favoriteActive ? 'Hapus dari favorit' : 'Tambah ke favorit'}
+                aria-label={favoriteActive ? t('detail.removeFavoriteAria') : t('detail.addFavoriteAria')}
                 onClick={() => toggleFavorite && toggleFavorite(place.slug)}
                 className={`inline-flex h-11 min-w-[44px] items-center justify-center gap-2 rounded-full border text-[13px] font-medium shadow-md backdrop-blur-md transition-all duration-150 active:scale-[0.97] sm:px-3.5 ${
                   favoriteActive
@@ -822,7 +837,7 @@ function TouristDetailPage({
               >
                 <HeartIcon filled={favoriteActive} className="h-5 w-5 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">
-                  {favoriteActive ? 'Tersimpan' : 'Simpan'}
+                  {favoriteActive ? t('common.saved') : t('common.save')}
                 </span>
               </button>
 
@@ -832,7 +847,7 @@ function TouristDetailPage({
                   aria-live="polite"
                   className="apple-glass-card absolute top-full right-0 z-30 mt-2 whitespace-nowrap rounded-xl px-3 py-1.5 text-[12px] font-medium text-[#F5F2EB] shadow-md"
                 >
-                  Tautan tersalin
+                  {t('common.linkCopied')}
                 </div>
               )}
             </div>
@@ -892,7 +907,7 @@ function TouristDetailPage({
                 <>
                   <span className="text-[#F5F2EB]/45" aria-hidden="true">·</span>
                   <span className="rounded-full border border-[rgba(244,239,230,0.22)] bg-black/40 px-3 py-0.5 text-[12px] font-semibold text-[#DFAA63] backdrop-blur-md">
-                    {place.category}
+                    {tCategory(place.category)}
                   </span>
                 </>
               )}
@@ -929,7 +944,7 @@ function TouristDetailPage({
               <>
                 <span className="text-[#F5F2EB]/40" aria-hidden="true">·</span>
                 <span className="rounded-full border border-[rgba(244,239,230,0.16)] bg-white/[0.07] px-2.5 py-0.5 text-[12px] font-semibold text-[#DFAA63]">
-                  {place.category}
+                  {tCategory(place.category)}
                 </span>
               </>
             )}
@@ -949,7 +964,7 @@ function TouristDetailPage({
             <div className="apple-glass-card rounded-2xl p-4 sm:p-6">
               {/* Baris Tombol Aksi Utama */}
               <section
-                aria-label="Aksi navigasi destinasi"
+                aria-label={t('detail.actionsAria')}
                 className="grid grid-cols-1 gap-3 sm:grid-cols-2"
               >
                 <button
@@ -971,7 +986,7 @@ function TouristDetailPage({
                   >
                     <polygon points="3 11 22 2 13 21 11 13 3 11" />
                   </svg>
-                  <span>Mulai perjalanan</span>
+                  <span>{t('detail.startJourney')}</span>
                 </button>
 
                 <a
@@ -981,13 +996,13 @@ function TouristDetailPage({
                   className="apple-glass-pill inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-[14px] font-medium text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.98]"
                 >
                   <MapPinIcon className="h-4 w-4 text-[#DFAA63]" />
-                  <span>Buka di Google Maps</span>
+                  <span>{t('detail.openGoogleMaps')}</span>
                 </a>
               </section>
 
               {/* Kartu Info Ringkas (Jam buka, Tiket masuk, Estimasi tiba) */}
               <section
-                aria-label="Informasi singkat tempat wisata"
+                aria-label={t('detail.quickInfoAria')}
                 className="apple-retro-bevel mt-5 overflow-hidden rounded-2xl border border-[rgba(244,239,230,0.14)] bg-black/25"
               >
                 <div className="flex items-start gap-3 border-b border-[rgba(244,239,230,0.12)] px-4 py-3.5 sm:items-center sm:px-5">
@@ -995,7 +1010,9 @@ function TouristDetailPage({
                     <ClockIcon className="h-4 w-4 text-[#DFAA63]" aria-hidden="true" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <span className="block text-[11px] font-medium text-[#F5F2EB]/60">Jam buka</span>
+                    <span className="block text-[11px] font-medium text-[#F5F2EB]/60">
+                      {t('detail.openingHours')}
+                    </span>
                     {operationalHoursParts.length > 1 ? (
                       <div className="mt-1 flex flex-col gap-0.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1">
                         {operationalHoursParts.map((part) => (
@@ -1009,7 +1026,7 @@ function TouristDetailPage({
                       </div>
                     ) : (
                       <span className="mt-0.5 block break-words font-mono text-[12.5px] font-semibold leading-snug tabular-nums tracking-wide text-[#F5F2EB] sm:text-[13px]">
-                        {operationalHoursParts[0] || 'Belum tersedia'}
+                        {operationalHoursParts[0] || t('common.notAvailable')}
                       </span>
                     )}
                   </div>
@@ -1032,7 +1049,7 @@ function TouristDetailPage({
 
               {/* Alamat Lengkap */}
               {cleanAddress && (
-                <section aria-label="Alamat tempat wisata" className="mt-4">
+                <section aria-label={t('detail.addressAria')} className="mt-4">
                   <div className="apple-retro-bevel flex items-start gap-2.5 rounded-2xl border border-[rgba(244,239,230,0.12)] bg-white/[0.04] px-4 py-3 text-[13px] leading-relaxed text-[#F5F2EB]/80 sm:text-[13.5px]">
                     <MapPinIcon className="mt-0.5 h-4 w-4 shrink-0 text-[#DFAA63]" />
                     <span>{cleanAddress}</span>
@@ -1043,7 +1060,7 @@ function TouristDetailPage({
               {/* Deskripsi Destinasi */}
               <section className="mt-6 border-t border-[rgba(244,239,230,0.12)] pt-5">
                 <h2 className="mb-2.5 text-[16px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[17px]">
-                  Tentang destinasi
+                  {t('detail.aboutTitle')}
                 </h2>
                 <div className="space-y-3 text-[14px] font-normal leading-relaxed text-[#F5F2EB]/85 sm:text-[15px]">
                   {paragraphs.map((p, idx) => (
@@ -1060,10 +1077,10 @@ function TouristDetailPage({
             <section className="apple-glass-card overflow-hidden rounded-2xl p-5">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-[16px] font-semibold tracking-tight text-[#F5F2EB]">
-                  Foto lokasi
+                  {t('detail.photosTitle')}
                 </h2>
                 <span className="text-[11.5px] font-medium not-italic tabular-nums text-[#F5F2EB]/60">
-                  {galleryImages.length} tersimpan
+                  {t('detail.photosSaved', { count: galleryImages.length })}
                 </span>
               </div>
 
@@ -1086,18 +1103,18 @@ function TouristDetailPage({
                     id="similar-places-heading"
                     className="text-[15.5px] font-semibold tracking-tight text-[#F5F2EB]"
                   >
-                    Destinasi Serupa di Sekitar
+                    {t('detail.similarHeading')}
                   </h2>
-                  <span className="text-[11px] font-medium text-[#F5F2EB]/55">Terdekat</span>
+                  <span className="text-[11px] font-medium text-[#F5F2EB]/55">
+                    {t('detail.nearest')}
+                  </span>
                 </div>
 
                 <ul className="divide-y divide-[rgba(244,239,230,0.12)]">
                   {similarPlaces.map(({ item, distKm }) => {
                     const itemDistLabel = Number.isFinite(distKm)
-                      ? distKm < 1
-                        ? `${Math.max(50, Math.round(distKm * 1000))} m`
-                        : `${distKm.toFixed(1)} km`
-                      : item.category
+                      ? formatShortDistance(distKm, { unit: distanceUnit })
+                      : tCategory(item.category)
                     return (
                       <li key={item.id || item.slug}>
                         <button
@@ -1135,7 +1152,9 @@ function TouristDetailPage({
                               {item.category && Number.isFinite(distKm) && (
                                 <>
                                   <span aria-hidden="true" className="text-[#F5F2EB]/35">·</span>
-                                  <span className="truncate text-[#DFAA63]/90">{item.category}</span>
+                                  <span className="truncate text-[#DFAA63]/90">
+                                    {tCategory(item.category)}
+                                  </span>
                                 </>
                               )}
                             </div>

@@ -1,10 +1,12 @@
 import { memo, useEffect, useRef } from 'react'
 import { Marker } from 'maplibre-gl'
 import { useMapLibre } from './mapContext'
+import { usePreferences } from '../../utils/preferences'
 
 const USER_POSITION = [-6.5895, 106.802] // [lat, lng] Central Bogor
 
 function UserLocationMarker({ position = USER_POSITION }) {
+  const { t } = usePreferences()
   const { map } = useMapLibre()
   const markerRef = useRef(null)
 
@@ -21,6 +23,7 @@ function UserLocationMarker({ position = USER_POSITION }) {
 
     if (markerRef.current) {
       markerRef.current.setLngLat([lng, lat])
+      markerRef.current.getElement()?.setAttribute('aria-label', t('map.yourLocationAria'))
       return
     }
 
@@ -29,7 +32,7 @@ function UserLocationMarker({ position = USER_POSITION }) {
     el.style.width = '44px'
     el.style.height = '44px'
     el.style.pointerEvents = 'none'
-    el.setAttribute('aria-label', 'Posisi Kamu')
+    el.setAttribute('aria-label', t('map.yourLocationAria'))
     el.innerHTML = `
       <div style="position:relative; width:44px; height:44px; display:flex; align-items:center; justify-content:center;">
         <div class="user-pulse-ring" style="position:absolute; width:44px; height:44px; border-radius:9999px; background:rgba(37,99,235,0.35);"></div>
@@ -46,7 +49,7 @@ function UserLocationMarker({ position = USER_POSITION }) {
     })
       .setLngLat([lng, lat])
       .addTo(map)
-  }, [map, lng, lat, isValid])
+  }, [map, lng, lat, isValid, t])
 
   useEffect(() => {
     return () => {

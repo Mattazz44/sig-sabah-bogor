@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { DESKTOP_BREAKPOINT, getHalfHeight, getPeekHeight } from './sheetMetrics'
 import { BottomSheetContext } from './bottomSheetContext'
 import ScrollToTopButton from './ScrollToTopButton'
+import { usePreferences } from '../../utils/preferences'
 
 const DRAG_THRESHOLD = 12 // px vertical before tap becomes drag
 const FLICK_VELOCITY = 0.35 // px/ms
@@ -46,6 +47,7 @@ function clampWithRubberBand(rawY, minY, maxY) {
  * dengan tracking 1:1 dan animasi spring 60fps via requestAnimationFrame.
  */
 export default function BottomSheet({ id, label, expanded, onExpandedChange, children }) {
+  const { t } = usePreferences()
   const [viewportSize, setViewportSize] = useState(() => ({
     width: typeof window !== 'undefined' ? window.innerWidth : 1024,
     height: typeof window !== 'undefined' ? window.innerHeight : 844,
@@ -463,8 +465,8 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
   const isExpandedState = isDesktop ? !desktopCollapsed : isFullMobile
   const canScrollContent = isDesktop ? !desktopCollapsed : isFullMobile
   const handleTitle = isExpandedState
-    ? 'Tarik ke bawah atau klik untuk melipat panel'
-    : 'Tarik ke atas atau klik untuk membuka penuh panel'
+    ? t('explore.sheetCollapseTitle')
+    : t('explore.sheetExpandTitle')
 
   const cornerRadiusClass = isDesktop
     ? 'rounded-3xl'
@@ -536,8 +538,8 @@ export default function BottomSheet({ id, label, expanded, onExpandedChange, chi
           <button
             type="button"
             id={`${id}-desktop-toggle`}
-            aria-label={desktopCollapsed ? 'Buka penuh daftar wisata' : 'Lipat panel sidebar ke bawah'}
-            title={desktopCollapsed ? 'Perluas panel wisata' : 'Lipat panel ke bawah'}
+            aria-label={desktopCollapsed ? t('explore.desktopExpandAria') : t('explore.desktopCollapseAria')}
+            title={desktopCollapsed ? t('explore.desktopExpandTitle') : t('explore.desktopCollapseTitle')}
             aria-expanded={!desktopCollapsed}
             onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => {

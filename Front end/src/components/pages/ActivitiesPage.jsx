@@ -21,6 +21,7 @@ import {
   DEFAULT_AVATAR_PLACEHOLDER,
   DEFAULT_IMAGE_PLACEHOLDER,
 } from '../../utils/imageHelper'
+import { usePreferences } from '../../utils/preferences'
 
 function ActivitiesPage({
   tourists = [],
@@ -31,6 +32,7 @@ function ActivitiesPage({
   onRequireLogin,
   onOpenProfile,
 }) {
+  const { language, t, tDynamic } = usePreferences()
   const [subTab, setSubTab] = useState('Kamu')
   const [showNotificationDrawer, setShowNotificationDrawer] = useState(false)
   const [reloadTick, setReloadTick] = useState(0)
@@ -150,8 +152,8 @@ function ActivitiesPage({
       }
       pushAppNotification({
         type: 'success',
-        title: 'Postingan berhasil dihapus',
-        desc: 'Cerita aktivitas Anda telah dihapus dari linimasa.',
+        title: t('activities.notifDeletedTitle'),
+        desc: t('activities.notifDeletedDesc'),
       })
     } catch (err) {
       console.warn('Gagal menghapus postingan:', err)
@@ -190,7 +192,7 @@ function ActivitiesPage({
     setIsPosting(true)
 
     const tempId = `post-${Date.now()}`
-    const todayFormatted = new Intl.DateTimeFormat('id-ID', {
+    const todayFormatted = new Intl.DateTimeFormat(language === 'en' ? 'en-US' : 'id-ID', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -199,7 +201,7 @@ function ActivitiesPage({
     const optimisticPost = {
       id: tempId,
       userId: currentUser?.id,
-      userName: currentUser?.name || 'Pengguna',
+      userName: currentUser?.name || t('common.defaultUser'),
       userAvatar: currentUser?.avatar || '',
       date: todayFormatted,
       image: tempLocalPreview,
@@ -256,8 +258,8 @@ function ActivitiesPage({
       }
       pushAppNotification({
         type: 'social',
-        title: 'Cerita dibagikan ke komunitas',
-        desc: `"${titleText}" di ${locText} berhasil dipublikasikan di linimasa Aktivitas.`,
+        title: t('activities.notifPostedTitle'),
+        desc: t('activities.notifPostedDesc', { title: titleText, location: locText }),
       })
     } catch (err) {
       console.warn('Gagal menyimpan postingan aktivitas ke server:', err)
@@ -318,7 +320,7 @@ function ActivitiesPage({
         <header className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between gap-3">
             <h1 className="text-[26px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[30px]">
-              Aktivitas
+              {t('activities.title')}
             </h1>
 
             <div className="flex shrink-0 items-center gap-2">
@@ -326,8 +328,8 @@ function ActivitiesPage({
                 type="button"
                 id="btn-notifikasi-aktivitas"
                 onClick={() => setShowNotificationDrawer(true)}
-                title="Lihat notifikasi"
-                aria-label="Notifikasi aktivitas"
+                title={t('activities.notifTitle')}
+                aria-label={t('activities.notifAria')}
                 className="apple-glass-pill relative flex h-11 w-11 items-center justify-center rounded-full text-[#EBF0EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
               >
                 <BellIcon className="h-[18px] w-[18px]" />
@@ -343,7 +345,7 @@ function ActivitiesPage({
                     onOpenProfile('self')
                   }
                 }}
-                aria-label={isLoggedIn ? 'Buka profil pengguna' : 'Masuk ke akun'}
+                aria-label={isLoggedIn ? t('foryou.openProfileAria') : t('foryou.signInAria')}
                 className="apple-glass-pill relative flex h-11 w-11 items-center justify-center rounded-full text-[#EBF0EB] shadow-sm transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
               >
                 <span className="flex h-full w-full items-center justify-center overflow-hidden rounded-full">
@@ -351,7 +353,7 @@ function ActivitiesPage({
                     <SafeImage
                       src={currentUser?.avatar}
                       fallback={DEFAULT_AVATAR_PLACEHOLDER}
-                      alt={currentUser?.name || 'Profil pengguna'}
+                      alt={currentUser?.name || t('saved.profileAria')}
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -363,7 +365,7 @@ function ActivitiesPage({
           </div>
 
           <p className="text-[13px] leading-relaxed text-white/60">
-            Bagikan momen perjalanan wisata dan jelajahi cerita komunitas Bogor
+            {t('activities.subtitle')}
           </p>
         </header>
 
@@ -371,7 +373,7 @@ function ActivitiesPage({
         <div className="mt-4 flex items-center justify-between gap-2.5 sm:gap-3">
           <div
             role="tablist"
-            aria-label="Filter aktivitas"
+            aria-label={t('activities.filterAria')}
             onKeyDown={handleTabKeyDown}
             className="apple-glass-pill relative inline-grid h-10 w-fit max-w-[240px] grid-cols-2 items-center rounded-full p-1"
           >
@@ -399,7 +401,7 @@ function ActivitiesPage({
                   : 'text-white/65 hover:text-[#EBF0EB]'
               }`}
             >
-              Kamu
+              {t('activities.tabYou')}
             </button>
 
             <button
@@ -415,7 +417,7 @@ function ActivitiesPage({
                   : 'text-[#C8D3C8] hover:text-[#EBF0EB]'
               }`}
             >
-              Komunitas
+              {t('activities.tabCommunity')}
             </button>
           </div>
 
@@ -423,19 +425,19 @@ function ActivitiesPage({
             type="button"
             id="btn-tambah-foto-aktivitas"
             onClick={handleCreatePostClick}
-            title="Posting foto aktivitas perjalanan"
-            aria-label="Posting foto perjalanan"
+            title={t('activities.postBtnTitle')}
+            aria-label={t('activities.postBtnAria')}
             className="apple-glass-pill relative inline-flex h-10 min-w-[44px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-4 text-xs font-semibold text-[#EBF0EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.98]"
           >
             <PlusIcon className="h-3.5 w-3.5 text-[#E2D7B5]" aria-hidden="true" />
-            <span>Post</span>
+            <span>{t('activities.postBtn')}</span>
           </button>
         </div>
 
         {/* Feed Section */}
         <section
           id="feed-list-container"
-          aria-label="Daftar postingan aktivitas"
+          aria-label={t('activities.title')}
           className="mt-5"
         >
           {subTab === 'Kamu' && !isLoggedIn ? (
@@ -446,21 +448,20 @@ function ActivitiesPage({
               <SabahMascot
                 size="md"
                 animate
-                label="Maskot Rusa Tutul Sabah Bogor"
                 className="mx-auto mb-4 drop-shadow-[0_12px_24px_rgba(0,0,0,0.38)]"
               />
               <h2 className="text-[18px] font-semibold tracking-tight text-[#EBF0EB]">
-                Aktivitas Perjalanan Anda
+                {t('activities.guestTitle')}
               </h2>
               <p className="mx-auto mt-1.5 max-w-md text-[13px] leading-relaxed text-white/65">
-                Masuk untuk melihat dan membagikan dokumentasi perjalanan wisata pribadi Anda di Bogor.
+                {t('activities.guestDesc')}
               </p>
               <button
                 type="button"
                 onClick={onRequireLogin}
                 className="apple-retro-cta mt-6 inline-flex min-h-[44px] items-center justify-center rounded-xl px-6 py-2.5 text-[13px] font-semibold active:scale-[0.98]"
               >
-                Masuk ke akun
+                {t('foryou.guestCta')}
               </button>
             </div>
           ) : isLoading && currentFeed.length === 0 ? (
@@ -485,10 +486,10 @@ function ActivitiesPage({
           ) : hasError && currentFeed.length === 0 ? (
             <div className="rounded-2xl border border-rose-400/25 bg-[#2a1216]/90 p-6 text-center">
               <p className="text-[15px] font-semibold text-[#EBF0EB]">
-                Aktivitas belum bisa dimuat
+                {t('activities.loadErrorTitle')}
               </p>
               <p className="mt-1 text-[12.5px] text-rose-100/85">
-                Periksa sambungan ke server backend lalu coba muat ulang.
+                {t('activities.loadErrorDesc')}
               </p>
               <button
                 type="button"
@@ -496,7 +497,7 @@ function ActivitiesPage({
                 className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-white/[0.2] bg-white/[0.1] px-4 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-white/[0.18]"
               >
                 <RefreshIcon className="h-3.5 w-3.5" />
-                <span>Muat ulang</span>
+                <span>{t('common.reload')}</span>
               </button>
             </div>
           ) : (
@@ -505,12 +506,12 @@ function ActivitiesPage({
                 {subTab === 'Kamu' ? (
                   <>
                     <span className="font-mono tabular-nums tracking-wide text-[#F5F2EB]">{myActivities.length}</span>{' '}
-                    aktivitas Anda bulan ini
+                    {t('activities.myCountSuffix')}
                   </>
                 ) : (
                   <>
                     <span className="font-mono tabular-nums tracking-wide text-[#F5F2EB]">{communityActivities.length}</span>{' '}
-                    cerita perjalanan komunitas
+                    {t('activities.communityCountSuffix')}
                   </>
                 )}
               </h2>
@@ -532,13 +533,13 @@ function ActivitiesPage({
                   )}
                   <p className="text-[15px] font-bold text-[#EBF0EB]">
                     {subTab === 'Kamu'
-                      ? 'Belum Ada Postingan Aktivitas'
-                      : 'Belum Ada Postingan Komunitas'}
+                      ? t('activities.emptyYouTitle')
+                      : t('activities.emptyCommunityTitle')}
                   </p>
                   <p className="mx-auto mt-1 max-w-sm text-[12.5px] leading-relaxed text-[#C8D3C8]">
                     {subTab === 'Kamu'
-                      ? 'Ketuk tombol + Post di atas untuk membagikan pengalaman wisata pertama Anda.'
-                      : 'Belum ada kiriman perjalanan dari komunitas saat ini.'}
+                      ? t('activities.emptyYouDesc')
+                      : t('activities.emptyCommunityDesc')}
                   </p>
                   {subTab === 'Kamu' && (
                     <button
@@ -547,7 +548,7 @@ function ActivitiesPage({
                       className="mt-5 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#EBF0EB] px-5 py-2.5 text-[12.5px] font-bold text-[#161E16] shadow-sm transition-colors hover:bg-[#DCE4DC]"
                     >
                       <CameraIcon className="h-4 w-4" />
-                      <span>Bagikan Foto Pertama</span>
+                      <span>{t('activities.shareFirstPhoto')}</span>
                     </button>
                   )}
                 </div>
@@ -570,7 +571,7 @@ function ActivitiesPage({
                           <button
                             type="button"
                             onClick={() => handleOpenAuthorProfile(post)}
-                            title={`Lihat profil ${post.userName}`}
+                            title={t('activities.viewProfileTitle', { name: post.userName })}
                             className="flex min-w-0 items-center gap-2.5 rounded-xl py-0.5 pr-1 text-left transition-opacity duration-150 hover:opacity-90 active:scale-[0.98]"
                           >
                             <SafeImage
@@ -586,12 +587,12 @@ function ActivitiesPage({
                                 <span className="truncate group-hover:underline">{post.userName}</span>
                                 {post.isOtherUser && (
                                   <span className="shrink-0 text-[11px] font-medium text-[#E2D7B5]">
-                                    (Lihat profil)
+                                    {t('activities.viewProfileTag')}
                                   </span>
                                 )}
                               </span>
                               <span className="mt-0.5 block truncate font-mono text-[11px] leading-tight tabular-nums tracking-wide text-[#F5F2EB]/55">
-                                {post.date}
+                                {tDynamic(post.date)}
                               </span>
                             </span>
                           </button>
@@ -603,8 +604,8 @@ function ActivitiesPage({
                                 e.stopPropagation()
                                 setPostToDelete(post.id)
                               }}
-                              title="Hapus aktivitas saya"
-                              aria-label="Hapus aktivitas ini"
+                              title={t('activities.deleteMyTitle')}
+                              aria-label={t('activities.deleteMyAria')}
                               className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#C8D3C8] transition-colors hover:bg-white/[0.08] hover:text-rose-300 active:scale-95 before:absolute before:-inset-1"
                             >
                               <svg
@@ -667,7 +668,7 @@ function ActivitiesPage({
         modalId="modal-post-foto"
         closeButtonId="btn-close-post-foto"
         titleId="modal-post-foto-title"
-        closeAriaLabel="Tutup modal posting"
+        closeAriaLabel={t('activities.postModalCloseAria')}
         maxWidthClass="max-w-md"
       >
         <div className="-mt-3 mb-3 flex justify-center">
@@ -682,10 +683,10 @@ function ActivitiesPage({
           id="modal-post-foto-title"
           className="text-center text-[19px] font-bold tracking-tight text-white"
         >
-          Posting Foto Perjalanan
+          {t('activities.postModalTitle')}
         </h3>
         <p className="mt-1 text-center text-[12.5px] text-[#E2EAE2]">
-          Bagikan pengalaman wisatamu ke komunitas Sabah Bogor
+          {t('activities.postModalDesc')}
         </p>
 
         <form onSubmit={handlePostSubmit} className="mt-5 flex flex-col gap-3.5">
@@ -694,7 +695,7 @@ function ActivitiesPage({
               htmlFor="input-file-activity-photo"
               className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]"
             >
-              Foto Aktivitas
+              {t('activities.photoLabel')}
             </label>
             <input
               ref={fileInputRef}
@@ -714,21 +715,21 @@ function ActivitiesPage({
                 <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl">
                   <img
                     src={uploadedImagePreview}
-                    alt="Preview Foto"
+                    alt={t('activities.photoPreviewAlt')}
                     className="h-full w-full object-cover"
                   />
                   <span className="absolute top-2 right-2 rounded-lg border border-white/[0.2] bg-[#161E16]/85 px-2.5 py-1 text-[11px] font-semibold text-[#EBF0EB]">
-                    Ganti Foto
+                    {t('activities.changePhoto')}
                   </span>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-1.5 py-3">
                   <CameraIcon className="h-7 w-7 text-[#E2D7B5]" />
                   <span className="text-[13px] font-bold text-[#EBF0EB]">
-                    Pilih foto dari galeri
+                    {t('activities.pickPhoto')}
                   </span>
                   <span className="text-[11.5px] text-[#C8D3C8]">
-                    Ketuk untuk unggah gambar JPG/PNG
+                    {t('activities.pickPhotoHint')}
                   </span>
                 </div>
               )}
@@ -740,14 +741,14 @@ function ActivitiesPage({
               htmlFor="input-post-location"
               className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]"
             >
-              Lokasi Wisata
+              {t('activities.locationLabel')}
             </label>
             <input
               type="text"
               id="input-post-location"
               value={postLocation}
               onChange={(e) => setPostLocation(e.target.value)}
-              placeholder="Misal: Curug Cikuluwung"
+              placeholder={t('activities.locationPlaceholder')}
               className="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13px] text-[#EBF0EB] placeholder:text-[#C8D3C8] transition-colors duration-150"
               required
             />
@@ -758,13 +759,13 @@ function ActivitiesPage({
               htmlFor="input-post-caption"
               className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]"
             >
-              Cerita / Keterangan
+              {t('activities.captionLabel')}
             </label>
             <textarea
               id="input-post-caption"
               value={postCaption}
               onChange={(e) => setPostCaption(e.target.value)}
-              placeholder="Tuliskan pengalaman seru di tempat ini..."
+              placeholder={t('activities.captionPlaceholder')}
               rows={3}
               className="liquid-glass-input w-full resize-none rounded-xl px-3.5 py-2.5 text-[13px] text-[#EBF0EB] placeholder:text-[#C8D3C8] transition-colors duration-150"
               required
@@ -780,10 +781,10 @@ function ActivitiesPage({
             {isPosting ? (
               <>
                 <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#161E16] border-t-transparent" />
-                <span>Mengunggah & Mengompresi...</span>
+                <span>{t('activities.uploading')}</span>
               </>
             ) : (
-              'Bagikan ke Komunitas'
+              t('activities.shareToCommunity')
             )}
           </button>
         </form>
@@ -797,7 +798,7 @@ function ActivitiesPage({
         modalId="modal-delete-post"
         closeButtonId="btn-close-delete-post"
         titleId="modal-delete-title"
-        closeAriaLabel="Tutup konfirmasi hapus aktivitas"
+        closeAriaLabel={t('activities.deleteModalCloseAria')}
         maxWidthClass="max-w-xs"
       >
         <div className="text-center">
@@ -805,10 +806,10 @@ function ActivitiesPage({
             <AlertTriangleIcon className="h-6 w-6" />
           </div>
           <h3 id="modal-delete-title" className="text-[17px] font-bold text-[#EBF0EB]">
-            Hapus Aktivitas?
+            {t('activities.deleteModalTitle')}
           </h3>
           <p className="mt-1.5 text-[12.5px] text-[#C8D3C8]">
-            Postingan aktivitas ini akan dihapus secara permanen.
+            {t('activities.deleteModalDesc')}
           </p>
           <div className="mt-5 flex gap-2.5">
             <button
@@ -816,7 +817,7 @@ function ActivitiesPage({
               onClick={() => setPostToDelete(null)}
               className="min-h-[44px] flex-1 rounded-xl border border-white/[0.14] bg-white/[0.06] py-2.5 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-white/[0.12]"
             >
-              Batal
+              {t('common.cancel')}
             </button>
             <button
               type="button"
@@ -824,7 +825,7 @@ function ActivitiesPage({
               disabled={isDeleting}
               className="flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl border border-rose-300/25 bg-[#3B1D24] py-2.5 text-[12.5px] font-bold text-rose-100 transition-colors hover:bg-[#4D242E] disabled:opacity-50"
             >
-              {isDeleting ? 'Menghapus...' : 'Ya, Hapus'}
+              {isDeleting ? t('common.deleting') : t('common.deleteConfirm')}
             </button>
           </div>
         </div>

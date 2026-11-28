@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { usePreferences } from '../utils/preferences'
 
 /**
  * Konfigurasi terpusat aset maskot Rusa Tutul Sabah Bogor & karakter gerak
@@ -8,67 +9,65 @@ export const ADMIN_FEEDBACK_CONFIG = {
   'save-success': {
     mode: 'toast',
     mascotAsset: '/assets/mascot/mascot-happy.svg',
-    mascotAlt: 'Maskot Rusa Tutul bahagia setelah perubahan tersimpan',
+    mascotAltKey: 'mascot.happy',
     motionPreset: 'bounce',
     tone: 'success',
-    title: 'Perubahan berhasil disimpan!',
-    defaultDetail: 'Data destinasi wisata telah diperbarui di database.',
+    titleKey: 'admin.feedback.saveSuccessTitle',
+    detailKey: 'admin.feedback.saveSuccessDesc',
     duration: 3000,
   },
   'filter-unsaved': {
     mode: 'toast',
     mascotAsset: '/assets/mascot/mascot-confused.svg',
-    mascotAlt: 'Maskot Rusa Tutul mengingatkan filter belum disimpan',
+    mascotAltKey: 'mascot.confused',
     motionPreset: 'shake',
     tone: 'warning',
-    title: 'Filter tidak disimpan',
-    defaultDetail: 'Perubahan pencarian atau kategori belum disimpan.',
+    titleKey: 'admin.feedback.filterUnsavedTitle',
+    detailKey: 'admin.feedback.filterUnsavedDesc',
     duration: 6000,
   },
   'delete-success': {
     mode: 'toast',
     mascotAsset: '/assets/mascot/mascot-default.svg',
-    mascotAlt: 'Maskot Rusa Tutul setelah data wisata berhasil dihapus',
+    mascotAltKey: 'mascot.default',
     motionPreset: 'fade',
     tone: 'neutral',
-    title: 'Data wisata berhasil dihapus.',
-    defaultDetail: 'Destinasi telah dihapus dari daftar wisata Kota Bogor.',
+    titleKey: 'admin.feedback.deleteSuccessTitle',
+    detailKey: 'admin.feedback.deleteSuccessDesc',
     duration: 3000,
   },
   'confirm-logout': {
     mode: 'modal',
     mascotAsset: '/assets/mascot/mascot-goodbye.svg',
-    mascotAlt: 'Maskot Rusa Tutul melambaikan tangan perpisahan',
+    mascotAltKey: 'mascot.goodbye',
     motionPreset: 'wave',
     tone: 'logout',
-    title: 'Kamu yakin ingin keluar dari halaman Admin?',
-    defaultDetail:
-      'Sesi administrator Anda akan diakhiri dan Anda perlu masuk kembali untuk mengelola data wisata.',
-    confirmLabel: 'Ya, Keluar',
-    busyLabel: 'Keluar...',
-    cancelLabel: 'Batal',
+    titleKey: 'admin.feedback.logoutTitle',
+    detailKey: 'admin.feedback.logoutDesc',
+    confirmKey: 'admin.feedback.logoutConfirm',
+    busyKey: 'admin.feedback.logoutBusy',
+    cancelKey: 'common.cancel',
   },
   'confirm-delete-wisata': {
     mode: 'modal',
     mascotAsset: '/assets/mascot/mascot-confused.svg',
-    mascotAlt: 'Maskot Rusa Tutul memperingatkan penghapusan data wisata',
+    mascotAltKey: 'mascot.confused',
     motionPreset: 'caution',
     tone: 'danger',
-    title: 'Hapus data wisata ini?',
-    defaultDetail:
-      'Yakin ingin menghapus data wisata ini? Tindakan ini tidak bisa dibatalkan.',
-    confirmLabel: 'Hapus Data',
-    busyLabel: 'Menghapus...',
-    cancelLabel: 'Batal',
+    titleKey: 'admin.feedback.deleteTitle',
+    detailKey: 'admin.feedback.deleteDesc',
+    confirmKey: 'admin.feedback.deleteConfirm',
+    busyKey: 'common.deleting',
+    cancelKey: 'common.cancel',
   },
   error: {
     mode: 'toast',
     mascotAsset: '/assets/mascot/mascot-confused.svg',
-    mascotAlt: 'Maskot Rusa Tutul menampilkan peringatan kesalahan',
+    mascotAltKey: 'mascot.confused',
     motionPreset: 'shake',
     tone: 'danger',
-    title: 'Terjadi kesalahan',
-    defaultDetail: 'Permintaan tidak dapat diproses. Silakan coba lagi.',
+    titleKey: 'admin.feedback.errorTitle',
+    detailKey: 'admin.feedback.errorDesc',
     duration: 4500,
   },
 }
@@ -78,6 +77,7 @@ export const ADMIN_FEEDBACK_CONFIG = {
  * Setiap panggilan baru langsung menggantikan notifikasi sebelumnya agar tidak menumpuk.
  */
 export function useAdminMascotFeedback() {
+  const { t } = usePreferences()
   const [feedback, setFeedback] = useState(null)
   const [isBusy, setIsBusy] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
@@ -108,19 +108,19 @@ export function useAdminMascotFeedback() {
         id: `${type}-${Date.now()}`,
         type,
         mode: config.mode,
-        title: options.title ?? config.title,
-        detail: options.detail ?? config.defaultDetail,
+        title: options.title ?? t(config.titleKey),
+        detail: options.detail ?? t(config.detailKey),
         itemName: options.itemName ?? null,
-        confirmLabel: options.confirmLabel ?? config.confirmLabel ?? 'Lanjutkan',
-        busyLabel: options.busyLabel ?? config.busyLabel ?? 'Memproses...',
-        cancelLabel: options.cancelLabel ?? config.cancelLabel ?? 'Batal',
-        saveLabel: options.saveLabel ?? 'Simpan Ulang',
+        confirmLabel: options.confirmLabel ?? (config.confirmKey ? t(config.confirmKey) : t('common.continue')),
+        busyLabel: options.busyLabel ?? (config.busyKey ? t(config.busyKey) : t('common.processing')),
+        cancelLabel: options.cancelLabel ?? (config.cancelKey ? t(config.cancelKey) : t('common.cancel')),
+        saveLabel: options.saveLabel ?? t('admin.feedback.saveAgain'),
         duration: options.duration ?? config.duration ?? 0,
         onConfirm: options.onConfirm ?? null,
         onSaveFilter: options.onSaveFilter ?? null,
       })
     },
-    [clearAutoTimer],
+    [clearAutoTimer, t],
   )
 
   useEffect(() => {

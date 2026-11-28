@@ -6,21 +6,22 @@ export const ALLOWED_NOTIFICATION_TYPES = new Set(['success', 'route', 'social',
 
 const MAX_NOTIFICATIONS = 25
 
-export function formatNotificationTime(timestamp) {
-  if (!timestamp || Number.isNaN(Number(timestamp))) return 'Baru saja'
+export function formatNotificationTime(timestamp, language = 'id') {
+  const isEn = language === 'en'
+  if (!timestamp || Number.isNaN(Number(timestamp))) return isEn ? 'Just now' : 'Baru saja'
   const diffMs = Date.now() - Number(timestamp)
-  if (diffMs < 60_000) return 'Baru saja'
+  if (diffMs < 60_000) return isEn ? 'Just now' : 'Baru saja'
   const diffMin = Math.floor(diffMs / 60_000)
-  if (diffMin < 60) return `${diffMin} menit lalu`
+  if (diffMin < 60) return isEn ? `${diffMin} min ago` : `${diffMin} menit lalu`
   const diffHours = Math.floor(diffMin / 60)
-  if (diffHours < 24) return `${diffHours} jam lalu`
+  if (diffHours < 24) return isEn ? `${diffHours} hr ago` : `${diffHours} jam lalu`
   try {
-    return new Intl.DateTimeFormat('id-ID', {
+    return new Intl.DateTimeFormat(isEn ? 'en-US' : 'id-ID', {
       day: 'numeric',
       month: 'short',
     }).format(new Date(Number(timestamp)))
   } catch {
-    return 'Baru saja'
+    return isEn ? 'Just now' : 'Baru saja'
   }
 }
 

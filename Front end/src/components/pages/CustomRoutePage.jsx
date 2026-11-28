@@ -4,14 +4,13 @@ import { calculateDistanceKm } from '../../utils/distance'
 import { pushAppNotification } from '../../utils/notifications'
 import SafeImage from '../ui/SafeImage'
 import GlassModal from '../ui/GlassModal'
-import { DEFAULT_AVATAR_PLACEHOLDER, getBogorFallbackPhoto } from '../../utils/imageHelper'
+import { getBogorFallbackPhoto } from '../../utils/imageHelper'
+import { usePreferences } from '../../utils/preferences'
 import {
   AlertTriangleIcon,
   CheckIcon,
   ChevronLeftIcon,
-  ClockIcon,
   MapIcon,
-  MapPinIcon,
 } from '../ui/VectorIcons'
 
 function enrichRoutePlace(rawPlace, touristById, touristBySlug) {
@@ -40,6 +39,7 @@ function CustomRoutePage({
   onBack,
   onStartCustomRoute,
 }) {
+  const { t, tCategory, tDynamic, tDuration, formatDistanceUnit } = usePreferences()
   const savedTouristSpots = useMemo(() => {
     if (!Array.isArray(tourists) || tourists.length === 0) return []
 
@@ -97,7 +97,6 @@ function CustomRoutePage({
         dbId: cr.id,
         title: cr.title,
         desc: cr.desc || '',
-        isPrimary: Boolean(cr.is_primary),
         stops,
         totalDistance: cr.total_distance || '3.0 KM',
         totalDuration: cr.total_duration || '10 Menit',
@@ -209,7 +208,6 @@ function CustomRoutePage({
       id: tempId,
       title: titleText,
       desc: 'Rute baru dibuat oleh Anda',
-      isPrimary: false,
       stops: stopsFormatted,
       totalDistance: `${totalRoadKm.toFixed(1)} KM`,
       totalDuration: `${totalMinutes} Menit`,
@@ -245,8 +243,11 @@ function CustomRoutePage({
       }
       pushAppNotification({
         type: 'route',
-        title: `Rute custom baru: ${titleText}`,
-        desc: `${chosenPlaces.length} destinasi wisata (${totalRoadKm.toFixed(1)} KM) berhasil ditambahkan ke Rute Custom.`,
+        title: t('routes.notifCreatedTitle', { title: titleText }),
+        desc: t('routes.notifCreatedDesc', {
+          count: chosenPlaces.length,
+          distance: formatDistanceUnit(totalRoadKm),
+        }),
       })
     } catch (err) {
       console.warn('Gagal menyimpan rute custom ke server:', err)
@@ -269,8 +270,8 @@ function CustomRoutePage({
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       pushAppNotification({
         type: 'success',
-        title: 'Rute custom berhasil dihapus',
-        desc: `Rute "${target.title}" telah dihapus dari daftar rute tersimpan.`,
+        title: t('routes.notifDeletedTitle'),
+        desc: t('routes.notifDeletedDesc', { title: target.title }),
       })
     } catch (err) {
       console.warn('Gagal menghapus rute custom:', err)
@@ -284,28 +285,28 @@ function CustomRoutePage({
 
   return (
     <div
-      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
-      className="apple-canopy-bg animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#EBF0EB]"
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 136px)' }}
+      className="animate-tab-enter h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain bg-[#0E1310] text-[#F5F2EB] will-change-transform transform-gpu"
     >
-      <div className="mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
-        {/* Top Header */}
-        <header className="flex flex-wrap items-center justify-between gap-3">
+      <div className="mx-auto w-full max-w-5xl px-5 pt-6 sm:px-6 lg:px-8">
+        {/* Top Header: Single Compact Row with Back, Title, and Compact + Action */}
+        <header className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
               id="btn-back-custom-route"
               onClick={onBack}
-              aria-label="Kembali ke aktivitas tersimpan"
-              className="apple-glass-pill flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#EBF0EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
+              aria-label={t('routes.backAria')}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#17201B] text-[#F5F2EB] transition-colors duration-150 hover:bg-[#212D26] active:scale-[0.96]"
             >
               <ChevronLeftIcon className="h-5 w-5" />
             </button>
             <div className="min-w-0">
-              <h1 className="text-[24px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[28px]">
-                Rute Custom
+              <h1 className="truncate text-[24px] leading-tight font-bold tracking-[-0.025em] text-[#F5F2EB] sm:text-[28px]">
+                {t('routes.title')}
               </h1>
-              <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
-                Rute perjalanan tersimpan akun Anda
+              <p className="mt-0.5 text-[12.5px] leading-snug text-[#A7B2AA]">
+                {t('routes.subtitle')}
               </p>
             </div>
           </div>
@@ -314,82 +315,73 @@ function CustomRoutePage({
             type="button"
             id="btn-add-custom-route"
             onClick={handleOpenCreateModal}
-            className="apple-glass-pill inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl px-4 py-2 text-[13px] font-semibold text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.98]"
+            aria-label={t('routes.createBtn')}
+            className="inline-flex min-h-[42px] shrink-0 items-center gap-1.5 rounded-xl bg-[#1C2620] px-3.5 py-2 text-[13px] font-semibold text-[#F5F2EB] transition-colors duration-150 hover:bg-[#25322B] active:scale-[0.97]"
           >
-            <span aria-hidden="true" className="text-[15px] leading-none font-bold text-[#DFAA63]">+</span>
-            <span>Buat Rute</span>
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              className="shrink-0 text-[#C5A868]"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span className="sm:hidden">{t('routes.createShortBtn')}</span>
+            <span className="hidden sm:inline">{t('routes.createBtn')}</span>
           </button>
         </header>
 
-        {/* Info Status Akun Terhubung */}
-        <div className="apple-glass-card mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3.5">
-          <div className="flex min-w-0 items-center gap-3">
-            <SafeImage
-              src={currentUser?.avatar}
-              fallback={DEFAULT_AVATAR_PLACEHOLDER}
-              alt={currentUser?.name ? `Foto profil ${currentUser.name}` : 'Foto profil pengguna'}
-              className="h-11 w-11 shrink-0 rounded-full border border-[rgba(244,239,230,0.24)] object-cover object-top"
-              imgClassName="object-cover object-top"
-            />
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="truncate text-[14px] font-semibold tracking-tight text-[#F5F2EB]">
-                  {currentUser?.name || 'Pengguna'}
-                </span>
-                <span className="apple-retro-bevel rounded-full border border-[rgba(244,239,230,0.16)] bg-white/[0.06] px-2.5 py-0.5 text-[11px] font-semibold text-[#DFAA63]">
-                  Terhubung
-                </span>
-              </div>
-              <p className="mt-0.5 font-mono text-[11.5px] tabular-nums tracking-wide text-[#F5F2EB]/60">
-                {visibleCustomRoutes.length} rute perjalanan aktif tersimpan
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Grid Daftar Rute Custom */}
+        {/* Daftar Rute Custom: Borderless Editorial Cards with Timeline Connector */}
         {visibleCustomRoutes.length > 0 ? (
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {visibleCustomRoutes.map((route) => (
-              <article
-                key={route.id}
-                id={`card-${route.id}`}
-                className="apple-glass-card apple-glass-card-hover group flex min-w-0 flex-col rounded-3xl p-4 sm:p-5"
-              >
-                {/* Header Rute */}
-                <div className="flex items-start justify-between gap-2.5">
-                  <div className="min-w-0 flex-1">
-                    {route.isPrimary && (
-                      <span className="mb-1.5 inline-block rounded-full border border-[#DFAA63]/35 bg-[#DFAA63]/12 px-2.5 py-0.5 font-mono text-[10px] font-semibold tracking-wide text-[#DFAA63]">
-                        Rute Utama
-                      </span>
-                    )}
-                    <h2 className="text-[15.5px] font-semibold tracking-tight leading-snug text-[#F5F2EB] transition-colors group-hover:text-[#DFAA63]">
-                      {route.title}
-                    </h2>
-                    {route.desc && (
-                      <p className="mt-1 text-[12px] leading-relaxed text-[#F5F2EB]/60">{route.desc}</p>
-                    )}
-                  </div>
-                  <div className="flex shrink-0 items-center gap-1.5">
-                    <span className="rounded-full border border-[rgba(244,239,230,0.16)] bg-white/[0.06] px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums tracking-wide text-[#DFAA63]">
-                      {route.stops.length} Tujuan
-                    </span>
+          <div
+            className={`mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 ${
+              visibleCustomRoutes.length >= 3 ? 'xl:grid-cols-3' : ''
+            }`}
+          >
+            {visibleCustomRoutes.map((route) => {
+              const displayTitle = tDynamic(route.title)
+              const displayDesc = tDynamic(route.desc)
+              return (
+                <article
+                  key={route.id}
+                  id={`card-${route.id}`}
+                  className="group flex min-w-0 flex-col rounded-2xl bg-[#151C18] p-5 transition-colors duration-150 hover:bg-[#19221D]"
+                >
+                  {/* Header Kartu Rute */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-[17px] font-bold tracking-[-0.02em] leading-snug text-[#F5F2EB]">
+                        {displayTitle}
+                      </h2>
+                      {displayDesc && (
+                        <p className="mt-1 text-[12.5px] leading-relaxed text-[#A7B2AA]">
+                          {displayDesc}
+                        </p>
+                      )}
+                    </div>
+
                     <button
                       type="button"
                       id={`btn-delete-${route.id}`}
                       onClick={() => setRouteToDelete(route)}
-                      aria-label={`Hapus rute ${route.title}`}
-                      title="Hapus rute"
-                      className="flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.05] text-[#C8D3C8] transition-colors hover:bg-[#3B1D24]/70 hover:text-rose-200 active:scale-95"
+                      aria-label={t('routes.deleteRouteAria', { title: displayTitle })}
+                      title={t('routes.deleteRouteTitle')}
+                      className="relative -mr-1.5 -mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[#94A198] transition-colors duration-150 hover:bg-[#2D181C] hover:text-[#FCA5A5] active:scale-[0.94] before:absolute before:-inset-1"
                     >
                       <svg
-                        width="13"
-                        height="13"
+                        width="15"
+                        height="15"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="2"
+                        strokeWidth="1.9"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         aria-hidden="true"
@@ -399,95 +391,130 @@ function CustomRoutePage({
                       </svg>
                     </button>
                   </div>
-                </div>
 
-                {/* Stepper Titik Lokasi */}
-                <div className="my-4 flex flex-col gap-3 border-y border-[rgba(244,239,230,0.12)] py-3.5">
-                  {route.stops.map((stop, idx) => {
-                    const isEdgeStop = idx === 0 || idx === route.stops.length - 1
-                    return (
-                      <div key={`${route.id}-stop-${idx}`} className="flex items-center gap-3">
-                        <span
-                          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full font-mono text-[11px] font-bold ${
-                            isEdgeStop
-                              ? 'bg-[#F2ECE1] text-[#141A14]'
-                              : 'border border-[rgba(244,239,230,0.22)] bg-white/[0.06] text-[#F5F2EB]'
-                          }`}
+                  {/* Stepper Pemberhentian dengan Garis Penghubung Vertikal (Timeline Connector) */}
+                  <ol className="mt-4 border-t border-[#F2ECE1]/[0.07] pt-4">
+                    {route.stops.map((stop, idx) => {
+                      const isFirst = idx === 0
+                      const isLast = idx === route.stops.length - 1
+                      const hasNext = idx < route.stops.length - 1
+                      const stopDistText = /[\d.,]+\s*(km|m|mi)/i.test(String(stop.distance || ''))
+                        ? formatDistanceUnit(stop.distance)
+                        : tDynamic(stop.distance)
+
+                      return (
+                        <li
+                          key={`${route.id}-stop-${idx}`}
+                          className="relative flex items-stretch gap-3.5"
                         >
-                          {idx + 1}
-                        </span>
-                        <div className="flex min-w-0 flex-1 items-center justify-between gap-2 text-[12.5px]">
-                          <div className="min-w-0">
-                            <p className="truncate font-semibold tracking-tight text-[#F5F2EB]">{stop.name}</p>
-                            <span className="block text-[11px] text-[#F5F2EB]/60">{stop.type}</span>
+                          {/* Timeline Column: Number Node + Vertical Connector Line */}
+                          <div className="flex flex-col items-center">
+                            <span
+                              className={`z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold tabular-nums ${
+                                isFirst
+                                  ? 'bg-[#F2ECE1] text-[#141A14]'
+                                  : isLast
+                                    ? 'bg-[#C5A868] text-[#141A14]'
+                                    : 'bg-[#222D26] text-[#F5F2EB]'
+                              }`}
+                            >
+                              {idx + 1}
+                            </span>
+                            {hasNext && (
+                              <span
+                                aria-hidden="true"
+                                className="my-1 w-[1.5px] flex-1 min-h-[20px] rounded-full bg-[#F2ECE1]/20"
+                              />
+                            )}
                           </div>
-                          <span className="shrink-0 font-mono text-[11px] tabular-nums tracking-wide text-[#F5F2EB]/65">
-                            {stop.distance}
-                          </span>
-                        </div>
+
+                          {/* Stop Name, Role & Leg Distance */}
+                          <div
+                            className={`flex min-w-0 flex-1 items-start justify-between gap-2.5 ${
+                              hasNext ? 'pb-4' : 'pb-0'
+                            }`}
+                          >
+                            <div className="min-w-0">
+                              <p className="truncate text-[14px] font-semibold tracking-[-0.012em] leading-snug text-[#F5F2EB]">
+                                {stop.name}
+                              </p>
+                              <span className="mt-0.5 block text-[12px] text-[#94A198]">
+                                {tDynamic(stop.type)}
+                              </span>
+                            </div>
+                            {stopDistText && (
+                              <span className="shrink-0 pt-0.5 text-[12px] font-medium tabular-nums text-[#A7B2AA]">
+                                {stopDistText}
+                              </span>
+                            )}
+                          </div>
+                        </li>
+                      )
+                    })}
+                  </ol>
+
+                  {/* Footer Rute: Jarak & Durasi Ringkas di Kiri, Tombol Start Journey Ramping di Kanan */}
+                  <div className="mt-auto pt-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#F2ECE1]/[0.07] pt-3.5">
+                      <div className="flex min-w-0 items-center gap-1.5 text-[13px] tabular-nums text-[#A7B2AA]">
+                        <span className="font-semibold text-[#F5F2EB]">
+                          {formatDistanceUnit(route.totalDistance)}
+                        </span>
+                        <span aria-hidden="true" className="text-[#94A198]/65">•</span>
+                        <span>{tDuration(route.totalDuration)}</span>
                       </div>
-                    )
-                  })}
-                </div>
 
-                {/* Footer Rute */}
-                <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-1">
-                  <div className="flex flex-wrap items-center gap-3 text-[12px] text-[#F5F2EB]/65">
-                    <span className="inline-flex items-center gap-1 font-mono font-semibold text-[#DFAA63] tabular-nums tracking-wide">
-                      <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
-                      <span>{route.totalDistance}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1 font-mono tabular-nums tracking-wide">
-                      <ClockIcon className="h-3.5 w-3.5 shrink-0 text-[#F5F2EB]/60" />
-                      <span>{route.totalDuration}</span>
-                    </span>
+                      <button
+                        type="button"
+                        id={`btn-mulai-${route.id}`}
+                        onClick={() => {
+                          if (onStartCustomRoute && route.places) {
+                            onStartCustomRoute(route.places.filter(Boolean))
+                          }
+                        }}
+                        className="relative inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[#F2ECE1] px-4 py-2 text-[13px] font-semibold text-[#141A14] transition-colors duration-150 hover:bg-[#E7DFD1] active:scale-[0.97] before:absolute before:-inset-y-0.5 before:inset-x-0"
+                      >
+                        <svg
+                          width="11"
+                          height="11"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          aria-hidden="true"
+                          className="shrink-0"
+                        >
+                          <polygon points="5 3 19 12 5 21 5 3" />
+                        </svg>
+                        <span>{t('routes.startJourney')}</span>
+                      </button>
+                    </div>
                   </div>
-
-                  <button
-                    type="button"
-                    id={`btn-mulai-${route.id}`}
-                    onClick={() => {
-                      if (onStartCustomRoute && route.places) {
-                        onStartCustomRoute(route.places.filter(Boolean))
-                      }
-                    }}
-                    className="apple-retro-cta inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-[12.5px] font-semibold active:scale-[0.98] sm:w-auto"
-                  >
-                    <svg
-                      width="13"
-                      height="13"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" />
-                    </svg>
-                    <span>Mulai Perjalanan</span>
-                  </button>
-                </div>
-              </article>
-            ))}
+                </article>
+              )
+            })}
           </div>
         ) : (
-          <div className="apple-glass-card mt-8 flex flex-col items-center justify-center rounded-3xl px-4 py-12 text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.14] bg-white/[0.06] text-[#E2D7B5]">
+          <div className="mt-7 flex flex-col items-center justify-center rounded-2xl bg-[#151C18] px-6 py-12 text-center">
+            <div className="mb-3.5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#1C2520] text-[#C5A868]">
               <MapIcon className="h-6 w-6" />
             </div>
-            <h3 className="text-[15px] font-semibold tracking-tight text-[#EBF0EB]">
-              Belum Ada Rute Custom
+            <h3 className="text-[16px] font-bold tracking-[-0.015em] text-[#F5F2EB]">
+              {t('routes.emptyTitle')}
             </h3>
-            <p className="mt-1 max-w-sm text-[12.5px] leading-relaxed text-white/60">
-              Anda belum memiliki rute custom. Klik tombol &quot;Buat Rute&quot; di atas untuk merangkai perjalanan dari tempat wisata tersimpan Anda.
+            <p className="mt-1.5 max-w-sm text-[13px] leading-relaxed text-[#A7B2AA]">
+              {t('routes.emptyDesc')}
             </p>
+            <button
+              type="button"
+              onClick={handleOpenCreateModal}
+              className="mt-5 inline-flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl bg-[#F2ECE1] px-5 py-2 text-[13px] font-semibold text-[#141A14] transition-colors hover:bg-[#E7DFD1] active:scale-[0.97]"
+            >
+              <span>{t('routes.createBtn')}</span>
+            </button>
           </div>
         )}
       </div>
 
-      {/* Modal Form: "Rancang Rute Custom Baru" (Liquid Glass) */}
+      {/* Modal Form: "Rancang Rute Custom Baru" */}
       <GlassModal
         isOpen={showCreateRouteModal}
         onClose={() => setShowCreateRouteModal(false)}
@@ -495,49 +522,49 @@ function CustomRoutePage({
         modalId="modal-rancang-rute"
         closeButtonId="btn-close-rancang-rute"
         titleId="modal-rancang-rute-title"
-        closeAriaLabel="Tutup modal rancang rute custom"
+        closeAriaLabel={t('routes.createModalCloseAria')}
         maxWidthClass="max-w-md"
       >
-        <div className="-mt-3 mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.2] bg-[rgba(20,28,20,0.45)] text-[#E2D7B5] shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22)]">
+        <div className="-mt-3 mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#1C2520] text-[#C5A868]">
           <MapIcon className="h-6 w-6" />
         </div>
 
-        <h3 id="modal-rancang-rute-title" className="text-center text-[19px] font-bold tracking-tight text-white">
-          Rancang Rute Custom Baru
+        <h3 id="modal-rancang-rute-title" className="text-center text-[19px] font-bold tracking-[-0.02em] text-[#F5F2EB]">
+          {t('routes.createModalTitle')}
         </h3>
-        <p className="mt-1 text-center text-[12.5px] text-[#E2EAE2]">
-          Pilih destinasi wisata untuk menyusun rute perjalanan Anda
+        <p className="mt-1 text-center text-[13px] text-[#A7B2AA]">
+          {t('routes.createModalDesc')}
         </p>
 
         <form onSubmit={handleCreateRouteSubmit} className="mt-5 flex flex-col gap-4">
           <div>
-            <label htmlFor="input-new-route-title" className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]">
-              Nama Rute
+            <label htmlFor="input-new-route-title" className="mb-1.5 block text-[12.5px] font-medium text-[#F5F2EB]">
+              {t('routes.routeNameLabel')}
             </label>
             <input
               type="text"
               id="input-new-route-title"
               value={newRouteTitle}
               onChange={(e) => setNewRouteTitle(e.target.value)}
-              placeholder="Contoh: Tur Budaya & Kebun Raya"
-              className="liquid-glass-input min-h-[44px] w-full rounded-xl px-3.5 py-2.5 text-[13px] text-[#EBF0EB] placeholder:text-[#C8D3C8] transition-colors duration-150"
+              placeholder={t('routes.routeNamePlaceholder')}
+              className="min-h-[44px] w-full rounded-xl bg-[#1B241F] px-3.5 py-2.5 text-[13.5px] text-[#F5F2EB] placeholder:text-[#94A198] transition-colors duration-150 focus:bg-[#212C26] focus:outline-2 focus:outline-[#C5A868]"
               required
             />
           </div>
 
           <div>
             <div className="mb-2 flex items-center justify-between gap-2">
-              <p className="text-[12px] font-medium text-[#EBF0EB]">
-                Pilih destinasi singgah:
+              <p className="text-[12.5px] font-medium text-[#F5F2EB]">
+                {t('routes.chooseStopsLabel')}
               </p>
               {savedTouristSpots.length > 0 && (
-                <span className="text-[11px] font-medium text-[#E2D7B5]">
-                  {savedTouristSpots.length} tempat tersimpan
+                <span className="text-[11.5px] font-medium text-[#C5A868]">
+                  {t('routes.savedSpotsCount', { count: savedTouristSpots.length })}
                 </span>
               )}
             </div>
 
-            <div className="flex max-h-52 flex-col gap-2 overflow-y-auto pr-1">
+            <div className="flex max-h-52 flex-col gap-1.5 overflow-y-auto pr-1">
               {modalCandidates.map((place) => {
                 const isChecked = selectedDestIds.includes(place.id)
                 return (
@@ -547,10 +574,10 @@ function CustomRoutePage({
                     role="checkbox"
                     aria-checked={isChecked}
                     onClick={() => handleToggleDest(place.id)}
-                    className={`flex min-h-[54px] w-full items-center justify-between gap-3 rounded-xl border p-2.5 text-left transition-colors duration-150 ${
+                    className={`flex min-h-[54px] w-full items-center justify-between gap-3 rounded-xl p-2.5 text-left transition-colors duration-150 ${
                       isChecked
-                        ? 'border-[#E2D7B5]/70 bg-white/[0.14]'
-                        : 'border-white/[0.14] bg-white/[0.06] hover:bg-white/[0.1]'
+                        ? 'bg-[#233028] ring-1 ring-[#C5A868]/60'
+                        : 'bg-[#19221D] hover:bg-[#202B24]'
                     }`}
                   >
                     <div className="flex min-w-0 items-center gap-3">
@@ -561,21 +588,21 @@ function CustomRoutePage({
                         className="h-10 w-10 shrink-0 rounded-lg object-cover"
                       />
                       <div className="min-w-0">
-                        <p className="truncate text-[13px] font-semibold text-[#EBF0EB]">
+                        <p className="truncate text-[13.5px] font-semibold text-[#F5F2EB]">
                           {place.name}
                         </p>
-                        <span className="block text-[11px] text-[#C8D3C8]">
-                          {place.category}
+                        <span className="block text-[11.5px] text-[#A7B2AA]">
+                          {tCategory(place.category)}
                         </span>
                       </div>
                     </div>
 
                     <span
                       aria-hidden="true"
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md transition-colors ${
                         isChecked
-                          ? 'border-[#F2ECE1] bg-[#F2ECE1] text-[#141A14]'
-                          : 'border-[rgba(244,239,230,0.28)] bg-white/[0.04] text-transparent'
+                          ? 'bg-[#F2ECE1] text-[#141A14]'
+                          : 'bg-[#26322B] text-transparent'
                       }`}
                     >
                       <CheckIcon className="h-3.5 w-3.5" />
@@ -590,17 +617,17 @@ function CustomRoutePage({
             <button
               type="button"
               onClick={() => setShowCreateRouteModal(false)}
-              className="min-h-[44px] flex-1 rounded-xl border border-white/[0.14] bg-white/[0.06] py-2.5 text-[13px] font-semibold text-[#EBF0EB] transition-colors duration-150 hover:bg-white/[0.12] active:scale-[0.98]"
+              className="min-h-[44px] flex-1 rounded-xl bg-[#1D2721] py-2.5 text-[13.5px] font-semibold text-[#F5F2EB] transition-colors duration-150 hover:bg-[#26332C] active:scale-[0.98]"
             >
-              Batal
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               id="btn-save-new-custom-route"
               disabled={selectedDestIds.length === 0}
-              className="apple-retro-cta min-h-[44px] flex-1 rounded-xl py-2.5 text-[13px] font-semibold active:scale-[0.98] disabled:opacity-50"
+              className="min-h-[44px] flex-1 rounded-xl bg-[#F2ECE1] py-2.5 text-[13.5px] font-semibold text-[#141A14] transition-colors duration-150 hover:bg-[#E7DFD1] active:scale-[0.98] disabled:opacity-50"
             >
-              Simpan Rute
+              {t('routes.saveRouteBtn')}
             </button>
           </div>
         </form>
@@ -614,35 +641,35 @@ function CustomRoutePage({
         modalId="modal-hapus-rute"
         closeButtonId="btn-close-hapus-rute"
         titleId="modal-hapus-rute-title"
-        closeAriaLabel="Tutup konfirmasi hapus rute"
+        closeAriaLabel={t('routes.deleteModalCloseAria')}
         maxWidthClass="max-w-xs"
       >
         <div className="text-center">
-          <div className="-mt-3 mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-rose-300/25 bg-[#3B1D24]/70 text-rose-200">
+          <div className="-mt-3 mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#2D181C] text-[#FCA5A5]">
             <AlertTriangleIcon className="h-6 w-6" />
           </div>
-          <h3 id="modal-hapus-rute-title" className="text-[17px] font-bold text-[#EBF0EB]">
-            Hapus Rute Custom?
+          <h3 id="modal-hapus-rute-title" className="text-[17px] font-bold text-[#F5F2EB]">
+            {t('routes.deleteModalTitle')}
           </h3>
-          <p className="mt-1.5 text-[12.5px] text-[#C8D3C8]">
-            Rute &quot;{routeToDelete?.title}&quot; akan dihapus permanen dari daftar rute Anda.
+          <p className="mt-1.5 text-[13px] leading-relaxed text-[#A7B2AA]">
+            {t('routes.deleteModalDesc', { title: tDynamic(routeToDelete?.title || '') })}
           </p>
           <div className="mt-5 flex gap-2.5">
             <button
               type="button"
               onClick={() => setRouteToDelete(null)}
-              className="min-h-[44px] flex-1 rounded-xl border border-white/[0.14] bg-white/[0.06] py-2.5 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-white/[0.12]"
+              className="min-h-[44px] flex-1 rounded-xl bg-[#1D2721] py-2.5 text-[13px] font-semibold text-[#F5F2EB] transition-colors hover:bg-[#26332C]"
             >
-              Batal
+              {t('common.cancel')}
             </button>
             <button
               type="button"
               id="btn-confirm-hapus-rute"
               onClick={confirmDeleteRoute}
               disabled={isDeletingRoute}
-              className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl border border-rose-300/25 bg-[#3B1D24] py-2.5 text-[12.5px] font-bold text-rose-100 transition-colors hover:bg-[#4D242E] disabled:opacity-50"
+              className="flex min-h-[44px] flex-1 items-center justify-center rounded-xl bg-[#3B1D24] py-2.5 text-[13px] font-bold text-rose-100 transition-colors hover:bg-[#4D242E] disabled:opacity-50"
             >
-              {isDeletingRoute ? 'Menghapus...' : 'Ya, Hapus'}
+              {isDeletingRoute ? t('common.deleting') : t('common.deleteConfirm')}
             </button>
           </div>
         </div>

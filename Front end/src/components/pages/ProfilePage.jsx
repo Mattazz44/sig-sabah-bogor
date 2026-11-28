@@ -2,6 +2,7 @@ import { memo, useEffect, useRef, useState } from 'react'
 import SafeImage from '../ui/SafeImage'
 import SabahMascot from '../ui/SabahMascot'
 import GlassModal from '../ui/GlassModal'
+import ProfileSettingsSheet from '../ui/ProfileSettingsSheet'
 import {
   DEFAULT_AVATAR_PLACEHOLDER,
   DEFAULT_IMAGE_PLACEHOLDER,
@@ -9,14 +10,17 @@ import {
 import { apiFetch, getAuthToken } from '../../utils/api'
 import { compressImage } from '../../utils/imageCompressor'
 import { pushAppNotification } from '../../utils/notifications'
+import { usePreferences } from '../../utils/preferences'
 import {
   AlertTriangleIcon,
   CameraIcon,
   CheckIcon,
   ChevronLeftIcon,
   CompassIcon,
+  EditIcon,
   MapPinIcon,
   RouteWaypointsIcon,
+  SettingsIcon,
 } from '../ui/VectorIcons'
 
 function buildFollowStorageKey(viewerId, identifier) {
@@ -43,6 +47,7 @@ function ProfilePage({
   isLoggedIn = false,
   onRequireLogin,
 }) {
+  const { t, tDynamic, formatDistanceUnit } = usePreferences()
   const isSelf = user === 'self' || Boolean(user?.isSelf)
 
   const targetIdentifier = isSelf
@@ -50,10 +55,10 @@ function ProfilePage({
     : user?.username || user?.id || user?.name || ''
 
   const viewerId = currentUser?.id || null
-  const initialName = isSelf ? (currentUser?.name || '') : (user?.name || '')
+  const initialName = isSelf ? currentUser?.name || '' : user?.name || ''
   const initialAvatar = isSelf ? currentUser?.avatar : user?.avatar
-  const initialEmail = isSelf ? (currentUser?.email || '') : null
-  const initialBio = user?.bio || ''
+  const initialEmail = isSelf ? currentUser?.email || '' : null
+  const initialBio = isSelf ? currentUser?.bio || user?.bio || '' : user?.bio || ''
 
   const [prevProfileKey, setPrevProfileKey] = useState(`${targetIdentifier}|${isSelf}|${viewerId}`)
   const currentProfileKey = `${targetIdentifier}|${isSelf}|${viewerId}`
@@ -76,6 +81,7 @@ function ProfilePage({
   const [postToDelete, setPostToDelete] = useState(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [settingsState, setSettingsState] = useState({ open: false, section: 'menu' })
 
   const fileInputRef = useRef(null)
   const toastTimerRef = useRef(null)
@@ -121,15 +127,15 @@ function ProfilePage({
         method: 'DELETE',
       })
       if (res.ok) {
-        showToast('Aktivitas berhasil dihapus.')
+        showToast(t('toast.activityDeleted'))
       } else {
         setUserActivities(prevActivities)
-        showToast('Gagal menghapus aktivitas.', true)
+        showToast(t('toast.activityDeleteFailed'), true)
       }
     } catch (err) {
       console.warn('Gagal menghapus aktivitas:', err)
       setUserActivities(prevActivities)
-      showToast('Gagal menghapus aktivitas.', true)
+      showToast(t('toast.activityDeleteFailed'), true)
     } finally {
       setIsDeleting(false)
     }
@@ -155,7 +161,7 @@ function ProfilePage({
 
         if (d.name) setProfileName(d.name)
         if (d.avatar) setProfileAvatar(d.avatar)
-        if (d.bio) setProfileBio(d.bio)
+        if (typeof d.bio === 'string') setProfileBio(d.bio)
         if (isSelf && d.email) setProfileEmail(d.email)
 
         if (typeof d.followers_count === 'number') {
@@ -213,7 +219,7 @@ function ProfilePage({
       if (onRequireLogin) {
         onRequireLogin()
       } else {
-        showToast('Silakan masuk terlebih dahulu untuk mengikuti penjelajah.', true)
+        showToast(t('toast.loginToFollow'), true)
       }
       return
     }
@@ -260,15 +266,15 @@ function ProfilePage({
       if (nextState) {
         pushAppNotification({
           type: 'social',
-          title: `Mulai mengikuti ${profileName}`,
-          desc: `Anda kini terhubung dengan ${profileName} di komunitas penjelajah Bogor.`,
+          title: t('profile.followNotifTitle', { name: profileName }),
+          desc: t('profile.followNotifDesc', { name: profileName }),
         })
       }
 
       showToast(
         nextState
-          ? `Berhasil mengikuti ${profileName}!`
-          : `Batal mengikuti ${profileName}.`,
+          ? t('toast.followSuccess', { name: profileName })
+          : t('toast.unfollowSuccess', { name: profileName }),
       )
     } catch (err) {
       console.warn('Gagal sinkronisasi status follow ke server:', err)
@@ -279,7 +285,7 @@ function ProfilePage({
       } catch {
         // abaikan
       }
-      showToast('Gagal memperbarui status follow.', true)
+      showToast(t('toast.followFailed'), true)
     }
   }
 
@@ -288,12 +294,12 @@ function ProfilePage({
     if (!file) return
 
     if (!file.type.startsWith('image/')) {
-      showToast('Harap pilih file gambar (JPG, PNG, WEBP).', true)
+      showToast(t('toast.invalidImageType'), true)
       return
     }
 
     if (file.size > 15 * 1024 * 1024) {
-      showToast('Ukuran foto profil maksimal 15 MB.', true)
+      showToast(t('toast.avatarTooLarge'), true)
       return
     }
 
@@ -332,10 +338,10 @@ function ProfilePage({
         }
         pushAppNotification({
           type: 'success',
-          title: 'Foto profil berhasil diperbarui',
-          desc: 'Perubahan foto profil akun Anda telah tersimpan.',
+          title: t('profile.avatarNotifTitle'),
+          desc: t('profile.avatarNotifDesc'),
         })
-        showToast('Foto profil berhasil diperbarui!')
+        showToast(t('toast.avatarUpdated'))
       } else {
         throw new Error('Respon server tidak valid')
       }
@@ -343,7 +349,7 @@ function ProfilePage({
       console.error('Gagal mengganti foto profil:', err)
       setLocalAvatar(null)
       setProfileAvatar(prevAvatar)
-      showToast(err.message || 'Gagal mengunggah foto profil. Silakan coba lagi.', true)
+      showToast(err.message || t('toast.avatarFailed'), true)
     } finally {
       URL.revokeObjectURL(previewUrl)
       setIsUploading(false)
@@ -353,15 +359,25 @@ function ProfilePage({
     }
   }
 
+  const handleProfileSaved = (updatedData) => {
+    if (updatedData?.name) setProfileName(updatedData.name)
+    if (typeof updatedData?.bio === 'string') setProfileBio(updatedData.bio)
+    if (onUpdateUser && updatedData) {
+      onUpdateUser({
+        ...(currentUser || {}),
+        ...updatedData,
+      })
+    }
+  }
+
   const [userCustomRoutes, setUserCustomRoutes] = useState([])
 
   useEffect(() => {
-    if (!isSelf) return
+    if (!isSelf) return undefined
     let isMounted = true
     const uid = currentUser?.id
     if (!uid || !getAuthToken()) {
-      setUserCustomRoutes([])
-      return
+      return undefined
     }
 
     apiFetch('/api/saved-activities')
@@ -371,9 +387,9 @@ function ProfilePage({
         if (Array.isArray(json.data.custom_routes)) {
           const byId = new Map()
           const bySlug = new Map()
-          tourists.forEach((t) => {
-            if (t?.id) byId.set(Number(t.id), t)
-            if (t?.slug) bySlug.set(t.slug, t)
+          tourists.forEach((item) => {
+            if (item?.id) byId.set(Number(item.id), item)
+            if (item?.slug) bySlug.set(item.slug, item)
           })
           const mapped = json.data.custom_routes.map((cr) => {
             const stops = Array.isArray(cr.stops) ? cr.stops : []
@@ -400,8 +416,8 @@ function ProfilePage({
               id: cr.slug || `cr-${cr.id}`,
               title: cr.title,
               distance: cr.total_distance || '0 KM',
-              summary: cr.desc || 'Rute kustom buatan Anda',
-              stopsLabel: `${stops.length} destinasi wisata`,
+              summary: cr.desc || '',
+              stopsCount: stops.length,
               places,
             }
           })
@@ -421,33 +437,34 @@ function ProfilePage({
     }
   }, [isSelf, currentUser?.id, tourists])
 
-  const savedMyRoutes = userCustomRoutes
-
+  const savedMyRoutes = currentUser?.id && getAuthToken() ? userCustomRoutes : []
   const activeAvatar = localAvatar || profileAvatar
+  const displayBio = profileBio?.trim() ? tDynamic(profileBio.trim()) : t('profile.defaultBio')
 
   return (
     <div
       style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 116px)' }}
-      className="apple-canopy-bg animate-tab-enter relative h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain will-change-transform transform-gpu text-[#EBF0EB]"
+      className="animate-tab-enter relative h-full min-h-0 w-full overflow-x-hidden overflow-y-auto overscroll-contain bg-[#0E1310] text-[#F5F2EB] will-change-transform transform-gpu"
     >
       {/* Toast Notifikasi Sukses / Gagal */}
       {toast && (
         <div
           role="status"
+          aria-live="polite"
           className="fixed inset-x-4 top-5 z-[2100] mx-auto max-w-sm animate-tab-enter"
         >
           <div
-            className={`flex items-center gap-2.5 rounded-2xl px-4 py-3 text-[12.5px] font-medium shadow-xl border ${
+            className={`flex items-center gap-2.5 rounded-2xl border px-4 py-3 text-[12.5px] font-medium shadow-xl backdrop-blur-xl ${
               toast.isError
-                ? 'border-rose-300/35 bg-[#2a1216]/95 text-rose-100'
-                : 'apple-glass-card text-[#EBF0EB]'
+                ? 'border-rose-300/30 bg-[#2A1418]/95 text-rose-100'
+                : 'border-[#F2ECE1]/12 bg-[#161F19]/95 text-[#F5F2EB]'
             }`}
           >
-            <span className="shrink-0 text-[#E2D7B5]">
+            <span className="shrink-0">
               {toast.isError ? (
                 <AlertTriangleIcon className="h-4 w-4 text-rose-300" />
               ) : (
-                <CheckIcon className="h-4 w-4 text-[#E2D7B5]" />
+                <CheckIcon className="h-4 w-4 text-[#8FB596]" />
               )}
             </span>
             <span>{toast.message}</span>
@@ -455,41 +472,55 @@ function ProfilePage({
         </div>
       )}
 
-      <div className="mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 lg:px-8">
-        {/* Top Bar Header */}
+      <div className="mx-auto w-full max-w-5xl px-5 pt-6 sm:px-6 lg:px-8">
+        {/* 1. Header Atas Sejajar: Judul di Kiri, Ikon Gear Pengaturan di Kanan (Tanpa Pil < Kembali) */}
         <header className="flex items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3">
-            <button
-              type="button"
-              id="btn-back-profile"
-              onClick={onBack}
-              aria-label="Kembali ke halaman sebelumnya"
-              className="apple-glass-pill inline-flex h-11 min-w-[44px] shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 text-[13px] font-semibold text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
-            >
-              <ChevronLeftIcon className="h-4 w-4 shrink-0" />
-              <span>Kembali</span>
-            </button>
-            <h1 className="truncate text-[24px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[28px]">
-              {isSelf ? 'Profil Saya' : 'Profil Penjelajah'}
+          <div className="flex min-w-0 items-center gap-2.5">
+            {!isSelf && onBack && (
+              <button
+                type="button"
+                id="btn-back-profile"
+                onClick={onBack}
+                aria-label={t('profile.backAria')}
+                className="-ml-1.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[#F5F2EB]/80 transition-colors hover:bg-white/[0.08] hover:text-[#F5F2EB] active:scale-[0.96]"
+              >
+                <ChevronLeftIcon className="h-5 w-5" />
+              </button>
+            )}
+            <h1 className="truncate text-[24px] font-bold tracking-[-0.025em] text-[#F5F2EB] sm:text-[28px]">
+              {isSelf ? t('profile.titleSelf') : t('profile.titleOther')}
             </h1>
           </div>
+
+          {isSelf && (
+            <button
+              type="button"
+              id="btn-open-settings"
+              onClick={() => setSettingsState({ open: true, section: 'menu' })}
+              aria-label={t('profile.openSettingsAria')}
+              title={t('settings.title')}
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[#F2ECE1]/10 bg-[#161E19] text-[#F5F2EB]/85 transition-colors duration-150 hover:border-[#F2ECE1]/20 hover:bg-[#1E2822] hover:text-[#F5F2EB] active:scale-[0.96]"
+            >
+              <SettingsIcon className="h-5 w-5" />
+            </button>
+          )}
         </header>
 
-        {/* Responsive Multi-Column Layout: Sidebar Profil Kiri + Konten Utama Kanan */}
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start">
-          {/* Kolom Kiri: Kartu Identitas Pengguna Kaca Halus */}
+        {/* Layout Responsif: Identitas Profil Seamless (Kiri) + Konten Rute / Aktivitas (Kanan) */}
+        <div className="mt-7 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start lg:gap-10">
+          {/* 2. Bagian Profil & Statistik (Menyatu dengan Background, Tanpa Kotak Besar) */}
           <aside className="lg:col-span-5 xl:col-span-4">
             <section
-              aria-label="Informasi profil pengguna"
-              className="apple-glass-card flex flex-col items-center rounded-3xl p-6 text-center"
+              aria-label={t('profile.titleSelf')}
+              className="flex flex-col items-center text-center"
             >
-              {/* Foto Profil dengan Tombol Ganti Foto Dark Glass */}
+              {/* Foto Profil dengan Badge Kamera Kecil */}
               <div className="relative h-24 w-24">
                 <SafeImage
                   src={activeAvatar}
                   fallback={DEFAULT_AVATAR_PLACEHOLDER}
-                  alt={profileName || 'Foto profil'}
-                  className="h-24 w-24 rounded-full border-2 border-[#DFAA63]/60 object-cover object-top shadow-sm"
+                  alt={profileName || t('profile.defaultUser')}
+                  className="h-24 w-24 rounded-full object-cover object-top ring-2 ring-[#C5A868]/60 ring-offset-4 ring-offset-[#0E1310]"
                   imgClassName="object-cover object-top"
                 />
 
@@ -505,16 +536,16 @@ function ProfilePage({
                     <button
                       type="button"
                       id="btn-upload-avatar"
-                      title="Ganti Foto Profil"
-                      aria-label="Ganti Foto Profil"
+                      title={t('profile.changeAvatarAria')}
+                      aria-label={t('profile.changeAvatarAria')}
                       disabled={isUploading}
                       onClick={() => fileInputRef.current?.click()}
-                      className="absolute -right-1 -bottom-1 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-[#1C241C]/90 text-[#EBF0EB] shadow-md backdrop-blur-md transition-all duration-150 hover:bg-[#263226]/95 active:scale-[0.96] disabled:opacity-60 before:absolute before:-inset-1.5"
+                      className="absolute -right-1 -bottom-1 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-[#0E1310] bg-[#1F2B23] text-[#F5F2EB] shadow-md transition-colors duration-150 hover:bg-[#2B3B30] active:scale-[0.95] disabled:opacity-60 before:absolute before:-inset-1.5"
                     >
                       {isUploading ? (
-                        <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#EBF0EB] border-t-transparent" />
+                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#F5F2EB] border-t-transparent" />
                       ) : (
-                        <CameraIcon className="h-4 w-4" />
+                        <CameraIcon className="h-3.5 w-3.5" />
                       )}
                     </button>
                   </>
@@ -522,170 +553,138 @@ function ProfilePage({
               </div>
 
               {/* Nama & Email */}
-              <h2 className="mt-4 text-[20px] font-semibold tracking-tight text-[#EBF0EB]">
-                {profileName || 'Pengguna'}
+              <h2 className="mt-4 text-[21px] font-bold tracking-[-0.02em] text-[#F5F2EB]">
+                {profileName || t('profile.defaultUser')}
               </h2>
 
               {isSelf && profileEmail && (
-                <p className="mt-0.5 text-[12.5px] font-medium text-white/60">
+                <p className="mt-0.5 text-[13px] font-medium text-[#F5F2EB]/50">
                   {profileEmail}
                 </p>
               )}
 
-              {profileBio && (
-                <p className="mt-2.5 max-w-xs text-[12.5px] leading-relaxed text-white/65">
-                  {profileBio}
-                </p>
-              )}
+              {/* Bio Singkat */}
+              <p className="mt-2.5 max-w-xs text-[13px] leading-relaxed text-[#F5F2EB]/68">
+                {displayBio}
+              </p>
 
-              {/* Badge Status */}
-              <div className="mt-3">
-                <span className="apple-retro-bevel inline-block rounded-full border border-[rgba(244,239,230,0.18)] bg-white/[0.06] px-3 py-1 text-[11px] font-semibold text-[#DFAA63]">
-                  {isSelf ? 'Penjelajah Aktif' : 'Petualang Alam Bogor'}
-                </span>
-              </div>
-
-              {/* Tombol Follow (Jika Melihat Profil Penjelajah Lain) */}
-              {!isSelf && (
+              {/* Tombol Sekunder Edit Profil (Self) atau Follow (Explorer Lain) */}
+              {isSelf ? (
+                <button
+                  type="button"
+                  id="btn-edit-profile-hero"
+                  onClick={() => setSettingsState({ open: true, section: 'edit-profile' })}
+                  className="mt-4 inline-flex min-h-[40px] items-center justify-center gap-2 rounded-xl border border-[#F2ECE1]/14 bg-[#161E19] px-5 py-2 text-[13px] font-semibold text-[#F5F2EB]/90 transition-colors duration-150 hover:border-[#F2ECE1]/24 hover:bg-[#1E2822] hover:text-[#F5F2EB] active:scale-[0.98]"
+                >
+                  <EditIcon className="h-3.5 w-3.5 text-[#C5A868]" />
+                  <span>{t('profile.editProfile')}</span>
+                </button>
+              ) : (
                 <button
                   type="button"
                   id="btn-follow-user"
                   onClick={handleToggleFollow}
-                  className={`mt-4 inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] ${
+                  className={`mt-4 inline-flex min-h-[44px] w-full max-w-[240px] items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] ${
                     isFollowing
-                      ? 'apple-glass-pill text-[#F5F2EB] hover:bg-white/[0.14]'
+                      ? 'border border-[#F2ECE1]/14 bg-[#161E19] text-[#F5F2EB] hover:bg-[#1E2822]'
                       : 'apple-retro-cta'
                   }`}
                 >
                   {isFollowing ? (
                     <>
-                      <CheckIcon className="h-4 w-4 text-[#DFAA63]" />
-                      <span>Mengikuti</span>
+                      <CheckIcon className="h-4 w-4 text-[#C5A868]" />
+                      <span>{t('profile.following')}</span>
                     </>
                   ) : (
-                    <>
-                      <svg
-                        width="15"
-                        height="15"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                        <circle cx="8.5" cy="7" r="4" />
-                        <line x1="20" y1="8" x2="20" y2="14" />
-                        <line x1="23" y1="11" x2="17" y2="11" />
-                      </svg>
-                      <span>Ikuti Perjalanan</span>
-                    </>
+                    <span>{t('profile.followAction')}</span>
                   )}
                 </button>
               )}
 
-              {/* Statistik Profil */}
-              <div className="apple-retro-bevel mt-5 grid w-full grid-cols-3 divide-x divide-[rgba(244,239,230,0.14)] rounded-2xl border border-[rgba(244,239,230,0.16)] bg-black/20 py-3">
+              {/* Bar Statistik Ramping dengan Garis Pemisah Vertikal Tipis (Tanpa Kotak Berlapis) */}
+              <div
+                id="profile-stats-bar"
+                className="mt-6 grid w-full max-w-sm grid-cols-3 divide-x divide-[#F2ECE1]/[0.1] border-y border-[#F2ECE1]/[0.08] py-3.5"
+              >
                 <div className="flex flex-col items-center px-2">
-                  <span className="font-mono text-[16px] font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+                  <span className="text-[18px] font-bold leading-none tabular-nums tracking-[-0.02em] text-[#F5F2EB]">
                     {routesCount}
                   </span>
-                  <span className="mt-0.5 text-[11px] text-[#F5F2EB]/60">Rute Custom</span>
+                  <span className="mt-1.5 text-[11.5px] font-medium text-[#F5F2EB]/50">
+                    {t('profile.statRoutes')}
+                  </span>
                 </div>
                 <div className="flex flex-col items-center px-2">
-                  <span className="font-mono text-[16px] font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+                  <span className="text-[18px] font-bold leading-none tabular-nums tracking-[-0.02em] text-[#F5F2EB]">
                     {followersCount}
                   </span>
-                  <span className="mt-0.5 text-[11px] text-[#F5F2EB]/60">Pengikut</span>
+                  <span className="mt-1.5 text-[11.5px] font-medium text-[#F5F2EB]/50">
+                    {t('profile.statFollowers')}
+                  </span>
                 </div>
                 <div className="flex flex-col items-center px-2">
-                  <span className="font-mono text-[16px] font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
+                  <span className="text-[18px] font-bold leading-none tabular-nums tracking-[-0.02em] text-[#F5F2EB]">
                     {followingCount}
                   </span>
-                  <span className="mt-0.5 text-[11px] text-[#F5F2EB]/60">Mengikuti</span>
+                  <span className="mt-1.5 text-[11.5px] font-medium text-[#F5F2EB]/50">
+                    {t('profile.statFollowing')}
+                  </span>
                 </div>
               </div>
-
-              {/* Tombol Logout Tunggal di Dalam Kartu Profil */}
-              {isSelf && onLogout && (
-                <div className="mt-5 w-full border-t border-white/[0.1] pt-4">
-                  <button
-                    type="button"
-                    id="btn-logout-profile"
-                    onClick={() => setShowLogoutModal(true)}
-                    className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-rose-300/25 bg-[#3B1D24]/60 px-4 py-2.5 text-[13px] font-semibold text-rose-200 transition-colors duration-150 hover:bg-[#4D242E] hover:text-white active:scale-[0.98]"
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                      <polyline points="16 17 21 12 16 7" />
-                      <line x1="21" y1="12" x2="9" y2="12" />
-                    </svg>
-                    <span>Keluar dari Akun</span>
-                  </button>
-                </div>
-              )}
             </section>
           </aside>
 
-          {/* Kolom Kanan: Rute Saya atau Aktivitas Penjelajah */}
+          {/* 3. Kolom Kanan: Rute Saya atau Aktivitas Penjelajah */}
           <div className="lg:col-span-7 xl:col-span-8">
             {isSelf ? (
               <section aria-labelledby="my-routes-heading">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex items-end justify-between gap-3">
                   <div>
                     <h2
                       id="my-routes-heading"
-                      className="text-[18px] font-semibold tracking-tight text-[#F5F2EB]"
+                      className="text-[19px] font-bold tracking-[-0.02em] text-[#F5F2EB]"
                     >
-                      Rute Saya
+                      {t('profile.myRoutesTitle')}
                     </h2>
-                    <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
-                      Koleksi rute siap navigasi dari akun Anda
+                    <p className="mt-0.5 text-[13px] text-[#F5F2EB]/55">
+                      {t('profile.myRoutesSubtitle')}
                     </p>
                   </div>
-                  <span className="apple-glass-pill shrink-0 rounded-full px-3 py-1 font-mono text-[11px] font-semibold tabular-nums tracking-wide text-[#DFAA63]">
-                    {savedMyRoutes.length} Rute Tersimpan
+                  <span className="shrink-0 rounded-full bg-[#18221B] px-3 py-1 font-mono text-[11.5px] font-semibold tabular-nums text-[#C5A868]">
+                    {t('profile.savedRoutesCount', { count: savedMyRoutes.length })}
                   </span>
                 </div>
 
-                {/* Grid Kartu Rute Saya dengan Struktur & Tinggi Seragam */}
                 {savedMyRoutes.length > 0 ? (
                   <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {savedMyRoutes.map((route) => {
                       const canStartRoute = Boolean(onStartCustomRoute && route.places.length > 0)
+                      const formattedDistance = formatDistanceUnit(route.distance)
                       return (
                         <article
                           key={route.id}
-                          className="apple-glass-card apple-glass-card-hover flex h-full min-w-0 flex-col rounded-3xl p-4 sm:p-5"
+                          data-route-card
+                          className="flex h-full min-w-0 flex-col rounded-2xl border border-[#F2ECE1]/[0.07] bg-[#161D19] p-4 transition-colors duration-200 hover:border-[#8FB596]/30 sm:p-5"
                         >
-                          <div className="flex items-start justify-between gap-2.5">
-                            <h3 className="text-[15px] font-semibold tracking-tight leading-snug text-[#F5F2EB]">
-                              {route.title}
+                          <div className="flex items-start justify-between gap-3">
+                            <h3 className="text-[15px] font-semibold leading-snug tracking-[-0.01em] text-[#F5F2EB]">
+                              {tDynamic(route.title)}
                             </h3>
-                            <span className="shrink-0 rounded-full border border-[rgba(244,239,230,0.16)] bg-white/[0.06] px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums tracking-wide text-[#DFAA63]">
-                              {route.distance}
+                            <span
+                              data-route-distance
+                              className="shrink-0 rounded-lg bg-[#202B24] px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums text-[#C5A868]"
+                            >
+                              {formattedDistance}
                             </span>
                           </div>
 
-                          <p className="mt-2 text-[12.5px] leading-relaxed text-[#F5F2EB]/65">
-                            {route.summary}
+                          <p className="mt-2 line-clamp-2 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
+                            {route.summary ? tDynamic(route.summary) : t('profile.routeDefaultSummary')}
                           </p>
 
-                          <div className="mt-3 flex items-center gap-1.5 text-[11.5px] font-medium text-[#DFAA63]">
+                          <div className="mt-3 flex items-center gap-1.5 text-[12px] font-medium text-[#8FB596]">
                             <RouteWaypointsIcon className="h-4 w-4 shrink-0" />
-                            <span>{route.stopsLabel}</span>
+                            <span>{t('profile.stopsCount', { count: route.stopsCount })}</span>
                           </div>
 
                           <div className="mt-auto pt-4">
@@ -693,22 +692,22 @@ function ProfilePage({
                               type="button"
                               disabled={!canStartRoute}
                               onClick={() => canStartRoute && onStartCustomRoute(route.places)}
-                              className="apple-retro-cta flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[12.5px] font-semibold active:scale-[0.98] disabled:opacity-50"
+                              className="apple-retro-cta flex h-[44px] w-full items-center justify-center gap-2 rounded-xl px-4 text-[13px] font-semibold active:scale-[0.98] disabled:opacity-50"
                             >
                               <svg
-                                width="13"
-                                height="13"
+                                width="12"
+                                height="12"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
-                                strokeWidth="2.5"
+                                strokeWidth="2.4"
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 aria-hidden="true"
                               >
                                 <polygon points="5 3 19 12 5 21 5 3" fill="currentColor" />
                               </svg>
-                              <span>Mulai Navigasi Rute</span>
+                              <span>{t('profile.startRoute')}</span>
                             </button>
                           </div>
                         </article>
@@ -716,15 +715,15 @@ function ProfilePage({
                     })}
                   </div>
                 ) : (
-                  <div className="apple-glass-card mt-4 flex flex-col items-center justify-center rounded-3xl px-4 py-10 text-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.14] bg-white/[0.06] text-[#E2D7B5]">
+                  <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-[#F2ECE1]/[0.07] bg-[#161D19] px-5 py-12 text-center">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1E2822] text-[#C5A868]">
                       <RouteWaypointsIcon className="h-6 w-6" />
                     </div>
-                    <p className="text-[14px] font-semibold tracking-tight text-[#EBF0EB]">
-                      Belum Ada Rute Tersimpan
+                    <p className="text-[14.5px] font-semibold tracking-tight text-[#F5F2EB]">
+                      {t('profile.emptyRoutesTitle')}
                     </p>
-                    <p className="mt-1 max-w-xs text-[12.5px] leading-relaxed text-white/60">
-                      Anda belum memiliki rute kustom. Rancang rute perjalanan Anda di tab Rute Tersimpan.
+                    <p className="mt-1 max-w-xs text-[12.5px] leading-relaxed text-[#F5F2EB]/55">
+                      {t('profile.emptyRoutesDesc')}
                     </p>
                   </div>
                 )}
@@ -734,13 +733,13 @@ function ProfilePage({
                 <div className="flex items-center justify-between gap-3">
                   <h2
                     id="explorer-activities-heading"
-                    className="text-[18px] font-bold tracking-tight text-[#EBF0EB]"
+                    className="text-[19px] font-bold tracking-[-0.02em] text-[#F5F2EB]"
                   >
-                    Aktivitas Terkini {profileName}
+                    {t('profile.recentActivities', { name: profileName })}
                   </h2>
                   {userActivities.length > 0 && (
-                    <span className="shrink-0 text-[12px] text-[#C8D3C8]">
-                      {userActivities.length} Aktivitas
+                    <span className="shrink-0 text-[12px] font-medium text-[#F5F2EB]/55">
+                      {t('profile.activitiesCount', { count: userActivities.length })}
                     </span>
                   )}
                 </div>
@@ -750,7 +749,7 @@ function ProfilePage({
                     {[1, 2].map((item) => (
                       <div
                         key={item}
-                        className="apple-glass-card rounded-2xl p-4"
+                        className="rounded-2xl border border-[#F2ECE1]/[0.06] bg-[#161D19] p-4"
                       >
                         <div className="aspect-[16/10] w-full rounded-xl bg-white/[0.04]" />
                         <div className="mt-3 h-4 w-3/4 rounded bg-white/[0.08]" />
@@ -763,24 +762,26 @@ function ProfilePage({
                     {userActivities.map((act) => (
                       <article
                         key={act.id}
-                        className="apple-glass-card apple-glass-card-hover flex flex-col rounded-3xl p-4"
+                        className="flex flex-col rounded-2xl border border-[#F2ECE1]/[0.07] bg-[#161D19] p-4 transition-colors duration-200 hover:border-[#8FB596]/30"
                       >
                         {act.image && (
-                          <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#182117]">
+                          <div className="aspect-[16/10] w-full overflow-hidden rounded-xl bg-[#111713]">
                             <SafeImage
                               src={act.image}
                               fallback={DEFAULT_IMAGE_PLACEHOLDER}
-                              alt={act.title || 'Aktivitas'}
+                              alt={act.title || t('activities.title')}
                               className="h-full w-full object-cover object-center"
                             />
                           </div>
                         )}
                         <div className="mt-3 flex flex-1 flex-col">
-                          <div className="mb-1 flex items-center justify-between gap-2 text-[11px] text-[#F5F2EB]/55">
-                            <span className="font-mono tabular-nums tracking-wide">{act.date || 'Baru saja'}</span>
+                          <div className="mb-1 flex items-center justify-between gap-2 text-[11px] text-[#F5F2EB]/50">
+                            <span className="font-mono tabular-nums tracking-wide">
+                              {act.date ? tDynamic(act.date) : t('profile.justNow')}
+                            </span>
                             <div className="flex items-center gap-2">
                               {act.location && (
-                                <span className="inline-flex max-w-[160px] items-center gap-1 truncate font-medium text-[#DFAA63]">
+                                <span className="inline-flex max-w-[160px] items-center gap-1 truncate font-medium text-[#C5A868]">
                                   <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
                                   <span className="truncate">{act.location}</span>
                                 </span>
@@ -792,8 +793,8 @@ function ProfilePage({
                                     e.stopPropagation()
                                     setPostToDelete(act.id)
                                   }}
-                                  title="Hapus aktivitas ini"
-                                  aria-label="Hapus aktivitas ini"
+                                  title={t('profile.deleteActivityAria')}
+                                  aria-label={t('profile.deleteActivityAria')}
                                   className="rounded-lg p-1 text-white/60 transition-colors hover:text-rose-300"
                                 >
                                   <svg
@@ -814,7 +815,7 @@ function ProfilePage({
                               )}
                             </div>
                           </div>
-                          <h3 className="text-[14px] font-semibold tracking-tight leading-snug text-[#EBF0EB]">
+                          <h3 className="text-[14px] font-semibold leading-snug tracking-tight text-[#F5F2EB]">
                             {act.title}
                           </h3>
                         </div>
@@ -822,15 +823,15 @@ function ProfilePage({
                     ))}
                   </div>
                 ) : (
-                  <div className="apple-glass-card mt-4 flex flex-col items-center justify-center rounded-3xl px-4 py-10 text-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.14] bg-white/[0.06] text-[#E2D7B5]">
+                  <div className="mt-4 flex flex-col items-center justify-center rounded-2xl border border-[#F2ECE1]/[0.07] bg-[#161D19] px-5 py-12 text-center">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1E2822] text-[#C5A868]">
                       <CompassIcon className="h-6 w-6" duotone />
                     </div>
-                    <p className="text-[14px] font-semibold tracking-tight text-[#EBF0EB]">
-                      Belum Ada Aktivitas Terkini
+                    <p className="text-[14.5px] font-semibold tracking-tight text-[#F5F2EB]">
+                      {t('profile.emptyActivitiesTitle')}
                     </p>
-                    <p className="mt-1 max-w-xs text-[12.5px] leading-relaxed text-white/60">
-                      {profileName} belum membagikan momen perjalanan terbarunya.
+                    <p className="mt-1 max-w-xs text-[12.5px] leading-relaxed text-[#F5F2EB]/55">
+                      {t('profile.emptyActivitiesDesc', { name: profileName })}
                     </p>
                   </div>
                 )}
@@ -840,6 +841,20 @@ function ProfilePage({
         </div>
       </div>
 
+      {/* 4. Drawer / Sheet Pengaturan Lengkap (Bahasa, Akun, Navigasi, Zona Bahaya) */}
+      {isSelf && (
+        <ProfileSettingsSheet
+          isOpen={settingsState.open}
+          initialSection={settingsState.section}
+          onClose={() => setSettingsState((prev) => ({ ...prev, open: false }))}
+          profileName={profileName}
+          profileBio={profileBio}
+          onProfileSaved={handleProfileSaved}
+          onRequestLogout={onLogout ? () => setShowLogoutModal(true) : null}
+          onNotify={(msg, isErr) => showToast(msg, isErr)}
+        />
+      )}
+
       {/* Modal Konfirmasi Hapus Aktivitas */}
       <GlassModal
         isOpen={Boolean(postToDelete)}
@@ -848,26 +863,26 @@ function ProfilePage({
         modalId="modal-hapus-aktivitas"
         closeButtonId="btn-close-hapus-aktivitas"
         titleId="modal-hapus-aktivitas-title"
-        closeAriaLabel="Tutup konfirmasi hapus aktivitas"
+        closeAriaLabel={t('common.close')}
         maxWidthClass="max-w-xs"
       >
         <div className="text-center">
           <div className="-mt-3 mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-2xl border border-rose-300/25 bg-[#3B1D24]/70 text-rose-200">
             <AlertTriangleIcon className="h-6 w-6" />
           </div>
-          <h3 id="modal-hapus-aktivitas-title" className="text-[17px] font-bold text-[#EBF0EB]">
-            Hapus Aktivitas?
+          <h3 id="modal-hapus-aktivitas-title" className="text-[17px] font-bold text-[#F5F2EB]">
+            {t('profile.deleteModalTitle')}
           </h3>
-          <p className="mt-1.5 text-[12.5px] text-[#C8D3C8]">
-            Postingan aktivitas ini akan dihapus secara permanen.
+          <p className="mt-1.5 text-[12.5px] text-[#F5F2EB]/65">
+            {t('profile.deleteModalDesc')}
           </p>
           <div className="mt-5 flex gap-2.5">
             <button
               type="button"
               onClick={() => setPostToDelete(null)}
-              className="min-h-[44px] flex-1 rounded-xl border border-white/[0.14] bg-white/[0.06] py-2.5 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-white/[0.12]"
+              className="min-h-[44px] flex-1 rounded-xl border border-white/[0.14] bg-white/[0.06] py-2.5 text-[12.5px] font-semibold text-[#F5F2EB] transition-colors hover:bg-white/[0.12]"
             >
-              Batal
+              {t('common.cancel')}
             </button>
             <button
               type="button"
@@ -875,13 +890,13 @@ function ProfilePage({
               disabled={isDeleting}
               className="flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl border border-rose-300/25 bg-[#3B1D24] py-2.5 text-[12.5px] font-bold text-rose-100 transition-colors hover:bg-[#4D242E] disabled:opacity-50"
             >
-              {isDeleting ? 'Menghapus...' : 'Ya, Hapus'}
+              {isDeleting ? t('profile.deleting') : t('profile.deleteConfirm')}
             </button>
           </div>
         </div>
       </GlassModal>
 
-      {/* Modal Konfirmasi Keluar dari Akun (Liquid Glass + Maskot Goodbye) */}
+      {/* Modal Konfirmasi Keluar dari Akun (Dipicu dari Settings -> Zona Bahaya) */}
       <GlassModal
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
@@ -889,23 +904,19 @@ function ProfilePage({
         modalId="modal-konfirmasi-logout"
         closeButtonId="btn-close-logout-modal"
         titleId="modal-logout-title"
-        closeAriaLabel="Tutup konfirmasi keluar"
+        closeAriaLabel={t('common.close')}
         maxWidthClass="max-w-sm"
       >
         <div className="text-center">
           <div className="-mt-3 mb-3.5 flex justify-center">
-            <SabahMascot
-              variant="goodbye"
-              size="md"
-              className="drop-shadow-[0_12px_24px_rgba(0,0,0,0.4)]"
-            />
+            <SabahMascot variant="goodbye" size="md" />
           </div>
 
           <h3 id="modal-logout-title" className="text-[19px] font-semibold tracking-tight text-[#F5F2EB]">
-            Kamu yakin ingin logout?
+            {t('profile.logoutModalTitle')}
           </h3>
           <p className="mx-auto mt-1.5 max-w-xs text-[12.5px] leading-relaxed text-[#F5F2EB]/65">
-            Rute tersimpan dan catatan perjalananmu akan tetap aman tersimpan di akun ini.
+            {t('profile.logoutModalDesc')}
           </p>
 
           <div className="mt-6 flex items-center gap-2.5">
@@ -915,7 +926,7 @@ function ProfilePage({
               onClick={() => setShowLogoutModal(false)}
               className="min-h-[44px] flex-1 rounded-xl border border-[rgba(244,239,230,0.18)] bg-white/[0.06] py-2.5 text-[13px] font-semibold text-[#F5F2EB] transition-colors duration-150 hover:bg-white/[0.12] active:scale-[0.98]"
             >
-              Batal
+              {t('common.cancel')}
             </button>
             <button
               type="button"
@@ -926,7 +937,7 @@ function ProfilePage({
               }}
               className="min-h-[44px] flex-1 rounded-xl border border-rose-300/30 bg-[#3B1D24] py-2.5 text-[13px] font-bold text-rose-100 transition-colors duration-150 hover:bg-[#4F252F] hover:text-white active:scale-[0.98]"
             >
-              Ya, Keluar
+              {t('profile.logoutConfirm')}
             </button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Map as MapLibreMap, Marker } from 'maplibre-gl'
+import { usePreferences } from '../../utils/preferences'
 
 const DEFAULT_BOGOR_CENTER = [-6.5971, 106.806] // [lat, lng]
 
@@ -19,6 +20,7 @@ function createAdminPinElement() {
 }
 
 function AdminLocationPickerMap({ lat, lng, onPickCoordinate }) {
+  const { t } = usePreferences()
   const containerRef = useRef(null)
   const mapRef = useRef(null)
   const markerRef = useRef(null)
@@ -152,8 +154,8 @@ function AdminLocationPickerMap({ lat, lng, onPickCoordinate }) {
           <button
             type="button"
             onClick={() => mapRef.current?.zoomIn()}
-            aria-label="Perbesar peta"
-            title="Perbesar peta"
+            aria-label={t('map.adminZoomIn')}
+            title={t('map.adminZoomIn')}
             className="flex h-9 w-9 items-center justify-center text-[16px] font-semibold transition-colors hover:bg-white/10 active:bg-white/15"
           >
             +
@@ -162,8 +164,8 @@ function AdminLocationPickerMap({ lat, lng, onPickCoordinate }) {
           <button
             type="button"
             onClick={() => mapRef.current?.zoomOut()}
-            aria-label="Perkecil peta"
-            title="Perkecil peta"
+            aria-label={t('map.adminZoomOut')}
+            title={t('map.adminZoomOut')}
             className="flex h-9 w-9 items-center justify-center text-[16px] font-semibold transition-colors hover:bg-white/10 active:bg-white/15"
           >
             -
@@ -184,8 +186,8 @@ function AdminLocationPickerMap({ lat, lng, onPickCoordinate }) {
               lng: DEFAULT_BOGOR_CENTER[1],
             })
           }}
-          title="Pusatkan ke Kota Bogor"
-          aria-label="Pusatkan pin ke Kota Bogor"
+          title={t('map.adminCenterBogor')}
+          aria-label={t('map.adminCenterPinAria')}
           className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-xl border border-white/20 bg-[#141C14]/80 text-[#E2D7B5] shadow-md backdrop-blur-md transition-colors hover:bg-[#233020] active:scale-[0.96]"
         >
           <svg
@@ -212,7 +214,7 @@ function AdminLocationPickerMap({ lat, lng, onPickCoordinate }) {
       {/* Chip koordinat & panduan gestur */}
       <div className="pointer-events-none absolute inset-x-3 bottom-3 z-[500] flex flex-wrap items-center justify-between gap-2">
         <span className="rounded-xl border border-white/15 bg-[#141C14]/80 px-2.5 py-1 text-[11px] font-medium text-[#C8D3C8] backdrop-blur-md">
-          Klik peta atau geser pin untuk akurasi
+          {t('map.adminMapHint')}
         </span>
         <span className="rounded-xl border border-white/15 bg-[#141C14]/85 px-2.5 py-1 font-mono text-[11px] font-semibold tabular-nums text-[#EBF0EB] backdrop-blur-md">
           {markerPosition[0].toFixed(5)}, {markerPosition[1].toFixed(5)}

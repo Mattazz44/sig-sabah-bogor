@@ -7,6 +7,7 @@ import {
 } from '../ui/sheetMetrics'
 import { BottomSheetContext } from '../ui/bottomSheetContext'
 import ScrollToTopButton from '../ui/ScrollToTopButton'
+import { usePreferences } from '../../utils/preferences'
 
 // Mobile 2-state metrics:
 // - expanded: melebar penuh edge-to-edge hingga menyentuh bagian atas layar (top: 0 / 100dvh)
@@ -57,11 +58,13 @@ function computeMobileMetrics(viewportHeight) {
  */
 export default function ResponsiveSidebar({
   id = 'sidebar',
-  label = 'Daftar tempat wisata',
+  label,
   expanded = false,
   onExpandedChange,
   children,
 }) {
+  const { t } = usePreferences()
+  const resolvedLabel = label || t('explore.sidebarLabel')
   const prefersReducedMotion = useReducedMotion()
   const [viewport, setViewport] = useState(getViewportSize)
   const [desktopOpen, setDesktopOpen] = useState(true)
@@ -302,7 +305,7 @@ export default function ResponsiveSidebar({
       <BottomSheetContext.Provider value={sheetContextValue}>
         <motion.aside
           id={id}
-          aria-label={label}
+          aria-label={resolvedLabel}
           data-mode="desktop"
           data-open={desktopOpen ? 'true' : 'false'}
           initial={false}
@@ -337,8 +340,8 @@ export default function ResponsiveSidebar({
             onClick={toggleDesktopOpen}
             aria-expanded={desktopOpen}
             aria-controls={`${id}-content`}
-            aria-label={desktopOpen ? 'Tutup panel daftar wisata' : 'Buka panel daftar wisata'}
-            title={desktopOpen ? 'Tutup panel wisata' : 'Buka panel wisata'}
+            aria-label={desktopOpen ? t('explore.closeSidebarAria') : t('explore.openSidebarAria')}
+            title={desktopOpen ? t('explore.closeSidebarTitle') : t('explore.openSidebarTitle')}
             className="apple-maps-sidebar pointer-events-auto absolute top-1/2 left-full z-10 ml-2 flex h-11 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-xl border border-white/[0.2] bg-[#161D16]/85 text-[#F5F2EB] shadow-xl backdrop-blur-md transition-colors duration-150 hover:border-[#DFAA63]/55 hover:bg-[#1E281E]/95 hover:text-[#DFAA63] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#DFAA63] active:scale-[0.95]"
           >
             <motion.svg
@@ -368,14 +371,14 @@ export default function ResponsiveSidebar({
   // =========================================================================
   const isExpandedMobile = mobileState === 'expanded'
   const handleAriaLabel = isExpandedMobile
-    ? 'Geser ke bawah atau ketuk untuk menurunkan daftar wisata'
-    : 'Geser ke atas atau ketuk untuk membuka daftar wisata'
+    ? t('explore.sheetCollapseAria')
+    : t('explore.sheetExpandAria')
 
   return (
     <BottomSheetContext.Provider value={sheetContextValue}>
       <motion.section
         id={id}
-        aria-label={label}
+        aria-label={resolvedLabel}
         data-mode="mobile"
         data-snap={mobileState}
         drag="y"

@@ -15,6 +15,7 @@ import {
   formatNotificationTime,
   getAppNotifications,
 } from '../../utils/notifications'
+import { usePreferences } from '../../utils/preferences'
 
 const READ_STORAGE_KEY = 'sabah_read_notifications_v1'
 
@@ -54,6 +55,7 @@ function NotificationDrawer({
   onSelectPlace,
   items = null,
 }) {
+  const { language, t, tCategory, tDynamic } = usePreferences()
   const [prevOpen, setPrevOpen] = useState(isOpen)
   const [isClosing, setIsClosing] = useState(false)
   const [isEntered, setIsEntered] = useState(isOpen)
@@ -173,30 +175,32 @@ function NotificationDrawer({
         id: entry.id,
         type: entry.type,
         slug: entry.slug || null,
-        title: entry.title,
-        desc: entry.desc,
-        time: entry.time || formatNotificationTime(entry.createdAt),
+        title: tDynamic(entry.title),
+        desc: tDynamic(entry.desc),
+        time: entry.time ? tDynamic(entry.time) : formatNotificationTime(entry.createdAt, language),
       })
     })
 
     // Pastikan destinasi favorit yang sudah tersimpan sebelumnya tetap muncul sebagai notifikasi Tersimpan
     favorites.forEach((slug) => {
       if (seenFavoriteSlugs.has(slug)) return
-      const place = tourists.find((t) => t.slug === slug)
+      const place = tourists.find((item) => item.slug === slug)
       if (!place) return
       seenFavoriteSlugs.add(slug)
       list.push({
         id: `fav-${slug}`,
         type: 'favorite',
         slug,
-        title: `${place.name} disimpan ke Tersimpan`,
-        desc: `${place.category || 'Destinasi wisata'} di Bogor masuk daftar tersimpan Anda.`,
-        time: 'Tersimpan',
+        title: t('notif.favTitle', { name: place.name }),
+        desc: t('notif.favDesc', {
+          category: tCategory(place.category) || t('common.destinationFallback'),
+        }),
+        time: t('notif.savedTime'),
       })
     })
 
     return list.slice(0, 20)
-  }, [items, storedNotifications, favorites, tourists])
+  }, [items, storedNotifications, favorites, tourists, language, t, tCategory, tDynamic])
 
   const unreadIds = useMemo(
     () => notifications.filter((item) => !readIds.includes(item.id)).map((item) => item.id),
@@ -262,7 +266,7 @@ function NotificationDrawer({
               id="notification-drawer-title"
               className="text-[17px] font-semibold tracking-tight text-[#F5F2EB]"
             >
-              Notifikasi
+              {t('notif.title')}
             </h2>
             <span
               id="notification-count-badge"
@@ -272,7 +276,7 @@ function NotificationDrawer({
                   : 'border-[#76937A]/30 bg-white/[0.06] text-[#F5F2EB]/70'
               }`}
             >
-              {unreadIds.length} Baru
+              {t('notif.newCount', { count: unreadIds.length })}
             </span>
           </div>
 
@@ -280,7 +284,7 @@ function NotificationDrawer({
             type="button"
             id="btn-close-notification"
             onClick={onClose}
-            aria-label="Tutup notifikasi"
+            aria-label={t('notif.closeAria')}
             className="apple-glass-pill relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#F5F2EB] transition-colors duration-150 hover:bg-white/[0.12] active:scale-[0.97] before:absolute before:-inset-1"
           >
             <XIcon className="h-4 w-4" />
@@ -334,7 +338,7 @@ function NotificationDrawer({
                         {isUnread && (
                           <span
                             className="h-2 w-2 shrink-0 rounded-full bg-[#C5A868]"
-                            aria-label="Belum dibaca"
+                            aria-label={t('notif.unreadAria')}
                           />
                         )}
                       </div>
@@ -355,10 +359,10 @@ function NotificationDrawer({
                 className="mb-4"
               />
               <p className="text-[15px] font-semibold tracking-tight text-[#F5F2EB]">
-                Belum ada pembaruan
+                {t('notif.emptyTitle')}
               </p>
               <p className="mt-1.5 max-w-[260px] text-[12.5px] leading-relaxed text-[#F5F2EB]/65">
-                Notifikasi akan muncul saat Anda menyimpan destinasi favorit, membuat rute custom, berinteraksi sosial, atau menyelesaikan aksi.
+                {t('notif.emptyDesc')}
               </p>
             </div>
           )}
@@ -375,7 +379,7 @@ function NotificationDrawer({
               onClick={markAllAsRead}
               className="apple-glass-pill flex min-h-[42px] flex-1 items-center justify-center rounded-xl px-3 py-2 text-[12px] font-semibold text-[#DFAA63] transition-all duration-150 hover:bg-white/[0.12] active:scale-[0.98]"
             >
-              Tandai dibaca
+              {t('notif.markAllRead')}
             </button>
           )}
           <button
@@ -384,7 +388,7 @@ function NotificationDrawer({
             onClick={onClose}
             className="apple-retro-cta flex min-h-[42px] flex-1 items-center justify-center rounded-xl px-4 py-2 text-[12.5px] font-semibold shadow-[0_6px_16px_-4px_rgba(0,0,0,0.45)] transition-all duration-150 hover:bg-[#E7DFD1] hover:shadow-[0_8px_20px_-4px_rgba(0,0,0,0.55)] active:scale-[0.98]"
           >
-            Tutup
+            {t('common.close')}
           </button>
         </div>
       </div>

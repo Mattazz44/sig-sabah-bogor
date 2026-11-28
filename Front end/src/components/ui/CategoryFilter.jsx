@@ -1,19 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ALL_CATEGORY, CATEGORIES } from './categories'
 import { CheckIcon, StarIcon, XIcon } from './VectorIcons'
+import { usePreferences } from '../../utils/preferences'
 
 const RATING_OPTIONS = [
-  { label: 'Semua', value: 0 },
+  { key: 'all', value: 0 },
   { label: '4.0+', value: 4.0 },
   { label: '4.5+', value: 4.5 },
 ]
 
-const RADIUS_OPTIONS = [
-  { label: 'Semua', value: 0 },
-  { label: '≤ 2 km', value: 2 },
-  { label: '≤ 5 km', value: 5 },
-  { label: '≤ 10 km', value: 10 },
-]
+const RADIUS_VALUES = [0, 2, 5, 10]
 
 export default function CategoryFilter({
   active,
@@ -32,6 +28,7 @@ export default function CategoryFilter({
   onToggleOpen,
   onClose,
 }) {
+  const { t, tCategory, distanceUnit } = usePreferences()
   const [internalOpen, setInternalOpen] = useState(false)
   const isControlled = typeof isOpen === 'boolean'
   const filterOpen = isControlled ? isOpen : internalOpen
@@ -96,10 +93,10 @@ export default function CategoryFilter({
         aria-controls="advanced-filter-popover"
         aria-label={
           activeAdvancedCount > 0
-            ? `Filter destinasi (${activeAdvancedCount} filter aktif)`
-            : 'Buka filter destinasi lanjutan'
+            ? t('explore.filterBtnAriaActive', { count: activeAdvancedCount })
+            : t('explore.filterBtnAria')
         }
-        title="Filter destinasi lanjutan"
+        title={t('explore.filterBtnTitle')}
         className={`apple-retro-bevel relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border backdrop-blur-md transition-all duration-150 active:scale-[0.95] before:absolute before:-inset-1.5 ${
           filterOpen || activeAdvancedCount > 0
             ? 'border-[#DFAA63]/55 bg-[#DFAA63]/20 text-[#DFAA63]'
@@ -130,7 +127,7 @@ export default function CategoryFilter({
 
       <div
         role="tablist"
-        aria-label="Filter kategori"
+        aria-label={t('explore.categoryTabsAria')}
         className="no-scrollbar flex min-w-0 flex-1 gap-1.5 overflow-x-auto py-0.5 pr-6"
       >
         {CATEGORIES.map((cat) => {
@@ -150,7 +147,7 @@ export default function CategoryFilter({
                   : 'apple-retro-bevel border border-[rgba(244,239,230,0.14)] bg-white/[0.07] text-[#F5F2EB]/80 hover:bg-white/[0.13] hover:text-[#F5F2EB]'
               }`}
             >
-              {cat}
+              {tCategory(cat)}
             </button>
           )
         })}
@@ -160,7 +157,7 @@ export default function CategoryFilter({
       <div
         id="advanced-filter-popover"
         role="dialog"
-        aria-label="Filter destinasi lanjutan"
+        aria-label={t('explore.filterBtnTitle')}
         aria-hidden={!filterOpen}
         data-no-sheet-drag
         onPointerDown={(e) => e.stopPropagation()}
@@ -171,12 +168,14 @@ export default function CategoryFilter({
         }`}
       >
         <div className="flex items-center justify-between gap-2 border-b border-[rgba(244,239,230,0.14)] pb-2.5">
-          <p className="text-[13px] font-semibold tracking-tight text-[#F5F2EB]">Filter Destinasi</p>
+          <p className="text-[13px] font-semibold tracking-tight text-[#F5F2EB]">
+            {t('explore.filterDialogTitle')}
+          </p>
           <button
             type="button"
             tabIndex={filterOpen ? 0 : -1}
             onClick={() => setOpenState(false)}
-            aria-label="Tutup panel filter"
+            aria-label={t('explore.filterCloseAria')}
             className="flex h-7 w-7 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#C8D3C8] transition-colors hover:bg-white/[0.14] hover:text-[#EBF0EB] active:scale-[0.95]"
           >
             <XIcon className="h-3.5 w-3.5" />
@@ -186,7 +185,7 @@ export default function CategoryFilter({
         {/* Kategori Cepat */}
         <div className="mt-3">
           <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#C8D3C8]">
-            Kategori
+            {t('explore.filterCategory')}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {CATEGORIES.map((cat) => {
@@ -203,7 +202,7 @@ export default function CategoryFilter({
                       : 'border-white/10 bg-white/[0.05] text-[#EBF0EB] hover:bg-white/[0.1]'
                   }`}
                 >
-                  {cat}
+                  {tCategory(cat)}
                 </button>
               )
             })}
@@ -213,14 +212,15 @@ export default function CategoryFilter({
         {/* Rating Minimum */}
         <div className="mt-3">
           <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#F5F2EB]/60">
-            Rating Minimum
+            {t('explore.filterMinRating')}
           </p>
           <div className="grid grid-cols-3 gap-1.5">
             {RATING_OPTIONS.map((opt) => {
               const selected = minRating === opt.value
+              const optLabel = opt.key === 'all' ? tCategory(ALL_CATEGORY) : opt.label
               return (
                 <button
-                  key={opt.label}
+                  key={opt.value}
                   type="button"
                   tabIndex={filterOpen ? 0 : -1}
                   onClick={() => onFilterChange?.({ minRating: opt.value })}
@@ -231,7 +231,7 @@ export default function CategoryFilter({
                   }`}
                 >
                   {opt.value > 0 && <StarIcon filled className="h-3 w-3 text-[#DFAA63]" />}
-                  <span>{opt.label}</span>
+                  <span>{optLabel}</span>
                 </button>
               )
             })}
@@ -242,25 +242,31 @@ export default function CategoryFilter({
         <div className="mt-3">
           <div className="mb-1.5 flex items-center justify-between">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-[#F5F2EB]/60">
-              Radius Terdekat
+              {t('explore.filterRadius')}
             </p>
             {!hasUserLocation && (
-              <span className="text-[10px] text-[#DFAA63]">Perlu GPS aktif</span>
+              <span className="text-[10px] text-[#DFAA63]">{t('explore.filterNeedsGps')}</span>
             )}
           </div>
           <div className="grid grid-cols-4 gap-1.5">
-            {RADIUS_OPTIONS.map((opt) => {
-              const selected = radiusKm === opt.value
+            {RADIUS_VALUES.map((kmVal) => {
+              const selected = radiusKm === kmVal
+              const label =
+                kmVal === 0
+                  ? tCategory(ALL_CATEGORY)
+                  : distanceUnit === 'mi'
+                    ? `≤ ${(kmVal * 0.621371).toFixed(1)} mi`
+                    : `≤ ${kmVal} km`
               return (
                 <button
-                  key={`rad-${opt.value}`}
+                  key={`rad-${kmVal}`}
                   type="button"
                   tabIndex={filterOpen ? 0 : -1}
                   onClick={() => {
-                    if (opt.value > 0 && !hasUserLocation) {
+                    if (kmVal > 0 && !hasUserLocation) {
                       onRequestLocation?.()
                     }
-                    onRadiusChange?.(opt.value)
+                    onRadiusChange?.(kmVal)
                   }}
                   className={`flex items-center justify-center rounded-xl border py-1.5 font-mono text-[11px] tabular-nums tracking-wide font-medium transition-all duration-150 active:scale-[0.95] ${
                     selected
@@ -268,7 +274,7 @@ export default function CategoryFilter({
                       : 'border-[rgba(244,239,230,0.12)] bg-white/[0.05] text-[#F5F2EB] hover:bg-white/[0.1]'
                   }`}
                 >
-                  {opt.label}
+                  {label}
                 </button>
               )
             })}
@@ -278,7 +284,7 @@ export default function CategoryFilter({
         {/* Preferensi Tambahan */}
         <div className="mt-3">
           <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#F5F2EB]/60">
-            Preferensi
+            {t('explore.filterPreferences')}
           </p>
           <div className="flex flex-wrap gap-1.5">
             <button
@@ -293,7 +299,7 @@ export default function CategoryFilter({
               }`}
             >
               {onlyPopular && <CheckIcon className="h-3 w-3 text-[#DFAA63]" />}
-              <span>Hanya Populer</span>
+              <span>{t('explore.filterOnlyPopular')}</span>
             </button>
 
             <button
@@ -308,7 +314,7 @@ export default function CategoryFilter({
               }`}
             >
               {onlyFavorites && <CheckIcon className="h-3 w-3 text-[#DFAA63]" />}
-              <span>Favorit Saya</span>
+              <span>{t('explore.filterMyFavorites')}</span>
             </button>
           </div>
         </div>
@@ -322,7 +328,7 @@ export default function CategoryFilter({
             onClick={() => onResetFilters?.()}
             className="apple-glass-pill min-h-[36px] rounded-xl px-3 text-[12px] font-semibold text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.12] active:scale-[0.95] disabled:opacity-45"
           >
-            Reset
+            {t('common.reset')}
           </button>
           <button
             type="button"
@@ -330,7 +336,7 @@ export default function CategoryFilter({
             onClick={() => setOpenState(false)}
             className="apple-retro-cta min-h-[36px] flex-1 rounded-xl px-3 text-[12px] font-semibold active:scale-[0.97]"
           >
-            Tampilkan (<span className="not-italic tabular-nums">{resultCount}</span>)
+            {t('explore.filterShowCount', { count: resultCount })}
           </button>
         </div>
       </div>

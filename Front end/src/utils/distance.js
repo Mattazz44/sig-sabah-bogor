@@ -30,31 +30,49 @@ export function calculateDistanceKm(lat1, lon1, lat2, lon2) {
 
 /**
  * Format jarak ke teks human-readable.
- * Contoh: "800 m dari posisi kamu" atau "4.2 km dari posisi kamu"
+ * Mendukung bahasa (id/en) dan satuan (km/mi).
  */
-export function formatDistance(distanceKm) {
-  if (distanceKm === null || distanceKm === undefined || isNaN(distanceKm)) {
+export function formatDistance(distanceKm, options = {}) {
+  if (distanceKm === null || distanceKm === undefined || Number.isNaN(Number(distanceKm))) {
     return null
   }
-  if (distanceKm < 1) {
-    const meters = Math.round(distanceKm * 1000)
-    return `${meters} m dari posisi kamu`
+  const numericKm = Number(distanceKm)
+  if (!Number.isFinite(numericKm) || numericKm < 0) return null
+
+  const { unit = 'km', language = 'id' } = options
+  const suffix = language === 'en' ? 'from you' : 'dari posisi kamu'
+
+  if (unit === 'mi') {
+    const miles = numericKm * 0.621371
+    const formatted = miles < 10 ? miles.toFixed(1) : Math.round(miles)
+    return `${formatted} mi ${suffix}`
   }
-  const formatted = distanceKm < 10 ? distanceKm.toFixed(1) : Math.round(distanceKm)
-  return `${formatted} km dari posisi kamu`
+
+  if (numericKm < 1) {
+    const meters = Math.round(numericKm * 1000)
+    return `${meters} m ${suffix}`
+  }
+  const formatted = numericKm < 10 ? numericKm.toFixed(1) : Math.round(numericKm)
+  return `${formatted} km ${suffix}`
 }
 
 /**
  * Format jarak ringkas untuk mini-card popup peta.
- * Contoh: "650 m", "3.2 km", "14.5 km"
+ * Contoh: "650 m", "3.2 km", "2.1 mi"
  */
-export function formatShortDistance(distanceKm) {
+export function formatShortDistance(distanceKm, options = {}) {
   if (distanceKm === null || distanceKm === undefined || Number.isNaN(Number(distanceKm))) {
     return null
   }
   const numericKm = Number(distanceKm)
   if (!Number.isFinite(numericKm) || numericKm < 0) {
     return null
+  }
+  const { unit = 'km' } = options
+  if (unit === 'mi') {
+    const miles = numericKm * 0.621371
+    const formatted = miles < 100 ? miles.toFixed(1) : Math.round(miles)
+    return `${formatted} mi`
   }
   if (numericKm < 1) {
     const meters = Math.max(10, Math.round(numericKm * 1000))
@@ -66,39 +84,38 @@ export function formatShortDistance(distanceKm) {
 
 /**
  * Menghitung estimasi waktu tempuh berkendara (mobil / motor) di kondisi lalu lintas kota Bogor.
- * Asumsi:
- * - Faktor kelokan jalan (winding factor / detour index): 1.35x dari garis lurus udara
- * - Kecepatan rata-rata berkendara dalam kota: ~25-30 km/jam (~0.45 km/menit)
- * - Buffer lampu merah & start: ~2-3 menit
  */
-export function formatTravelTime(distanceKm) {
-  if (distanceKm === null || distanceKm === undefined || isNaN(distanceKm)) {
-    return '15 Menit'
+export function formatTravelTime(distanceKm, options = {}) {
+  const { language = 'id' } = options
+  const minLabel = language === 'en' ? 'min' : 'Menit'
+  const hrLabel = language === 'en' ? 'hr' : 'Jam'
+
+  if (distanceKm === null || distanceKm === undefined || Number.isNaN(Number(distanceKm))) {
+    return `15 ${minLabel}`
   }
 
-  // Jarak perkiraan rute jalan
-  const roadDistanceKm = distanceKm * 1.35
-  // Kecepatan rata-rata kota Bogor: 25 km/jam
+  const roadDistanceKm = Number(distanceKm) * 1.35
   const minutes = Math.round((roadDistanceKm / 25) * 60) + 2
 
   if (minutes < 3) {
-    return '3 Menit'
+    return `3 ${minLabel}`
   }
   if (minutes >= 60) {
     const hours = Math.floor(minutes / 60)
     const remMinutes = minutes % 60
-    return remMinutes > 0 ? `${hours} Jam ${remMinutes} Menit` : `${hours} Jam`
+    return remMinutes > 0
+      ? `${hours} ${hrLabel} ${remMinutes} ${minLabel}`
+      : `${hours} ${hrLabel}`
   }
-  return `${minutes} Menit`
+  return `${minutes} ${minLabel}`
 }
 
 /**
  * Memperkaya objek tempat wisata dengan jarak dan waktu tempuh dinamis berdasarkan koordinat user.
  */
-export function enrichTouristWithUserLocation(place, userPosition) {
+export function enrichTouristWithUserLocation(place, userPosition, options = {}) {
   if (!place) return place
   if (!userPosition || !Array.isArray(userPosition) || userPosition.length < 2) {
-    // Jika lokasi GPS pengguna belum tersedia/belum diizinkan, jangan berikan estimasi jarak palsu
     return {
       ...place,
       distanceKm: null,
@@ -122,9 +139,8 @@ export function enrichTouristWithUserLocation(place, userPosition) {
   return {
     ...place,
     distanceKm: distKm,
-    distance: formatDistance(distKm),
-    shortDistance: formatShortDistance(distKm),
-    travelTime: formatTravelTime(distKm),
+    distance: formatDistance(distKm, options),
+    shortDistance: formatShortDistance(distKm, options),
+    travelTime: formatTravelTime(distKm, options),
   }
 }
-

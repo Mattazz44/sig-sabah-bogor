@@ -6,11 +6,17 @@ import SafeImage from '../ui/SafeImage'
 import { getBogorFallbackPhoto } from '../../utils/imageHelper'
 import { useBottomSheet } from '../ui/bottomSheetContext'
 import { CheckIcon, ChevronRightIcon, RefreshIcon, StarIcon } from '../ui/VectorIcons'
+import { usePreferences } from '../../utils/preferences'
 
-const SORT_OPTIONS = ['Paling relevan', 'Rating tertinggi', 'Jarak terdekat', 'Terpopuler']
+const SORT_OPTIONS = [
+  { key: 'Paling relevan', labelKey: 'explore.sortRelevant' },
+  { key: 'Rating tertinggi', labelKey: 'explore.sortHighestRated' },
+  { key: 'Jarak terdekat', labelKey: 'explore.sortNearest' },
+  { key: 'Terpopuler', labelKey: 'explore.sortPopular' },
+]
 
-function formatCompactArea(address) {
-  if (!address || typeof address !== 'string') return 'Kota Bogor, Jawa Barat'
+function formatCompactArea(address, fallbackArea) {
+  if (!address || typeof address !== 'string') return fallbackArea
   const parts = address
     .split(',')
     .map((part) => part.trim())
@@ -25,7 +31,7 @@ function formatCompactArea(address) {
   if (parts.length === 2) {
     return `${parts[0]}, ${parts[1]}`
   }
-  return parts[0] || 'Kota Bogor, Jawa Barat'
+  return parts[0] || fallbackArea
 }
 
 export default function TouristList({
@@ -50,8 +56,11 @@ export default function TouristList({
   isFavorite,
   toggleFavorite,
 }) {
+  const { t, tCategory } = usePreferences()
   const sheetCtx = useBottomSheet()
   const [sortOption, setSortOption] = useState('Paling relevan')
+  const currentSortLabel =
+    t(SORT_OPTIONS.find((opt) => opt.key === sortOption)?.labelKey || 'explore.sortRelevant')
   const [sortMenuOpen, setSortMenuOpen] = useState(false)
   const [filterOpen, setFilterOpen] = useState(false)
   const [minRating, setMinRating] = useState(0)
@@ -211,7 +220,7 @@ export default function TouristList({
       {popularSpot && !query && !isLoading && (
         <section className="mt-5" aria-labelledby="populer-heading">
           <h2 id="populer-heading" className="text-[13px] font-semibold tracking-tight text-[#F5F2EB]/90">
-            Populer dengan pengunjung
+            {t('explore.popularHeading')}
           </h2>
           <div className="mt-1.5 border-b border-[rgba(244,239,230,0.12)] pb-3">
             {(() => {
@@ -278,7 +287,7 @@ export default function TouristList({
                       {popularSpot.name}
                     </h3>
                     <p className="mt-0.5 truncate text-[12px] text-[#F5F2EB]/60">
-                      {formatCompactArea(popularSpot.address)}
+                      {formatCompactArea(popularSpot.address, t('common.bogorCityWestJava'))}
                     </p>
                     <div className="mt-1 flex items-center gap-1.5 text-[12px] text-[#F5F2EB]/80">
                       <StarIcon filled className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />
@@ -287,7 +296,7 @@ export default function TouristList({
                       </span>
                       <span className="text-[#F5F2EB]/35" aria-hidden="true">·</span>
                       <span className="truncate text-[11.5px] not-italic tabular-nums text-[#F5F2EB]/65">
-                        {popularSpot.distance || popularSpot.category}
+                        {popularSpot.distance || tCategory(popularSpot.category)}
                       </span>
                     </div>
                   </div>
@@ -309,11 +318,11 @@ export default function TouristList({
       <div className="relative z-30 mt-4 flex items-center justify-between gap-2">
         <h2 id="tourist-count" className="text-[13px] font-semibold tracking-tight text-[#F5F2EB]">
           {isLoading ? (
-            'Memuat destinasi...'
+            t('explore.loadingDestinations')
           ) : (
             <>
               <span className="not-italic tabular-nums">{sortedPlaces.length}</span>{' '}
-              Tujuan wisata
+              {t('explore.destinationsLabel')}
             </>
           )}
         </h2>
@@ -335,14 +344,14 @@ export default function TouristList({
             aria-haspopup="listbox"
             aria-expanded={sortMenuOpen}
             aria-controls="sort-dropdown-menu"
-            aria-label={`Urutan daftar: ${sortOption}. Klik untuk mengubah`}
+            aria-label={t('explore.sortAria', { sort: currentSortLabel })}
             className={`apple-retro-bevel relative flex h-8 items-center gap-1.5 rounded-full border px-3 text-[12px] font-medium text-[#F5F2EB] transition-all duration-150 active:scale-[0.95] before:absolute before:-inset-y-1.5 before:inset-x-0 ${
               sortMenuOpen
                 ? 'border-[#DFAA63]/50 bg-white/[0.15]'
                 : 'border-[rgba(244,239,230,0.16)] bg-white/[0.08] hover:bg-white/[0.14]'
             }`}
           >
-            <span>{sortOption}</span>
+            <span>{currentSortLabel}</span>
             <svg
               width="12"
               height="12"
@@ -364,7 +373,7 @@ export default function TouristList({
           <ul
             id="sort-dropdown-menu"
             role="listbox"
-            aria-label="Pilihan pengurutan destinasi"
+            aria-label={t('explore.sortListAria')}
             aria-hidden={!sortMenuOpen}
             data-no-sheet-drag
             onPointerDown={(e) => e.stopPropagation()}
@@ -375,14 +384,14 @@ export default function TouristList({
             }`}
           >
             {SORT_OPTIONS.map((option) => {
-              const isSelected = option === sortOption
+              const isSelected = option.key === sortOption
               return (
-                <li key={option} role="option" aria-selected={isSelected}>
+                <li key={option.key} role="option" aria-selected={isSelected}>
                   <button
                     type="button"
                     tabIndex={sortMenuOpen ? 0 : -1}
                     onClick={() => {
-                      setSortOption(option)
+                      setSortOption(option.key)
                       setSortMenuOpen(false)
                     }}
                     className={`flex min-h-[38px] w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-[12.5px] transition-colors duration-150 active:scale-[0.97] ${
@@ -391,7 +400,7 @@ export default function TouristList({
                         : 'font-medium text-[#F5F2EB] hover:bg-white/[0.08]'
                     }`}
                   >
-                    <span>{option}</span>
+                    <span>{t(option.labelKey)}</span>
                     {isSelected && <CheckIcon className="h-3.5 w-3.5 shrink-0 text-[#DFAA63]" />}
                   </button>
                 </li>
@@ -420,10 +429,10 @@ export default function TouristList({
       ) : isBackendError && places.length === 0 ? (
         <div className="mt-4 rounded-2xl border border-rose-400/25 bg-[#2a1216] p-5 text-center">
           <p className="text-[13px] font-semibold text-[#EBF0EB]">
-            Daftar destinasi gagal dimuat
+            {t('explore.loadFailedTitle')}
           </p>
           <p className="mt-1 text-[12px] text-rose-100/85">
-            Pastikan server backend aktif lalu muat ulang data wisata.
+            {t('explore.loadFailedDesc')}
           </p>
           {onRetryBackend && (
             <button
@@ -433,7 +442,7 @@ export default function TouristList({
               className="mt-3.5 inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/12 px-4 text-[12px] font-semibold text-[#EBF0EB] transition-colors hover:bg-[#EBF0EB]/20 disabled:opacity-50"
             >
               <RefreshIcon className={`h-3.5 w-3.5 ${isRetryingBackend ? 'animate-spin' : ''}`} />
-              <span>{isRetryingBackend ? 'Menghubungkan...' : 'Muat ulang'}</span>
+              <span>{isRetryingBackend ? t('explore.connecting') : t('common.reload')}</span>
             </button>
           )}
         </div>
@@ -459,13 +468,13 @@ export default function TouristList({
         </ul>
       ) : (
         <div className="py-12 text-center">
-          <p className="text-[13px] text-[#C8D3C8]">Tidak ada tempat wisata yang cocok.</p>
+          <p className="text-[13px] text-[#C8D3C8]">{t('explore.noMatch')}</p>
           <button
             type="button"
             onClick={handleResetAllFilters}
             className="mt-3 inline-flex min-h-[44px] items-center rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/[0.08] px-4 text-[12px] font-semibold text-[#EBF0EB] transition-colors duration-150 hover:bg-[#EBF0EB]/[0.15] active:scale-[0.97]"
           >
-            Reset filter
+            {t('common.resetFilter')}
           </button>
         </div>
       )}

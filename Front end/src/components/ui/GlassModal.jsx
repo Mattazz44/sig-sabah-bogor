@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { XIcon } from './VectorIcons'
+import { usePreferences } from '../../utils/preferences'
 
 function getFocusableElements(container) {
   if (!container) return []
@@ -21,10 +22,12 @@ export default function GlassModal({
   modalId,
   closeButtonId,
   titleId,
-  closeAriaLabel = 'Tutup dialog',
+  closeAriaLabel,
   maxWidthClass = 'max-w-sm',
   children,
 }) {
+  const { t } = usePreferences()
+  const resolvedCloseAriaLabel = closeAriaLabel || t('common.closeDialog')
   const cardRef = useRef(null)
   const previousFocusRef = useRef(null)
 
@@ -132,7 +135,7 @@ export default function GlassModal({
           type="button"
           id={closeButtonId}
           onClick={onClose}
-          aria-label={closeAriaLabel}
+          aria-label={resolvedCloseAriaLabel}
           className="apple-glass-pill relative ml-auto flex h-9 w-9 items-center justify-center rounded-full text-[#F5F2EB] transition-colors duration-150 hover:bg-white/[0.12] active:scale-[0.97] before:absolute before:-inset-1"
         >
           <XIcon className="h-4 w-4" />

@@ -9,6 +9,7 @@ import { useAdminMascotFeedback } from '../../hooks/useAdminMascotFeedback'
 import { clearAuthStorage } from '../../utils/api'
 import { compressImage } from '../../utils/imageCompressor'
 import { getImageUrl } from '../../utils/imageHelper'
+import { usePreferences } from '../../utils/preferences'
 import {
   AlertTriangleIcon,
   CameraIcon,
@@ -169,6 +170,7 @@ function formatTicketDisplay(value) {
 }
 
 function AdminPage({ onLocationsMutated, onLogout }) {
+  const { t, tCategory, tTicket, tHours } = usePreferences()
   const [activeTab, setActiveTab] = useState('tambah')
   const [editingSpot, setEditingSpot] = useState(null)
   const [form, setForm] = useState(INITIAL_FORM)
@@ -226,31 +228,31 @@ function AdminPage({ onLocationsMutated, onLogout }) {
       // Abaikan kegagalan storage pada mode privat
     }
     setSavedFilter(nextFilter)
-    showSaveSuccess('Filter pencarian dan kategori berhasil disimpan.')
-  }, [searchQuery, selectedCategoryFilter, showSaveSuccess])
+    showSaveSuccess(t('admin.filterSavedMsg'))
+  }, [searchQuery, selectedCategoryFilter, showSaveSuccess, t])
 
   const handleSwitchTab = useCallback(
     (nextTab) => {
       if (activeTab === 'daftar' && nextTab !== 'daftar' && isFilterUnsaved) {
         showFilterUnsaved({
-          detail: 'Perubahan pencarian atau kategori belum disimpan sebelum berpindah tab.',
+          detail: t('admin.filterUnsavedTab'),
           onSaveFilter: handleSaveFilter,
         })
       }
       setActiveTab(nextTab)
     },
-    [activeTab, isFilterUnsaved, showFilterUnsaved, handleSaveFilter],
+    [activeTab, isFilterUnsaved, showFilterUnsaved, handleSaveFilter, t],
   )
 
   const handleRefreshList = useCallback(() => {
     if (isFilterUnsaved) {
       showFilterUnsaved({
-        detail: 'Filter daftar wisata belum disimpan. Simpan filter agar tetap aktif.',
+        detail: t('admin.filterUnsavedRefresh'),
         onSaveFilter: handleSaveFilter,
       })
     }
     refreshLocations()
-  }, [isFilterUnsaved, showFilterUnsaved, handleSaveFilter, refreshLocations])
+  }, [isFilterUnsaved, showFilterUnsaved, handleSaveFilter, refreshLocations, t])
 
   const revokeUnusedBlobs = useCallback((items) => {
     const activePreviews = new Set(items.map((item) => item.previewUrl))
@@ -436,11 +438,11 @@ function AdminPage({ onLocationsMutated, onLogout }) {
     e.preventDefault()
 
     if (!form.name.trim()) {
-      setFormError('Nama tempat wisata wajib diisi.')
+      setFormError(t('admin.errNameRequired'))
       return
     }
     if (!form.address.trim()) {
-      setFormError('Alamat lengkap tempat wisata wajib diisi.')
+      setFormError(t('admin.errAddressRequired'))
       return
     }
     const latNum = Number(form.lat)
@@ -455,7 +457,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
       lngNum < -180 ||
       lngNum > 180
     ) {
-      setFormError('Koordinat Latitude dan Longitude harus valid. Klik peta untuk menetapkan pin.')
+      setFormError(t('admin.errInvalidCoords'))
       return
     }
 
@@ -488,9 +490,9 @@ function AdminPage({ onLocationsMutated, onLogout }) {
       setActiveTab('daftar')
       pageScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
-      const msg = err?.message || 'Terjadi kesalahan saat menyimpan lokasi ke database.'
+      const msg = err?.message || t('admin.errSaveGeneric')
       setFormError(msg)
-      showError('Gagal menyimpan', msg)
+      showError(t('admin.errSaveTitle'), msg)
     }
   }
 
@@ -504,14 +506,14 @@ function AdminPage({ onLocationsMutated, onLogout }) {
             if (editingSpot?.id === spot.id) {
               resetFormState()
             }
-            showDeleteSuccess(msg || `'${spot.name}' telah dihapus dari database.`)
+            showDeleteSuccess(msg || t('admin.deletedDetail', { name: spot.name }))
           } catch (err) {
-            showError('Gagal menghapus', err?.message || 'Tidak dapat menghapus lokasi ini.')
+            showError(t('admin.errDeleteTitle'), err?.message || t('admin.errDeleteGeneric'))
           }
         },
       })
     },
-    [confirmDeleteWisata, removeLocation, editingSpot, resetFormState, showDeleteSuccess, showError],
+    [confirmDeleteWisata, removeLocation, editingSpot, resetFormState, showDeleteSuccess, showError, t],
   )
 
   const handleRequestLogout = useCallback(() => {
@@ -545,17 +547,17 @@ function AdminPage({ onLocationsMutated, onLogout }) {
             </div>
             <div>
               <h1 className="text-[20px] sm:text-[22px] font-bold tracking-tight text-[#EBF0EB]">
-                Admin Wisata Bogor
+                {t('admin.title')}
               </h1>
               <p className="text-[12.5px] text-[#C8D3C8]">
-                Kelola data spasial, informasi wisata, dan galeri destinasi
+                {t('admin.subtitle')}
               </p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="inline-flex min-h-[40px] items-center rounded-xl border border-white/15 bg-[#141C14]/55 px-3.5 text-[12px] font-medium tabular-nums text-[#C8D3C8] backdrop-blur-md">
-              {isLoading ? 'Memuat database...' : `${locations.length} lokasi di database`}
+              {isLoading ? t('admin.loadingDb') : t('admin.dbCount', { count: locations.length })}
             </span>
 
             <Link
@@ -563,7 +565,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
               className="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl border border-white/18 bg-[#141C14]/65 px-3.5 py-2 text-[12.5px] font-semibold text-[#EBF0EB] backdrop-blur-md transition-colors hover:border-white/30 hover:bg-[#1E2B1E] active:scale-[0.98]"
             >
               <ChevronLeftIcon className="h-4 w-4" />
-              <span>Peta utama</span>
+              <span>{t('admin.mainMap')}</span>
             </Link>
 
             <button
@@ -572,7 +574,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
               onClick={handleRequestLogout}
               className="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl border border-rose-300/25 bg-[#3A1B22]/85 px-3.5 py-2 text-[12.5px] font-semibold text-rose-100 backdrop-blur-md transition-colors hover:bg-[#49222B] active:scale-[0.98]"
             >
-              <span>Keluar</span>
+              <span>{t('admin.logout')}</span>
             </button>
           </div>
         </header>
@@ -581,7 +583,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <div
             role="tablist"
-            aria-label="Navigasi admin"
+            aria-label={t('admin.navAria')}
             className="relative grid w-full max-w-sm grid-cols-2 rounded-2xl border border-white/15 bg-[#141C14]/55 p-1 backdrop-blur-xl shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.16)]"
           >
             <span
@@ -603,7 +605,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                   : 'font-medium text-[#C8D3C8] hover:text-[#EBF0EB]'
               }`}
             >
-              {editingSpot ? 'Edit lokasi' : 'Tambah lokasi'}
+              {editingSpot ? t('admin.tabEdit') : t('admin.tabAdd')}
             </button>
 
             <button
@@ -618,21 +620,21 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                   : 'font-medium text-[#C8D3C8] hover:text-[#EBF0EB]'
               }`}
             >
-              Daftar wisata ({locations.length})
+              {t('admin.tabList', { count: locations.length })}
             </button>
           </div>
 
           {editingSpot && activeTab === 'tambah' && (
             <div className="flex items-center gap-2 rounded-xl border border-[#E2D7B5]/35 bg-[#141C14]/65 px-3.5 py-2 text-[12px] backdrop-blur-md">
               <span className="text-[#E2D7B5]">
-                Sedang mengedit: <strong className="font-semibold text-[#EBF0EB]">{editingSpot.name}</strong>
+                {t('admin.editingNotice')} <strong className="font-semibold text-[#EBF0EB]">{editingSpot.name}</strong>
               </span>
               <button
                 type="button"
                 onClick={resetFormState}
                 className="ml-1 rounded-lg bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-[#EBF0EB] transition-colors hover:bg-white/20"
               >
-                Batal edit
+                {t('admin.cancelEdit')}
               </button>
             </div>
           )}
@@ -662,23 +664,23 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                 {/* Kartu Informasi Lokasi */}
                 <section className={glassCardClass} aria-labelledby="heading-info-lokasi">
                   <h2 id="heading-info-lokasi" className="text-[15px] font-bold tracking-tight text-[#EBF0EB]">
-                    Informasi Lokasi
+                    {t('admin.infoHeading')}
                   </h2>
                   <p className="mt-0.5 text-[12px] text-[#C8D3C8]">
-                    Lengkapi identitas destinasi, kategori peta, tarif masuk, dan alamat.
+                    {t('admin.infoDesc')}
                   </p>
 
                   <div className="mt-5 space-y-4">
                     <div>
                       <label htmlFor="admin-name" className={labelBaseClass}>
-                        Nama tempat wisata
+                        {t('admin.nameLabel')}
                       </label>
                       <input
                         id="admin-name"
                         type="text"
                         value={form.name}
                         onChange={handleFieldChange('name')}
-                        placeholder="Contoh: Kebun Raya Bogor"
+                        placeholder={t('admin.namePlaceholder')}
                         className={glassInputClass}
                         required
                       />
@@ -687,7 +689,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
                         <label htmlFor="admin-category" className={labelBaseClass}>
-                          Kategori
+                          {t('admin.categoryLabel')}
                         </label>
                         <div className="relative">
                           <select
@@ -702,7 +704,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                                 value={cat}
                                 className="bg-[#1B261B] text-[#EBF0EB]"
                               >
-                                {cat}
+                                {tCategory(cat)}
                               </option>
                             ))}
                           </select>
@@ -725,14 +727,14 @@ function AdminPage({ onLocationsMutated, onLogout }) {
 
                       <div>
                         <label htmlFor="admin-ticket" className={labelBaseClass}>
-                          Harga tiket
+                          {t('admin.ticketLabel')}
                         </label>
                         <input
                           id="admin-ticket"
                           type="text"
                           value={form.ticketPrice}
                           onChange={handleFieldChange('ticketPrice')}
-                          placeholder="Contoh: Rp 15.000 atau Gratis"
+                          placeholder={t('admin.ticketPlaceholder')}
                           className={glassInputClass}
                         />
                       </div>
@@ -741,7 +743,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
                         <label htmlFor="admin-rating" className={labelBaseClass}>
-                          Rating awal (0.0 – 5.0)
+                          {t('admin.ratingLabel')}
                         </label>
                         <input
                           id="admin-rating"
@@ -757,13 +759,13 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                       </div>
 
                       <div className="flex flex-col justify-end">
-                        <span className={labelBaseClass}>Visibilitas</span>
+                        <span className={labelBaseClass}>{t('admin.visibilityLabel')}</span>
                         <label
                           htmlFor="admin-popular"
                           className="flex min-h-[44px] cursor-pointer items-center justify-between gap-3 rounded-xl border border-white/[0.15] bg-white/[0.06] px-3.5 py-2 transition-colors hover:bg-white/[0.09]"
                         >
                           <span className="text-[13px] font-medium text-[#EBF0EB]">
-                            Tandai wisata populer
+                            {t('admin.markPopular')}
                           </span>
                           <span className="relative inline-flex h-5 w-5 shrink-0 items-center justify-center">
                             <input
@@ -782,14 +784,14 @@ function AdminPage({ onLocationsMutated, onLogout }) {
 
                     <div>
                       <label htmlFor="admin-address" className={labelBaseClass}>
-                        Alamat
+                        {t('admin.addressLabel')}
                       </label>
                       <input
                         id="admin-address"
                         type="text"
                         value={form.address}
                         onChange={handleFieldChange('address')}
-                        placeholder="Jl. Ir. H. Juanda No.13, Kota Bogor, Jawa Barat"
+                        placeholder={t('admin.addressPlaceholder')}
                         className={glassInputClass}
                         required
                       />
@@ -797,14 +799,14 @@ function AdminPage({ onLocationsMutated, onLogout }) {
 
                     <div>
                       <label htmlFor="admin-description" className={labelBaseClass}>
-                        Deskripsi
+                        {t('admin.descLabel')}
                       </label>
                       <textarea
                         id="admin-description"
                         rows={4}
                         value={form.description}
                         onChange={handleFieldChange('description')}
-                        placeholder="Tulis gambaran singkat daya tarik wisata, fasilitas, dan suasana lokasi"
+                        placeholder={t('admin.descPlaceholder')}
                         className={`${glassInputClass} resize-y`}
                       />
                     </div>
@@ -817,7 +819,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                     <div className="flex items-center gap-2">
                       <ClockIcon className="h-4 w-4 text-[#E2D7B5]" />
                       <h2 id="heading-jam-operasional" className="text-[15px] font-bold tracking-tight text-[#EBF0EB]">
-                        Jam Operasional
+                        {t('admin.hoursHeading')}
                       </h2>
                     </div>
 
@@ -833,14 +835,14 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                           : 'border-white/15 bg-white/[0.06] text-[#C8D3C8] hover:text-[#EBF0EB]'
                       }`}
                     >
-                      Buka 24 jam
+                      {t('admin.open24h')}
                     </button>
                   </div>
 
                   <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
                       <label htmlFor="admin-open" className={labelBaseClass}>
-                        Jam buka
+                        {t('admin.openTime')}
                       </label>
                       <input
                         id="admin-open"
@@ -854,7 +856,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
 
                     <div>
                       <label htmlFor="admin-close" className={labelBaseClass}>
-                        Jam tutup
+                        {t('admin.closeTime')}
                       </label>
                       <input
                         id="admin-close"
@@ -870,7 +872,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                   <div className="mt-5">
                     <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                       <span className="text-[12px] font-medium text-[#C8D3C8]">
-                        Hari buka (Senin–Minggu)
+                        {t('admin.openDaysLabel')}
                       </span>
                       <div className="flex items-center gap-2 text-[11px]">
                         <button
@@ -880,7 +882,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                           }
                           className="rounded-lg px-2 py-1 font-medium text-[#C8D3C8] transition-colors hover:bg-white/10 hover:text-[#EBF0EB]"
                         >
-                          Setiap hari
+                          {t('admin.daily')}
                         </button>
                         <button
                           type="button"
@@ -892,7 +894,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                           }
                           className="rounded-lg px-2 py-1 font-medium text-[#C8D3C8] transition-colors hover:bg-white/10 hover:text-[#EBF0EB]"
                         >
-                          Senin–Jumat
+                          {t('admin.weekdays')}
                         </button>
                         <button
                           type="button"
@@ -904,14 +906,14 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                           }
                           className="rounded-lg px-2 py-1 font-medium text-[#C8D3C8] transition-colors hover:bg-white/10 hover:text-[#EBF0EB]"
                         >
-                          Akhir pekan
+                          {t('admin.weekends')}
                         </button>
                       </div>
                     </div>
 
                     <div
                       role="group"
-                      aria-label="Pilih hari operasional"
+                      aria-label={t('admin.selectDaysAria')}
                       className="grid grid-cols-4 gap-2 sm:grid-cols-7"
                     >
                       {WEEKDAYS.map((day) => {
@@ -922,23 +924,23 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                             type="button"
                             aria-pressed={isSelected}
                             onClick={() => handleToggleDay(day.id)}
-                            title={day.id}
+                            title={t(`admin.day.${day.id}`)}
                             className={`flex min-h-[42px] items-center justify-center rounded-xl border px-2 text-[12.5px] font-semibold transition-colors duration-150 active:scale-[0.97] ${
                               isSelected
                                 ? 'border-[#EBF0EB] bg-[#EBF0EB] text-[#161E16] shadow-sm'
                                 : 'border-white/15 bg-white/[0.06] text-[#C8D3C8] hover:border-white/30 hover:text-[#EBF0EB]'
                             }`}
                           >
-                            {day.short}
+                            {t(`admin.day.${day.id}`)}
                           </button>
                         )
                       })}
                     </div>
 
                     <p className="mt-2.5 text-[12px] text-[#C8D3C8]">
-                      Format tersimpan:{' '}
+                      {t('admin.savedFormat')}{' '}
                       <span className="font-medium text-[#EBF0EB]">
-                        {buildOperationalHoursString(form)}
+                        {tHours(buildOperationalHoursString(form))}
                       </span>
                     </p>
                   </div>
@@ -952,11 +954,11 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                   <div className="flex items-center gap-2">
                     <MapPinIcon className="h-4 w-4 text-[#E2D7B5]" />
                     <h2 id="heading-koordinat" className="text-[15px] font-bold tracking-tight text-[#EBF0EB]">
-                      Titik Koordinat
+                      {t('admin.coordHeading')}
                     </h2>
                   </div>
                   <p className="mt-0.5 text-[12px] text-[#C8D3C8]">
-                    Klik peta, geser pin, atau isi koordinat secara langsung.
+                    {t('admin.coordDesc')}
                   </p>
 
                   <div className="mt-4">
@@ -1006,15 +1008,15 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                     <div className="flex items-center gap-2">
                       <CameraIcon className="h-4 w-4 text-[#E2D7B5]" />
                       <h2 id="heading-foto-lokasi" className="text-[15px] font-bold tracking-tight text-[#EBF0EB]">
-                        Foto Lokasi
+                        {t('admin.photosHeading')}
                       </h2>
                     </div>
                     <span className="text-[12px] font-medium tabular-nums text-[#C8D3C8]">
-                      {photoItems.length} foto
+                      {t('admin.photosCount', { count: photoItems.length })}
                     </span>
                   </div>
                   <p className="mt-0.5 text-[12px] text-[#C8D3C8]">
-                    Unggah satu atau beberapa foto. Foto pertama menjadi sampul utama destinasi.
+                    {t('admin.photosDesc')}
                   </p>
 
                   <input
@@ -1029,7 +1031,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
 
                   <button
                     type="button"
-                    aria-label="Pilih atau seret beberapa foto lokasi"
+                    aria-label={t('admin.photosDropAria')}
                     onClick={() => fileInputRef.current?.click()}
                     onDragOver={(e) => {
                       e.preventDefault()
@@ -1047,10 +1049,10 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                       <CameraIcon className="h-5 w-5" />
                     </span>
                     <span className="text-[13px] font-medium text-[#EBF0EB]">
-                      Klik atau seret beberapa foto ke sini
+                      {t('admin.photosDropTitle')}
                     </span>
                     <span className="text-[11.5px] text-[#C8D3C8]">
-                      JPG, PNG, WebP · Kompresi otomatis saat dipilih
+                      {t('admin.photosDropHint')}
                     </span>
                   </button>
 
@@ -1065,7 +1067,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                           >
                             <img
                               src={item.previewUrl}
-                              alt={item.name || `Foto lokasi ${idx + 1}`}
+                              alt={item.name || `${t('admin.photosHeading')} ${idx + 1}`}
                               className="h-full w-full object-cover"
                             />
 
@@ -1073,7 +1075,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
 
                             {isPrimary ? (
                               <span className="absolute top-2 left-2 rounded-md border border-white/25 bg-[#141C14]/85 px-2 py-0.5 text-[10px] font-semibold text-[#E2D7B5] backdrop-blur-sm">
-                                Utama
+                                {t('admin.primaryBadge')}
                               </span>
                             ) : (
                               <button
@@ -1081,14 +1083,14 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                                 onClick={() => handleSetPrimaryPhoto(item.id)}
                                 className="absolute bottom-2 left-2 rounded-md border border-white/25 bg-[#141C14]/85 px-2 py-0.5 text-[10px] font-medium text-[#EBF0EB] backdrop-blur-sm transition-colors hover:bg-[#233020]"
                               >
-                                Jadikan utama
+                                {t('admin.setPrimaryBtn')}
                               </button>
                             )}
 
                             <button
                               type="button"
                               onClick={() => handleRemovePhoto(item.id)}
-                              aria-label={`Hapus foto ${idx + 1}`}
+                              aria-label={t('admin.removePhotoAria', { index: idx + 1 })}
                               className="absolute top-1.5 right-1.5 flex h-7 w-7 items-center justify-center rounded-full border border-white/25 bg-[#141C14]/85 text-[#EBF0EB] backdrop-blur-sm transition-colors hover:bg-rose-500/80"
                             >
                               <XIcon className="h-3.5 w-3.5" />
@@ -1111,7 +1113,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                   onClick={resetFormState}
                   className="inline-flex min-h-[48px] items-center justify-center rounded-xl border border-white/18 bg-[#141C14]/65 px-5 py-2.5 text-[13.5px] font-medium text-[#C8D3C8] backdrop-blur-md transition-colors hover:border-white/30 hover:text-[#EBF0EB] disabled:opacity-50"
                 >
-                  {editingSpot ? 'Batal edit' : 'Reset formulir'}
+                  {editingSpot ? t('admin.cancelEdit') : t('admin.resetForm')}
                 </button>
               )}
 
@@ -1124,10 +1126,10 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                 {isSubmitting && <RefreshIcon className="h-4 w-4 animate-spin" />}
                 <span>
                   {isSubmitting
-                    ? 'Menyimpan...'
+                    ? t('common.saving')
                     : editingSpot
-                      ? 'Simpan Perubahan'
-                      : 'Simpan Lokasi'}
+                      ? t('common.saveChanges')
+                      : t('admin.saveLocation')}
                 </span>
               </button>
             </div>
@@ -1144,7 +1146,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                     id="admin-search-spots"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Cari nama wisata, kategori, atau alamat..."
+                    placeholder={t('admin.searchPlaceholder')}
                     className={`${glassInputClass} pl-10 pr-9`}
                   />
                   <svg
@@ -1166,7 +1168,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                     <button
                       type="button"
                       onClick={() => setSearchQuery('')}
-                      aria-label="Hapus pencarian"
+                      aria-label={t('explore.clearSearchAria')}
                       className="absolute top-1/2 right-2.5 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-[#C8D3C8] hover:bg-white/10 hover:text-[#EBF0EB]"
                     >
                       <XIcon className="h-3.5 w-3.5" />
@@ -1185,7 +1187,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                         : 'border-white/15 bg-white/[0.05] text-[#C8D3C8] hover:bg-white/[0.1] hover:text-[#EBF0EB]'
                     }`}
                   >
-                    <span>Simpan filter</span>
+                    <span>{t('admin.saveFilter')}</span>
                   </button>
 
                   <button
@@ -1195,7 +1197,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                     className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl border border-white/18 bg-white/[0.06] px-4 text-[13px] font-medium text-[#EBF0EB] transition-colors hover:bg-white/[0.12] active:scale-[0.98] disabled:opacity-50"
                   >
                     <RefreshIcon className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                    <span>Muat ulang</span>
+                    <span>{t('common.reload')}</span>
                   </button>
                 </div>
               </div>
@@ -1216,7 +1218,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                           : 'border-white/15 bg-white/[0.05] text-[#C8D3C8] hover:border-white/30 hover:text-[#EBF0EB]'
                       }`}
                     >
-                      {cat} ({count})
+                      {tCategory(cat)} ({count})
                     </button>
                   )
                 })}
@@ -1228,7 +1230,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
               <div className={`${glassCardClass} flex flex-col items-center py-10 text-center`}>
                 <AlertTriangleIcon className="h-8 w-8 text-rose-300" />
                 <p className="mt-3 text-[14px] font-semibold text-[#EBF0EB]">
-                  Gagal memuat daftar wisata
+                  {t('admin.loadErrorTitle')}
                 </p>
                 <p className="mt-1 max-w-md text-[12.5px] text-[#C8D3C8]">{fetchError}</p>
                 <button
@@ -1237,7 +1239,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                   className="mt-5 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-[#EBF0EB] px-5 text-[13px] font-semibold text-[#161E16] hover:bg-[#DCE4DC]"
                 >
                   <RefreshIcon className="h-4 w-4" />
-                  <span>Coba lagi</span>
+                  <span>{t('common.retry')}</span>
                 </button>
               </div>
             ) : isLoading ? (
@@ -1261,13 +1263,13 @@ function AdminPage({ onLocationsMutated, onLogout }) {
               <div className={`${glassCardClass} flex flex-col items-center py-12 text-center`}>
                 <p className="text-[14px] font-semibold text-[#EBF0EB]">
                   {locations.length === 0
-                    ? 'Belum ada lokasi wisata di database'
-                    : 'Tidak ada lokasi yang cocok dengan filter'}
+                    ? t('admin.emptyDbTitle')
+                    : t('admin.emptyFilterTitle')}
                 </p>
                 <p className="mt-1 text-[12.5px] text-[#C8D3C8]">
                   {locations.length === 0
-                    ? 'Tambahkan destinasi pertama melalui tab Tambah lokasi.'
-                    : 'Ubah kata kunci pencarian atau pilih kategori lain.'}
+                    ? t('admin.emptyDbDesc')
+                    : t('admin.emptyFilterDesc')}
                 </p>
                 <button
                   type="button"
@@ -1281,13 +1283,16 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                   }}
                   className="mt-5 inline-flex min-h-[44px] items-center rounded-xl bg-[#EBF0EB] px-5 text-[13px] font-semibold text-[#161E16] hover:bg-[#DCE4DC]"
                 >
-                  {locations.length === 0 ? 'Tambah lokasi pertama' : 'Reset filter'}
+                  {locations.length === 0 ? t('admin.addFirstBtn') : t('common.resetFilter')}
                 </button>
               </div>
             ) : (
               <>
                 <p className="text-[12.5px] font-medium tabular-nums text-[#C8D3C8]">
-                  Menampilkan {filteredLocations.length} dari {locations.length} destinasi wisata
+                  {t('admin.showingCount', {
+                    shown: filteredLocations.length,
+                    total: locations.length,
+                  })}
                 </p>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -1308,12 +1313,12 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/55 to-transparent" />
 
                           <span className="absolute top-2.5 left-2.5 rounded-lg border border-white/20 bg-[#141C14]/80 px-2.5 py-1 text-[11px] font-semibold text-[#EBF0EB] backdrop-blur-md">
-                            {loc.category}
+                            {tCategory(loc.category)}
                           </span>
 
                           {loc.isPopular && (
                             <span className="absolute top-2.5 right-2.5 rounded-lg border border-[#E2D7B5]/40 bg-[#141C14]/80 px-2 py-0.5 text-[10.5px] font-semibold text-[#E2D7B5] backdrop-blur-md">
-                              Populer
+                              {t('admin.popularBadge')}
                             </span>
                           )}
                         </div>
@@ -1330,11 +1335,11 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                           </div>
 
                           <p className="text-[12.5px] font-medium text-[#E2D7B5]">
-                            {formatTicketDisplay(loc.ticketPrice)}
+                            {tTicket(formatTicketDisplay(loc.ticketPrice))}
                           </p>
 
                           <p className="line-clamp-2 min-h-[36px] text-[12px] leading-relaxed text-[#C8D3C8]">
-                            {loc.address || 'Alamat belum tersedia'}
+                            {loc.address || t('admin.addressMissing')}
                           </p>
 
                           <p className="font-mono text-[11px] tabular-nums text-[#9AA89A]">
@@ -1350,7 +1355,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                           onClick={() => handleStartEdit(loc)}
                           className="min-h-[42px] rounded-xl border border-white/18 bg-white/[0.07] px-3 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-white/[0.15] active:scale-[0.98]"
                         >
-                          Edit
+                          {t('common.edit')}
                         </button>
                         <button
                           type="button"
@@ -1358,7 +1363,7 @@ function AdminPage({ onLocationsMutated, onLogout }) {
                           onClick={() => handleRequestDelete(loc)}
                           className="min-h-[42px] rounded-xl border border-rose-300/25 bg-[#3B1D24]/80 px-3 text-[12.5px] font-semibold text-rose-100 transition-colors hover:bg-[#49242D] active:scale-[0.98] disabled:opacity-50"
                         >
-                          {deletingId === loc.id ? 'Menghapus...' : 'Hapus'}
+                          {deletingId === loc.id ? t('common.deleting') : t('common.delete')}
                         </button>
                       </div>
                     </article>

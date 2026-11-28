@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import TouristList from './TouristList'
 import TouristDetail from './TouristDetail'
 import ResponsiveSidebar from './ResponsiveSidebar'
+import { usePreferences } from '../../utils/preferences'
 
 export default function SidebarContainer({
   places,
@@ -26,13 +27,14 @@ export default function SidebarContainer({
   isFavorite,
   toggleFavorite,
 }) {
+  const { t } = usePreferences()
   const selectedId = selected && !Array.isArray(selected) ? selected.id : null
   const selectedStamp = selected && !Array.isArray(selected) ? (selected._selectedAt ?? selected.id ?? 0) : 0
 
   return (
     <ResponsiveSidebar
       id="sidebar"
-      label="Daftar tempat wisata"
+      label={t('explore.sidebarLabel')}
       expanded={expanded}
       onExpandedChange={onExpandedChange}
     >

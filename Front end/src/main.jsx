@@ -6,6 +6,8 @@ import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import './index.css'
 import App from './App.jsx'
+import PreferencesProvider from './context/PreferencesProvider.jsx'
+import { loadStoredPreferences, translateKey } from './utils/preferences.js'
 
 setWorkerUrl(maplibreWorkerUrl)
 
@@ -25,6 +27,7 @@ class ErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
+      const lang = loadStoredPreferences().language
       return (
         <div style={{
           minHeight: '100dvh',
@@ -41,10 +44,10 @@ class ErrorBoundary extends Component {
           textAlign: 'center',
         }}>
           <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>
-            Terjadi Kendala Memuat Aplikasi
+            {translateKey(lang, 'app.errorBoundaryTitle')}
           </h2>
           <p style={{ fontSize: '13px', opacity: 0.8, maxWidth: '360px', marginBottom: '20px' }}>
-            {this.state.error?.message || 'Silakan muat ulang halaman untuk melanjutkan.'}
+            {this.state.error?.message || translateKey(lang, 'app.errorBoundaryDesc')}
           </p>
           <button
             type="button"
@@ -59,7 +62,7 @@ class ErrorBoundary extends Component {
               cursor: 'pointer',
             }}
           >
-            Muat Ulang Halaman
+            {translateKey(lang, 'app.reloadPage')}
           </button>
         </div>
       )
@@ -71,9 +74,11 @@ class ErrorBoundary extends Component {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <PreferencesProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </PreferencesProvider>
     </ErrorBoundary>
   </StrictMode>,
 )

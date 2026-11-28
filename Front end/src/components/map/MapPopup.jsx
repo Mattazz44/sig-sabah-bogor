@@ -2,6 +2,7 @@ import SafeImage from '../ui/SafeImage'
 import { getBogorFallbackPhoto } from '../../utils/imageHelper'
 import { calculateDistanceKm, formatShortDistance } from '../../utils/distance'
 import { ChevronRightIcon, MapPinIcon, RouteIcon, StarIcon } from '../ui/VectorIcons'
+import { usePreferences } from '../../utils/preferences'
 
 function extractStreetName(address) {
   if (!address || typeof address !== 'string') return null
@@ -23,6 +24,7 @@ export default function MapPopup({
   userPosition = null,
   locationStatus = 'idle',
 }) {
+  const { t, tCategory, distanceUnit } = usePreferences()
   if (!place) return null
 
   const numericRating = Number(place.rating)
@@ -51,9 +53,10 @@ export default function MapPopup({
   }
 
   const shortDistanceText =
-    place.shortDistance || formatShortDistance(resolvedDistanceKm)
+    place.shortDistance || formatShortDistance(resolvedDistanceKm, { unit: distanceUnit })
   const isGpsActive = Boolean(shortDistanceText)
-  const distanceFallbackLabel = locationStatus === 'requesting' ? 'GPS...' : 'GPS off'
+  const distanceFallbackLabel =
+    locationStatus === 'requesting' ? t('map.gpsSearching') : t('map.gpsOff')
 
   const handleOpen = (e) => {
     e.stopPropagation()
@@ -81,12 +84,12 @@ export default function MapPopup({
         />
         {isTransit && (
           <span className="absolute top-2 left-2 z-[2] inline-flex items-center rounded-full border border-[#DFAA63]/40 bg-[#111711]/85 px-2.5 py-0.5 text-[10px] font-semibold text-[#DFAA63] backdrop-blur-sm">
-            Lokasi transit
+            {t('map.transitBadge')}
           </span>
         )}
         {place.category && (
           <span className="absolute bottom-2 left-2.5 z-[2] rounded-full border border-[rgba(244,239,230,0.16)] bg-[#111711]/75 px-2.5 py-0.5 text-[10px] font-medium text-[#F5F2EB] backdrop-blur-sm">
-            {place.category}
+            {tCategory(place.category)}
           </span>
         )}
       </div>
@@ -129,8 +132,11 @@ export default function MapPopup({
                 data-popup-distance="active"
                 title={
                   place.travelTime
-                    ? `${shortDistanceText} dari posisi Anda · Estimasi ${place.travelTime}`
-                    : `${shortDistanceText} dari posisi Anda`
+                    ? t('map.distanceWithEta', {
+                        distance: shortDistanceText,
+                        eta: place.travelTime,
+                      })
+                    : t('map.distanceFromYou', { distance: shortDistanceText })
                 }
                 className="inline-flex min-w-0 items-center gap-1 text-[#F5F2EB]/85"
               >
@@ -142,7 +148,7 @@ export default function MapPopup({
             ) : (
               <span
                 data-popup-distance="gps-off"
-                title="Aktifkan izin lokasi GPS untuk melihat jarak dari posisi Anda"
+                title={t('map.gpsOffHint')}
                 className="inline-flex min-w-0 items-center gap-1 text-[#F5F2EB]/50"
               >
                 <RouteIcon className="h-3 w-3 shrink-0 text-[#F5F2EB]/45" />
@@ -156,10 +162,10 @@ export default function MapPopup({
           <button
             type="button"
             onClick={handleOpen}
-            aria-label={`Lihat detail ${place.name}`}
+            aria-label={t('map.viewDetailAria', { name: place.name })}
             className="apple-retro-cta z-[2] inline-flex min-h-[34px] shrink-0 items-center gap-1 rounded-full bg-[#F2ECE1] px-3.5 py-1.5 text-[11.5px] font-semibold text-[#141A14] transition-transform duration-150 active:scale-[0.96] after:absolute after:inset-0 after:z-[1] after:content-['']"
           >
-            <span>{isTransit ? 'Rute' : 'Detail'}</span>
+            <span>{isTransit ? t('map.routeBtn') : t('map.detailBtn')}</span>
             <ChevronRightIcon className="h-3 w-3 shrink-0 transition-transform duration-150 group-hover:translate-x-0.5" />
           </button>
         </div>

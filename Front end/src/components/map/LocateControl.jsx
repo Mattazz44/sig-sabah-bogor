@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMapLibre } from './mapContext'
+import { usePreferences } from '../../utils/preferences'
 
 export default function LocateControl({
   userPosition,
@@ -12,6 +13,7 @@ export default function LocateControl({
   clusteringEnabled = true,
   onToggleClustering,
 }) {
+  const { t } = usePreferences()
   const { map } = useMapLibre()
   const [isLocating, setIsLocating] = useState(false)
 
@@ -44,9 +46,9 @@ export default function LocateControl({
   const isDenied = status === 'denied'
   const isRequesting = status === 'requesting' || isLocating
 
-  let tooltipText = 'Tampilkan lokasi Anda'
-  if (isDenied) tooltipText = 'Izin lokasi ditolak di browser'
-  else if (isGranted) tooltipText = 'Pusatkan ke lokasi Anda'
+  let tooltipText = t('map.locateShow')
+  if (isDenied) tooltipText = t('map.locateDenied')
+  else if (isGranted) tooltipText = t('map.locateCenter')
 
   return (
     <div
@@ -58,8 +60,8 @@ export default function LocateControl({
           type="button"
           id="btn-toggle-3d"
           aria-pressed={is3D}
-          aria-label={is3D ? 'Beralih ke tampilan datar 2D' : 'Beralih ke tampilan miring 3D'}
-          title={is3D ? 'Mode 3D Aktif (Klik untuk 2D Datar)' : 'Mode 2D Aktif (Klik untuk 3D Miring)'}
+          aria-label={is3D ? t('map.switch2DAria') : t('map.switch3DAria')}
+          title={is3D ? t('map.mode3DTitle') : t('map.mode2DTitle')}
           onClick={(e) => {
             e.stopPropagation()
             e.preventDefault()
@@ -83,8 +85,8 @@ export default function LocateControl({
           type="button"
           id="btn-toggle-boundary"
           aria-pressed={showBoundary}
-          aria-label={showBoundary ? 'Sembunyikan Batas Wilayah Kota Bogor' : 'Tampilkan Batas Wilayah Kota Bogor'}
-          title={showBoundary ? 'Batas Wilayah Kota Bogor: Aktif (Klik untuk nonaktifkan)' : 'Batas Wilayah Kota Bogor: Nonaktif (Klik untuk aktifkan)'}
+          aria-label={showBoundary ? t('map.hideBoundaryAria') : t('map.showBoundaryAria')}
+          title={showBoundary ? t('map.boundaryOnTitle') : t('map.boundaryOffTitle')}
           onClick={(e) => {
             e.stopPropagation()
             e.preventDefault()
@@ -120,8 +122,8 @@ export default function LocateControl({
           type="button"
           id="btn-toggle-clustering"
           aria-pressed={clusteringEnabled}
-          aria-label={clusteringEnabled ? 'Nonaktifkan Pengelompokan Marker (Cluster)' : 'Aktifkan Pengelompokan Marker (Cluster)'}
-          title={clusteringEnabled ? 'Marker Clustering: Aktif (Klik untuk nonaktifkan)' : 'Marker Clustering: Nonaktif (Klik untuk aktifkan)'}
+          aria-label={clusteringEnabled ? t('map.disableClusterAria') : t('map.enableClusterAria')}
+          title={clusteringEnabled ? t('map.clusterOnTitle') : t('map.clusterOffTitle')}
           onClick={(e) => {
             e.stopPropagation()
             e.preventDefault()

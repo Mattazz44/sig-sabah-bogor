@@ -19,6 +19,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/current-user', [AuthController::class, 'currentUser']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/update-avatar', [AuthController::class, 'updateAvatar']);
+    Route::match(['put', 'patch'], '/auth/profile', [AuthController::class, 'updateProfile']);
+    Route::match(['put', 'patch'], '/auth/password', [AuthController::class, 'changePassword']);
     Route::post('/users/{usernameOrId}/follow', [AuthController::class, 'toggleFollow']);
 
     // Halaman 'Tersimpan' & Rute Custom (khusus akun terautentikasi)

@@ -13,16 +13,15 @@ import {
   UserIcon,
 } from '../ui/VectorIcons'
 import { DEFAULT_AVATAR_PLACEHOLDER, getBogorFallbackPhoto } from '../../utils/imageHelper'
+import { formatShortDistance } from '../../utils/distance'
+import { usePreferences } from '../../utils/preferences'
 
-function formatDistanceLabel(place) {
+function formatDistanceLabel(place, { distanceUnit = 'km', tDuration } = {}) {
   if (typeof place?.distanceKm === 'number' && Number.isFinite(place.distanceKm)) {
-    if (place.distanceKm < 1) {
-      return `${Math.max(50, Math.round(place.distanceKm * 1000))} m`
-    }
-    return `${place.distanceKm.toFixed(1)} km`
+    return formatShortDistance(place.distanceKm, { unit: distanceUnit })
   }
-  if (place?.travelTime && place.travelTime !== 'Aktifkan GPS') {
-    return place.travelTime
+  if (place?.travelTime && place.travelTime !== 'Aktifkan GPS' && place.travelTime !== 'Enable GPS') {
+    return tDuration ? tDuration(place.travelTime) : place.travelTime
   }
   return null
 }
@@ -77,9 +76,10 @@ function DestinationCard({
   onOpenDetail,
   onStartNavigation,
 }) {
-  const distanceLabel = formatDistanceLabel(place)
+  const { t, tCategory, tDuration, distanceUnit } = usePreferences()
+  const distanceLabel = formatDistanceLabel(place, { distanceUnit, tDuration })
   const displayRating = Number(place.rating || 0).toFixed(1)
-  const displayLocation = place.address || place.location || 'Bogor, Jawa Barat'
+  const displayLocation = place.address || place.location || t('common.bogorWestJava')
   const fallbackPhoto = getBogorFallbackPhoto(place)
 
   return (
@@ -88,7 +88,11 @@ function DestinationCard({
       <button
         type="button"
         aria-pressed={favoriteActive}
-        aria-label={favoriteActive ? `Hapus ${place.name} dari favorit` : `Simpan ${place.name} ke favorit`}
+        aria-label={
+          favoriteActive
+            ? t('explore.removeFavAria', { name: place.name })
+            : t('explore.addFavAria', { name: place.name })
+        }
         onClick={() => onToggleFavorite?.(place.slug)}
         className={`apple-glass-pill absolute top-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full transition-all duration-150 active:scale-[0.95] ${
           favoriteActive
@@ -119,7 +123,7 @@ function DestinationCard({
           />
           {place.category && (
             <span className="apple-glass-pill absolute bottom-2.5 left-3 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-tight text-[#EBF0EB]">
-              {place.category}
+              {tCategory(place.category)}
             </span>
           )}
         </div>
@@ -142,7 +146,9 @@ function DestinationCard({
             {distanceLabel && (
               <span className="inline-flex items-center gap-1 text-[#DFAA63]">
                 <span aria-hidden="true" className="text-[#F5F2EB]/35">•</span>
-                <span className="font-medium not-italic tabular-nums">{distanceLabel} dari Anda</span>
+                <span className="font-medium not-italic tabular-nums">
+                  {t('foryou.distanceFromYou', { distance: distanceLabel })}
+                </span>
               </span>
             )}
           </div>
@@ -156,17 +162,17 @@ function DestinationCard({
           onClick={() => onOpenDetail(place)}
           className="apple-glass-pill flex min-h-[44px] flex-1 items-center justify-center rounded-xl px-3 text-[12.5px] font-semibold text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.12] active:scale-[0.98]"
         >
-          Lihat detail
+          {t('foryou.viewDetail')}
         </button>
         {onStartNavigation && (
           <button
             type="button"
             onClick={() => onStartNavigation(place)}
-            aria-label={`Mulai rute cepat ke ${place.name}`}
+            aria-label={t('foryou.quickRouteAria', { name: place.name })}
             className="apple-retro-cta inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl px-3.5 text-[12.5px] font-semibold active:scale-[0.98]"
           >
             <RouteWaypointsIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
-            <span>Rute</span>
+            <span>{t('foryou.routeBtn')}</span>
           </button>
         )}
       </div>
@@ -190,6 +196,7 @@ function ForYouPage({
   onRequireLogin,
   onOpenProfile,
 }) {
+  const { t, tDuration, distanceUnit } = usePreferences()
   const navigate = useNavigate()
   const scrollContainerRef = useRef(null)
   const [reloadTick, setReloadTick] = useState(0)
@@ -359,12 +366,14 @@ function ForYouPage({
         <header className="flex items-start justify-between gap-4 sm:items-center">
           <div className="min-w-0">
             <h1 className="text-[26px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[30px]">
-              Untuk Anda
+              {t('foryou.title')}
             </h1>
             <p className="mt-1 text-[13px] leading-relaxed text-[#F5F2EB]/60">
               {isLoggedIn
-                ? `Dipersonalisasi untuk ${currentUser?.name || 'perjalanan Anda'}`
-                : 'Kurasi tempat wisata unggulan di sekitar Bogor'}
+                ? t('foryou.subtitleLoggedIn', {
+                    name: currentUser?.name || t('foryou.subtitleDefaultName'),
+                  })
+                : t('foryou.subtitleGuest')}
             </p>
           </div>
 
@@ -377,14 +386,14 @@ function ForYouPage({
                 onOpenProfile('self')
               }
             }}
-            aria-label={isLoggedIn ? 'Buka profil pengguna' : 'Masuk ke akun'}
+            aria-label={isLoggedIn ? t('foryou.openProfileAria') : t('foryou.signInAria')}
             className="apple-glass-pill flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.14] active:scale-[0.97]"
           >
             {isLoggedIn ? (
               <SafeImage
                 src={currentUser?.avatar}
                 fallback={DEFAULT_AVATAR_PLACEHOLDER}
-                alt={currentUser?.name || 'Foto profil'}
+                alt={currentUser?.name || t('profile.defaultUser')}
                 className="h-full w-full object-cover"
               />
             ) : (
@@ -404,7 +413,6 @@ function ForYouPage({
                 <div className="flex min-w-0 items-center gap-4">
                   <SabahMascot
                     size="sm"
-                    label="Maskot Rusa Tutul Sabah Bogor"
                     className="drop-shadow-[0_8px_18px_rgba(0,0,0,0.35)]"
                   />
                   <div className="min-w-0">
@@ -412,10 +420,10 @@ function ForYouPage({
                       id="guest-invite-title"
                       className="text-[17px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[18px]"
                     >
-                      Simpan rute dan personalisasi rekomendasi Anda
+                      {t('foryou.guestTitle')}
                     </h2>
                     <p className="mt-1 max-w-2xl text-[13px] leading-relaxed text-[#F5F2EB]/65">
-                      Masuk ke akun Sabah Bogor untuk menyelaraskan tempat favorit, melanjutkan tempat terakhir dilihat, dan menyusun urutan rekomendasi sesuai minat Anda.
+                      {t('foryou.guestDesc')}
                     </p>
                   </div>
                 </div>
@@ -425,7 +433,7 @@ function ForYouPage({
                   onClick={onRequireLogin}
                   className="apple-retro-cta inline-flex min-h-[44px] shrink-0 items-center justify-center rounded-xl px-5 py-2.5 text-[13px] font-semibold active:scale-[0.98]"
                 >
-                  Masuk ke akun
+                  {t('foryou.guestCta')}
                 </button>
               </div>
             </section>
@@ -438,10 +446,10 @@ function ForYouPage({
                     id="curated-bogor-heading"
                     className="text-[17px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[18px]"
                   >
-                    Rekomendasi Pilihan di Bogor
+                    {t('foryou.curatedHeading')}
                   </h2>
                   <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
-                    Destinasi terpopuler yang siap dikunjungi atau langsung diarahkan di peta
+                    {t('foryou.curatedDesc')}
                   </p>
                 </div>
               </div>
@@ -451,10 +459,10 @@ function ForYouPage({
               ) : isBackendError && curatedBogorPlaces.length === 0 ? (
                 <div className="mt-5 rounded-2xl border border-rose-400/25 bg-[#2a1216] p-5 text-center">
                   <p className="text-[14px] font-semibold text-[#EBF0EB]">
-                    Daftar rekomendasi belum bisa dimuat
+                    {t('foryou.loadErrorTitle')}
                   </p>
                   <p className="mt-1 text-[12.5px] text-rose-100/85">
-                    Periksa sambungan ke server backend lalu coba muat ulang.
+                    {t('foryou.loadErrorDesc')}
                   </p>
                   <button
                     type="button"
@@ -462,7 +470,7 @@ function ForYouPage({
                     className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/12 px-4 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-[#EBF0EB]/20"
                   >
                     <RefreshIcon className="h-3.5 w-3.5" />
-                    <span>Coba lagi</span>
+                    <span>{t('common.retry')}</span>
                   </button>
                 </div>
               ) : curatedBogorPlaces.length > 0 ? (
@@ -480,7 +488,7 @@ function ForYouPage({
                 </div>
               ) : (
                 <p className="apple-glass-card mt-4 rounded-2xl p-5 text-[13px] text-white/65">
-                  Belum ada destinasi yang tersedia untuk ditampilkan.
+                  {t('foryou.emptyAvailable')}
                 </p>
               )}
             </section>
@@ -490,10 +498,10 @@ function ForYouPage({
         ) : (recState.error || isBackendError) && displayedPersonalized.length === 0 ? (
           <div className="mt-8 rounded-2xl border border-rose-400/25 bg-[#2a1216] p-5 text-center">
             <p className="text-[14px] font-semibold text-[#EBF0EB]">
-              Rekomendasi belum bisa dimuat
+              {t('foryou.loadErrorAuthTitle')}
             </p>
             <p className="mt-1 text-[12.5px] text-rose-100/85">
-              Periksa sambungan ke server backend lalu coba muat ulang.
+              {t('foryou.loadErrorDesc')}
             </p>
             <button
               type="button"
@@ -504,7 +512,7 @@ function ForYouPage({
               className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/12 px-4 text-[12.5px] font-semibold text-[#EBF0EB] transition-colors hover:bg-[#EBF0EB]/20"
             >
               <RefreshIcon className="h-3.5 w-3.5" />
-              <span>Coba lagi</span>
+              <span>{t('common.retry')}</span>
             </button>
           </div>
         ) : (
@@ -515,9 +523,9 @@ function ForYouPage({
                   id="continue-heading"
                   className="text-[16px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[17px]"
                 >
-                  Lanjutkan perjalanan
+                  {t('foryou.continueHeading')}
                 </h2>
-                <p className="mt-0.5 text-[12.5px] text-[#F5F2EB]/60">Destinasi terakhir yang Anda buka</p>
+                <p className="mt-0.5 text-[12.5px] text-[#F5F2EB]/60">{t('foryou.continueDesc')}</p>
 
                 <article className="apple-glass-card apple-glass-card-hover mt-3 overflow-hidden rounded-2xl sm:flex sm:items-stretch">
                   <button
@@ -536,22 +544,24 @@ function ForYouPage({
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col justify-center p-4">
                       <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-[#DFAA63]">
-                        Terakhir dilihat
+                        {t('foryou.lastViewed')}
                       </span>
                       <h3 className="mt-1 line-clamp-1 text-[16px] font-semibold tracking-tight text-[#F5F2EB]">
                         {effectiveContinue.name}
                       </h3>
                       <p className="mt-1 line-clamp-1 text-[12.5px] text-[#F5F2EB]/65">
-                        {effectiveContinue.address || effectiveContinue.location || 'Bogor, Jawa Barat'}
+                        {effectiveContinue.address || effectiveContinue.location || t('common.bogorWestJava')}
                       </p>
                       <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px]">
                         <span className="inline-flex items-center gap-1 font-semibold not-italic tabular-nums text-[#F5F2EB]">
                           <StarIcon filled className="h-3.5 w-3.5 text-[#DFAA63]" aria-hidden="true" />
                           {Number(effectiveContinue.rating || 0).toFixed(1)}
                         </span>
-                        {formatDistanceLabel(effectiveContinue) && (
+                        {formatDistanceLabel(effectiveContinue, { distanceUnit, tDuration }) && (
                           <span className="font-medium not-italic tabular-nums text-[#DFAA63]">
-                            {formatDistanceLabel(effectiveContinue)} dari Anda
+                            {t('foryou.distanceFromYou', {
+                              distance: formatDistanceLabel(effectiveContinue, { distanceUnit, tDuration }),
+                            })}
                           </span>
                         )}
                       </div>
@@ -564,8 +574,8 @@ function ForYouPage({
                       aria-pressed={checkFavorite(effectiveContinue.slug)}
                       aria-label={
                         checkFavorite(effectiveContinue.slug)
-                          ? `Hapus ${effectiveContinue.name} dari favorit`
-                          : `Simpan ${effectiveContinue.name} ke favorit`
+                          ? t('explore.removeFavAria', { name: effectiveContinue.name })
+                          : t('explore.addFavAria', { name: effectiveContinue.name })
                       }
                       onClick={() => toggleFavorite && toggleFavorite(effectiveContinue.slug)}
                       className={`apple-retro-bevel flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border transition-all duration-150 active:scale-[0.96] ${
@@ -583,7 +593,7 @@ function ForYouPage({
                         className="apple-retro-cta inline-flex min-h-[44px] items-center gap-1.5 rounded-xl px-4 text-[12.5px] font-semibold active:scale-[0.98]"
                       >
                         <RouteWaypointsIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                        <span>Lanjutkan rute</span>
+                        <span>{t('foryou.continueRoute')}</span>
                       </button>
                     )}
                   </div>
@@ -598,12 +608,12 @@ function ForYouPage({
                     id="rec-heading"
                     className="text-[17px] font-semibold tracking-tight text-[#F5F2EB] sm:text-[18px]"
                   >
-                    Berdasarkan Minat & Riwayatmu
+                    {t('foryou.personalizedHeading')}
                   </h2>
                   <p className="mt-0.5 text-[12.5px] leading-relaxed text-[#F5F2EB]/60">
                     {usingCuratedFallbackForLoggedIn
-                      ? 'Menampilkan destinasi unggulan di Bogor selagi riwayat perjalanan Anda terkumpul'
-                      : 'Disusun dari tempat favorit, aktivitas, dan riwayat penelusuran Anda'}
+                      ? t('foryou.personalizedFallbackDesc')
+                      : t('foryou.personalizedDesc')}
                   </p>
                 </div>
               </div>
@@ -623,7 +633,7 @@ function ForYouPage({
                 </div>
               ) : (
                 <p className="apple-glass-card mt-4 rounded-2xl p-5 text-[13px] text-white/65">
-                  Belum ada rekomendasi tersedia saat ini.
+                  {t('foryou.emptyRecs')}
                 </p>
               )}
             </section>

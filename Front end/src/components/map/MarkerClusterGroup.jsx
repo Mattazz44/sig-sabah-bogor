@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { LngLatBounds, Marker } from 'maplibre-gl'
 import MapMarker from './MapMarker'
 import { useMapLibre } from './mapContext'
+import { usePreferences } from '../../utils/preferences'
 
 // Clustering aktif saat zoom <= 14; terurai otomatis saat zoom > 14 (default 15.5)
 const CLUSTER_MAX_ZOOM = 14
@@ -18,6 +19,7 @@ function projectMercatorPx(lng, lat, zoom) {
 }
 
 function ClusterBadgeMarker({ cluster, map, clusterRefs, onClusterClick }) {
+  const { t } = usePreferences()
   const onClickRef = useRef(onClusterClick)
 
   useEffect(() => {
@@ -34,7 +36,7 @@ function ClusterBadgeMarker({ cluster, map, clusterRefs, onClusterClick }) {
       .map((item) => item.name)
       .join(', ')
     const moreCount = count - 3
-    const tooltipLabel = `${count} Objek Wisata: ${previewNames}${moreCount > 0 ? ` +${moreCount} lainnya` : ''}`
+    const tooltipLabel = `${t('map.clusterTooltip', { count, names: previewNames })}${moreCount > 0 ? t('map.clusterMore', { count: moreCount }) : ''}`
 
     const el = document.createElement('button')
     el.type = 'button'
@@ -114,7 +116,7 @@ function ClusterBadgeMarker({ cluster, map, clusterRefs, onClusterClick }) {
       clusterMap.delete(cluster.id)
       marker.remove()
     }
-  }, [map, cluster, clusterRefs])
+  }, [map, cluster, clusterRefs, t])
 
   return null
 }

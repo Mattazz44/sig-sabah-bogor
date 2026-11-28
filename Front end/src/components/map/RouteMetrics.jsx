@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef, useState } from 'react'
+import { usePreferences } from '../../utils/preferences'
 
 function parseNumericSuffix(text, unitRegex) {
   if (typeof text === 'number' && Number.isFinite(text)) return text
@@ -68,16 +69,19 @@ function RouteMetrics({
   routeInfo,
   isNavigationMode = false,
 }) {
+  const { language, distanceUnit, t, tDuration, formatDistanceUnit } = usePreferences()
   const isActive = isNavigationMode && Boolean(activeDestination)
 
   const targetMinutes = isActive
     ? routeInfo?.totalMinutes ??
-      parseNumericSuffix(activeDestination?.travelTime, /([\d.,]+)\s*menit/i)
+      parseNumericSuffix(activeDestination?.travelTime, /([\d.,]+)\s*(?:menit|min)/i)
     : null
 
   const targetKm = isActive
     ? parseNumericSuffix(routeInfo?.totalKm ?? routeInfo?.distanceText, /([\d.,]+)/) ??
-      parseNumericSuffix(activeDestination?.distance, /([\d.,]+)\s*km/i)
+      (typeof activeDestination?.distanceKm === 'number'
+        ? activeDestination.distanceKm
+        : parseNumericSuffix(activeDestination?.distance, /([\d.,]+)\s*km/i))
     : null
 
   const animatedMinutes = useRollingNumber(targetMinutes, 420)
@@ -88,39 +92,45 @@ function RouteMetrics({
   const isCustomRoute =
     Array.isArray(activeDestination) || Boolean(routeInfo?.isCustomRoute)
 
-  let title = 'Destinasi wisata'
-  let badgeLabel = 'Navigasi aktif'
+  let title = t('common.destinationFallback')
+  let badgeLabel = t('map.activeNavBadge')
 
   if (isCustomRoute) {
-    badgeLabel = 'Rute custom'
+    badgeLabel = t('map.customRouteBadge')
     if (Array.isArray(activeDestination)) {
       title = activeDestination
-        .map((p) => p.name?.split('-')[0].trim() || 'Titik')
-        .join(' ke ')
+        .map((p) => p.name?.split('-')[0].trim() || t('map.pointFallback'))
+        .join(t('map.routeJoinWord'))
     } else {
-      title = activeDestination?.name || 'Rute custom wisata'
+      title = activeDestination?.name || t('map.customRouteFallback')
     }
   } else {
-    title = activeDestination?.name || 'Destinasi wisata'
+    title = activeDestination?.name || t('common.destinationFallback')
   }
 
-  const fallbackTimeText =
-    routeInfo?.timeText || activeDestination?.travelTime || 'Menghitung...'
+  const fallbackTimeText = tDuration(routeInfo?.timeText || activeDestination?.travelTime) || t('map.calculating')
   const fallbackDistanceText =
-    routeInfo?.distanceText || activeDestination?.distance || 'Menghitung...'
+    routeInfo?.distanceText || activeDestination?.distance
+      ? formatDistanceUnit(routeInfo?.distanceText || activeDestination?.distance)
+      : t('map.calculating')
   const isFallbackOrigin = Boolean(routeInfo?.isFallbackOrigin)
 
+  const minUnit = language === 'en' ? 'min' : 'Menit'
   const formattedTime =
     animatedMinutes !== null
-      ? `${Math.max(1, Math.round(animatedMinutes))} Menit`
+      ? `${Math.max(1, Math.round(animatedMinutes))} ${minUnit}`
       : fallbackTimeText
   const formattedDistance =
-    animatedKm !== null ? `${animatedKm.toFixed(1)} KM` : fallbackDistanceText
+    animatedKm !== null
+      ? distanceUnit === 'mi'
+        ? `${(animatedKm * 0.621371).toFixed(1)} MI`
+        : `${animatedKm.toFixed(1)} KM`
+      : fallbackDistanceText
 
   return (
     <aside
       id="route-metrics-panel"
-      aria-label="Panel perkiraan rute navigasi"
+      aria-label={t('map.metricsAria')}
       className="pointer-events-none fixed top-4 inset-x-4 z-[900] mx-auto max-w-sm animate-tab-enter"
     >
       <div className="pointer-events-auto apple-glass-card flex flex-col gap-1.5 rounded-2xl px-4 py-3">
@@ -139,7 +149,7 @@ function RouteMetrics({
         <div className="mt-0.5 flex items-center justify-between border-t border-[rgba(244,239,230,0.14)] pt-2 text-[12px]">
           <div className="flex items-center gap-1.5 text-[#F5F2EB]">
             <span className="text-[#F5F2EB]/60">
-              {isCustomRoute ? 'Estimasi total:' : 'Estimasi:'}
+              {isCustomRoute ? t('map.totalEstimate') : t('map.estimate')}
             </span>
             <span className="font-mono font-semibold tabular-nums tracking-wide text-[#F5F2EB]">
               {formattedTime}
@@ -148,7 +158,7 @@ function RouteMetrics({
           <span className="text-[#F5F2EB]/25" aria-hidden="true">|</span>
           <div className="flex items-center gap-1.5 text-[#F5F2EB]">
             <span className="text-[#F5F2EB]/60">
-              {isCustomRoute ? 'Jarak total:' : 'Jarak:'}
+              {isCustomRoute ? t('map.totalDistance') : t('map.distance')}
             </span>
             <span className="font-mono font-semibold tabular-nums tracking-wide text-[#DFAA63]">
               {formattedDistance}
@@ -158,9 +168,7 @@ function RouteMetrics({
 
         {isFallbackOrigin && (
           <p className="mt-1 text-center text-[10.5px] font-medium text-[#F5F2EB]/65">
-            {isCustomRoute
-              ? 'GPS nonaktif — estimasi dihitung antar titik rute'
-              : 'GPS nonaktif — estimasi dari Pusat Kota Bogor'}
+            {isCustomRoute ? t('map.gpsFallbackMulti') : t('map.gpsFallbackSingle')}
           </p>
         )}
       </div>

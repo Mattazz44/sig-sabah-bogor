@@ -1,6 +1,7 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { apiFetch, buildApiUrl, setAuthToken, setStoredUser } from '../../utils/api'
+import { usePreferences } from '../../utils/preferences'
 import {
   AlertTriangleIcon,
   EyeIcon,
@@ -13,7 +14,7 @@ import {
 
 const INTRO_EASE = [0.22, 1, 0.36, 1]
 
-function SabahLogoIntro({ reducedMotion }) {
+function SabahLogoIntro({ reducedMotion, logoAlt }) {
   if (reducedMotion) {
     return (
       <div className="relative mx-auto -mt-3 mb-4 flex h-20 w-20 items-center justify-center">
@@ -24,7 +25,7 @@ function SabahLogoIntro({ reducedMotion }) {
           <img
             id="login-brand-logo"
             src="/SABAH.png"
-            alt="Logo Sabah Bogor"
+            alt={logoAlt}
             className="h-full w-full rounded-xl object-contain"
           />
         </div>
@@ -109,7 +110,7 @@ function SabahLogoIntro({ reducedMotion }) {
         <motion.img
           id="login-brand-logo"
           src="/SABAH.png"
-          alt="Logo Sabah Bogor"
+          alt={logoAlt}
           initial={{ opacity: 0, scale: 0.82, filter: 'blur(5px)' }}
           animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
           transition={{ delay: 0.92, duration: 1.38, ease: INTRO_EASE }}
@@ -139,6 +140,7 @@ function getFocusableElements(container) {
 }
 
 function LoginModal({ isOpen, onClose, onLoginSuccess }) {
+  const { t } = usePreferences()
   const prefersReducedMotion = useReducedMotion()
   const [authMode, setAuthMode] = useState('login')
   const [fullName, setFullName] = useState('')
@@ -253,28 +255,28 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
 
     if (isRegisterMode) {
       if (fullName.trim().length < 2) {
-        setErrorMessage('Nama lengkap minimal 2 karakter.')
+        setErrorMessage(t('auth.errNameMin'))
         return
       }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registerEmail.trim())) {
-        setErrorMessage('Masukkan alamat email yang valid.')
+        setErrorMessage(t('auth.errInvalidEmail'))
         return
       }
       if (password.length < 6) {
-        setErrorMessage('Kata sandi minimal 6 karakter.')
+        setErrorMessage(t('auth.errPasswordMin'))
         return
       }
       if (password !== confirmPassword) {
-        setErrorMessage('Konfirmasi kata sandi belum cocok.')
+        setErrorMessage(t('auth.errPasswordMismatch'))
         return
       }
     } else {
       if (!emailOrUsername.trim()) {
-        setErrorMessage('Masukkan email atau username Anda.')
+        setErrorMessage(t('auth.errIdentityRequired'))
         return
       }
       if (!password) {
-        setErrorMessage('Masukkan kata sandi Anda.')
+        setErrorMessage(t('auth.errPasswordRequired'))
         return
       }
     }
@@ -314,15 +316,13 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         throw new Error(
           firstValidationError ||
             data?.message ||
-            (isRegisterMode
-              ? 'Pendaftaran gagal. Periksa kembali data yang dimasukkan.'
-              : 'Login gagal. Periksa kembali email dan kata sandi.'),
+            (isRegisterMode ? t('auth.errRegisterFailed') : t('auth.errLoginFailed')),
         )
       }
 
       const authToken = data?.token || data?.data?.token
       if (!data?.data || !authToken) {
-        throw new Error('Respons autentikasi server tidak menyertakan token yang valid.')
+        throw new Error(t('auth.errMissingToken'))
       }
 
       setAuthToken(authToken)
@@ -334,7 +334,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
         onLoginSuccess(data.data, authToken)
       }
     } catch (err) {
-      setErrorMessage(err.message || 'Gagal terhubung ke server autentikasi.')
+      setErrorMessage(err.message || t('auth.errConnect'))
     } finally {
       setIsLoading(false)
     }
@@ -373,13 +373,17 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           type="button"
           id="btn-close-login-modal"
           onClick={onClose}
-          aria-label={isRegisterMode ? 'Tutup dialog pendaftaran' : 'Tutup dialog login'}
+          aria-label={isRegisterMode ? t('auth.closeRegisterAria') : t('auth.closeLoginAria')}
           className="apple-glass-pill relative ml-auto flex h-9 w-9 items-center justify-center rounded-full text-[#F5F2EB] transition-all duration-150 hover:bg-white/[0.12] active:scale-[0.97] before:absolute before:-inset-1"
         >
           <XIcon className="h-4 w-4" />
         </button>
 
-        <SabahLogoIntro key={`logo-intro-${openCycle}`} reducedMotion={Boolean(prefersReducedMotion)} />
+        <SabahLogoIntro
+          key={`logo-intro-${openCycle}`}
+          reducedMotion={Boolean(prefersReducedMotion)}
+          logoAlt={t('auth.logoAlt')}
+        />
 
         <div key={`${openCycle}-${authMode}`}>
           <motion.div
@@ -392,12 +396,10 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
             }
           >
             <h2 id="login-modal-title" className="text-[20px] font-semibold tracking-tight text-[#F5F2EB]">
-              {isRegisterMode ? 'Buat akun baru' : 'Masuk ke akun'}
+              {isRegisterMode ? t('auth.registerTitle') : t('auth.loginTitle')}
             </h2>
             <p className="mx-auto mt-1.5 max-w-[285px] text-[12.5px] leading-relaxed text-[#F5F2EB]/65">
-              {isRegisterMode
-                ? 'Daftar akun Sabah Bogor untuk menyimpan rute perjalanan, favorit, dan dokumentasi wisata Anda.'
-                : 'Simpan rute perjalanan custom, bagikan dokumentasi wisata, dan kelola daftar favorit Anda.'}
+              {isRegisterMode ? t('auth.registerDesc') : t('auth.loginDesc')}
             </p>
           </motion.div>
 
@@ -427,7 +429,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
               <>
                 <div>
                   <label htmlFor="input-register-name" className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]">
-                    Nama Lengkap
+                    {t('auth.fullNameLabel')}
                   </label>
                   <div className="relative flex items-center">
                     <UserIcon
@@ -440,7 +442,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                       autoComplete="name"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Nama lengkap Anda"
+                      placeholder={t('auth.fullNamePlaceholder')}
                       className="liquid-glass-input min-h-[44px] w-full rounded-xl py-2.5 pr-3.5 pl-10 text-[13px] text-white placeholder:text-white/40 transition-colors duration-150"
                       required
                     />
@@ -449,7 +451,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
 
                 <div>
                   <label htmlFor="input-register-email" className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]">
-                    Email
+                    {t('auth.emailLabel')}
                   </label>
                   <div className="relative flex items-center">
                     <MailIcon
@@ -462,7 +464,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                       autoComplete="email"
                       value={registerEmail}
                       onChange={(e) => setRegisterEmail(e.target.value)}
-                      placeholder="nama@email.com"
+                      placeholder={t('auth.emailPlaceholder')}
                       className="liquid-glass-input min-h-[44px] w-full rounded-xl py-2.5 pr-3.5 pl-10 text-[13px] text-white placeholder:text-white/40 transition-colors duration-150"
                       required
                     />
@@ -471,7 +473,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
 
                 <div>
                   <label htmlFor="input-register-password" className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]">
-                    Kata Sandi
+                    {t('auth.passwordLabel')}
                   </label>
                   <div className="relative flex items-center">
                     <LockIcon
@@ -484,7 +486,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                       autoComplete="new-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Minimal 6 karakter"
+                      placeholder={t('auth.passwordMinPlaceholder')}
                       className="liquid-glass-input min-h-[44px] w-full rounded-xl py-2.5 pr-11 pl-10 text-[13px] text-white placeholder:text-white/40 transition-colors duration-150"
                       required
                     />
@@ -492,7 +494,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                       type="button"
                       id="btn-toggle-register-password"
                       onClick={() => setShowPassword((prev) => !prev)}
-                      aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                      aria-label={showPassword ? t('auth.hidePasswordAria') : t('auth.showPasswordAria')}
                       className="absolute right-0.5 flex h-10 w-10 items-center justify-center rounded-xl text-white/55 transition-colors hover:text-white"
                     >
                       {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
@@ -505,7 +507,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                     htmlFor="input-register-confirm-password"
                     className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]"
                   >
-                    Konfirmasi Kata Sandi
+                    {t('auth.confirmPasswordLabel')}
                   </label>
                   <div className="relative flex items-center">
                     <LockIcon
@@ -518,7 +520,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                       autoComplete="new-password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Ulangi kata sandi"
+                      placeholder={t('auth.confirmPasswordPlaceholder')}
                       className="liquid-glass-input min-h-[44px] w-full rounded-xl py-2.5 pr-11 pl-10 text-[13px] text-white placeholder:text-white/40 transition-colors duration-150"
                       required
                     />
@@ -527,9 +529,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                       id="btn-toggle-register-confirm-password"
                       onClick={() => setShowConfirmPassword((prev) => !prev)}
                       aria-label={
-                        showConfirmPassword
-                          ? 'Sembunyikan konfirmasi kata sandi'
-                          : 'Tampilkan konfirmasi kata sandi'
+                        showConfirmPassword ? t('auth.hideConfirmAria') : t('auth.showConfirmAria')
                       }
                       className="absolute right-0.5 flex h-10 w-10 items-center justify-center rounded-xl text-white/55 transition-colors hover:text-white"
                     >
@@ -546,7 +546,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
               <>
                 <div>
                   <label htmlFor="input-login-email" className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]">
-                    Email atau username
+                    {t('auth.loginIdentityLabel')}
                   </label>
                   <div className="relative flex items-center">
                     <MailIcon
@@ -559,7 +559,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                       autoComplete="username"
                       value={emailOrUsername}
                       onChange={(e) => setEmailOrUsername(e.target.value)}
-                      placeholder="nama@email.com"
+                      placeholder={t('auth.emailPlaceholder')}
                       className="liquid-glass-input min-h-[44px] w-full rounded-xl py-2.5 pr-3.5 pl-10 text-[13px] text-white placeholder:text-white/40 transition-colors duration-150"
                       required
                     />
@@ -568,7 +568,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
 
                 <div>
                   <label htmlFor="input-login-password" className="mb-1.5 block text-[12px] font-medium text-[#EBF0EB]">
-                    Kata sandi
+                    {t('auth.loginPasswordLabel')}
                   </label>
                   <div className="relative flex items-center">
                     <LockIcon
@@ -581,7 +581,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                       autoComplete="current-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Masukkan kata sandi"
+                      placeholder={t('auth.loginPasswordPlaceholder')}
                       className="liquid-glass-input min-h-[44px] w-full rounded-xl py-2.5 pr-11 pl-10 text-[13px] text-white placeholder:text-white/40 transition-colors duration-150"
                       required
                     />
@@ -589,7 +589,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                       type="button"
                       id="btn-toggle-login-password"
                       onClick={() => setShowPassword((prev) => !prev)}
-                      aria-label={showPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
+                      aria-label={showPassword ? t('auth.hidePasswordAria') : t('auth.showPasswordAria')}
                       className="absolute right-0.5 flex h-10 w-10 items-center justify-center rounded-xl text-white/55 transition-colors hover:text-white"
                     >
                       {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
@@ -605,7 +605,11 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
               disabled={isLoading}
               className="apple-retro-cta mt-1.5 flex min-h-[44px] w-full items-center justify-center rounded-xl py-2.5 text-[13px] font-semibold active:scale-[0.98] disabled:opacity-60"
             >
-              {isLoading ? 'Memproses...' : isRegisterMode ? 'Daftar Akun' : 'Masuk'}
+              {isLoading
+                ? t('common.processing')
+                : isRegisterMode
+                  ? t('auth.registerBtn')
+                  : t('auth.loginBtn')}
             </button>
           </motion.form>
 
@@ -620,7 +624,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           >
             <div className="my-4 flex items-center gap-3">
               <div className="h-px flex-1 bg-[rgba(244,239,230,0.16)]" />
-              <span className="text-[11px] font-medium text-[#F5F2EB]/55">atau</span>
+              <span className="text-[11px] font-medium text-[#F5F2EB]/55">{t('auth.orDivider')}</span>
               <div className="h-px flex-1 bg-[rgba(244,239,230,0.16)]" />
             </div>
 
@@ -649,7 +653,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                 />
               </svg>
-              <span>{isRegisterMode ? 'Daftar dengan Google' : 'Masuk dengan Google'}</span>
+              <span>{isRegisterMode ? t('auth.googleRegister') : t('auth.googleLogin')}</span>
             </button>
 
             <button
@@ -658,9 +662,9 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
               onClick={() => handleSwitchMode(isRegisterMode ? 'login' : 'register')}
               className="mt-3.5 inline-flex min-h-[44px] w-full items-center justify-center gap-1.5 rounded-xl px-3 text-[12.5px] text-[#F5F2EB]/70 transition-colors duration-150 hover:text-[#F5F2EB] active:scale-[0.98]"
             >
-              <span>{isRegisterMode ? 'Sudah punya akun?' : 'Belum punya akun?'}</span>
+              <span>{isRegisterMode ? t('auth.haveAccount') : t('auth.noAccount')}</span>
               <span className="font-semibold text-[#DFAA63]">
-                {isRegisterMode ? 'Masuk' : 'Daftar sekarang'}
+                {isRegisterMode ? t('auth.switchLogin') : t('auth.switchRegister')}
               </span>
             </button>
           </motion.div>
@@ -679,7 +683,7 @@ function LoginModal({ isOpen, onClose, onLoginSuccess }) {
           }
           className="mt-1 inline-flex min-h-[40px] items-center justify-center rounded-xl px-4 text-[12px] font-medium text-white/55 transition-colors duration-150 hover:text-white/90"
         >
-          Nanti saja
+          {t('auth.laterBtn')}
         </motion.button>
       </div>
     </div>

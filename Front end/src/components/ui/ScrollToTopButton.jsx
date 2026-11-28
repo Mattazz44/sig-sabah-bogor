@@ -1,5 +1,6 @@
 import { memo, useEffect, useState } from 'react'
 import { ArrowUp } from 'lucide-react'
+import { usePreferences } from '../../utils/preferences'
 
 const DEFAULT_THRESHOLD_PX = 250
 
@@ -12,8 +13,10 @@ function ScrollToTopButton({
   className = 'fixed bottom-24 right-4 z-40',
   threshold = DEFAULT_THRESHOLD_PX,
   hidden = false,
-  ariaLabel = 'Kembali ke atas',
+  ariaLabel,
 }) {
+  const { t } = usePreferences()
+  const resolvedAriaLabel = ariaLabel || t('common.scrollToTop')
   const [scrolledPast, setScrolledPast] = useState(false)
 
   useEffect(() => {
@@ -63,9 +66,9 @@ function ScrollToTopButton({
       data-scroll-top-btn="true"
       data-visible={isVisible ? 'true' : 'false'}
       data-no-sheet-drag="true"
-      aria-label={ariaLabel}
+      aria-label={resolvedAriaLabel}
       aria-hidden={!isVisible}
-      title={ariaLabel}
+      title={resolvedAriaLabel}
       tabIndex={isVisible ? 0 : -1}
       onPointerDown={(e) => e.stopPropagation()}
       onClick={handleScrollToTop}

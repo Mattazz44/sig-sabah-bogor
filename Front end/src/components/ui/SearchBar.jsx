@@ -1,6 +1,8 @@
 import { XIcon } from './VectorIcons'
+import { usePreferences } from '../../utils/preferences'
 
 export default function SearchBar({ value, onChange, onSubmit }) {
+  const { t } = usePreferences()
   return (
     <div className="relative w-full">
       <label
@@ -33,14 +35,14 @@ export default function SearchBar({ value, onChange, onSubmit }) {
               onSubmit?.()
             }
           }}
-          placeholder="Cari destinasi wisata di Bogor"
+          placeholder={t('explore.searchPlaceholder')}
           className="w-full bg-transparent text-left text-[13px] font-normal text-white placeholder:text-left placeholder:text-white/50 focus:outline-none"
         />
         {value && (
           <button
             type="button"
             onClick={() => onChange('')}
-            aria-label="Hapus pencarian"
+            aria-label={t('explore.clearSearchAria')}
             className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/15 text-white/80 transition-colors hover:bg-white/25 hover:text-white active:scale-[0.95] before:absolute before:-inset-2"
           >
             <XIcon className="h-3 w-3" />

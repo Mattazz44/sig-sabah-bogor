@@ -387,4 +387,106 @@ class AuthController extends Controller
             'message' => 'Tidak ada file foto profil yang diunggah',
         ], 400);
     }
+
+    /**
+     * Memperbarui nama dan bio milik user terautentikasi.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak terautentikasi.',
+            ], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|min:2|max:100',
+            'bio' => 'nullable|string|max:240',
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'name.min' => 'Nama lengkap minimal 2 karakter.',
+            'name.max' => 'Nama lengkap maksimal 100 karakter.',
+            'bio.max' => 'Bio singkat maksimal 240 karakter.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $cleanName = trim((string) $request->input('name'));
+        $cleanBio = trim((string) $request->input('bio', ''));
+
+        $user->update([
+            'name' => $cleanName,
+            'bio' => $cleanBio !== '' ? $cleanBio : null,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Profil berhasil diperbarui.',
+            'data' => array_merge($this->formatUserPayload($user->fresh(), true), [
+                'isSelf' => true,
+            ]),
+        ]);
+    }
+
+    /**
+     * Mengubah kata sandi milik user terautentikasi.
+     */
+    public function changePassword(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak terautentikasi.',
+            ], 401);
+        }
+
+        $hasExistingPassword = !empty($user->password);
+
+        $rules = [
+            'new_password' => 'required|string|min:6|max:100|confirmed',
+        ];
+        if ($hasExistingPassword) {
+            $rules['current_password'] = 'required|string';
+        }
+
+        $validator = Validator::make($request->all(), $rules, [
+            'current_password.required' => 'Kata sandi saat ini wajib diisi.',
+            'new_password.required' => 'Kata sandi baru wajib diisi.',
+            'new_password.min' => 'Kata sandi baru minimal 6 karakter.',
+            'new_password.confirmed' => 'Konfirmasi kata sandi baru tidak cocok.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        if ($hasExistingPassword && !Hash::check((string) $request->input('current_password'), (string) $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kata sandi saat ini tidak sesuai.',
+            ], 422);
+        }
+
+        $user->update([
+            'password' => Hash::make((string) $request->input('new_password')),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Kata sandi berhasil diperbarui.',
+        ]);
+    }
 }

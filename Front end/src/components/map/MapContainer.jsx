@@ -9,6 +9,7 @@ import RouteMetrics from './RouteMetrics'
 import BogorBoundaryLayer from './BogorBoundaryLayer'
 import MarkerClusterGroup from './MarkerClusterGroup'
 import { getMapFocusOffset } from '../ui/sheetMetrics'
+import { usePreferences } from '../../utils/preferences'
 
 const BOGOR_CENTER = [106.805, -6.598] // [lng, lat]
 const BOGOR_FALLBACK_POS = [-6.598, 106.805] // [lat, lng] Pusat Kota Bogor jika GPS ditolak/timeout
@@ -31,6 +32,7 @@ export default function MapView({
   isNavigationMode = false,
   onRegisterHoverHandler = null,
 }) {
+  const { t } = usePreferences()
   const mapContainerRef = useRef(null)
   const onMapInteractRef = useRef(onMapInteract)
   useEffect(() => {
@@ -218,7 +220,7 @@ export default function MapView({
   return (
     <section
       id="map-section"
-      aria-label="Peta wisata Bogor"
+      aria-label={t('map.sectionAria')}
       className="relative z-0 m-0 h-[100dvh] w-full overflow-hidden bg-[#F5F5F7] p-0"
     >
       {/* 3. PANEL METRICS MELAYANG (RouteMetrics.jsx) */}
@@ -233,7 +235,7 @@ export default function MapView({
       {/* DEFAULT STATE HANDLER: Tampilan petunjuk jika Navigasi dibuka langsung tanpa destinasi */}
       {isNavigationMode && !hasDestination && (
         <aside
-          aria-label="Petunjuk navigasi"
+          aria-label={t('map.navGuideAria')}
           className="pointer-events-none absolute top-4 inset-x-4 z-[900] mx-auto max-w-sm animate-tab-enter"
         >
           <div className="apple-glass-card pointer-events-auto flex items-center gap-3 rounded-2xl px-4 py-3">
@@ -254,7 +256,7 @@ export default function MapView({
               <line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             <p className="text-[12px] font-medium leading-snug text-[#F5F2EB]">
-              Pilih destinasi di menu Explore atau susun Rute Custom untuk mulai navigasi.
+              {t('map.navGuideText')}
             </p>
           </div>
         </aside>
@@ -286,7 +288,7 @@ export default function MapView({
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
-            <span>Akhiri perjalanan</span>
+            <span>{t('map.endJourney')}</span>
           </button>
         </div>
       )}

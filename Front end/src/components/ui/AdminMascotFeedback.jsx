@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ADMIN_FEEDBACK_CONFIG } from '../../hooks/useAdminMascotFeedback'
 import { AlertTriangleIcon, XIcon } from './VectorIcons'
+import { usePreferences } from '../../utils/preferences'
 
 const TOAST_TONE_STYLES = {
   success: {
@@ -83,6 +84,7 @@ function AdminMascotFeedback({
   onSaveFilter,
   onPauseChange,
 }) {
+  const { t } = usePreferences()
   const reduceMotion = useReducedMotion()
   const cancelBtnRef = useRef(null)
 
@@ -148,7 +150,7 @@ function AdminMascotFeedback({
                 >
                   <img
                     src={config.mascotAsset}
-                    alt={config.mascotAlt}
+                    alt={t(config.mascotAltKey || 'mascot.default')}
                     width={56}
                     height={56}
                     loading="eager"
@@ -177,7 +179,7 @@ function AdminMascotFeedback({
                           onClick={onSaveFilter}
                           className="inline-flex min-h-[34px] items-center justify-center rounded-lg border border-[#DFAA63]/45 bg-[#DFAA63]/18 px-3 text-[12px] font-semibold text-[#F5E6C8] transition-colors hover:bg-[#DFAA63]/28 active:scale-[0.98]"
                         >
-                          {feedback.saveLabel || 'Simpan Ulang'}
+                          {feedback.saveLabel || t('admin.feedback.saveAgain')}
                         </button>
                       )}
                       <button
@@ -185,7 +187,7 @@ function AdminMascotFeedback({
                         onClick={onDismiss}
                         className="inline-flex min-h-[34px] items-center justify-center rounded-lg border border-white/15 bg-white/[0.06] px-3 text-[12px] font-medium text-[#F5F2EB]/80 transition-colors hover:bg-white/[0.12] hover:text-[#F5F2EB] active:scale-[0.98]"
                       >
-                        Tutup
+                        {t('common.close')}
                       </button>
                     </div>
                   )}
@@ -195,7 +197,7 @@ function AdminMascotFeedback({
                 <button
                   type="button"
                   onClick={onDismiss}
-                  aria-label="Tutup notifikasi"
+                  aria-label={t('notif.closeAria')}
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[#F5F2EB]/65 transition-colors hover:bg-white/[0.1] hover:text-[#F5F2EB]"
                 >
                   <XIcon className="h-4 w-4" />
@@ -265,7 +267,7 @@ function AdminMascotFeedback({
                 >
                   <img
                     src={config.mascotAsset}
-                    alt={config.mascotAlt}
+                    alt={t(config.mascotAltKey || 'mascot.default')}
                     width={96}
                     height={96}
                     loading="eager"

@@ -2,9 +2,10 @@ import { memo, useEffect, useState } from 'react'
 import SafeImage from '../ui/SafeImage'
 import { getBogorFallbackPhoto } from '../../utils/imageHelper'
 import { CheckIcon, HeartIcon, ShareIcon, StarIcon } from '../ui/VectorIcons'
+import { usePreferences } from '../../utils/preferences'
 
-function formatLocationLabel(address) {
-  if (!address || typeof address !== 'string') return 'Kota Bogor, Jawa Barat'
+function formatLocationLabel(address, fallbackArea) {
+  if (!address || typeof address !== 'string') return fallbackArea
   const parts = address
     .split(',')
     .map((part) => part.trim())
@@ -19,7 +20,7 @@ function formatLocationLabel(address) {
   if (parts.length === 2) {
     return `${parts[0]}, ${parts[1]}`
   }
-  return parts[0] || 'Kota Bogor, Jawa Barat'
+  return parts[0] || fallbackArea
 }
 
 function TouristCard({
@@ -31,9 +32,10 @@ function TouristCard({
   saved = false,
   onToggleFavorite,
 }) {
+  const { t, tCategory } = usePreferences()
   const [copied, setCopied] = useState(false)
   const [isPressed, setIsPressed] = useState(false)
-  const displayLocation = formatLocationLabel(place.address)
+  const displayLocation = formatLocationLabel(place.address, t('common.bogorCityWestJava'))
   const fallbackPhoto = getBogorFallbackPhoto(place)
 
   useEffect(() => {
@@ -48,7 +50,7 @@ function TouristCard({
       if (navigator.share) {
         await navigator.share({
           title: `${place.name} - Sabah Bogor`,
-          text: `Lihat destinasi ${place.name} di Sabah Bogor`,
+          text: t('explore.shareText', { name: place.name }),
           url: shareUrl,
         })
         return
@@ -134,7 +136,7 @@ function TouristCard({
             />
             {isSelected && (
               <span className="pointer-events-none absolute bottom-2 left-2 z-[3] inline-flex items-center rounded-full border border-[#DFAA63]/50 bg-[#111711]/85 px-2.5 py-0.5 text-[10px] font-semibold tracking-tight text-[#DFAA63] backdrop-blur-md shadow-sm">
-                Aktif di peta
+                {t('explore.activeOnMap')}
               </span>
             )}
           </div>
@@ -157,7 +159,7 @@ function TouristCard({
               </span>
               <span className="text-[#F5F2EB]/35" aria-hidden="true">·</span>
               <span className="truncate text-[11.5px] not-italic tabular-nums text-[#F5F2EB]/65">
-                {place.distance || place.category}
+                {place.distance || tCategory(place.category)}
               </span>
             </div>
           </div>
@@ -173,7 +175,11 @@ function TouristCard({
             data-no-sheet-drag
             onPointerDown={(e) => e.stopPropagation()}
             onClick={handleShare}
-            aria-label={copied ? `Tautan ${place.name} tersalin` : `Bagikan ${place.name}`}
+            aria-label={
+              copied
+                ? t('explore.shareCopiedAria', { name: place.name })
+                : t('explore.sharePlaceAria', { name: place.name })
+            }
             className="apple-retro-bevel relative flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(244,239,230,0.2)] bg-black/40 text-[#F5F2EB] backdrop-blur-md shadow-sm transition-all duration-150 hover:bg-black/55 active:scale-[0.95] before:absolute before:-inset-1"
           >
             {copied ? <CheckIcon className="h-4 w-4 text-[#DFAA63]" /> : <ShareIcon className="h-4 w-4" />}
@@ -184,7 +190,11 @@ function TouristCard({
             onPointerDown={(e) => e.stopPropagation()}
             onClick={() => onToggleFavorite?.(place.slug)}
             aria-pressed={saved}
-            aria-label={saved ? `Hapus ${place.name} dari favorit` : `Simpan ${place.name} ke favorit`}
+            aria-label={
+              saved
+                ? t('explore.removeFavAria', { name: place.name })
+                : t('explore.addFavAria', { name: place.name })
+            }
             className={`apple-retro-bevel relative flex h-9 w-9 items-center justify-center rounded-full border backdrop-blur-md shadow-sm transition-all duration-150 active:scale-[0.95] before:absolute before:-inset-1 ${
               saved
                 ? 'border-rose-300/40 bg-rose-950/65 text-rose-200 hover:bg-rose-900/75'

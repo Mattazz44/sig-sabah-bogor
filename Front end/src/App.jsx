@@ -27,12 +27,18 @@ import {
 } from './utils/api'
 import { getBogorFallbackPhoto, getImageUrl } from './utils/imageHelper'
 import { pushAppNotification, removeFavoriteNotification } from './utils/notifications'
+import { usePreferences } from './utils/preferences'
 import { AlertTriangleIcon, RefreshIcon, XIcon } from './components/ui/VectorIcons'
 
 let handledOAuthCode = null
 let inFlightOAuthExchange = null
 
 export default function App() {
+  const { language, distanceUnit, t, tCategory } = usePreferences()
+  const locationFormatOpts = useMemo(
+    () => ({ unit: distanceUnit, language }),
+    [distanceUnit, language],
+  )
   // Data destinasi wisata: murni di-fetch dari API backend Laravel (PostgreSQL / PostGIS)
   const [tourists, setTourists] = useState([])
   const [isLoadingTourists, setIsLoadingTourists] = useState(true)
@@ -148,8 +154,8 @@ export default function App() {
 
   // Perkaya data tempat wisata dengan jarak dan waktu tempuh dinamis dari lokasi user
   const enrichedTourists = useMemo(
-    () => tourists.map((place) => enrichTouristWithUserLocation(place, userPosition)),
-    [tourists, userPosition],
+    () => tourists.map((place) => enrichTouristWithUserLocation(place, userPosition, locationFormatOpts)),
+    [tourists, userPosition, locationFormatOpts],
   )
 
   // State mode navigasi internal peta (destination object atau array rute custom)
@@ -197,14 +203,16 @@ export default function App() {
         type: 'favorite',
         slug,
         title: matchedPlace
-          ? `${matchedPlace.name} disimpan ke Tersimpan`
-          : 'Destinasi disimpan ke Tersimpan',
+          ? t('notif.favTitle', { name: matchedPlace.name })
+          : t('notif.favFallbackTitle'),
         desc: matchedPlace
-          ? `${matchedPlace.category || 'Destinasi wisata'} di Bogor masuk daftar tersimpan Anda.`
-          : 'Tempat wisata berhasil disimpan ke daftar tersimpan Anda.',
+          ? t('notif.favDesc', {
+              category: tCategory(matchedPlace.category) || t('common.destinationFallback'),
+            })
+          : t('notif.favFallbackDesc'),
       })
     },
-    [favorites, toggleFavoriteState, enrichedTourists],
+    [favorites, toggleFavoriteState, enrichedTourists, t, tCategory],
   )
 
   const location = useLocation()
@@ -230,13 +238,15 @@ export default function App() {
     const matchedClicked =
       clickedPlace && clickedPlace.slug === selectedSlug ? clickedPlace : null
     const targetPlace = routePlace ?? matchedClicked
-    return targetPlace ? enrichTouristWithUserLocation(targetPlace, userPosition) : null
-  }, [selectedSlug, routePlace, clickedPlace, userPosition])
+    return targetPlace
+      ? enrichTouristWithUserLocation(targetPlace, userPosition, locationFormatOpts)
+      : null
+  }, [selectedSlug, routePlace, clickedPlace, userPosition, locationFormatOpts])
 
   const selectedForMap = useMemo(() => {
     const target = previewPlace ?? selectedPlace
-    return target ? enrichTouristWithUserLocation(target, userPosition) : null
-  }, [previewPlace, selectedPlace, userPosition])
+    return target ? enrichTouristWithUserLocation(target, userPosition, locationFormatOpts) : null
+  }, [previewPlace, selectedPlace, userPosition, locationFormatOpts])
 
   const selected = selectedForMap
 
@@ -520,10 +530,10 @@ export default function App() {
           <RefreshIcon className="h-6 w-6 animate-spin" />
         </div>
         <h1 className="mt-4 text-[19px] font-semibold tracking-tight text-[#F5F2EB]">
-          Mengarahkan ke Panel Admin...
+          {t('app.adminRedirectTitle')}
         </h1>
         <p className="mt-1.5 max-w-sm text-[13px] leading-relaxed text-[#F5F2EB]/70">
-          Anda sedang dialihkan ke sistem manajemen destinasi backend di{' '}
+          {t('app.adminRedirectDesc')}{' '}
           <code className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-[12px] tracking-wide text-[#DFAA63]">
             {adminUrl}
           </code>
@@ -533,14 +543,14 @@ export default function App() {
             href={adminUrl}
             className="apple-retro-cta inline-flex min-h-[44px] items-center justify-center rounded-xl px-6 text-[13px] font-semibold active:scale-[0.98]"
           >
-            Buka Panel Admin
+            {t('app.openAdminPanel')}
           </a>
           <button
             type="button"
             onClick={() => navigate('/')}
             className="apple-glass-pill inline-flex min-h-[44px] items-center justify-center rounded-xl px-5 text-[13px] font-medium text-[#F5F2EB]/80 transition-colors hover:text-[#F5F2EB]"
           >
-            Kembali ke Peta
+            {t('app.backToMap')}
           </button>
         </div>
       </div>
@@ -551,7 +561,7 @@ export default function App() {
 
   return (
     <main className="apple-canopy-bg fixed inset-0 m-0 flex h-[100dvh] w-full flex-col overflow-hidden p-0">
-      <h1 className="sr-only">SIG Wisata Bogor</h1>
+      <h1 className="sr-only">{t('app.srTitle')}</h1>
 
       {/* Banner Peringatan Melayang jika Backend Laravel Belum Dijalankan agar tinggi peta tetap 100dvh penuh */}
       {showBackendBanner && (
@@ -570,9 +580,9 @@ export default function App() {
                   <AlertTriangleIcon className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 text-left text-[12px] leading-snug">
-                  <p className="font-semibold text-[#EBF0EB]">Koneksi ke server terputus</p>
+                  <p className="font-semibold text-[#EBF0EB]">{t('app.serverDisconnected')}</p>
                   <p className="mt-0.5 text-rose-100/85">
-                    Jalankan server Laravel (<code className="rounded bg-black/35 px-1 font-mono text-[11px]">php artisan serve --port=8001</code>) untuk memuat destinasi.
+                    {t('app.serverHintBefore')}<code className="rounded bg-black/35 px-1 font-mono text-[11px]">php artisan serve --port=8001</code>{t('app.serverHintAfter')}
                   </p>
                 </div>
               </div>
@@ -582,16 +592,16 @@ export default function App() {
                   type="button"
                   onClick={handleRetryBackend}
                   disabled={isRetryingBackend}
-                  aria-label="Coba hubungkan ulang ke backend"
+                  aria-label={t('app.retryConnectAria')}
                   className="relative inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/10 px-3 text-[12px] font-semibold text-[#EBF0EB] transition-colors duration-150 hover:bg-[#EBF0EB]/18 active:scale-[0.97] disabled:opacity-50 before:absolute before:-inset-1"
                 >
                   <RefreshIcon className={`h-3.5 w-3.5 ${isRetryingBackend ? 'animate-spin' : ''}`} />
-                  <span>{isRetryingBackend ? 'Memuat...' : 'Coba lagi'}</span>
+                  <span>{isRetryingBackend ? t('app.loadingShort') : t('app.retry')}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsErrorBannerDismissed(true)}
-                  aria-label="Tutup peringatan backend"
+                  aria-label={t('app.closeBannerAria')}
                   className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-[#EBF0EB]/20 bg-[#EBF0EB]/10 text-[#EBF0EB] transition-colors duration-150 hover:bg-[#EBF0EB]/18 active:scale-[0.97] before:absolute before:-inset-1"
                 >
                   <XIcon className="h-4 w-4" />
