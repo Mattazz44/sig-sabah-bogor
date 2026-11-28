@@ -38,6 +38,22 @@ class AdminTouristSpotController extends Controller
 
         $spots = $query->paginate(10)->withQueryString();
         $totalSpots = TouristSpot::count();
+        $popularSpots = TouristSpot::where('is_popular', true)->count();
+        $freeSpots = TouristSpot::where(function ($q) {
+            $q->whereNull('ticket_price')
+              ->orWhereRaw("TRIM(ticket_price) = ''")
+              ->orWhereRaw("LOWER(ticket_price) LIKE '%gratis%'")
+              ->orWhereRaw("LOWER(ticket_price) LIKE '%free%'");
+        })->count();
+        $averageRating = round((float) (TouristSpot::whereNotNull('rating')->where('rating', '>', 0)->avg('rating') ?? 0), 1);
+
+        $stats = [
+            'total' => $totalSpots,
+            'popular' => $popularSpots,
+            'free' => $freeSpots,
+            'avgRating' => $averageRating,
+        ];
+
         $categoriesCount = [
             'Semua' => $totalSpots,
             'Alam & Curug' => TouristSpot::where('category', 'Alam & Curug')->count(),
@@ -45,7 +61,7 @@ class AdminTouristSpotController extends Controller
             'Edukasi & Budaya' => TouristSpot::where('category', 'Edukasi & Budaya')->count(),
         ];
 
-        return view('admin.spots.index', compact('spots', 'category', 'search', 'totalSpots', 'categoriesCount'));
+        return view('admin.spots.index', compact('spots', 'category', 'search', 'totalSpots', 'categoriesCount', 'stats'));
     }
 
     /**
@@ -84,7 +100,8 @@ class AdminTouristSpotController extends Controller
             $cleanName = trim((string) $validated['name']);
 
             return redirect()->route('admin.spots.index')
-                ->with('success', "Tempat wisata '{$cleanName}' berhasil ditambahkan ke database!");
+                ->with('success', "Tempat wisata '{$cleanName}' berhasil ditambahkan ke database!")
+                ->with('admin_feedback_type', 'save-success');
         }
 
         // Buat slug unik
@@ -153,7 +170,9 @@ class AdminTouristSpotController extends Controller
             return $created;
         });
 
-        return redirect()->route('admin.spots.index')->with('success', "Tempat wisata '{$spot->name}' berhasil ditambahkan ke database!");
+        return redirect()->route('admin.spots.index')
+            ->with('success', "Tempat wisata '{$spot->name}' berhasil ditambahkan ke database!")
+            ->with('admin_feedback_type', 'save-success');
     }
 
     /**
@@ -195,7 +214,8 @@ class AdminTouristSpotController extends Controller
             $cleanName = trim((string) $validated['name']);
 
             return redirect()->route('admin.spots.index')
-                ->with('success', "Tempat wisata '{$cleanName}' berhasil diperbarui!");
+                ->with('success', "Tempat wisata '{$cleanName}' berhasil diperbarui!")
+                ->with('admin_feedback_type', 'save-success');
         }
 
         // Upload file foto baru yang diunggah ke public/images/spots/
@@ -258,7 +278,9 @@ class AdminTouristSpotController extends Controller
             $this->updateSpatialPoint($spot->id, (float) $validated['longitude'], (float) $validated['latitude']);
         });
 
-        return redirect()->route('admin.spots.index')->with('success', "Tempat wisata '{$spot->name}' berhasil diperbarui!");
+        return redirect()->route('admin.spots.index')
+            ->with('success', "Tempat wisata '{$spot->name}' berhasil diperbarui!")
+            ->with('admin_feedback_type', 'save-success');
     }
 
     /**
@@ -270,7 +292,9 @@ class AdminTouristSpotController extends Controller
         $name = $spot->name;
         $spot->delete();
 
-        return redirect()->route('admin.spots.index')->with('success', "Tempat wisata '{$name}' telah dihapus.");
+        return redirect()->route('admin.spots.index')
+            ->with('success', "Tempat wisata '{$name}' telah dihapus.")
+            ->with('admin_feedback_type', 'delete-success');
     }
 
     /**

@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom'
 import AdminLocationPickerMap from '../map/AdminLocationPickerMap'
 import SafeImage from '../ui/SafeImage'
 import SabahMascot from '../ui/SabahMascot'
+import AdminMascotFeedback from '../ui/AdminMascotFeedback'
 import { useAdminLocations } from '../../hooks/useAdminLocations'
+import { useAdminMascotFeedback } from '../../hooks/useAdminMascotFeedback'
+import { clearAuthStorage } from '../../utils/api'
 import { compressImage } from '../../utils/imageCompressor'
 import { getImageUrl } from '../../utils/imageHelper'
 import {
@@ -17,6 +20,27 @@ import {
   StarIcon,
   XIcon,
 } from '../ui/VectorIcons'
+
+const ADMIN_SAVED_FILTER_KEY = 'sabah_admin_saved_filter_v1'
+
+function loadSavedAdminFilter() {
+  if (typeof window === 'undefined') {
+    return { query: '', category: 'Semua' }
+  }
+  try {
+    const raw = window.localStorage.getItem(ADMIN_SAVED_FILTER_KEY)
+    const parsed = raw ? JSON.parse(raw) : null
+    if (parsed && typeof parsed === 'object') {
+      return {
+        query: typeof parsed.query === 'string' ? parsed.query : '',
+        category: typeof parsed.category === 'string' && parsed.category ? parsed.category : 'Semua',
+      }
+    }
+  } catch {
+    // Abaikan kegagalan membaca storage lokal
+  }
+  return { query: '', category: 'Semua' }
+}
 
 const BASE_CATEGORIES = ['Alam & Curug', 'Kuliner', 'Edukasi & Budaya']
 
@@ -144,17 +168,18 @@ function formatTicketDisplay(value) {
   return str
 }
 
-function AdminPage({ onLocationsMutated }) {
+function AdminPage({ onLocationsMutated, onLogout }) {
   const [activeTab, setActiveTab] = useState('tambah')
   const [editingSpot, setEditingSpot] = useState(null)
   const [form, setForm] = useState(INITIAL_FORM)
   const [photoItems, setPhotoItems] = useState([])
   const [formError, setFormError] = useState('')
   const [isDraggingPhoto, setIsDraggingPhoto] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('Semua')
-  const [deleteCandidate, setDeleteCandidate] = useState(null)
-  const [toast, setToast] = useState(null)
+  const [savedFilter, setSavedFilter] = useState(() => loadSavedAdminFilter())
+  const [searchQuery, setSearchQuery] = useState(() => loadSavedAdminFilter().query)
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState(
+    () => loadSavedAdminFilter().category,
+  )
 
   const fileInputRef = useRef(null)
   const pageScrollRef = useRef(null)
@@ -172,15 +197,60 @@ function AdminPage({ onLocationsMutated }) {
     removeLocation,
   } = useAdminLocations({ onMutated: onLocationsMutated })
 
-  const showToast = useCallback((type, title, message) => {
-    setToast({ id: Date.now(), type, title, message })
-  }, [])
+  const {
+    feedback,
+    isBusy: isFeedbackBusy,
+    setIsPaused: setFeedbackPaused,
+    dismissFeedback,
+    handleConfirm: handleFeedbackConfirm,
+    handleSaveFilter: handleFeedbackSaveFilter,
+    showSaveSuccess,
+    showFilterUnsaved,
+    showDeleteSuccess,
+    showError,
+    confirmLogout,
+    confirmDeleteWisata,
+  } = useAdminMascotFeedback()
 
-  useEffect(() => {
-    if (!toast) return undefined
-    const timer = window.setTimeout(() => setToast(null), 4200)
-    return () => window.clearTimeout(timer)
-  }, [toast])
+  const isFilterUnsaved =
+    searchQuery.trim() !== savedFilter.query || selectedCategoryFilter !== savedFilter.category
+
+  const handleSaveFilter = useCallback(() => {
+    const nextFilter = {
+      query: searchQuery.trim(),
+      category: selectedCategoryFilter,
+    }
+    try {
+      window.localStorage.setItem(ADMIN_SAVED_FILTER_KEY, JSON.stringify(nextFilter))
+    } catch {
+      // Abaikan kegagalan storage pada mode privat
+    }
+    setSavedFilter(nextFilter)
+    showSaveSuccess('Filter pencarian dan kategori berhasil disimpan.')
+  }, [searchQuery, selectedCategoryFilter, showSaveSuccess])
+
+  const handleSwitchTab = useCallback(
+    (nextTab) => {
+      if (activeTab === 'daftar' && nextTab !== 'daftar' && isFilterUnsaved) {
+        showFilterUnsaved({
+          detail: 'Perubahan pencarian atau kategori belum disimpan sebelum berpindah tab.',
+          onSaveFilter: handleSaveFilter,
+        })
+      }
+      setActiveTab(nextTab)
+    },
+    [activeTab, isFilterUnsaved, showFilterUnsaved, handleSaveFilter],
+  )
+
+  const handleRefreshList = useCallback(() => {
+    if (isFilterUnsaved) {
+      showFilterUnsaved({
+        detail: 'Filter daftar wisata belum disimpan. Simpan filter agar tetap aktif.',
+        onSaveFilter: handleSaveFilter,
+      })
+    }
+    refreshLocations()
+  }, [isFilterUnsaved, showFilterUnsaved, handleSaveFilter, refreshLocations])
 
   const revokeUnusedBlobs = useCallback((items) => {
     const activePreviews = new Set(items.map((item) => item.previewUrl))
@@ -201,17 +271,6 @@ function AdminPage({ onLocationsMutated }) {
       blobSet.clear()
     }
   }, [])
-
-  useEffect(() => {
-    if (!deleteCandidate) return undefined
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && deletingId === null) {
-        setDeleteCandidate(null)
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [deleteCandidate, deletingId])
 
   const categoryOptions = useMemo(() => {
     const set = new Set(BASE_CATEGORIES)
@@ -420,10 +479,10 @@ function AdminPage({ onLocationsMutated }) {
       setFormError('')
       if (editingSpot) {
         const result = await updateLocation(editingSpot.id, payload)
-        showToast('success', 'Perubahan tersimpan', result.message)
+        showSaveSuccess(result.message)
       } else {
         const result = await createLocation(payload)
-        showToast('success', 'Lokasi ditambahkan', result.message)
+        showSaveSuccess(result.message)
       }
       resetFormState()
       setActiveTab('daftar')
@@ -431,24 +490,42 @@ function AdminPage({ onLocationsMutated }) {
     } catch (err) {
       const msg = err?.message || 'Terjadi kesalahan saat menyimpan lokasi ke database.'
       setFormError(msg)
-      showToast('error', 'Gagal menyimpan', msg)
+      showError('Gagal menyimpan', msg)
     }
   }
 
-  const handleConfirmDelete = async () => {
-    if (!deleteCandidate) return
-    try {
-      const targetName = deleteCandidate.name
-      const msg = await removeLocation(deleteCandidate.id)
-      if (editingSpot?.id === deleteCandidate.id) {
-        resetFormState()
-      }
-      setDeleteCandidate(null)
-      showToast('success', 'Lokasi dihapus', msg || `'${targetName}' telah dihapus dari database.`)
-    } catch (err) {
-      showToast('error', 'Gagal menghapus', err?.message || 'Tidak dapat menghapus lokasi ini.')
-    }
-  }
+  const handleRequestDelete = useCallback(
+    (spot) => {
+      confirmDeleteWisata({
+        itemName: spot.name,
+        onConfirm: async () => {
+          try {
+            const msg = await removeLocation(spot.id)
+            if (editingSpot?.id === spot.id) {
+              resetFormState()
+            }
+            showDeleteSuccess(msg || `'${spot.name}' telah dihapus dari database.`)
+          } catch (err) {
+            showError('Gagal menghapus', err?.message || 'Tidak dapat menghapus lokasi ini.')
+          }
+        },
+      })
+    },
+    [confirmDeleteWisata, removeLocation, editingSpot, resetFormState, showDeleteSuccess, showError],
+  )
+
+  const handleRequestLogout = useCallback(() => {
+    confirmLogout({
+      onConfirm: async () => {
+        if (typeof onLogout === 'function') {
+          await onLogout()
+          return
+        }
+        clearAuthStorage()
+        window.location.assign('/login')
+      },
+    })
+  }, [confirmLogout, onLogout])
 
   return (
     <div
@@ -459,43 +536,6 @@ function AdminPage({ onLocationsMutated }) {
           'radial-gradient(circle at 12% 10%, rgba(79, 95, 59, 0.36) 0%, transparent 45%), radial-gradient(circle at 88% 85%, rgba(20, 28, 20, 0.6) 0%, transparent 50%)',
       }}
     >
-      {/* Notifikasi Toast Liquid Glass */}
-      {toast && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed top-4 right-4 left-4 z-[700] mx-auto max-w-md sm:left-auto sm:w-full animate-fade-enter"
-        >
-          <div className="flex items-start gap-3 rounded-2xl border border-white/20 bg-[#141C14]/88 px-4 py-3.5 backdrop-blur-xl shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22),0_18px_40px_-10px_rgba(0,0,0,0.5)]">
-            <span
-              className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border ${
-                toast.type === 'error'
-                  ? 'border-rose-300/35 bg-rose-500/20 text-rose-200'
-                  : 'border-[#E2D7B5]/35 bg-[#E2D7B5]/15 text-[#E2D7B5]'
-              }`}
-            >
-              {toast.type === 'error' ? (
-                <AlertTriangleIcon className="h-4 w-4" />
-              ) : (
-                <CheckIcon className="h-4 w-4" />
-              )}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[13px] font-semibold text-[#EBF0EB]">{toast.title}</p>
-              <p className="mt-0.5 text-[12px] leading-snug text-[#C8D3C8]">{toast.message}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setToast(null)}
-              aria-label="Tutup notifikasi"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#C8D3C8] transition-colors hover:bg-white/10 hover:text-[#EBF0EB]"
-            >
-              <XIcon className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
       <div className="mx-auto w-full max-w-6xl px-4 pt-6 pb-20 sm:px-6 sm:pt-8 lg:px-8">
         {/* Header Admin */}
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -525,6 +565,15 @@ function AdminPage({ onLocationsMutated }) {
               <ChevronLeftIcon className="h-4 w-4" />
               <span>Peta utama</span>
             </Link>
+
+            <button
+              type="button"
+              id="btn-admin-logout"
+              onClick={handleRequestLogout}
+              className="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl border border-rose-300/25 bg-[#3A1B22]/85 px-3.5 py-2 text-[12.5px] font-semibold text-rose-100 backdrop-blur-md transition-colors hover:bg-[#49222B] active:scale-[0.98]"
+            >
+              <span>Keluar</span>
+            </button>
           </div>
         </header>
 
@@ -547,7 +596,7 @@ function AdminPage({ onLocationsMutated }) {
               role="tab"
               id="tab-tambah-lokasi"
               aria-selected={activeTab === 'tambah'}
-              onClick={() => setActiveTab('tambah')}
+              onClick={() => handleSwitchTab('tambah')}
               className={`relative z-10 min-h-[42px] rounded-xl px-4 text-[13px] transition-colors duration-150 ${
                 activeTab === 'tambah'
                   ? 'font-semibold text-[#EBF0EB]'
@@ -562,7 +611,7 @@ function AdminPage({ onLocationsMutated }) {
               role="tab"
               id="tab-daftar-lokasi"
               aria-selected={activeTab === 'daftar'}
-              onClick={() => setActiveTab('daftar')}
+              onClick={() => handleSwitchTab('daftar')}
               className={`relative z-10 min-h-[42px] rounded-xl px-4 text-[13px] tabular-nums transition-colors duration-150 ${
                 activeTab === 'daftar'
                   ? 'font-semibold text-[#EBF0EB]'
@@ -1125,15 +1174,30 @@ function AdminPage({ onLocationsMutated }) {
                   )}
                 </div>
 
-                <button
-                  type="button"
-                  onClick={refreshLocations}
-                  disabled={isLoading}
-                  className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl border border-white/18 bg-white/[0.06] px-4 text-[13px] font-medium text-[#EBF0EB] transition-colors hover:bg-white/[0.12] active:scale-[0.98] disabled:opacity-50"
-                >
-                  <RefreshIcon className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                  <span>Muat ulang</span>
-                </button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    id="btn-save-admin-filter"
+                    onClick={handleSaveFilter}
+                    className={`inline-flex min-h-[44px] shrink-0 items-center justify-center gap-1.5 rounded-xl border px-4 text-[13px] font-semibold transition-colors active:scale-[0.98] ${
+                      isFilterUnsaved
+                        ? 'border-[#DFAA63]/45 bg-[#DFAA63]/18 text-[#F5E6C8] hover:bg-[#DFAA63]/28'
+                        : 'border-white/15 bg-white/[0.05] text-[#C8D3C8] hover:bg-white/[0.1] hover:text-[#EBF0EB]'
+                    }`}
+                  >
+                    <span>Simpan filter</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleRefreshList}
+                    disabled={isLoading}
+                    className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl border border-white/18 bg-white/[0.06] px-4 text-[13px] font-medium text-[#EBF0EB] transition-colors hover:bg-white/[0.12] active:scale-[0.98] disabled:opacity-50"
+                  >
+                    <RefreshIcon className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                    <span>Muat ulang</span>
+                  </button>
+                </div>
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
@@ -1291,7 +1355,7 @@ function AdminPage({ onLocationsMutated }) {
                         <button
                           type="button"
                           disabled={deletingId === loc.id}
-                          onClick={() => setDeleteCandidate(loc)}
+                          onClick={() => handleRequestDelete(loc)}
                           className="min-h-[42px] rounded-xl border border-rose-300/25 bg-[#3B1D24]/80 px-3 text-[12.5px] font-semibold text-rose-100 transition-colors hover:bg-[#49242D] active:scale-[0.98] disabled:opacity-50"
                         >
                           {deletingId === loc.id ? 'Menghapus...' : 'Hapus'}
@@ -1306,47 +1370,15 @@ function AdminPage({ onLocationsMutated }) {
         )}
       </div>
 
-      {/* Modal Konfirmasi Hapus (Liquid Glass) */}
-      {deleteCandidate && (
-        <div
-          className="fixed inset-0 z-[650] flex items-center justify-center bg-black/45 px-4 backdrop-blur-sm"
-          onClick={() => deletingId === null && setDeleteCandidate(null)}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-modal-title"
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm rounded-3xl border border-white/20 bg-[#141C14]/88 p-6 text-[#EBF0EB] backdrop-blur-2xl shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22),0_24px_48px_-12px_rgba(0,0,0,0.5)]"
-          >
-            <h2 id="delete-modal-title" className="text-[17px] font-bold tracking-tight text-[#EBF0EB]">
-              Hapus lokasi wisata?
-            </h2>
-            <p className="mt-2 text-[13px] leading-relaxed text-[#C8D3C8]">
-              Destinasi <strong className="font-semibold text-[#EBF0EB]">{deleteCandidate.name}</strong> akan dihapus permanen dari database peta wisata Bogor.
-            </p>
-
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                disabled={deletingId !== null}
-                onClick={() => setDeleteCandidate(null)}
-                className="min-h-[44px] rounded-xl border border-white/18 bg-white/[0.07] px-4 text-[13px] font-semibold text-[#EBF0EB] transition-colors hover:bg-white/[0.14] disabled:opacity-50"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                disabled={deletingId !== null}
-                onClick={handleConfirmDelete}
-                className="min-h-[44px] rounded-xl border border-rose-300/35 bg-[#49242D] px-4 text-[13px] font-semibold text-rose-100 transition-colors hover:bg-[#5E2E39] disabled:opacity-50"
-              >
-                {deletingId !== null ? 'Menghapus...' : 'Ya, Hapus'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Komponen Terpadu Notifikasi Toast & Modal Konfirmasi Maskot Admin */}
+      <AdminMascotFeedback
+        feedback={feedback}
+        isBusy={isFeedbackBusy}
+        onDismiss={dismissFeedback}
+        onConfirm={handleFeedbackConfirm}
+        onSaveFilter={handleFeedbackSaveFilter}
+        onPauseChange={setFeedbackPaused}
+      />
     </div>
   )
 }

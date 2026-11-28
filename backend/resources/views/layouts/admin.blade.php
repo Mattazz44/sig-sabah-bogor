@@ -67,9 +67,10 @@
             font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
             background-color: #111711;
             background-image:
-                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E"),
-                radial-gradient(120% 65% at 50% 0%, rgba(44, 62, 42, 0.3) 0%, transparent 64%),
+                radial-gradient(rgba(242, 239, 233, 0.055) 1px, transparent 1px),
+                radial-gradient(90% 48% at 50% -4%, rgba(118, 147, 122, 0.18) 0%, rgba(44, 62, 42, 0.14) 44%, transparent 74%),
                 linear-gradient(180deg, #161d15 0%, #111711 55%, #0d120d 100%);
+            background-size: 24px 24px, 100% 100%, 100% 100%;
             background-attachment: fixed;
         }
 
@@ -361,7 +362,14 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2.5">
-                <span class="apple-retro-bevel inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-[rgba(244,239,230,0.14)] bg-[rgba(28,36,28,0.65)] px-3.5 text-[12px] font-medium text-[#F5F2EB]/75">
+                <span
+                    id="admin-db-status-pill"
+                    class="apple-retro-bevel inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[rgba(244,239,230,0.14)] bg-[rgba(28,36,28,0.68)] px-3.5 text-[12px] font-medium text-[#F5F2EB]/80 backdrop-blur-md"
+                >
+                    <span class="relative flex h-2 w-2 shrink-0" aria-hidden="true">
+                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                    </span>
                     <span class="font-mono font-semibold tabular-nums text-[#DFAA63]">{{ $navTotalSpots }}</span>
                     <span>lokasi di database</span>
                 </span>
@@ -379,9 +387,10 @@
                 </a>
 
                 @auth
-                    <form action="{{ route('admin.logout') }}" method="POST">
+                    <form id="admin-logout-form" data-admin-logout-form action="{{ route('admin.logout') }}" method="POST">
                         @csrf
                         <button type="submit"
+                                id="btn-admin-logout"
                                 title="Keluar dari akun ({{ auth()->user()->name }})"
                                 class="apple-retro-bevel inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-rose-300/25 bg-[#3A1B22]/85 px-3.5 py-2 text-[12.5px] font-semibold text-rose-100 transition-colors hover:bg-[#49222B] active:scale-[0.98]">
                             <span>Keluar</span>
@@ -415,8 +424,8 @@
             @endif
         </nav>
 
-        <!-- Flash Notification Feedback -->
-        @if(session('success'))
+        <!-- Flash Notification Feedback (hanya untuk pesan non-toast seperti sambutan login) -->
+        @if(session('success') && !session('admin_feedback_type'))
             <div role="status" class="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-emerald-300/30 bg-[#182B1D]/90 px-4 py-2.5 text-[13px] text-emerald-100 shadow-sm">
                 <div class="flex items-center gap-2.5">
                     <svg class="h-4 w-4 shrink-0 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -450,6 +459,46 @@
             Sabah Bogor GIS · Panel Administrasi Destinasi Kota Bogor
         </footer>
     </div>
+
+    <!-- Floating Scroll-to-Top Button -->
+    <button
+        type="button"
+        id="admin-scroll-to-top"
+        aria-label="Kembali ke atas"
+        title="Kembali ke atas"
+        class="pointer-events-none fixed right-5 bottom-6 z-40 flex h-12 w-12 translate-y-3 items-center justify-center rounded-full border border-white/20 bg-[#2c352d]/90 text-[#F5F2EB] opacity-0 shadow-xl backdrop-blur-md transition-all duration-200 hover:border-[#76937A]/60 hover:bg-[#3a463b] active:scale-95"
+    >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="19" x2="12" y2="5"></line>
+            <polyline points="5 12 12 5 19 12"></polyline>
+        </svg>
+    </button>
+
+    <script>
+        (function () {
+            const scrollBtn = document.getElementById('admin-scroll-to-top');
+            if (!scrollBtn) return;
+
+            function toggleScrollBtn() {
+                const visible = window.scrollY > 250;
+                scrollBtn.classList.toggle('opacity-100', visible);
+                scrollBtn.classList.toggle('pointer-events-auto', visible);
+                scrollBtn.classList.toggle('translate-y-0', visible);
+                scrollBtn.classList.toggle('opacity-0', !visible);
+                scrollBtn.classList.toggle('pointer-events-none', !visible);
+                scrollBtn.classList.toggle('translate-y-3', !visible);
+            }
+
+            window.addEventListener('scroll', toggleScrollBtn, { passive: true });
+            scrollBtn.addEventListener('click', function () {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+            toggleScrollBtn();
+        })();
+    </script>
+
+    <!-- Sistem Terpadu Toast & Modal Konfirmasi Maskot Admin -->
+    <x-admin-mascot-feedback />
 
     @stack('scripts')
 </body>
