@@ -6,6 +6,27 @@ Format changelog mengikuti standar [Keep a Changelog](https://keepachangelog.com
 
 ---
 
+## [1.4.0] - 2026-11-28
+
+### Added
+- **Notifikasi & Konfirmasi Maskot Terpadu:** Menambahkan komponen notifikasi toast dan modal konfirmasi animasi maskot untuk status simpan berhasil, filter belum tersimpan, konfirmasi hapus data wisata, serta konfirmasi logout admin.
+- **Animasi Interaktif Lintas Perangkat:** Menambahkan *micro-interactions* berbasis *spring physics*, efek *scroll-reveal* halus pada daftar kartu wisata di halaman Explore, serta dukungan interaksi gestur sentuh (mobile) dan hover/drag (tablet & desktop).
+- **Aksi Cepat Mulai Perjalanan:** Menambahkan tombol langsung **Mulai** pada kartu *preview* pin peta agar pengguna dapat memulai navigasi tanpa harus membuka halaman detail terlebih dahulu.
+- **Penyambungan Garis Rute Presisi:** Menambahkan segmen garis putus-putus (*last-mile connector*) yang menghubungkan titik ujung jalan raya langsung tepat ke pusat ikon pin lokasi tujuan.
+
+### Changed
+- **Redesign UI Halaman Admin, Saved, & Custom Routes:** Merombak tampilan agar lebih modern, bersih, dan bergaya aplikasi *native* dengan mengurangi garis bingkai kaku serta menyederhanakan kartu statistik menjadi strip metrik ringkas.
+- **Lokalisasi Penuh Bilingual (ID / EN):** Menyelesaikan translasi bahasa Indonesia dan Inggris secara menyeluruh di seluruh halaman (*Explore*, *For You*, *Navigation*, *Saved*, *Activity*, *Place Detail*, *Admin*, dan *Bottom Navigation*).
+- **Perbaikan Spacing & Layout Responsif:** Memperlebar jarak vertikal dan horizontal antar-kartu populer serta daftar tujuan wisata di halaman Explore, dan menyesuaikan kanvas peta agar tampil layar penuh (*full-screen*) di tablet maupun desktop.
+- **Pembaruan Label Kategori Wisata:** Memperbaiki kategori destinasi taman kota non-air terjun (seperti Kebun Raya Bogor) agar lebih akurat.
+
+### Removed
+- **Pembersihan Jalur Navigasi Peta:** Menghapus jalur alternatif dan simulasi segmen warna kemacetan agar navigasi fokus pada satu rute utama yang bersih, akurat, dan bebas jalur memutar.
+- **Penyederhanaan Kartu & Profil:** Menghapus tombol *Buka di Google Maps* pada halaman detail wisata, menghapus badge *Active Explorer* pada halaman profil, serta membersihkan duplikasi tombol Edit & Hapus pada kartu wisata Admin.
+- **Optimasi Build PWA:** Membersihkan sisa *asset* hasil *build* lama di folder publik dan menghapus file `manifest.webmanifest` tidak terpakai sehingga ukuran *precache* Service Worker menyusut drastis menjadi ~2,2 MB.
+
+---
+
 ## [1.3.0] - 2026-11-26
 
 ### Added
